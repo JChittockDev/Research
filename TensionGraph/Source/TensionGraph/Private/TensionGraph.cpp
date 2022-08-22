@@ -1,4 +1,4 @@
-// Tension Graph - Joseph Chittock
+// Copyright 2022 Joseph Chittock. All Rights Reserved.
 
 #include "TensionGraph.h"
 #include "Modules/ModuleManager.h"
