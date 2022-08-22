@@ -2,14 +2,15 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
+	"EngineVersion" : "5.0.3",
 	"FriendlyName": "TensionGraph",
 	"Description": "Deformer Graph Implementation of tension maps",
 	"Category": "Animation",
 	"CreatedBy": "Joseph Chittock",
-	"CreatedByURL": "",
-	"DocsURL": "",
+	"CreatedByURL": "https://github.com/JChittockDev",
+	"DocsURL": "https://github.com/JChittockDev/Research/tree/main/TensionGraph",
 	"MarketplaceURL": "",
-	"SupportURL": "",
+	"SupportURL": "https://github.com/JChittockDev/Research/tree/main/TensionGraph",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": true,
@@ -18,7 +19,8 @@
 		{
 			"Name": "TensionGraph",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": ["Win64"]
 		}
 	],
 	"Plugins": [
