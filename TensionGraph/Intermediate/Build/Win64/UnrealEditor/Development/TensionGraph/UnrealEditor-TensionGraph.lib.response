@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-TensionGraph.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"E:\Projects\research\TensionMapping\Intermediate\Build\Win64\TensionMappingEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"E:\Projects\research\TensionMapping\Plugins\TensionGraph\Intermediate\Build\Win64\UnrealEditor\Development\TensionGraph\Module.TensionGraph.cpp.obj"
+"E:\Projects\research\TensionMapping\Plugins\TensionGraph\Intermediate\Build\Win64\UnrealEditor\Development\TensionGraph\Module.TensionGraph.gen.cpp.obj"
+"E:\Projects\research\TensionMapping\Plugins\TensionGraph\Intermediate\Build\Win64\UnrealEditor\Development\TensionGraph\Default.rc2.res"
+/OUT:"E:\Projects\research\TensionMapping\Plugins\TensionGraph\Intermediate\Build\Win64\UnrealEditor\Development\TensionGraph\UnrealEditor-TensionGraph.lib"

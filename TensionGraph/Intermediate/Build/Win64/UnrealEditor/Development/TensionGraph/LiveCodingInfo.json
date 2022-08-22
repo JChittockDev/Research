@@ -1,0 +1,15 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.TensionGraph.cpp.obj": [
+			"TensionComponent.cpp.obj",
+			"TensionDataInterface.cpp.obj",
+			"TensionGraph.cpp.obj"
+		],
+		"Module.TensionGraph.gen.cpp.obj": [
+			"TensionComponent.gen.cpp.obj",
+			"TensionDataInterface.gen.cpp.obj",
+			"TensionGraph.init.gen.cpp.obj"
+		]
+	}
+}

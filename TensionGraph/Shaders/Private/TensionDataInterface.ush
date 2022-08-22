@@ -1,0 +1,18 @@
+#include "/Plugin/ComputeFramework/Private/ComputeKernelCommon.ush"
+
+uint DI_LOCAL(NumVertices);
+uint DI_LOCAL(InputStreamStart);
+Buffer<uint> DI_LOCAL(VertexAdjacencyMapBuffer);
+
+DI_IMPL_READ(ReadNumVertices, uint, void)
+{
+	return DI_LOCAL(NumVertices);
+}
+
+DI_IMPL_READ(ReadAdjacentIDs, uint, uint VertexIndex)
+{
+	uint BufferIndex = VertexIndex + DI_LOCAL(InputStreamStart);
+	uint id = DI_LOCAL(VertexAdjacencyMapBuffer)[VertexIndex + DI_LOCAL(InputStreamStart)];
+	
+	return id;
+}
