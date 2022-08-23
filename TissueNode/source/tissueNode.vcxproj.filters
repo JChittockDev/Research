@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="apiutil.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="math.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="node.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="physics.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="plugin.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="attr.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="postransfer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="tetgenutil.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header">
+      <UniqueIdentifier>{a6b40a62-b09e-4364-abbd-191e5028d5cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{724d6b70-aa46-4b3f-ade9-f753154f3dc6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="node.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
