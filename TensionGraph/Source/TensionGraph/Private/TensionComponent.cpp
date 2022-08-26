@@ -38,6 +38,7 @@ void UTensionComponent::BeginDestroy()
 	ReleaseGPUData();
 }
 
+#if WITH_EDITOR
 // Attribute function to initialize vertex data if the skeletal mesh or skeletal mesh deformer have changed
 void UTensionComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -53,6 +54,7 @@ void UTensionComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
+#endif
 
 // Query if class is ready for destruction
 bool UTensionComponent::IsReadyForFinishDestroy()
