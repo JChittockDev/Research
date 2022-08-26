@@ -9,6 +9,7 @@
 #include "Animation/MeshDeformer.h"
 #include "RenderCommandFence.h"
 #include "UObject/ObjectMacros.h"
+#include "Rendering/SkeletalMeshRenderData.h"
 #include "Components/ActorComponent.h"
 #include "TensionComponent.generated.h"
 
