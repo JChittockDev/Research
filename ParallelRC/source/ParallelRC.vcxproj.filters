@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header">
+      <UniqueIdentifier>{bec28f52-03da-48a1-91c6-4f756e04e8b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{0f700310-b8be-4b5a-9ce7-05407ef6ab23}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="node.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="attr.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="plugin.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="raycast.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="data.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="node.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="raycast.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
