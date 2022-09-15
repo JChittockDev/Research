@@ -79,15 +79,3 @@ void PRCMesh::Set(std::map<int, std::vector<MVector>>& data)
         meshData[i] = triangle;
     }
 };
-
-PRCTriangle::PRCTriangle()
-{
-};
-
-PRCData::PRCData()
-{
-};
-
-PRCMesh::PRCMesh()
-{
-};
