@@ -86,7 +86,6 @@ TMap<const int, float> UTissueComponent::ReturnFlatVertexPositions(TMap<const in
 }
 
 
-
 // Functions to concatenate the process of initiliazing & destorying resources
 void UTissueComponent::InitGPUData()
 {
@@ -95,15 +94,16 @@ void UTissueComponent::InitGPUData()
 	{
 		TArray<TArray<unsigned int>> TriangleIds;
 		FSkeletalMeshRenderData* RenderData = SkeletalMeshComponent->GetSkeletalMeshRenderData();
-		TetInterface.GenerateTetMesh(radius_edge_ratio, volume_constraint, RenderData, { {} });
+
+		const FVector hole( 0.0f, 0.0f, 0.0f );
+
+		TetInterface.GenerateTetMesh(radiusEdgeRatio, volumeConstraint, RenderData, { {0,  hole } });
 		
-		BeginReleaseResource(&InputVertexPositionsBuffer);
 		BeginReleaseResource(&TetVertexPositionsBuffer);
 
-		InputVertexPositionsBuffer.Init(ReturnFlatVertexPositions(*TetInterface.GetInputVertexPositions()), "inputVertexPositionBuffer");
-		InputVertexPositionsBuffer.Init(ReturnFlatVertexPositions(*TetInterface.GetTetVertexPositions()), "tetVertexPositionBuffer");
+		TetVertexCount = *TetInterface.GetTetVertexCount();
+		TetVertexPositionsBuffer.Init(ReturnFlatVertexPositions(*TetInterface.GetTetVertexPositions()), "tetVertexPositionBuffer");
 		
-		BeginInitResource(&InputVertexPositionsBuffer);
 		BeginInitResource(&TetVertexPositionsBuffer);
 	}
 }
@@ -111,7 +111,6 @@ void UTissueComponent::InitGPUData()
 
 void UTissueComponent::ReleaseGPUData()
 {
-	BeginReleaseResource(&InputVertexPositionsBuffer);
 	BeginReleaseResource(&TetVertexPositionsBuffer);
 	RenderResourceDestroyFence.BeginFence();
 }

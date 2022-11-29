@@ -50,5 +50,6 @@ public:
 
 private:
 	FSkeletalMeshObject* SkeletalMeshObject;
-	FRHIShaderResourceView* VertexAdjacencyMapBufferSRV = nullptr;
+	int TetVertexCountRef;
+	FRHIShaderResourceView* TetVertexPositionsBufferSRV = nullptr;
 };

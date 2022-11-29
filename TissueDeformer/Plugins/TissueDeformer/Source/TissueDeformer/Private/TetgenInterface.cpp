@@ -2,141 +2,171 @@
 
 #define searchDistance 9999999.99999
 
-void TetgenInterface::ToTetgenIO(FSkeletalMeshRenderData* RenderData, const TMap<const int, const FVector>& hole)
+void TetgenInterface::ToTetgenIO(const TMap<const int, const FVector>& hole, tetgenio& in, 
+    const TMap<const int, FVector>& inputVertexPositions, const TMap<const int, TTuple<int, int, int>>& inputTriangleIDs, 
+    const TMap<const int, FVectorTangent>& inputTangents, const TArray<TMap<const int, FVector2D>>& inputTextureCoordinates)
 {
-    const FPositionVertexBuffer& positionBuffer = RenderData->LODRenderData[0].StaticVertexBuffers.PositionVertexBuffer;
-    const FRawStaticIndexBuffer16or32Interface& indexBuffer = *(RenderData->LODRenderData[0].MultiSizeIndexContainer.GetIndexBuffer());
 
-    int vertexCount = RenderData->LODRenderData[0].GetNumVertices();
-    int triangleCount = indexBuffer.Num() / 3;
+    in.firstnumber = 1;
+    in.numberofpoints = inputVertexPositions.Num();
+    in.pointlist = new REAL[in.numberofpoints * 3];
+    in.pointparamlist = new tetgenio::pointparam[in.numberofpoints];
 
-    tetgenio::facet* f;
-    tetgenio::polygon* p;
-
-    _in.firstnumber = 1;
-    _in.numberofpoints = vertexCount;
-    _in.pointlist = new REAL[_in.numberofpoints * 3];
-
-    int pointIndex = 0;
-    for (int vertexListIndex = 0; vertexListIndex < vertexCount; vertexListIndex++)
+    for (int vertexListIndex = 0; vertexListIndex < in.numberofpoints; vertexListIndex++)
     {
-        const FVector3f& position = positionBuffer.VertexPosition(vertexListIndex);
-        _in.pointlist[pointIndex] = position.X; pointIndex++;
-        _in.pointlist[pointIndex] = position.Y; pointIndex++;
-        _in.pointlist[pointIndex] = position.Z; pointIndex++;
-    }
+        in.pointlist[vertexListIndex * 3] = inputVertexPositions[vertexListIndex].X;
+        in.pointlist[vertexListIndex * 3 + 1] = inputVertexPositions[vertexListIndex].Y;
+        in.pointlist[vertexListIndex * 3 + 2] = inputVertexPositions[vertexListIndex].Z;
 
-    _in.numberoffacets = triangleCount;
-    _in.facetlist = new tetgenio::facet[_in.numberoffacets];
-
-    for (int facetIndex = 0; facetIndex < triangleCount; facetIndex++)
-    {
-        f = &_in.facetlist[facetIndex];
-        f->numberofpolygons = 1;
-        f->polygonlist = new tetgenio::polygon[f->numberofpolygons];
-        p = &f->polygonlist[0];
-        p->numberofvertices = 3;
-        p->vertexlist = new int[p->numberofvertices];
-        f->numberofholes = 0;
-        f->holelist = NULL;
+        tetgenio::pointparam param;
+        param.tag = 0;
+        param.type = 0;
         
-        for (int facetVertexIndex = 0; facetVertexIndex < p->numberofvertices; facetVertexIndex++)
+        for (int t = 0; t < MAX_TEXCOORDS; ++t)
         {
-            p->vertexlist[facetVertexIndex] = indexBuffer.Get(facetIndex * 3 + facetVertexIndex) + 1;
+            param.uv[t * 2 + 0] = inputTextureCoordinates[t][vertexListIndex].X;
+            param.uv[t * 2 + 1] = inputTextureCoordinates[t][vertexListIndex].Y;
         }
+
+        param.uv[MAX_TEXCOORDS * 2 + 0] = *((double*)(&inputTangents[vertexListIndex].TangentX.Vector.Packed));
+        param.uv[MAX_TEXCOORDS * 2 + 1] = *((double*)(&inputTangents[vertexListIndex].TangentZ.Vector.Packed));
+        param.uv[MAX_TEXCOORDS * 2 + 2] = 0;
+        param.uv[MAX_TEXCOORDS * 2 + 3] = 0;
+        param.uv[MAX_TEXCOORDS * 2 + 4] = 0;
+        param.uv[MAX_TEXCOORDS * 2 + 5] = 0;
+        in.pointparamlist[vertexListIndex] = param;
     }
 
-    _in.numberofholes = hole.Num();
-    _in.holelist = new double[3 * _in.numberofholes];
+    in.numberoffacets = inputTriangleIDs.Num();
+    in.facetlist = new tetgenio::facet[in.numberoffacets];
+    in.facetmarkerlist = new int[in.numberoffacets];
 
-    for (int holeID = 0, nHoles = hole.Num(); holeID < nHoles; holeID++)
+    
+    for (int ti = 0; ti < in.numberoffacets; ti++)
     {
-        _in.holelist[holeID * 3 + 0] = hole[holeID][0];
-        _in.holelist[holeID * 3 + 1] = hole[holeID][1];
-        _in.holelist[holeID * 3 + 2] = hole[holeID][2];
+        in.facetmarkerlist[ti] = 1;
+
+        tetgenio::facet& f = in.facetlist[ti];
+        f.holelist = NULL;
+        f.numberofholes = 0;
+        f.numberofpolygons = 1;
+        f.polygonlist = new tetgenio::polygon[f.numberofpolygons];
+
+        tetgenio::polygon& p = f.polygonlist[0];
+        p.numberofvertices = 3;
+        p.vertexlist = new int[p.numberofvertices];
+        p.vertexlist[0] = inputTriangleIDs[ti].Get<0>();
+        p.vertexlist[1] = inputTriangleIDs[ti].Get<1>();
+        p.vertexlist[2] = inputTriangleIDs[ti].Get<2>();
+    }
+
+    in.facetmarkerlist = NULL;
+
+    int nholes = hole.Num();
+    in.numberofholes = nholes;
+    in.holelist = new double[in.numberofholes * 3];
+
+    for (int holeid = 0; holeid < nholes; holeid++)
+    {
+        in.holelist[holeid * 3] = hole[holeid][0];
+        in.holelist[holeid * 3 + 1] = hole[holeid][1];
+        in.holelist[holeid * 3 + 2] = hole[holeid][2];
     }
 }
 
 // Output Tetgen mesh to maya object
-void TetgenInterface::OutTetMeshData(TMap<const int, FVector>& inputVertexPositions, TMap<const int, FVector>& tetVertexPositions, 
-    TMap<const int, int>& tetrahedralIDs, TMap<const int, TTuple<int, int>> edgeIDs, TMap<const int, TTuple<int, int, int>> triangleIDs, 
-    int& vertexCount, int& tetCount, int& edgeCount, int& triangleCount, TMap<const int, TTuple<float, float, int, int>>& baraycentericCoordinates)
+void TetgenInterface::OutTetMeshData(TMap<const int, FVector>& inputVertexPositions, 
+    TMap<const int, FVector>& tetVertexPositions, TMap<const int, int>& tetIDs, 
+    TMap<const int, TTuple<int, int>> tetEdgeIDs, TMap<const int, TTuple<int, int, int>> tetTriangleIDs, 
+    int& tetVertexCount, int& tetCount, int& tetEdgeCount, int& tetTriangleCount, 
+    TMap<const int, TTuple<float, float, int, int>>& baraycentericCoordinates, 
+    const tetgenio& in, tetgenio& out)
 {
     // Get output tet vertex data
-    vertexCount = _out.numberofpoints;
-    REAL* tetpoints = _out.pointlist;
+    tetVertexCount = out.numberofpoints;
+    REAL* tetpoints = out.pointlist;
 
-    for (int i = 0; i < vertexCount * 3; i++)
+    for (int i = 0; i < tetVertexCount; i++)
     {
-        const double x = tetpoints[i]; i++;
-        const double y = tetpoints[i]; i++;
-        const double z = tetpoints[i];
-        const FVector point(x, y, z);
-        tetVertexPositions[i] = point;
-    }
-
-    const int inputCount =  _in.numberofpoints;
-    for (int i = 0; i < vertexCount * 3; i++)
-    {
-        const double x = tetpoints[i]; i++;
-        const double y = tetpoints[i]; i++;
-        const double z = tetpoints[i];
-        const FVector point(x, y, z);
-        inputVertexPositions[i] = point;
+        tetVertexPositions[i] = FVector(tetpoints[i * 3], tetpoints[i * 3 + 1], tetpoints[i * 3 + 2]);
     }
 
     // Get output tet face data
-    tetCount = _out.numberoftetrahedra * 4;
+    tetCount = out.numberoftetrahedra * 4;
 
     for (int i = 0; i < tetCount; i++)
     {
-        tetrahedralIDs[i] = _out.tetrahedronlist[i] - 1;
+        tetIDs[i] = out.tetrahedronlist[i] - 1;
     }
 
-    edgeCount = _out.numberofedges;
-    int* edges = _out.edgelist;
+    tetEdgeCount = out.numberofedges;
+    int* edges = out.edgelist;
 
-    for (int i = 0; i < edgeCount/2; i++)
+    for (int i = 0; i < tetEdgeCount /2; i++)
     {
-        edgeIDs[i] = MakeTuple(edges[i * 2], edges[i * 2 + 1]);
+        tetEdgeIDs[i] = MakeTuple(edges[i * 2], edges[i * 2 + 1]);
     }
 
-    triangleCount = _out.numberoftrifaces;
-    int* tris = _out.trifacelist;
+    tetTriangleCount = out.numberoftrifaces;
+    int* tris = out.trifacelist;
     
-    for (int i = 0; i < triangleCount/3; i++)
+    for (int i = 0; i < tetTriangleCount /3; i++)
     {
-        triangleIDs[i] = MakeTuple(tris[i * 3] - 1, tris[i * 3 + 1] - 1, tris[i * 3 + 2] - 1);
+        tetTriangleIDs[i] = MakeTuple(tris[i * 3], tris[i * 3 + 1], tris[i * 3 + 2]);
     }
 
-    GetClosestBaraycenter(inputVertexPositions, tetVertexPositions, triangleIDs, baraycentericCoordinates);
+    GetClosestBaraycenter(inputVertexPositions, tetVertexPositions, tetTriangleIDs, baraycentericCoordinates);
+}
+
+tetgenbehavior behaviour(float radiusEdgeRatio, float volumeConstraint)
+{
+    tetgenbehavior b;
+    {
+        b.zeroindex = 1;
+        b.docheck = 1;
+        b.verbose = 1;
+        b.diagnose = 0;
+        b.facesout = 1;
+        b.edgesout = 1;
+        b.neighout = 2;
+        b.object = tetgenbehavior::POLY;
+        b.refine = 0;
+        b.plc = 1;
+        b.quality = 1;
+        b.nomergefacet = 1;
+        b.nomergevertex = 1;
+        b.nojettison = 1;
+        b.nobisect = 1;
+        b.nobisect_nomerge = 1;
+        b.supsteiner_level = 4;
+        b.addsteiner_algo = 1;
+        b.order = 1;
+        b.psc = 1;
+        b.minratio = radiusEdgeRatio;
+        b.maxvolume = volumeConstraint;
+    }
+    return b;
 }
 
 void TetgenInterface::ToTetMesh(double radius_edge_ratio, double volume_constraint, FSkeletalMeshRenderData* RenderData, 
-    const TMap<const int, const FVector>& holes, TMap<const int, FVector>& inputVertexPositions, TMap<const int, FVector>& tetVertexPositions, 
-    TMap<const int, int>& tetrahedralIDs, TMap<const int, TTuple<int, int>>& edgeIDs, TMap<const int, TTuple<int, int, int>>& triangleIDs, 
-    int& vertexCount, int& tetCount, int& edgeCount, int& triangleCount, TMap<const int, TTuple<float, float, int, int>>& baraycentericCoordinates)
+    const TMap<const int, const FVector>& holes, TMap<const int, FVector>& inputVertexPositions, 
+    TMap<const int, TTuple<int, int, int>>& inputTriangleIDs, 
+    TMap<const int, FVectorTangent>& inputTangents,
+    TArray<TMap<const int, FVector2D>>& inputTextureCoordinates,
+    TMap<const int, FVector>& tetVertexPositions, 
+    TMap<const int, int>& tetIDs, TMap<const int, TTuple<int, int>>& tetEdgeIDs, 
+    TMap<const int, TTuple<int, int, int>>& tetTriangleIDs, int& tetVertexCount, 
+    int& tetCount, int& tetEdgeCount, int& tetTriangleCount, 
+    TMap<const int, TTuple<float, float, int, int>>& baraycentericCoordinates, 
+    tetgenio& in, tetgenio& out)
 {
-    // Create Tetgen compatible data structure
-    ToTetgenIO(RenderData, holes);
-    // Convert this to a string command
-    std::ostringstream strs;
-    strs << radius_edge_ratio;
-    std::string radius_edge_ratio_string = strs.str();
-    strs.clear();
-    strs.seekp(0);
-    strs << volume_constraint;
-    std::string volume_constraint_string = strs.str();
-    std::string cmd = "pq" + radius_edge_ratio_string + "a" + volume_constraint_string;
-    char* c_cmd = new char[cmd.size() + 1];
-    std::copy(cmd.begin(), cmd.end(), c_cmd);
-    c_cmd[cmd.size()] = '\0';
-    // Perform terahedralization
-    tetrahedralize(reinterpret_cast<tetgenbehavior*>(c_cmd), &_in, &_out);
+    ToTetgenIO(holes, in, inputVertexPositions, inputTriangleIDs, inputTangents, inputTextureCoordinates);
+    tetgenbehavior bhvr = behaviour(1.5, 1.5);
+     //Perform terahedralization
+    tetrahedralize(&bhvr, &in, &out);
     // Output as a Maya object
-    OutTetMeshData(inputVertexPositions, tetVertexPositions, tetrahedralIDs, edgeIDs, triangleIDs,
-                        vertexCount, tetCount, edgeCount, triangleCount, baraycentericCoordinates);
-    delete[] c_cmd;
+    OutTetMeshData(inputVertexPositions, tetVertexPositions, tetIDs, tetEdgeIDs, tetTriangleIDs,
+        tetVertexCount, tetCount, tetEdgeCount, tetTriangleCount, baraycentericCoordinates, in, out);
 }
 
 int TetgenInterface::FindClosestIndex(const FVector inputPoint, const TMap<const int, FVector>& targetPoints)
@@ -237,10 +267,65 @@ void TetgenInterface::GetClosestBaraycenter(const TMap<const int, FVector>& orig
     }
 }
 
-void TetgenInterface::GenerateTetMesh(double radius_edge_ratio, double volume_constraint,
+void TetgenInterface::ParseMeshData(FSkeletalMeshRenderData* RenderData, TMap<const int, FVector>& InputVertexPositions, 
+    TMap<const int, TTuple<int, int, int>>& InputTriangleIDs, TMap<const int, FVectorTangent>& inputTangents,
+    TArray<TMap<const int, FVector2D>>& inputTextureCoordinates)
+{
+    const FPositionVertexBuffer& positionBuffer = RenderData->LODRenderData[0].StaticVertexBuffers.PositionVertexBuffer;
+    const FStaticMeshVertexBuffer& staticBuffer = RenderData->LODRenderData[0].StaticVertexBuffers.StaticMeshVertexBuffer;
+    const FRawStaticIndexBuffer16or32Interface& indexBuffer = *(RenderData->LODRenderData[0].MultiSizeIndexContainer.GetIndexBuffer());
+
+    int vertexCount = RenderData->LODRenderData[0].GetNumVertices();
+    int triangleCount = indexBuffer.Num() / 3;
+
+    for (int v = 0; v < vertexCount; v++)
+    {
+        const FVector3f& position = positionBuffer.VertexPosition(v);
+        InputVertexPositions.Add(v, FVector(position.X, position.Y, position.Z));
+    }
+
+    for (int t = 0; t < triangleCount; t++)
+    {
+        InputTriangleIDs.Add(t, MakeTuple(indexBuffer.Get(t * 3),
+                            indexBuffer.Get(t * 3 + 1),
+                            indexBuffer.Get(t * 3 + 2)));
+    }
+
+    for (int tn = 0; tn < vertexCount; tn++)
+    {
+        auto tangentX = staticBuffer.VertexTangentX(tn);
+        auto tangentZ = staticBuffer.VertexTangentZ(tn);
+
+        FVectorTangent tangents;
+        tangents.TangentX = FPackedRGB10A2N(tangentX);
+        tangents.TangentZ = FPackedRGB10A2N(tangentZ);
+        inputTangents.Add(tn, tangents);
+    }
+
+    for (int txc = 0; txc < MAX_TEXCOORDS; txc++)
+    {
+        TMap<const int, FVector2D> UVSet;
+        inputTextureCoordinates.Add(UVSet);
+    }
+
+    for (int tx = 0; tx < vertexCount; tx++)
+    {
+        auto test = staticBuffer.GetVertexUV(tx, 0);
+        for (int txc = 0; txc < MAX_TEXCOORDS; txc++)
+        {
+            inputTextureCoordinates[txc].Add(tx, FVector2D(test.X, test.Y));
+        }
+    }
+}
+
+void TetgenInterface::GenerateTetMesh(double radiusEdgeRatio, double volumeConstraint,
     FSkeletalMeshRenderData* RenderData, const TMap<const int, const FVector>& holes)
 {
-    ToTetMesh(radius_edge_ratio, volume_constraint, RenderData, holes, _inputVertexPositions,
-        _tetVertexPositions, _tetrahedralIDs, _edgeIDs, _triangleIDs, _vertexCount, _tetCount, 
-        _edgeCount, _triangleCount, _baraycentericCoordinates);
+
+    ParseMeshData(RenderData, _inputVertexPositions, _inputTriangleIDs, _inputTangents, _inputTextureCoordinates);
+
+    ToTetMesh(radiusEdgeRatio, volumeConstraint, RenderData, holes, _inputVertexPositions,
+        _inputTriangleIDs, _inputTangents, _inputTextureCoordinates, _tetVertexPositions, _tetIDs, _tetEdgeIDs,
+        _tetTriangleIDs, _tetVertexCount, _tetCount, _tetEdgeCount, _tetTriangleCount, _baraycentericCoordinates, 
+        _in, _out);
 }

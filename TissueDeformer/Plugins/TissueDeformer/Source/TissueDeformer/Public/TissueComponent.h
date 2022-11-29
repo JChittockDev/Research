@@ -27,17 +27,17 @@ class UTissueComponent : public UActorComponent
 	UPROPERTY(EditAnywhere)
 	int substeps;
 	UPROPERTY(EditAnywhere)
-	float volume_compliance;
+	float volumeCompliance;
 	UPROPERTY(EditAnywhere)
-	float edge_compliance;
+	float edgeCompliance;
 	UPROPERTY(EditAnywhere)
-	float time_step;
+	float timeStep;
 	UPROPERTY(EditAnywhere)
-	float radius_edge_ratio;
+	float radiusEdgeRatio = 1.5;
 	UPROPERTY(EditAnywhere)
-	float volume_constraint;
+	float volumeConstraint = 2.0;
 	UPROPERTY(EditAnywhere)
-	FVector volume_cavity_location;
+	FVector volumeCavityLocation;
 
 
 public:
@@ -60,8 +60,11 @@ public:
 	void GetSkeletalMeshData();
 
 public:
-	TissueFloatVertexBuffer InputVertexPositionsBuffer;
+	int TetVertexCount;
+	
 	TissueFloatVertexBuffer TetVertexPositionsBuffer;
+	
+	
 	TissueFloatVertexBuffer PreviousTetVertexPositionsBuffer;
 	TissueFloatVertexBuffer TetVertexVelocityBuffer;
 	TissueFloatVertexBuffer InverseMassBuffer;
@@ -71,6 +74,7 @@ public:
 	TissueFloatVertexBuffer TempBuffer;
 	TissueIntegerVertexBuffer TetIDsBuffer;
 	TissueIntegerVertexBuffer TetEdgeIDsBuffer;
+
 
 private:
 	FRenderCommandFence RenderResourceDestroyFence;

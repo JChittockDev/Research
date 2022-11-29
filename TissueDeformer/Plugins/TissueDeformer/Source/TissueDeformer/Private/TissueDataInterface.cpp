@@ -15,15 +15,14 @@
 // Define display name in optimus graph
 FString UTissueDataInterface::GetDisplayName() const
 {
-	return TEXT("Tissue Info");
+	return TEXT("Tissue Data");
 }
 
 // Declare the node graph pin names
 TArray<FOptimusCDIPinDefinition> UTissueDataInterface::GetPinDefinitions() const
 {
 	TArray<FOptimusCDIPinDefinition> Defs;
-	Defs.Add({ "AdjacentIDs", "ReadAdjacentIDs", Optimus::DomainName::Vertex, "ReadNumVertices" });
-	
+	Defs.Add({ "TetVertexPositions", "ReadTetVertexPositions", Optimus::DomainName::Vertex, "ReadNumTetVertices" });
 	return Defs;
 }
 
@@ -32,20 +31,20 @@ void UTissueDataInterface::GetSupportedInputs(TArray<FShaderFunctionDefinition>&
 {
 	{
 		FShaderFunctionDefinition Fn;
-		Fn.Name = TEXT("ReadNumVertices");
+		Fn.Name = TEXT("ReadNumTetVertices");
 		Fn.bHasReturnType = true;
 		FShaderParamTypeDefinition ReturnParam = {};
 		ReturnParam.ValueType = FShaderValueType::Get(EShaderFundamentalType::Uint);
 		Fn.ParamTypes.Add(ReturnParam);
 		OutFunctions.Add(Fn);
 	}
-	
+
 	{
 		FShaderFunctionDefinition Fn;
-		Fn.Name = TEXT("ReadAdjacentIDs");
+		Fn.Name = TEXT("ReadTetVertexPositions");
 		Fn.bHasReturnType = true;
 		FShaderParamTypeDefinition ReturnParam = {};
-		ReturnParam.ValueType = FShaderValueType::Get(EShaderFundamentalType::Uint);
+		ReturnParam.ValueType = FShaderValueType::Get(EShaderFundamentalType::Float, 3);
 		Fn.ParamTypes.Add(ReturnParam);
 		FShaderParamTypeDefinition Param0 = {};
 		Param0.ValueType = FShaderValueType::Get(EShaderFundamentalType::Uint);
@@ -55,9 +54,11 @@ void UTissueDataInterface::GetSupportedInputs(TArray<FShaderFunctionDefinition>&
 }
 
 BEGIN_SHADER_PARAMETER_STRUCT(FTissueDataInterfaceParameters, )
-SHADER_PARAMETER(uint32, NumVertices)
 SHADER_PARAMETER(uint32, InputStreamStart)
-SHADER_PARAMETER_SRV(Buffer<uint>, VertexAdjacencyMapBuffer)
+SHADER_PARAMETER(uint32, NumInputVertices)
+SHADER_PARAMETER(uint32, NumTetVertices)
+SHADER_PARAMETER_SRV(Buffer<float3>, InputVertexPositionBuffer)
+SHADER_PARAMETER_SRV(Buffer<float3>, TetVertexPositionBuffer)
 END_SHADER_PARAMETER_STRUCT()
 
 // Query shader parameters
@@ -124,7 +125,8 @@ FComputeDataProviderRenderProxy* UTissueDataProvider::GetRenderProxy()
 FTissueDataProviderProxy::FTissueDataProviderProxy(USkeletalMeshComponent* SkeletalMeshComponent, UTissueComponent* DeformerComponent)
 {
 	SkeletalMeshObject = SkeletalMeshComponent->MeshObject;
-	//VertexAdjacencyMapBufferSRV = DeformerComponent->VertexAdjacencyMapBuffer.ShaderResourceViewRHI;
+	TetVertexCountRef = DeformerComponent->TetVertexCount;
+	TetVertexPositionsBufferSRV = DeformerComponent->TetVertexPositionsBuffer.ShaderResourceViewRHI;
 }
 
 // Declare the vertex buffer bindings
@@ -137,9 +139,9 @@ void FTissueDataProviderProxy::GetBindings(int32 InvocationIndex, TCHAR const* U
 
 	FTissueDataInterfaceParameters Parameters;
 	FMemory::Memset(&Parameters, 0, sizeof(Parameters));
-	Parameters.NumVertices = 0;
 	Parameters.InputStreamStart = RenderSection.BaseVertexIndex;
-	Parameters.VertexAdjacencyMapBuffer = VertexAdjacencyMapBufferSRV;
+	Parameters.NumTetVertices = 0;
+	Parameters.TetVertexPositionBuffer = TetVertexPositionsBufferSRV;
 
 	TArray<uint8> ParamData;
 	ParamData.SetNum(sizeof(Parameters));

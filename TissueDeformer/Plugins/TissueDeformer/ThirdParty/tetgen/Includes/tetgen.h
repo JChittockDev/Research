@@ -1390,9 +1390,6 @@ public:
 	triface recenttet;
 	face recentsh;
 
-	// PI is the ratio of a circle's circumference to its diameter.
-	static REAL PIconstant;
-
 	// Array (size = numberoftetrahedra * 6) for storing high-order nodes of
 	//   tetrahedra (only used when -o2 switch is selected).
 	point *highordertable;
