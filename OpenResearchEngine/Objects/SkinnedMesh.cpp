@@ -1,7 +1,25 @@
 #include "SkinnedMesh.h"
 #include "../Models/External/LoadM3d.h"
 
-void SkinnedMesh::LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device>& device,
+SkinnedMesh::SkinnedMesh(std::shared_ptr<MeshGeometry>& geometry, 
+                        std::vector<std::shared_ptr<Material>>& materials,
+                        SkinnedData* skinningData, 
+                        std::vector<DirectX::XMFLOAT4X4>& boneTransforms)
+{
+    _geometry = geometry; 
+    _materials = materials;
+    _skinningData = skinningData;
+    _boneTransforms = boneTransforms;
+};
+
+SkinnedMesh::SkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
+    UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath)
+{
+    LoadSkinnedMesh(device, commandList, srvHeapIndex, matCBIndex, filePath);
+}
+
+void SkinnedMesh::LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
     UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath)
 {

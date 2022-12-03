@@ -1,7 +1,20 @@
 #include "StaticMesh.h"
 #include "../Models/External/LoadM3d.h"
 
-void StaticMesh::LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device>& device,
+StaticMesh::StaticMesh(std::shared_ptr<MeshGeometry>& geometry,
+    std::vector<std::shared_ptr<Material>>& materials)
+{
+    _geometry = geometry; _materials = materials;
+};
+
+StaticMesh::StaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
+    UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath)
+{
+    LoadStaticMesh(device, commandList, srvHeapIndex, matCBIndex, filePath);
+}
+
+void StaticMesh::LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
     UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath)
 {

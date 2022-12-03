@@ -51,11 +51,13 @@ private:
     void BuildSsaoRootSignature();
     void BuildDescriptorHeaps();
     void BuildShadersAndInputLayout();
-    void BuildGenericGeometry();
-    void BuildMesh();
+    
+    std::unique_ptr<MeshGeometry> GenericGeometry();
+    std::vector<std::shared_ptr<Material>> GenericMaterials();
+
+    void BuildMesh(std::unordered_map<std::string, std::pair<MeshType, const std::string>>& inputData);
     void BuildPSOs();
     void BuildFrameResources();
-    void BuildMaterials();
     void BuildRenderItems();
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
     void DrawSceneToShadowMap();
@@ -70,16 +72,21 @@ private:
 
 private:
 
+    UINT matCBIndex = 0;
+    UINT srvHeapIndex = 0;
+
+    std::unordered_map<std::string, std::pair<MeshType, const std::string>> meshAssets;
+
+
     std::vector<std::unique_ptr<FrameResource>> mFrameResources;
     FrameResource* mCurrFrameResource = nullptr;
     int mCurrFrameResourceIndex = 0;
 
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
-
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 
-    std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
+    std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
     std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
     std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
@@ -88,10 +95,7 @@ private:
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
 
-    // List of all the render items.
     std::vector<std::unique_ptr<RenderItem>> mAllRitems;
-
-    // Render items divided by PSO.
     std::vector<RenderItem*> mRitemLayer[(int)RenderLayer::Count];
 
     UINT mSkyTexHeapIndex = 0;
@@ -119,9 +123,7 @@ private:
     Camera mCamera;
 
     std::unique_ptr<ShadowMap> mShadowMap;
-
     std::unique_ptr<Ssao> mSsao;
-
     DirectX::BoundingSphere mSceneBounds;
 
     float mLightNearZ = 0.0f;

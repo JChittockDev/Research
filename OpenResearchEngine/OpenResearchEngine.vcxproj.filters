@@ -60,7 +60,7 @@
     <ClCompile Include="Objects\StaticMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildGenericGeometry.cpp">
+    <ClCompile Include="Build\GenericGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\BuildMesh.cpp">
@@ -69,7 +69,7 @@
     <ClCompile Include="Render\Resources\StaticSamplers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildMaterials.cpp">
+    <ClCompile Include="Build\GenericMaterials.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\BuildRenderItems.cpp">

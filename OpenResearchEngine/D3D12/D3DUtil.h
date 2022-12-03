@@ -14,6 +14,7 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
+#include <utility>
 #include <memory>
 #include <algorithm>
 #include <vector>

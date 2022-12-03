@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildGenericGeometry()
+std::unique_ptr<MeshGeometry> EngineApp::GenericGeometry()
 {
 	GeometryGenerator geoGen;
 	GeometryGenerator::MeshData box = geoGen.CreateBox(1.0f, 1.0f, 1.0f, 3);
@@ -144,5 +144,5 @@ void EngineApp::BuildGenericGeometry()
 	geo->DrawArgs["cylinder"] = cylinderSubmesh;
 	geo->DrawArgs["quad"] = quadSubmesh;
 
-	mGeometries[geo->Name] = std::move(geo);
+	return std::move(geo);
 }

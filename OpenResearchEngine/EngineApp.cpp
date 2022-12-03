@@ -73,14 +73,12 @@ bool EngineApp::Initialize()
         mCommandList.Get(),
         mClientWidth, mClientHeight);
 
-    BuildMesh();
+    BuildMesh(meshAssets);
 	LoadTextures();
     BuildRootSignature();
     BuildSsaoRootSignature();
 	BuildDescriptorHeaps();
     BuildShadersAndInputLayout();
-    BuildGenericGeometry();
-	BuildMaterials();
     BuildRenderItems();
     BuildFrameResources();
     BuildPSOs();

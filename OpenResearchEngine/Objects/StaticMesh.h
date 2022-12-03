@@ -7,12 +7,16 @@ class StaticMesh : public Object
 {
 public:
 	StaticMesh();
+
+	StaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
+		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
+		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
+	
 	StaticMesh(std::shared_ptr<MeshGeometry>& geometry,
-		std::vector<std::shared_ptr<Material>>& materials) 
-		{ _geometry = geometry; _materials = materials; };
+		std::vector<std::shared_ptr<Material>>& materials);
 
 public:
-	void LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device>& device,
+	void LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
 		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
 

@@ -101,6 +101,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,7 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Build\BuildDescriptorHeaps.cpp" />
     <ClCompile Include="Build\BuildFrameResources.cpp" />
-    <ClCompile Include="Build\BuildMaterials.cpp" />
+    <ClCompile Include="Build\GenericMaterials.cpp" />
     <ClCompile Include="Build\BuildPso.cpp" />
     <ClCompile Include="Build\BuildRenderItems.cpp" />
     <ClCompile Include="Build\BuildRootSignature.cpp" />
@@ -163,7 +164,7 @@
     <ClCompile Include="Draw\DrawRenderItems.cpp" />
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
-    <ClCompile Include="Build\BuildGenericGeometry.cpp" />
+    <ClCompile Include="Build\GenericGeometry.cpp" />
     <ClCompile Include="Models\External\LoadM3d.cpp" />
     <ClCompile Include="Build\BuildMesh.cpp" />
     <ClCompile Include="Objects\StaticMesh.cpp" />

@@ -13,6 +13,12 @@
 
 extern const int gNumFrameResources;
 
+enum MeshType : int
+{
+    Static,
+    Skinned
+};
+
 struct ObjectConstants
 {
     DirectX::XMFLOAT4X4 World = Math::Identity4x4();

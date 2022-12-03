@@ -1,54 +1,29 @@
 #include "../EngineApp.h"
+#include "../Objects/SkinnedMesh.h"
+#include "../Objects/StaticMesh.h"
 
-void EngineApp::BuildMesh()
+void EngineApp::BuildMesh(std::unordered_map<std::string, std::pair<MeshType, const std::string>>& inputData)
 {
-	std::vector<M3DLoader::SkinnedVertex> vertices;
-	std::vector<std::uint16_t> indices;
 
-	M3DLoader m3dLoader;
-	m3dLoader.LoadM3d(mSkinnedModelFilename, vertices, indices,
-		mSkinnedSubsets, mSkinnedMats, mSkinnedInfo);
+	std::shared_ptr<MeshGeometry> genericGeo = GenericGeometry();
+	std::vector<std::shared_ptr<Material>> genericMats = GenericMaterials();
 
-	mSkinnedModelInst = std::make_unique<SkinnedModelInstance>();
-	mSkinnedModelInst->SkinnedInfo = &mSkinnedInfo;
-	mSkinnedModelInst->FinalTransforms.resize(mSkinnedInfo.BoneCount());
-	mSkinnedModelInst->ClipName = "Take1";
-	mSkinnedModelInst->TimePos = 0.0f;
+	StaticMesh staticMesh(genericGeo, genericMats);
 
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(SkinnedVertex);
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
-
-	auto geo = std::make_unique<MeshGeometry>();
-	geo->Name = mSkinnedModelFilename;
-
-	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
-	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
-
-	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
-
-	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
-
-	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
-
-	geo->VertexByteStride = sizeof(SkinnedVertex);
-	geo->VertexBufferByteSize = vbByteSize;
-	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
-	geo->IndexBufferByteSize = ibByteSize;
-
-	for (UINT i = 0; i < (UINT)mSkinnedSubsets.size(); ++i)
+	// generate mesh types from external sources
+	for (auto& [key, val] : inputData)
 	{
-		SubmeshGeometry submesh;
-		std::string name = "sm_" + std::to_string(i);
+		std::pair<MeshType, const std::string>& meshInput = val;
+		MeshType& type = meshInput.first;
+		const std::string& filePath = meshInput.second;
 
-		submesh.IndexCount = (UINT)mSkinnedSubsets[i].FaceCount * 3;
-		submesh.StartIndexLocation = mSkinnedSubsets[i].FaceStart * 3;
-		submesh.BaseVertexLocation = 0;
-
-		geo->DrawArgs[name] = submesh;
+		if (type == MeshType::Skinned)
+		{
+			SkinnedMesh skinnedMesh(md3dDevice, mCommandList, srvHeapIndex, matCBIndex, filePath);
+		}
+		else
+		{
+			StaticMesh staticMesh(md3dDevice, mCommandList, srvHeapIndex, matCBIndex, filePath);
+		}
 	}
-
-	mGeometries[geo->Name] = std::move(geo);
 }
