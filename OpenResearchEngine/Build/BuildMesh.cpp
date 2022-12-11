@@ -7,6 +7,7 @@ void EngineApp::BuildMesh(std::unordered_map<std::string, std::pair<MeshType, st
 {
 	std::unique_ptr<MeshGeometry> genericGeo = GenericGeometry();
 	std::unique_ptr<MeshMaterial> genericMats = GenericMaterials();
+	std::unordered_map<std::string, std::string> genericTextures = GenericTextures();
 	
 	std::unique_ptr<StaticMesh> genericStaticMesh = std::make_unique<StaticMesh>(genericGeo, genericMats);
 	std::shared_ptr<MeshRenderData> genericMeshRenderData = std::make_shared<MeshRenderData>();

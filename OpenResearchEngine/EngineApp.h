@@ -53,6 +53,7 @@ private:
     
     std::unique_ptr<MeshGeometry> GenericGeometry();
     std::unique_ptr<MeshMaterial> GenericMaterials();
+    std::unordered_map<std::string, std::string> GenericTextures();
 
     void BuildMesh(std::unordered_map<std::string, std::pair<MeshType, std::string>>& inputData,
                     std::unordered_map<std::string, std::shared_ptr<MeshRenderData>>& meshRenderAssets);
@@ -80,6 +81,9 @@ private:
     std::unordered_map<std::string, std::shared_ptr<MeshRenderData>> meshRenderAssets;
     std::unordered_map<std::string, std::pair<MeshType, std::string>> meshDefinitions;
 
+    std::unordered_map<std::string, std::string> textureDefinitions;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> textureRenderAssets;
+
     std::vector<std::unique_ptr<FrameResource>> mFrameResources;
     FrameResource* mCurrFrameResource = nullptr;
     int mCurrFrameResourceIndex = 0;
@@ -88,10 +92,12 @@ private:
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 
-    std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
-    std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
-    std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
+    // redundant at this stage, will use later;
+    //std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
+    //std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
+    
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
+    
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
 
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;

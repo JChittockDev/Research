@@ -2,6 +2,7 @@
 
 void EngineApp::SerializeAssets()
 {
+	// Soldier Mesh
 	const std::string skinnedModelFilename = "Models\\soldier.m3d";
 	MeshType type = MeshType::Skinned;
 
