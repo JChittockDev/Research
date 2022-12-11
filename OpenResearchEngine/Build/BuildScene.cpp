@@ -54,24 +54,20 @@ std::unique_ptr<std::vector<std::unique_ptr<RenderItem>>> buildNestedRenderItem(
 	{
 		subMeshSize = meshRenderAsset->skinnedMesh->geometry->DrawArgs.size();
 	}
-	else
-	{
-		return nullptr;
-	}
 		
 	for (UINT i = 0; i < (UINT)subMeshSize; ++i)
 	{
 		std::string submeshName = "sm_" + std::to_string(i);
 		std::string submeshMaterialName = "m_" + std::to_string(i);
 		auto subMeshRenderItem = buildRenderItem(meshRenderAssets, renderAsset, submeshMaterialName, objectConstantBufferIndex, skinnedConstantBufferIndex, worldTransform, textureTransform, submeshName);
-		nestedRenderItem->push_back(subMeshRenderItem);
+		nestedRenderItem->push_back(std::move(subMeshRenderItem));
 	}
 	return std::move(nestedRenderItem);
 }
 
 void sendRenderItem(std::unique_ptr<RenderItem>& renderItem, std::unordered_map<RenderLayer, std::vector<RenderItem*>>& renderItemLayers, std::vector<std::unique_ptr<RenderItem>>& renderItems, RenderLayer renderLayer)
 {
-	renderItemLayers[renderLayer].push_back(renderItem.get());
+	renderItemLayers[renderLayer].push_back(std::move(renderItem.get()));
 	renderItems.push_back(std::move(renderItem));
 }
 

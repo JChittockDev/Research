@@ -74,8 +74,8 @@ bool EngineApp::Initialize()
         mClientWidth, mClientHeight);
 
     SerializeAssets();
-    BuildMesh(meshDefinitions, meshRenderAssets);
-	LoadTextures();
+    BuildAssets(meshDefinitions, meshRenderAssets, textureDefinitions);
+    BuildTextureResources();
     BuildRootSignature();
     BuildSsaoRootSignature();
 	BuildDescriptorHeaps();

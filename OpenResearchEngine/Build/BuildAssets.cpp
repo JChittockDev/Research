@@ -2,12 +2,13 @@
 #include "../Objects/SkinnedMesh.h"
 #include "../Objects/StaticMesh.h"
 
-void EngineApp::BuildMesh(std::unordered_map<std::string, std::pair<MeshType, std::string>>& inputData, 
-						std::unordered_map<std::string, std::shared_ptr<MeshRenderData>>& meshRenderAssets)
+void EngineApp::BuildAssets(std::unordered_map<std::string, std::pair<MeshType, std::string>>& inputData, 
+						std::unordered_map<std::string, std::shared_ptr<MeshRenderData>>& meshRenderAssets,
+						std::unordered_map<std::string, std::string>& textureDefinitions)
 {
 	std::unique_ptr<MeshGeometry> genericGeo = GenericGeometry();
 	std::unique_ptr<MeshMaterial> genericMats = GenericMaterials();
-	std::unordered_map<std::string, std::string> genericTextures = GenericTextures();
+	textureDefinitions = GenericTextures();
 	
 	std::unique_ptr<StaticMesh> genericStaticMesh = std::make_unique<StaticMesh>(genericGeo, genericMats);
 	std::shared_ptr<MeshRenderData> genericMeshRenderData = std::make_shared<MeshRenderData>();
@@ -27,12 +28,12 @@ void EngineApp::BuildMesh(std::unordered_map<std::string, std::pair<MeshType, st
 
 		if (type == MeshType::Skinned)
 		{
-			std::unique_ptr<SkinnedMesh> skinnedMesh = std::make_unique<SkinnedMesh>(md3dDevice, mCommandList, srvHeapIndex, matCBIndex, filePath);
+			std::unique_ptr<SkinnedMesh> skinnedMesh = std::make_unique<SkinnedMesh>(md3dDevice, mCommandList, diffuseSrvHeapIndex, normalSrvHeapIndex, matCBIndex, textureDefinitions, filePath);
 			meshRenderData->skinnedMesh = std::move(skinnedMesh);
 		}
 		else
 		{
-			std::unique_ptr<StaticMesh> staticMesh = std::make_unique<StaticMesh>(md3dDevice, mCommandList, srvHeapIndex, matCBIndex, filePath);
+			std::unique_ptr<StaticMesh> staticMesh = std::make_unique<StaticMesh>(md3dDevice, mCommandList, diffuseSrvHeapIndex, normalSrvHeapIndex, matCBIndex, textureDefinitions, filePath);
 			meshRenderData->staticMesh = std::move(staticMesh);
 		}
 

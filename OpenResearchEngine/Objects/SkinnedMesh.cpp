@@ -14,9 +14,11 @@ SkinnedMesh::SkinnedMesh(std::unique_ptr<MeshGeometry>& geometry,
 
 SkinnedMesh::SkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
-    UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath)
+    UINT& diffuseSrvHeapIndex, UINT& normalSrvHeapIndex, UINT& matCBIndex, 
+    std::unordered_map<std::string, std::string>& textureDefinitions, 
+    const std::string& filePath)
 {
-    LoadSkinnedMesh(device, commandList, srvHeapIndex, matCBIndex, filePath);
+    LoadSkinnedMesh(device, commandList, diffuseSrvHeapIndex, normalSrvHeapIndex, matCBIndex, textureDefinitions, filePath);
 }
 
 void SkinnedMesh::UpdateTransforms(const std::string& animClip, float& clipTime)
@@ -31,7 +33,9 @@ void SkinnedMesh::UpdateTransforms(const std::string& animClip, float& clipTime)
 
 void SkinnedMesh::LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
-    UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath)
+    UINT& diffuseSrvHeapIndex, UINT& normalSrvHeapIndex, UINT& matCBIndex, 
+    std::unordered_map<std::string, std::string>& textureDefinitions,
+    const std::string& filePath)
 {
     std::vector<M3DLoader::SkinnedVertex> vertices;
     std::vector<std::uint16_t> indices;
@@ -89,11 +93,22 @@ void SkinnedMesh::LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 
         mat->Name = name;
         mat->MatCBIndex = matCBIndex++;
-        mat->DiffuseSrvHeapIndex = srvHeapIndex++;
-        mat->NormalSrvHeapIndex = srvHeapIndex++;
+        mat->DiffuseSrvHeapIndex = diffuseSrvHeapIndex++;
+        mat->NormalSrvHeapIndex = normalSrvHeapIndex++;
         mat->DiffuseAlbedo = mats[i].DiffuseAlbedo;
         mat->FresnelR0 = mats[i].FresnelR0;
         mat->Roughness = mats[i].Roughness;
+
+        std::string diffuseName = mats[i].DiffuseMapName;
+        std::string normalName = mats[i].NormalMapName;
+        std::string diffuseFilename = "Textures/" + diffuseName;
+        std::string normalFilename = "Textures/" + normalName;
+
+        diffuseName = diffuseName.substr(0, diffuseName.find_last_of("."));
+        normalName = normalName.substr(0, normalName.find_last_of("."));
+
+        textureDefinitions[diffuseName] = diffuseFilename;
+        textureDefinitions[normalName] = normalFilename;
 
         materials->mappedMaterials[mat->Name] = (std::move(mat));
     }

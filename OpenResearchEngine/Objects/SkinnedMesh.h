@@ -10,7 +10,8 @@ public:
 	
 	SkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
-		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
+		UINT& diffuseSrvHeapIndex, UINT& normalSrvHeapIndex, UINT& matCBIndex, 
+		std::unordered_map<std::string, std::string>& textureDefinitions, const std::string& filePath);
 	
 	SkinnedMesh(std::unique_ptr<MeshGeometry>& geometry, std::unique_ptr<MeshMaterial>& materials,
 			SkinnedData* skinningData, std::vector<DirectX::XMFLOAT4X4>& boneTransforms);
@@ -20,12 +21,11 @@ public:
 
 	void LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
-		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
+		UINT& diffuseSrvHeapIndex, UINT& normalSrvHeapIndex, UINT& matCBIndex, 
+		std::unordered_map<std::string, std::string>& textureDefinitions, const std::string& filePath);
 
 public:
 	UINT objCBIndex = -1;
-	UINT matCBIndex = -1;
-	UINT srvHeapIndex = -1;
 	UINT skinnedCBIndex = -1;
 
 	SkinnedData* skinningData = nullptr;

@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Build\BuildDescriptorHeaps.cpp" />
     <ClCompile Include="Build\BuildFrameResources.cpp" />
+    <ClCompile Include="Build\BuildTextureResources.cpp" />
     <ClCompile Include="Build\GenericTextures.cpp" />
     <ClCompile Include="Build\SerializeAssets.cpp" />
     <ClCompile Include="Build\GenericMaterials.cpp" />
@@ -153,7 +154,6 @@
     <ClCompile Include="Build\BuildRootSignature.cpp" />
     <ClCompile Include="Build\BuildShaders.cpp" />
     <ClCompile Include="Build\BuildSSAORootSignature.cpp" />
-    <ClCompile Include="Build\BuildTextures.cpp" />
     <ClCompile Include="Objects\Camera.cpp" />
     <ClCompile Include="D3D12\D3DApp.cpp" />
     <ClCompile Include="D3D12\D3DUtil.cpp" />
@@ -168,7 +168,7 @@
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
     <ClCompile Include="Build\GenericGeometry.cpp" />
     <ClCompile Include="Models\External\LoadM3d.cpp" />
-    <ClCompile Include="Build\BuildMesh.cpp" />
+    <ClCompile Include="Build\BuildAssets.cpp" />
     <ClCompile Include="Objects\StaticMesh.cpp" />
     <ClCompile Include="Render\Passes\ShadowMap.cpp" />
     <ClCompile Include="Render\Resources\SkinnedData.cpp" />

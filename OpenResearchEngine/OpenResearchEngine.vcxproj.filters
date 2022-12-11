@@ -63,7 +63,7 @@
     <ClCompile Include="Build\GenericGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildMesh.cpp">
+    <ClCompile Include="Build\BuildAssets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Resources\StaticSamplers.cpp">
@@ -79,9 +79,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\BuildShaders.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Build\BuildTextures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\BuildRootSignature.cpp">
@@ -130,6 +127,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\GenericTextures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Build\BuildTextureResources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

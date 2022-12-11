@@ -10,7 +10,8 @@ public:
 
 	StaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
-		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
+		UINT& diffuseSrvHeapIndex, UINT& normalSrvHeapIndex, UINT& matCBIndex, 
+		std::unordered_map<std::string, std::string>& textureDefinitions, const std::string& filePath);
 	
 	StaticMesh(std::unique_ptr<MeshGeometry>& geometry,
 		std::unique_ptr<MeshMaterial>& materials);
@@ -18,12 +19,11 @@ public:
 public:
 	void LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
-		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
+		UINT& diffuseSrvHeapIndex, UINT& normalSrvHeapIndex, UINT& matCBIndex, 
+		std::unordered_map<std::string, std::string>& textureDefinitions, const std::string& filePath);
 
 public:
 	UINT objCBIndex = -1;
-	UINT matCBIndex = -1;
-	UINT srvHeapIndex = -1;
 
 	std::unique_ptr<MeshGeometry> geometry;
 	std::unique_ptr<MeshMaterial> materials;

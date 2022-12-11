@@ -45,7 +45,6 @@ private:
     void UpdateShadowPassCB(const GameTimer& gt);
     void UpdateSsaoCB(const GameTimer& gt);
 
-    void LoadTextures();
     void BuildRootSignature();
     void BuildSsaoRootSignature();
     void BuildDescriptorHeaps();
@@ -55,8 +54,11 @@ private:
     std::unique_ptr<MeshMaterial> GenericMaterials();
     std::unordered_map<std::string, std::string> GenericTextures();
 
-    void BuildMesh(std::unordered_map<std::string, std::pair<MeshType, std::string>>& inputData,
-                    std::unordered_map<std::string, std::shared_ptr<MeshRenderData>>& meshRenderAssets);
+    void BuildTextureResources();
+
+    void BuildAssets(std::unordered_map<std::string, std::pair<MeshType, std::string>>& inputData,
+                     std::unordered_map<std::string, std::shared_ptr<MeshRenderData>>& meshRenderAssets,
+                     std::unordered_map<std::string, std::string>& textureDefinitions);
     void BuildPSOs();
     void BuildFrameResources();
     void BuildScene();
@@ -73,10 +75,11 @@ private:
     std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
 private:
-    UINT objCBIndex = 0;
-    UINT matCBIndex = 0;
-    UINT srvHeapIndex = 0;
-    UINT skinnedCBIndex = 0;
+    UINT objCBIndex = -1;
+    UINT matCBIndex = -1;
+    UINT diffuseSrvHeapIndex = -1;
+    UINT normalSrvHeapIndex = -1;
+    UINT skinnedCBIndex = -1;
 
     std::unordered_map<std::string, std::shared_ptr<MeshRenderData>> meshRenderAssets;
     std::unordered_map<std::string, std::pair<MeshType, std::string>> meshDefinitions;

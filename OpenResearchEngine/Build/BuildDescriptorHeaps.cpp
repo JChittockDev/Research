@@ -37,44 +37,25 @@ void EngineApp::BuildDescriptorHeaps()
 	//
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
-	std::vector<ComPtr<ID3D12Resource>> tex2DList =
-	{
-		mTextures["bricksDiffuseMap"]->Resource,
-		mTextures["bricksNormalMap"]->Resource,
-		mTextures["tileDiffuseMap"]->Resource,
-		mTextures["tileNormalMap"]->Resource,
-		mTextures["defaultDiffuseMap"]->Resource,
-		mTextures["defaultNormalMap"]->Resource
-	};
-
-	mSkinnedSrvHeapStart = (UINT)tex2DList.size();
-
-	for (UINT i = 0; i < (UINT)mSkinnedTextureNames.size(); ++i)
-	{
-		auto texResource = mTextures[mSkinnedTextureNames[i]]->Resource;
-		assert(texResource != nullptr);
-		tex2DList.push_back(texResource);
-	}
-
-
-	auto skyCubeMap = mTextures["skyCubeMap"]->Resource;
-
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-	for (UINT i = 0; i < (UINT)tex2DList.size(); ++i)
+	for (auto& [key, val] : textureRenderAssets)
 	{
-		srvDesc.Format = tex2DList[i]->GetDesc().Format;
-		srvDesc.Texture2D.MipLevels = tex2DList[i]->GetDesc().MipLevels;
-		md3dDevice->CreateShaderResourceView(tex2DList[i].Get(), &srvDesc, hDescriptor);
+		auto resource = textureRenderAssets[key]->Resource;
+		srvDesc.Format = resource->GetDesc().Format;
+		srvDesc.Texture2D.MipLevels = resource->GetDesc().MipLevels;
+		md3dDevice->CreateShaderResourceView(resource.Get(), &srvDesc, hDescriptor);
 
 		// next descriptor
 		hDescriptor.Offset(1, mCbvSrvUavDescriptorSize);
+
 	}
 
+	auto skyCubeMap = textureRenderAssets["skyCubeMap"]->Resource;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 	srvDesc.TextureCube.MostDetailedMip = 0;
 	srvDesc.TextureCube.MipLevels = skyCubeMap->GetDesc().MipLevels;
@@ -82,7 +63,7 @@ void EngineApp::BuildDescriptorHeaps()
 	srvDesc.Format = skyCubeMap->GetDesc().Format;
 	md3dDevice->CreateShaderResourceView(skyCubeMap.Get(), &srvDesc, hDescriptor);
 
-	mSkyTexHeapIndex = (UINT)tex2DList.size();
+	mSkyTexHeapIndex = (UINT)textureRenderAssets.size();
 	mShadowMapHeapIndex = mSkyTexHeapIndex + 1;
 	mSsaoHeapIndexStart = mShadowMapHeapIndex + 1;
 	mSsaoAmbientMapIndex = mSsaoHeapIndexStart + 3;
