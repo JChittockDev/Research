@@ -1,15 +1,15 @@
 #include "SkinnedMesh.h"
 #include "../Models/External/LoadM3d.h"
 
-SkinnedMesh::SkinnedMesh(std::shared_ptr<MeshGeometry>& geometry, 
-                        std::vector<std::shared_ptr<Material>>& materials,
+SkinnedMesh::SkinnedMesh(std::unique_ptr<MeshGeometry>& geometry,
+                        std::unique_ptr<MeshMaterial>& materials,
                         SkinnedData* skinningData, 
                         std::vector<DirectX::XMFLOAT4X4>& boneTransforms)
 {
-    _geometry = geometry; 
-    _materials = materials;
-    _skinningData = skinningData;
-    _boneTransforms = boneTransforms;
+    geometry = std::move(geometry); 
+    materials = std::move(materials);
+    skinningData = skinningData;
+    boneTransforms = boneTransforms;
 };
 
 SkinnedMesh::SkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
@@ -17,6 +17,16 @@ SkinnedMesh::SkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
     UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath)
 {
     LoadSkinnedMesh(device, commandList, srvHeapIndex, matCBIndex, filePath);
+}
+
+void SkinnedMesh::UpdateTransforms(const std::string& animClip, float& clipTime)
+{
+    if (skinningData)
+    {
+        clipTime++;
+        if (clipTime > skinningData->GetClipEndTime(animClip)) { clipTime = 0.0f; }
+        skinningData->GetFinalTransforms(animClip, clipTime, boneTransforms);
+    }
 }
 
 void SkinnedMesh::LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
@@ -34,13 +44,13 @@ void SkinnedMesh::LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
     M3DLoader m3dLoader;
     m3dLoader.LoadM3d(filePath, vertices, indices, subsets, mats, skinningInfo);
 
-    this->_skinningData = &skinningInfo;
-    this->_boneTransforms.resize(_skinningData->BoneCount());
+    this->skinningData = &skinningInfo;
+    this->boneTransforms.resize(skinningData->BoneCount());
 
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(M3DLoader::SkinnedVertex);
     const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
-    auto geo = std::make_shared<MeshGeometry>();
+    auto geo = std::make_unique<MeshGeometry>();
     geo->Name = filePath;
 
     ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
@@ -74,8 +84,10 @@ void SkinnedMesh::LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 
     for (UINT i = 0; i < mats.size(); ++i)
     {
-        std::shared_ptr<Material> mat = std::make_shared<Material>();
-        mat->Name = mats[i].Name;
+        std::unique_ptr<Material> mat = std::make_unique<Material>();
+        std::string name = "m_" + std::to_string(i);
+
+        mat->Name = name;
         mat->MatCBIndex = matCBIndex++;
         mat->DiffuseSrvHeapIndex = srvHeapIndex++;
         mat->NormalSrvHeapIndex = srvHeapIndex++;
@@ -83,8 +95,8 @@ void SkinnedMesh::LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
         mat->FresnelR0 = mats[i].FresnelR0;
         mat->Roughness = mats[i].Roughness;
 
-        _materials.push_back(std::move(mat));
+        materials->mappedMaterials[mat->Name] = (std::move(mat));
     }
 
-    _geometry = std::move(geo);
+    geometry = std::move(geo);
 }

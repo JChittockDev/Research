@@ -1,10 +1,10 @@
 #include "StaticMesh.h"
 #include "../Models/External/LoadM3d.h"
 
-StaticMesh::StaticMesh(std::shared_ptr<MeshGeometry>& geometry,
-    std::vector<std::shared_ptr<Material>>& materials)
+StaticMesh::StaticMesh(std::unique_ptr<MeshGeometry>& geometry,
+                        std::unique_ptr<MeshMaterial>& materials)
 {
-    _geometry = geometry; _materials = materials;
+    geometry = std::move(geometry); materials = std::move(materials);
 };
 
 StaticMesh::StaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
@@ -30,7 +30,7 @@ void StaticMesh::LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
     const UINT vbByteSize = (UINT)vertices.size() * sizeof(M3DLoader::Vertex);
     const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
-    std::shared_ptr<MeshGeometry> geo = std::make_shared<MeshGeometry>();
+    std::unique_ptr<MeshGeometry> geo = std::make_unique<MeshGeometry>();
     geo->Name = filePath;
 
     ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
@@ -64,8 +64,10 @@ void StaticMesh::LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 
     for (UINT i = 0; i < mats.size(); ++i)
     {
-        std::shared_ptr<Material> mat = std::make_shared<Material>();
-        mat->Name = mats[i].Name;
+        std::unique_ptr<Material> mat = std::make_unique<Material>();
+        std::string name = "m_" + std::to_string(i);
+
+        mat->Name = name;
         mat->MatCBIndex = matCBIndex++;
         mat->DiffuseSrvHeapIndex = srvHeapIndex++;
         mat->NormalSrvHeapIndex = srvHeapIndex++;
@@ -73,8 +75,8 @@ void StaticMesh::LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
         mat->FresnelR0 = mats[i].FresnelR0;
         mat->Roughness = mats[i].Roughness;
 
-        _materials.push_back(std::move(mat));
+        materials->mappedMaterials[mat->Name] = (std::move(mat));
     }
 
-    _geometry = std::move(geo);
+    geometry = std::move(geo);
 }

@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <DirectXCollision.h>
+
 #include "../D3D12/D3Dx12.h"
 #include "../D3D12/D3DUtil.h"
 #include "Math.h"
@@ -12,12 +13,6 @@
 #define MaxLights 16
 
 extern const int gNumFrameResources;
-
-enum MeshType : int
-{
-    Static,
-    Skinned
-};
 
 struct ObjectConstants
 {
@@ -251,4 +246,9 @@ struct Texture
 
     Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadHeap = nullptr;
+};
+
+struct MeshMaterial
+{
+    std::unordered_map<std::string, std::unique_ptr<Material>> mappedMaterials;
 };

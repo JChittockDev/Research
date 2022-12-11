@@ -73,13 +73,14 @@ bool EngineApp::Initialize()
         mCommandList.Get(),
         mClientWidth, mClientHeight);
 
-    BuildMesh(meshAssets);
+    SerializeAssets();
+    BuildMesh(meshDefinitions, meshRenderAssets);
 	LoadTextures();
     BuildRootSignature();
     BuildSsaoRootSignature();
 	BuildDescriptorHeaps();
     BuildShadersAndInputLayout();
-    BuildRenderItems();
+    BuildScene();
     BuildFrameResources();
     BuildPSOs();
 
@@ -248,16 +249,16 @@ void EngineApp::Draw(const GameTimer& gt)
     mCommandList->SetGraphicsRootDescriptorTable(4, skyTexDescriptor);
 
     mCommandList->SetPipelineState(mPSOs["opaque"].Get());
-    DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::Opaque]);
+    DrawRenderItems(mCommandList.Get(), mRitemLayer[RenderLayer::Opaque]);
 
     mCommandList->SetPipelineState(mPSOs["skinnedOpaque"].Get());
-    DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::SkinnedOpaque]);
+    DrawRenderItems(mCommandList.Get(), mRitemLayer[RenderLayer::SkinnedOpaque]);
 
     mCommandList->SetPipelineState(mPSOs["debug"].Get());
-    DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::Debug]);
+    DrawRenderItems(mCommandList.Get(), mRitemLayer[RenderLayer::Debug]);
 
 	mCommandList->SetPipelineState(mPSOs["sky"].Get());
-	DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::Sky]);
+	DrawRenderItems(mCommandList.Get(), mRitemLayer[RenderLayer::Sky]);
 
     // Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),

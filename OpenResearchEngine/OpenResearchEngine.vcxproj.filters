@@ -72,7 +72,7 @@
     <ClCompile Include="Build\GenericMaterials.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildRenderItems.cpp">
+    <ClCompile Include="Build\BuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\BuildPso.cpp">
@@ -124,6 +124,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Draw\DrawShadowMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Build\SerializeAssets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Build\GenericTextures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -182,10 +188,10 @@
     <ClInclude Include="Render\Resources\RenderItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\SkinnedModelInstance.h">
+    <ClInclude Include="Common\Structures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Structures.h">
+    <ClInclude Include="Objects\MeshRenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

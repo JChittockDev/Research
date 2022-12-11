@@ -12,8 +12,8 @@ public:
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
 		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
 	
-	StaticMesh(std::shared_ptr<MeshGeometry>& geometry,
-		std::vector<std::shared_ptr<Material>>& materials);
+	StaticMesh(std::unique_ptr<MeshGeometry>& geometry,
+		std::unique_ptr<MeshMaterial>& materials);
 
 public:
 	void LoadStaticMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
@@ -21,20 +21,19 @@ public:
 		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
 
 public:
+	UINT objCBIndex = -1;
+	UINT matCBIndex = -1;
+	UINT srvHeapIndex = -1;
 
-	UINT _objCBIndex = -1;
-	UINT _matCBIndex = -1;
-	UINT _srvHeapIndex = -1;
+	std::unique_ptr<MeshGeometry> geometry;
+	std::unique_ptr<MeshMaterial> materials;
 
-	int _numFramesDirty = 0;
+	std::string activeMaterial;
 
-	std::shared_ptr<MeshGeometry> _geometry;
-	std::vector<std::shared_ptr<Material>> _materials;
+	UINT indexCount = 0;
+	UINT startIndexLocation = 0;
+	int baseVertexLocation = 0;
 
-	UINT _indexCount = 0;
-	UINT _startIndexLocation = 0;
-	int _baseVertexLocation = 0;
-
-	D3D12_PRIMITIVE_TOPOLOGY _primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	XMFLOAT4X4 _textureTransform = Math::Identity4x4();
+	D3D12_PRIMITIVE_TOPOLOGY primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	XMFLOAT4X4 textureTransform = Math::Identity4x4();
 };

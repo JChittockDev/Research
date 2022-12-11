@@ -12,7 +12,6 @@
 #include "Render/Passes/Ssao.h"
 #include "Render/Resources/SkinnedData.h"
 #include "Render/Resources/RenderItem.h"
-#include "Render/Resources/SkinnedModelInstance.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -53,15 +52,17 @@ private:
     void BuildShadersAndInputLayout();
     
     std::unique_ptr<MeshGeometry> GenericGeometry();
-    std::vector<std::shared_ptr<Material>> GenericMaterials();
+    std::unique_ptr<MeshMaterial> GenericMaterials();
 
-    void BuildMesh(std::unordered_map<std::string, std::pair<MeshType, const std::string>>& inputData);
+    void BuildMesh(std::unordered_map<std::string, std::pair<MeshType, std::string>>& inputData,
+                    std::unordered_map<std::string, std::shared_ptr<MeshRenderData>>& meshRenderAssets);
     void BuildPSOs();
     void BuildFrameResources();
-    void BuildRenderItems();
+    void BuildScene();
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
     void DrawSceneToShadowMap();
     void DrawNormalsAndDepth();
+    void SerializeAssets();
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuSrv(int index)const;
     CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuSrv(int index)const;
@@ -71,12 +72,13 @@ private:
     std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
 private:
-
+    UINT objCBIndex = 0;
     UINT matCBIndex = 0;
     UINT srvHeapIndex = 0;
+    UINT skinnedCBIndex = 0;
 
-    std::unordered_map<std::string, std::pair<MeshType, const std::string>> meshAssets;
-
+    std::unordered_map<std::string, std::shared_ptr<MeshRenderData>> meshRenderAssets;
+    std::unordered_map<std::string, std::pair<MeshType, std::string>> meshDefinitions;
 
     std::vector<std::unique_ptr<FrameResource>> mFrameResources;
     FrameResource* mCurrFrameResource = nullptr;
@@ -96,7 +98,7 @@ private:
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
 
     std::vector<std::unique_ptr<RenderItem>> mAllRitems;
-    std::vector<RenderItem*> mRitemLayer[(int)RenderLayer::Count];
+    std::unordered_map<RenderLayer, std::vector<RenderItem*>> mRitemLayer;
 
     UINT mSkyTexHeapIndex = 0;
     UINT mShadowMapHeapIndex = 0;
@@ -111,14 +113,6 @@ private:
 
     PassConstants mMainPassCB;  // index 0 of pass cbuffer.
     PassConstants mShadowPassCB;// index 1 of pass cbuffer.
-
-    UINT mSkinnedSrvHeapStart = 0;
-    std::string mSkinnedModelFilename = "Models\\soldier.m3d";
-    std::unique_ptr<SkinnedModelInstance> mSkinnedModelInst;
-    SkinnedData mSkinnedInfo;
-    std::vector<M3DLoader::Subset> mSkinnedSubsets;
-    std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
-    std::vector<std::string> mSkinnedTextureNames;
 
     Camera mCamera;
 

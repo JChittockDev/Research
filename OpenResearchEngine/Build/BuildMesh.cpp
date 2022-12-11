@@ -2,28 +2,39 @@
 #include "../Objects/SkinnedMesh.h"
 #include "../Objects/StaticMesh.h"
 
-void EngineApp::BuildMesh(std::unordered_map<std::string, std::pair<MeshType, const std::string>>& inputData)
+void EngineApp::BuildMesh(std::unordered_map<std::string, std::pair<MeshType, std::string>>& inputData, 
+						std::unordered_map<std::string, std::shared_ptr<MeshRenderData>>& meshRenderAssets)
 {
+	std::unique_ptr<MeshGeometry> genericGeo = GenericGeometry();
+	std::unique_ptr<MeshMaterial> genericMats = GenericMaterials();
+	
+	std::unique_ptr<StaticMesh> genericStaticMesh = std::make_unique<StaticMesh>(genericGeo, genericMats);
+	std::shared_ptr<MeshRenderData> genericMeshRenderData = std::make_shared<MeshRenderData>();
 
-	std::shared_ptr<MeshGeometry> genericGeo = GenericGeometry();
-	std::vector<std::shared_ptr<Material>> genericMats = GenericMaterials();
+	genericMeshRenderData->staticMesh = std::move(genericStaticMesh);
 
-	StaticMesh staticMesh(genericGeo, genericMats);
+	meshRenderAssets["generic"] = genericMeshRenderData;
 
 	// generate mesh types from external sources
 	for (auto& [key, val] : inputData)
 	{
-		std::pair<MeshType, const std::string>& meshInput = val;
+		std::pair<MeshType, std::string>& meshInput = val;
 		MeshType& type = meshInput.first;
 		const std::string& filePath = meshInput.second;
 
+		std::shared_ptr<MeshRenderData> meshRenderData = std::make_shared<MeshRenderData>();
+
 		if (type == MeshType::Skinned)
 		{
-			SkinnedMesh skinnedMesh(md3dDevice, mCommandList, srvHeapIndex, matCBIndex, filePath);
+			std::unique_ptr<SkinnedMesh> skinnedMesh = std::make_unique<SkinnedMesh>(md3dDevice, mCommandList, srvHeapIndex, matCBIndex, filePath);
+			meshRenderData->skinnedMesh = std::move(skinnedMesh);
 		}
 		else
 		{
-			StaticMesh staticMesh(md3dDevice, mCommandList, srvHeapIndex, matCBIndex, filePath);
+			std::unique_ptr<StaticMesh> staticMesh = std::make_unique<StaticMesh>(md3dDevice, mCommandList, srvHeapIndex, matCBIndex, filePath);
+			meshRenderData->staticMesh = std::move(staticMesh);
 		}
+
+		meshRenderAssets[key] = meshRenderData;
 	}
 }

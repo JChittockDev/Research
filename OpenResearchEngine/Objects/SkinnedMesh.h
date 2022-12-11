@@ -12,34 +12,34 @@ public:
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
 		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
 	
-	SkinnedMesh(std::shared_ptr<MeshGeometry>& geometry, std::vector<std::shared_ptr<Material>>& materials,
-				SkinnedData* skinningData, std::vector<DirectX::XMFLOAT4X4>& boneTransforms) 
-				{_geometry = geometry; _materials = materials, _skinningData = skinningData, 
-				_boneTransforms = boneTransforms;};
+	SkinnedMesh(std::unique_ptr<MeshGeometry>& geometry, std::unique_ptr<MeshMaterial>& materials,
+			SkinnedData* skinningData, std::vector<DirectX::XMFLOAT4X4>& boneTransforms);
 
 public:
+	void UpdateTransforms(const std::string& animClip, float& clipTime);
+
 	void LoadSkinnedMesh(Microsoft::WRL::ComPtr<ID3D12Device> device,
 		Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList,
 		UINT& srvHeapIndex, UINT& matCBIndex, const std::string& filePath);
 
 public:
-	UINT _objCBIndex = -1;
-	UINT _matCBIndex = -1;
-	UINT _srvHeapIndex = -1;
-	UINT _skinnedCBIndex = -1;
+	UINT objCBIndex = -1;
+	UINT matCBIndex = -1;
+	UINT srvHeapIndex = -1;
+	UINT skinnedCBIndex = -1;
 
-	int _numFramesDirty = 0;
+	SkinnedData* skinningData = nullptr;
+	std::vector<DirectX::XMFLOAT4X4> boneTransforms;
 
-	SkinnedData* _skinningData = nullptr;
-	std::vector<DirectX::XMFLOAT4X4> _boneTransforms;
+	std::unique_ptr<MeshGeometry> geometry;
+	std::unique_ptr<MeshMaterial> materials;
 
-	std::shared_ptr<MeshGeometry> _geometry;
-	std::vector<std::shared_ptr<Material>> _materials;
+	std::string activeMaterial;
 
-	UINT _indexCount = 0;
-	UINT _startIndexLocation = 0;
-	int _baseVertexLocation = 0;
+	UINT indexCount = 0;
+	UINT startIndexLocation = 0;
+	int baseVertexLocation = 0;
 
-	D3D12_PRIMITIVE_TOPOLOGY _primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	XMFLOAT4X4 _textureTransform = Math::Identity4x4();
+	D3D12_PRIMITIVE_TOPOLOGY primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	XMFLOAT4X4 textureTransform = Math::Identity4x4();
 };

@@ -23,10 +23,10 @@ void EngineApp::DrawSceneToShadowMap()
     mCommandList->SetGraphicsRootConstantBufferView(2, passCBAddress);
 
     mCommandList->SetPipelineState(mPSOs["shadow_opaque"].Get());
-    DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::Opaque]);
+    DrawRenderItems(mCommandList.Get(), mRitemLayer[RenderLayer::Opaque]);
 
     mCommandList->SetPipelineState(mPSOs["skinnedShadow_opaque"].Get());
-    DrawRenderItems(mCommandList.Get(), mRitemLayer[(int)RenderLayer::SkinnedOpaque]);
+    DrawRenderItems(mCommandList.Get(), mRitemLayer[RenderLayer::SkinnedOpaque]);
 
     // Change back to GENERIC_READ so we can read the texture in a shader.
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mShadowMap->Resource(),

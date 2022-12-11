@@ -6,5 +6,5 @@ using namespace DirectX;
 class Object
 {
 public:
-	XMFLOAT4X4 _worldTransform = Math::Identity4x4();
+	XMFLOAT4X4 worldTransform = Math::Identity4x4();
 };

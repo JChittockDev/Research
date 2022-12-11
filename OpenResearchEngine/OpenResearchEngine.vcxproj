@@ -101,7 +101,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,9 +145,11 @@
   <ItemGroup>
     <ClCompile Include="Build\BuildDescriptorHeaps.cpp" />
     <ClCompile Include="Build\BuildFrameResources.cpp" />
+    <ClCompile Include="Build\GenericTextures.cpp" />
+    <ClCompile Include="Build\SerializeAssets.cpp" />
     <ClCompile Include="Build\GenericMaterials.cpp" />
     <ClCompile Include="Build\BuildPso.cpp" />
-    <ClCompile Include="Build\BuildRenderItems.cpp" />
+    <ClCompile Include="Build\BuildScene.cpp" />
     <ClCompile Include="Build\BuildRootSignature.cpp" />
     <ClCompile Include="Build\BuildShaders.cpp" />
     <ClCompile Include="Build\BuildSSAORootSignature.cpp" />
@@ -187,6 +189,7 @@
     <ClInclude Include="D3D12\D3DUtil.h" />
     <ClInclude Include="D3D12\D3Dx12.h" />
     <ClInclude Include="Models\External\DDSTextureLoader.h" />
+    <ClInclude Include="Objects\MeshRenderData.h" />
     <ClInclude Include="Utilities\GameTimer.h" />
     <ClInclude Include="Models\Internal\GeometryGenerator.h" />
     <ClInclude Include="Common\Math.h" />
@@ -197,7 +200,6 @@
     <ClInclude Include="Models\External\LoadM3d.h" />
     <ClInclude Include="Objects\Object.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
-    <ClInclude Include="Render\Resources\SkinnedModelInstance.h" />
     <ClInclude Include="Objects\StaticMesh.h" />
     <ClInclude Include="Render\Passes\ShadowMap.h" />
     <ClInclude Include="Render\Resources\SkinnedData.h" />
