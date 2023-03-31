@@ -25,7 +25,7 @@ struct ObjectConstants
 
 struct SkinnedConstants
 {
-    DirectX::XMFLOAT4X4 BoneTransforms[96];
+    DirectX::XMFLOAT4X4 BoneTransforms[256];
 };
 
 struct Light
@@ -114,8 +114,8 @@ struct SkinnedVertex
     DirectX::XMFLOAT3 Normal;
     DirectX::XMFLOAT2 TexC;
     DirectX::XMFLOAT3 TangentU;
-    DirectX::XMFLOAT3 BoneWeights;
-    BYTE BoneIndices[4];
+    DirectX::XMFLOAT4 BoneWeights;
+    BYTE BoneIndices[16];
 };
 
 enum class RenderLayer : int
@@ -136,6 +136,7 @@ struct SubmeshGeometry
     UINT IndexCount = 0;
     UINT StartIndexLocation = 0;
     INT BaseVertexLocation = 0;
+    UINT MaterialIndex = 0;
 
     // Bounding box of the geometry defined by this submesh. 
     // This is used in later chapters of the book.
@@ -245,4 +246,11 @@ struct Texture
 
     Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadHeap = nullptr;
+};
+
+struct Node
+{
+    std::string name;
+    std::string parent;
+    std::vector<std::string> children;
 };

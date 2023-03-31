@@ -8,10 +8,10 @@ void EngineApp::UpdateSkinnedCBs(const GameTimer& gt)
     mSkinnedModelInst->UpdateSkinnedAnimation(gt.DeltaTime());
 
     SkinnedConstants skinnedConstants;
-    std::copy(
-        std::begin(mSkinnedModelInst->FinalTransforms),
-        std::end(mSkinnedModelInst->FinalTransforms),
-        &skinnedConstants.BoneTransforms[0]);
+    for (size_t i = 0; i < mSkinnedModelInst->FinalTransforms.size(); ++i, ++i)
+    {
+        skinnedConstants.BoneTransforms[i] = mSkinnedModelInst->FinalTransforms[i];
+    }
 
     currSkinnedCB->CopyData(0, skinnedConstants);
 }

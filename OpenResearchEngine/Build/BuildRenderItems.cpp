@@ -125,7 +125,7 @@ void EngineApp::BuildRenderItems()
 		mAllRitems.push_back(std::move(rightSphereRitem));
 	}
 
-	for (UINT i = 0; i < mSkinnedMats.size(); ++i)
+	for (UINT i = 0; i < mSkinnedSubsets.size(); ++i)
 	{
 		std::string submeshName = "sm_" + std::to_string(i);
 
@@ -139,15 +139,16 @@ void EngineApp::BuildRenderItems()
 
 		ritem->TexTransform = Math::Identity4x4();
 		ritem->ObjCBIndex = objCBIndex++;
-		ritem->Mat = mMaterials[mSkinnedMats[i].Name].get();
 		ritem->Geo = mGeometries[mSkinnedModelFilename].get();
+
+		UINT materialIndex = ritem->Geo->DrawArgs[submeshName].MaterialIndex;
+		ritem->Mat = mMaterials[mSkinnedMats[materialIndex].Name].get();
+
 		ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
 		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
 
-		// All render items for this solider.m3d instance share
-		// the same skinned model instance.
 		ritem->SkinnedCBIndex = 0;
 		ritem->SkinnedModelInst = mSkinnedModelInst.get();
 

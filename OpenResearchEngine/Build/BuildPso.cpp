@@ -36,6 +36,7 @@ void EngineApp::BuildPSOs()
     // PSO for skinned pass.
     //
     D3D12_GRAPHICS_PIPELINE_STATE_DESC skinnedOpaquePsoDesc = opaquePsoDesc;
+
     skinnedOpaquePsoDesc.InputLayout = { mSkinnedInputLayout.data(), (UINT)mSkinnedInputLayout.size() };
     skinnedOpaquePsoDesc.VS =
     {

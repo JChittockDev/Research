@@ -8,15 +8,31 @@
 ///<summary>
 /// A Keyframe defines the bone transformation at an instant in time.
 ///</summary>
-struct Keyframe
+struct PositionKeyframe
 {
-	Keyframe();
-	~Keyframe();
+	PositionKeyframe();
+	~PositionKeyframe();
 
     float TimePos;
 	DirectX::XMFLOAT3 Translation;
-    DirectX::XMFLOAT3 Scale;
-    DirectX::XMFLOAT4 RotationQuat;
+};
+
+struct RotateKeyframe
+{
+	RotateKeyframe();
+	~RotateKeyframe();
+
+	float TimePos;
+	DirectX::XMFLOAT4 Rotation;
+};
+
+struct ScaleKeyframe
+{
+	ScaleKeyframe();
+	~ScaleKeyframe();
+
+	float TimePos;
+	DirectX::XMFLOAT3 Scale;
 };
 
 ///<summary>
@@ -33,7 +49,9 @@ struct BoneAnimation
 
     void Interpolate(float t, DirectX::XMFLOAT4X4& M)const;
 
-	std::vector<Keyframe> Keyframes; 	
+	std::vector<PositionKeyframe> PositionKeyframes;
+	std::vector<RotateKeyframe> RotationKeyframes;
+	std::vector<ScaleKeyframe> ScaleKeyframes;
 };
 
 ///<summary>
@@ -46,9 +64,9 @@ struct AnimationClip
 	float GetClipStartTime()const;
 	float GetClipEndTime()const;
 
-    void Interpolate(float t, std::vector<DirectX::XMFLOAT4X4>& boneTransforms)const;
+    void Interpolate(float t, const std::unordered_map<std::string, int>& boneIndex, std::vector<DirectX::XMFLOAT4X4>& boneTransforms)const;
 
-    std::vector<BoneAnimation> BoneAnimations; 	
+	std::unordered_map<std::string, BoneAnimation> BoneAnimations;
 };
 
 class SkinnedData
@@ -61,22 +79,26 @@ public:
 	float GetClipEndTime(const std::string& clipName)const;
 
 	void Set(
-		std::vector<int>& boneHierarchy, 
+		std::unordered_map<std::string, Node> boneTree,
+		std::unordered_map<std::string, int>& boneIndex,
 		std::vector<DirectX::XMFLOAT4X4>& boneOffsets,
-		std::unordered_map<std::string, AnimationClip>& animations);
+		std::unordered_map<std::string, AnimationClip>& animations,
+		std::string& rootBone);
 
 	 // In a real project, you'd want to cache the result if there was a chance
 	 // that you were calling this several times with the same clipName at 
 	 // the same timePos.
     void GetFinalTransforms(const std::string& clipName, float timePos, 
-		 std::vector<DirectX::XMFLOAT4X4>& finalTransforms)const;
+		 std::vector<DirectX::XMFLOAT4X4>& finalTransforms);
+
+	void TraverseToRootTransforms(const std::string& bone, std::vector<DirectX::XMFLOAT4X4>& transforms,
+		std::vector<DirectX::XMFLOAT4X4>& toRootTransforms);
 
 private:
-    // Gives parentIndex of ith bone.
-	std::vector<int> mBoneHierarchy;
-
+	std::string mRootBone;
+	std::unordered_map<std::string, Node> mBoneTree;
+	std::unordered_map<std::string, int> mBoneIndex;
 	std::vector<DirectX::XMFLOAT4X4> mBoneOffsets;
-   
 	std::unordered_map<std::string, AnimationClip> mAnimations;
 };
  

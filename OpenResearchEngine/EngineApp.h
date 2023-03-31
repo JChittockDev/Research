@@ -5,7 +5,7 @@
 #include "Common/UploadBuffer.h"
 #include "Objects/Camera.h"
 #include "Objects/Object.h"
-#include "Models/External/LoadM3d.h"
+#include "Models/External/LoadModel.h"
 #include "Models/Internal/GeometryGenerator.h"
 #include "Render/Resources/FrameResource.h"
 #include "Render/Passes/ShadowMap.h"
@@ -109,11 +109,11 @@ private:
     PassConstants mShadowPassCB;// index 1 of pass cbuffer.
 
     UINT mSkinnedSrvHeapStart = 0;
-    std::string mSkinnedModelFilename = "Models\\soldier.m3d";
+    std::string mSkinnedModelFilename = "Models\\test.fbx";
     std::unique_ptr<SkinnedModelInstance> mSkinnedModelInst;
     SkinnedData mSkinnedInfo;
-    std::vector<M3DLoader::Subset> mSkinnedSubsets;
-    std::vector<M3DLoader::M3dMaterial> mSkinnedMats;
+    std::vector<ModelLoader::Subset> mSkinnedSubsets;
+    std::vector<ModelLoader::ModelMaterial> mSkinnedMats;
     std::vector<std::string> mSkinnedTextureNames;
 
     Camera mCamera;

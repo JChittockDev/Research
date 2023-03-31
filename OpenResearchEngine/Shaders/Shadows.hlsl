@@ -10,7 +10,7 @@ struct VertexIn
 	float3 PosL    : POSITION;
 	float2 TexC    : TEXCOORD;
 #ifdef SKINNED
-    float3 BoneWeights : WEIGHTS;
+    float4 BoneWeights : WEIGHTS;
     uint4 BoneIndices  : BONEINDICES;
 #endif
 };
@@ -32,7 +32,7 @@ VertexOut VS(VertexIn vin)
     weights[0] = vin.BoneWeights.x;
     weights[1] = vin.BoneWeights.y;
     weights[2] = vin.BoneWeights.z;
-    weights[3] = 1.0f - weights[0] - weights[1] - weights[2];
+    weights[3] = vin.BoneWeights.w;
 
     float3 posL = float3(0.0f, 0.0f, 0.0f);
     for(int i = 0; i < 4; ++i)
@@ -42,8 +42,6 @@ VertexOut VS(VertexIn vin)
 
         posL += weights[i] * mul(float4(vin.PosL, 1.0f), gBoneTransforms[vin.BoneIndices[i]]).xyz;
     }
-
-    vin.PosL = posL;
 #endif
 
     // Transform to world space.

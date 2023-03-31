@@ -9,6 +9,30 @@ void EngineApp::BuildGenericGeometry()
 	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.5f, 0.3f, 3.0f, 20, 20);
 	GeometryGenerator::MeshData quad = geoGen.CreateQuad(0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
+
+	std::vector<ModelLoader::Vertex> verticesML;
+	std::vector<std::uint16_t> indicesML;
+	std::vector<ModelLoader::Subset> subsetsML;
+	std::vector<ModelLoader::ModelMaterial> matsML;
+
+
+	ModelLoader modelLoader;
+	modelLoader.LoadModel(mSkinnedModelFilename, verticesML, indicesML, subsetsML, matsML);
+
+	quad.Vertices.resize(verticesML.size());
+	for (int i = 0; i < verticesML.size(); ++i)
+	{
+		GeometryGenerator::Vertex vert;
+		vert.Position = verticesML[i].Pos;
+		quad.Vertices[i] = vert;
+	}
+
+	quad.Indices32.resize(indicesML.size());
+	for (int i = 0; i < indicesML.size(); ++i)
+	{
+		quad.Indices32[i] = indicesML[i];
+	}
+
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
 	// define the regions in the buffer each submesh covers.
