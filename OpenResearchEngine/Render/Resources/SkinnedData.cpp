@@ -234,6 +234,7 @@ void SkinnedData::GetFinalTransforms(const std::string& clipName, float timePos,
 	std::vector<XMFLOAT4X4> toRootTransforms(numBones);
 
 	auto clip = mAnimations.find(clipName);
+
 	clip->second.Interpolate(timePos, mBoneIndex, transforms);
 
 	int rootIndex = mBoneIndex.at(mRootBone);
@@ -244,4 +245,13 @@ void SkinnedData::GetFinalTransforms(const std::string& clipName, float timePos,
 		const std::string childBone = mBoneTree.at(mRootBone).children[i];
 		TraverseToRootTransforms(childBone, transforms, toRootTransforms);
 	}
+
+	for (UINT i = 0; i < numBones; ++i)
+	{
+		XMMATRIX offset = XMLoadFloat4x4(&mBoneOffsets[i]);
+		XMMATRIX toRoot = XMLoadFloat4x4(&toRootTransforms[i]);
+		XMMATRIX finalTransform = XMMatrixMultiply(offset, toRoot);
+		XMStoreFloat4x4(&finalTransforms[i], XMMatrixTranspose(finalTransform));
+	}
+
 }

@@ -64,7 +64,7 @@ cbuffer cbPerObject : register(b0)
 
 cbuffer cbSkinned : register(b1)
 {
-    float4x4 gBoneTransforms[256];
+    float4x4 gBoneTransforms[96];
 };
 
 // Constant data that varies per material.

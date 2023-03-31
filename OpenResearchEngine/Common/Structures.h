@@ -25,7 +25,7 @@ struct ObjectConstants
 
 struct SkinnedConstants
 {
-    DirectX::XMFLOAT4X4 BoneTransforms[256];
+    DirectX::XMFLOAT4X4 BoneTransforms[96];
 };
 
 struct Light
@@ -115,7 +115,7 @@ struct SkinnedVertex
     DirectX::XMFLOAT2 TexC;
     DirectX::XMFLOAT3 TangentU;
     DirectX::XMFLOAT4 BoneWeights;
-    BYTE BoneIndices[16];
+    BYTE BoneIndices[4];
 };
 
 enum class RenderLayer : int

@@ -5,11 +5,11 @@ void EngineApp::UpdateSkinnedCBs(const GameTimer& gt)
     auto currSkinnedCB = mCurrFrameResource->SkinnedCB.get();
 
     // We only have one skinned model being animated.
-    mSkinnedModelInst->UpdateSkinnedAnimation(gt.DeltaTime());
+    mSkinnedModelInst->UpdateSkinnedAnimation(5.00);
 
     SkinnedConstants skinnedConstants;
-    for (size_t i = 0; i < mSkinnedModelInst->FinalTransforms.size(); ++i, ++i)
-    {
+    for (size_t i = 0; i < mSkinnedModelInst->FinalTransforms.size(); ++i)
+    {       
         skinnedConstants.BoneTransforms[i] = mSkinnedModelInst->FinalTransforms[i];
     }
 

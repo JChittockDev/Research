@@ -23,5 +23,6 @@ struct SkinnedModelInstance
 
         // Compute the final transforms for this time position.
         SkinnedInfo->GetFinalTransforms(ClipName, TimePos, FinalTransforms);
+
     }
 };

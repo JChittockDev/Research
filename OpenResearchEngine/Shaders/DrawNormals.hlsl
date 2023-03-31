@@ -64,6 +64,9 @@ VertexOut VS(VertexIn vin)
         normalL += weights[i] * mul(vin.NormalL, (float3x3)gBoneTransforms[vin.BoneIndices[i]]);
         tangentL += weights[i] * mul(vin.TangentL.xyz, (float3x3)gBoneTransforms[vin.BoneIndices[i]]);
     }
+    vin.PosL = posL;
+    vin.NormalL = normalL;
+    vin.TangentL.xyz = tangentL;
 #endif
 
     // Assumes nonuniform scaling; otherwise, need to use inverse-transpose of world matrix.

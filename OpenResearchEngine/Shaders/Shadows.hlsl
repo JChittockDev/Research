@@ -42,6 +42,7 @@ VertexOut VS(VertexIn vin)
 
         posL += weights[i] * mul(float4(vin.PosL, 1.0f), gBoneTransforms[vin.BoneIndices[i]]).xyz;
     }
+    vin.PosL = posL;
 #endif
 
     // Transform to world space.

@@ -67,6 +67,9 @@ VertexOut VS(VertexIn vin)
         normalL += weights[i] * mul(vin.NormalL, (float3x3)gBoneTransforms[vin.BoneIndices[i]]);
         tangentL += weights[i] * mul(vin.TangentL.xyz, (float3x3)gBoneTransforms[vin.BoneIndices[i]]);
     }
+	vin.PosL = posL;
+    vin.NormalL = normalL;
+    vin.TangentL.xyz = tangentL;
 #endif
 
     // Transform to world space.
