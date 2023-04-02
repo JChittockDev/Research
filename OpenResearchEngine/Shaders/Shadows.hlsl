@@ -32,7 +32,7 @@ VertexOut VS(VertexIn vin)
     weights[0] = vin.BoneWeights.x;
     weights[1] = vin.BoneWeights.y;
     weights[2] = vin.BoneWeights.z;
-    weights[3] = vin.BoneWeights.w;
+    weights[3] = 1.0f - weights[0] - weights[1] - weights[2];
 
     float3 posL = float3(0.0f, 0.0f, 0.0f);
     for(int i = 0; i < 4; ++i)

@@ -4,6 +4,10 @@
 #include "../../Common/Structures.h"
 #include "../../D3D12/D3DUtil.h"
 #include "../../Common/Math.h"
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+#include "assimp/vector3.h"
 
 ///<summary>
 /// A Keyframe defines the bone transformation at an instant in time.
@@ -81,9 +85,10 @@ public:
 	void Set(
 		std::unordered_map<std::string, Node> boneTree,
 		std::unordered_map<std::string, int>& boneIndex,
-		std::vector<DirectX::XMFLOAT4X4>& boneOffsets,
+		std::vector<aiMatrix4x4>& boneOffsets,
 		std::unordered_map<std::string, AnimationClip>& animations,
-		std::string& rootBone);
+		std::string& rootBone,
+		aiMatrix4x4& rootMatrix);
 
 	 // In a real project, you'd want to cache the result if there was a chance
 	 // that you were calling this several times with the same clipName at 
@@ -91,14 +96,14 @@ public:
     void GetFinalTransforms(const std::string& clipName, float timePos, 
 		 std::vector<DirectX::XMFLOAT4X4>& finalTransforms);
 
-	void TraverseToRootTransforms(const std::string& bone, std::vector<DirectX::XMFLOAT4X4>& transforms,
-		std::vector<DirectX::XMFLOAT4X4>& toRootTransforms);
+	void TraverseToRootTransforms(const std::string& bone, const aiMatrix4x4& parentTransform, const std::vector<aiMatrix4x4>& localTransforms, const aiMatrix4x4& inverseRootMatrix, std::vector<DirectX::XMFLOAT4X4>& outputTransforms);
 
 private:
 	std::string mRootBone;
+	aiMatrix4x4 mRootMatrix;
 	std::unordered_map<std::string, Node> mBoneTree;
 	std::unordered_map<std::string, int> mBoneIndex;
-	std::vector<DirectX::XMFLOAT4X4> mBoneOffsets;
+	std::vector<aiMatrix4x4> mBoneOffsets;
 	std::unordered_map<std::string, AnimationClip> mAnimations;
 };
  

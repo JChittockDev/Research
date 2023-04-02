@@ -59,10 +59,17 @@ void ModelLoader::ReadSkinnedVertices(unsigned int numMesh, aiMesh** meshList, s
 			vertices.push_back(vertex);
 		}
 	}
+	ReadSkinningData(numMesh, meshList, boneIndex, vertices);
+}
 
+void ModelLoader::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::unordered_map<std::string, int> boneIndex, std::vector<SkinnedVertex>& vertices)
+{
+
+	int vertexCounter = 0;
 	std::vector<SkinWeight> weightTable(vertices.size());
 	for (UINT x = 0; x < numMesh; ++x)
 	{
+		int numVertices = meshList[x]->mNumVertices;
 		for (UINT i = 0; i < meshList[x]->mNumBones; ++i)
 		{
 			aiVertexWeight* weights = meshList[x]->mBones[i]->mWeights;
@@ -73,11 +80,12 @@ void ModelLoader::ReadSkinnedVertices(unsigned int numMesh, aiMesh** meshList, s
 
 			for (UINT w = 0; w < numWeights; ++w)
 			{
-				int vertexID = weights[w].mVertexId;
+				int vertexID = vertexCounter + weights[w].mVertexId;
 				weightTable[vertexID].BoneWeights.push_back(weights[w].mWeight);
 				weightTable[vertexID].BoneIndices.push_back(boneIndex[cBoneName]);
 			}
 		}
+		vertexCounter += numVertices;
 	}
 
 	for (UINT x = 0; x < weightTable.size(); ++x)
@@ -150,7 +158,8 @@ void ModelLoader::ReadBoneOffsets(unsigned int numMesh, aiMesh** meshList, std::
 		{
 			aiString& boneName = meshList[x]->mBones[i]->mName;
 			std::string cBoneName(boneName.C_Str());
-			boneOffsets[boneIndex[cBoneName]] = meshList[x]->mBones[i]->mOffsetMatrix;
+			boneOffsets[boneIndex[cBoneName]] = meshList[x]->mBones[i]->mOffsetMatrix.Transpose();
+
 		}
 	}
 }
@@ -282,7 +291,7 @@ bool ModelLoader::LoadModel(const std::string& filename,
 {
 	try {
 		Assimp::Importer imp;
-		const aiScene* scene = imp.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_FlipWindingOrder);
+		const aiScene* scene = imp.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
 		ReadMaterials(scene, mats);
 		ReadSubsetTable(scene, subsets);
 		ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices);
@@ -319,18 +328,6 @@ void ModelLoader::GetBoneIndexData(const aiScene* scene, std::unordered_map<std:
 	}
 }
 
-void aiMatConvert(const std::vector<aiMatrix4x4>& input, std::vector<XMFLOAT4X4>& output)
-{
-	output.resize(input.size());
-	for (UINT x = 0; x < input.size(); ++x)
-	{
-		output[x](0, 0) = input[x].a1; output[x](0, 1) = input[x].a2; output[x](0, 2) = input[x].a3; output[x](0, 3) = input[x].a4;
-		output[x](1, 0) = input[x].b1; output[x](1, 1) = input[x].b2; output[x](1, 2) = input[x].b3; output[x](1, 3) = input[x].b4;
-		output[x](2, 0) = input[x].c1; output[x](2, 1) = input[x].c2; output[x](2, 2) = input[x].c3; output[x](2, 3) = input[x].c4;
-		output[x](3, 0) = input[x].d1; output[x](3, 1) = input[x].d2; output[x](3, 2) = input[x].d3; output[x](3, 3) = input[x].d4;
-	}
-}
-
 bool ModelLoader::LoadModel(const std::string& filename,
 							std::vector<SkinnedVertex>& vertices,
 							std::vector<USHORT>& indices,
@@ -340,11 +337,10 @@ bool ModelLoader::LoadModel(const std::string& filename,
 {
 	try {
 		Assimp::Importer imp;
-		const aiScene* scene = imp.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_FlipWindingOrder);
+		const aiScene* scene = imp.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
 
 		std::string rootBone;
 		std::vector<aiMatrix4x4> boneOffsets;
-		std::vector<XMFLOAT4X4> dXboneOffsets;
 		std::unordered_map<std::string, Node> boneTree;
 		std::unordered_map<std::string, int> boneIndex;
 		std::unordered_map<std::string, AnimationClip> animations;
@@ -358,8 +354,7 @@ bool ModelLoader::LoadModel(const std::string& filename,
 		ReadBoneHierarchy(scene, boneIndex, boneTree, rootBone);
 		ReadAnimationClips(scene, animations);
 
-		aiMatConvert(boneOffsets, dXboneOffsets);
-		skinInfo.Set(boneTree, boneIndex, dXboneOffsets, animations, rootBone);
+		skinInfo.Set(boneTree, boneIndex, boneOffsets, animations, rootBone, scene->mRootNode->mTransformation);
 
 		return true;
 	}

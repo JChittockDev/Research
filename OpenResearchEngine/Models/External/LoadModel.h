@@ -3,6 +3,7 @@
 
 #include "../../Common/Structures.h"
 #include "../../Render/Resources/SkinnedData.h"
+#include "../../Render/Resources/Skeleton.h"
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
@@ -89,6 +90,7 @@ public:
 private:
     void ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Vertex>& vertices);
     void ReadSkinnedVertices(unsigned int numMesh, aiMesh** meshList, std::unordered_map<std::string, int> boneIndex, std::vector<SkinnedVertex>& vertices);
+    void ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::unordered_map<std::string, int> boneIndex, std::vector<SkinnedVertex>& vertices);
     void ReadSubsetTable(const aiScene* scene, std::vector<Subset>& subsets);
     void ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<USHORT>& indices);
     void ReadBoneOffsets(unsigned int numMesh, aiMesh** meshList, std::unordered_map<std::string, int>& hierachyData, std::vector<aiMatrix4x4>& boneOffsets);
@@ -97,7 +99,6 @@ private:
     void ReadAnimationClips(const aiScene* scene, std::unordered_map<std::string, AnimationClip>& outAnimations);
     void ReadMaterials(const aiScene* scene, std::vector<ModelMaterial>& mats);
     void GetBoneIndexData(const aiScene* scene, std::unordered_map<std::string, int>& boneIndex);
-    void GenerateWeightTable(std::vector<SkinWeight>& weightTable, const std::vector<SkinnedVertex>& vertices);
     void BoneParentRecursion(aiNode* boneNode, const std::string& boneName, std::string& parentName);
 };
 #endif // LOADModel_H

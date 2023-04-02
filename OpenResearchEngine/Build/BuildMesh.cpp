@@ -50,4 +50,5 @@ void EngineApp::BuildMesh()
 	}
 
 	mGeometries[geo->Name] = std::move(geo);
+
 }

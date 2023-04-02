@@ -99,6 +99,9 @@
     <ClCompile Include="D3D12\D3DApp.cpp" />
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
+    <ClCompile Include="Render\Resources\Animation.cpp" />
+    <ClCompile Include="Render\Resources\Joint.cpp" />
+    <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
     <ClCompile Include="Common\Math.cpp" />
@@ -128,6 +131,9 @@
     <ClInclude Include="D3D12\D3DUtil.h" />
     <ClInclude Include="D3D12\D3Dx12.h" />
     <ClInclude Include="Models\External\DDSTextureLoader.h" />
+    <ClInclude Include="Render\Resources\Animation.h" />
+    <ClInclude Include="Render\Resources\Joint.h" />
+    <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Utilities\GameTimer.h" />
     <ClInclude Include="Models\Internal\GeometryGenerator.h" />
     <ClInclude Include="Common\Math.h" />

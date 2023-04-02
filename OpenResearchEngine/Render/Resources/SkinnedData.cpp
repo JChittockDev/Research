@@ -25,6 +25,28 @@ ScaleKeyframe::ScaleKeyframe() : TimePos(0.0f), Scale(1.0f, 1.0f, 1.0f)
 ScaleKeyframe::~ScaleKeyframe()
 {
 }
+
+void aiMatConvert(const aiMatrix4x4& aiMatrix, XMFLOAT4X4& dXMatrix)
+{
+	XMMATRIX meshToBoneTransform = 
+		XMMATRIX(aiMatrix.a1, aiMatrix.a2, aiMatrix.a3, aiMatrix.a4,
+			aiMatrix.b1, aiMatrix.b2, aiMatrix.b3, aiMatrix.b4,
+			aiMatrix.c1, aiMatrix.c2, aiMatrix.c3, aiMatrix.c4,
+			aiMatrix.d1, aiMatrix.d2, aiMatrix.d3, aiMatrix.d4);
+
+	XMStoreFloat4x4(&dXMatrix, meshToBoneTransform);
+}
+
+void aiMatConvertTranspose(const aiMatrix4x4& aiMatrix, XMFLOAT4X4& dXMatrix)
+{
+	XMMATRIX meshToBoneTransform = XMMatrixTranspose(
+		XMMATRIX(aiMatrix.a1, aiMatrix.a2, aiMatrix.a3, aiMatrix.a4,
+			aiMatrix.b1, aiMatrix.b2, aiMatrix.b3, aiMatrix.b4,
+			aiMatrix.c1, aiMatrix.c2, aiMatrix.c3, aiMatrix.c4,
+			aiMatrix.d1, aiMatrix.d2, aiMatrix.d3, aiMatrix.d4));
+
+	XMStoreFloat4x4(&dXMatrix, meshToBoneTransform);
+}
  
 float BoneAnimation::GetStartTime()const
 {
@@ -194,12 +216,15 @@ UINT SkinnedData::BoneCount()const
 	return mBoneIndex.size();
 }
 
-void SkinnedData::Set(std::unordered_map<std::string, Node> boneTree,
+void SkinnedData::Set(
+					  std::unordered_map<std::string, Node> boneTree,
 					  std::unordered_map<std::string, int>& boneIndex,
-		              std::vector<XMFLOAT4X4>& boneOffsets,
+		              std::vector<aiMatrix4x4>& boneOffsets,
 		              std::unordered_map<std::string, AnimationClip>& animations,
-					  std::string& rootBone)
+					  std::string& rootBone,
+					  aiMatrix4x4& rootMatrix)
 {
+	mRootMatrix    = rootMatrix;
 	mBoneTree      = boneTree;
 	mBoneIndex     = boneIndex;
 	mBoneOffsets   = boneOffsets;
@@ -207,51 +232,43 @@ void SkinnedData::Set(std::unordered_map<std::string, Node> boneTree,
 	mRootBone	   = rootBone;
 }
 
-void SkinnedData::TraverseToRootTransforms(const std::string& bone, std::vector<XMFLOAT4X4>& transforms, std::vector<XMFLOAT4X4>& toRootTransforms)
+void SkinnedData::TraverseToRootTransforms(const std::string& bone, const aiMatrix4x4& parentTransform, const std::vector<aiMatrix4x4>& localTransforms, const aiMatrix4x4& inverseRootMatrix, std::vector<DirectX::XMFLOAT4X4>& outputTransforms)
 {
-	const std::string parentBone = mBoneTree.at(bone).parent;
-
 	int currentBoneIndex = mBoneIndex[bone];
-	int parentBoneIndex = mBoneIndex[parentBone];
-
-	XMMATRIX boneTransform = XMLoadFloat4x4(&transforms[currentBoneIndex]);
-	XMMATRIX parentToRoot = XMLoadFloat4x4(&toRootTransforms[parentBoneIndex]);
-	XMMATRIX toRoot = XMMatrixMultiply(boneTransform, parentToRoot);
-	XMStoreFloat4x4(&toRootTransforms[currentBoneIndex], toRoot);
+	aiMatrix4x4 globalTransform = localTransforms[currentBoneIndex] * parentTransform;
+	//aiMatrix4x4 globalTransform = parentTransform * localTransforms[currentBoneIndex];
+	aiMatrix4x4 finalTransform = globalTransform;
+	//aiMatrix4x4 finalTransform = inverseRootMatrix * globalTransform * mBoneOffsets[currentBoneIndex];
+	aiMatConvert(finalTransform, outputTransforms[currentBoneIndex]);
 
 	for (UINT i = 0; i < mBoneTree.at(bone).children.size(); ++i)
 	{
 		const std::string childBone = mBoneTree.at(bone).children[i];
-		TraverseToRootTransforms(childBone, transforms, toRootTransforms);
+		TraverseToRootTransforms(childBone, globalTransform, localTransforms, inverseRootMatrix, outputTransforms);
 	}
-
 }
  
 void SkinnedData::GetFinalTransforms(const std::string& clipName, float timePos,  std::vector<XMFLOAT4X4>& finalTransforms)
 {
 	UINT numBones = mBoneOffsets.size();
-	std::vector<XMFLOAT4X4> transforms(numBones);
-	std::vector<XMFLOAT4X4> toRootTransforms(numBones);
-
-	auto clip = mAnimations.find(clipName);
-
-	clip->second.Interpolate(timePos, mBoneIndex, transforms);
-
-	int rootIndex = mBoneIndex.at(mRootBone);
-	toRootTransforms[rootIndex] = transforms[rootIndex];
-
-	for (UINT i = 0; i < mBoneTree.at(mRootBone).children.size(); ++i)
-	{
-		const std::string childBone = mBoneTree.at(mRootBone).children[i];
-		TraverseToRootTransforms(childBone, transforms, toRootTransforms);
-	}
+	std::vector<aiMatrix4x4> transforms(numBones);
 
 	for (UINT i = 0; i < numBones; ++i)
 	{
-		XMMATRIX offset = XMLoadFloat4x4(&mBoneOffsets[i]);
-		XMMATRIX toRoot = XMLoadFloat4x4(&toRootTransforms[i]);
-		XMMATRIX finalTransform = XMMatrixMultiply(offset, toRoot);
-		XMStoreFloat4x4(&finalTransforms[i], XMMatrixTranspose(finalTransform));
+		transforms[i] = aiMatrix4x4(1.0, 0.0, 0.0, 0.0,
+									0.0, 1.0, 0.0, 0.0,
+									0.0, 0.0, 1.0, 0.0,
+									0.0, 0.0, 0.0, 1.0);
 	}
+
+	transforms[2] = aiMatrix4x4(1.0, 0.0, 0.0, 10.0,
+								 0.0, 1.0, 0.0, 0.0,
+								 0.0, 0.0, 1.0, 0.0,
+								 0.0, 0.0, 0.0, 1.0);
+
+	//auto clip = mAnimations.find(clipName);
+	//clip->second.Interpolate(timePos, mBoneIndex, transforms);
+
+	TraverseToRootTransforms(mRootBone, mRootMatrix, transforms, mRootMatrix.Inverse(), finalTransforms);
 
 }
