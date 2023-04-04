@@ -88,20 +88,19 @@
     <ClCompile Include="Build\BuildDescriptorHeaps.cpp" />
     <ClCompile Include="Build\BuildFrameResources.cpp" />
     <ClCompile Include="Build\BuildMaterials.cpp" />
+    <ClCompile Include="Build\BuildMesh.cpp" />
     <ClCompile Include="Build\BuildPso.cpp" />
     <ClCompile Include="Build\BuildRenderItems.cpp" />
     <ClCompile Include="Build\BuildRootSignature.cpp" />
     <ClCompile Include="Build\BuildShaders.cpp" />
     <ClCompile Include="Build\BuildSSAORootSignature.cpp" />
     <ClCompile Include="Build\BuildTextures.cpp" />
-    <ClCompile Include="Models\External\LoadModel.cpp" />
     <ClCompile Include="Objects\Camera.cpp" />
     <ClCompile Include="D3D12\D3DApp.cpp" />
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
-    <ClCompile Include="Render\Resources\Animation.cpp" />
-    <ClCompile Include="Render\Resources\Joint.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
+    <ClCompile Include="Update\UpdateSkinnedMesh.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
     <ClCompile Include="Common\Math.cpp" />
@@ -111,9 +110,8 @@
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
     <ClCompile Include="Build\BuildGenericGeometry.cpp" />
-    <ClCompile Include="Build\BuildMesh.cpp" />
+    <ClCompile Include="Render\Resources\Mesh.cpp" />
     <ClCompile Include="Render\Passes\ShadowMap.cpp" />
-    <ClCompile Include="Render\Resources\SkinnedData.cpp" />
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="Render\Passes\Ssao.cpp" />
     <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
@@ -121,17 +119,15 @@
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp" />
     <ClCompile Include="Update\UpdateRenderItems.cpp" />
     <ClCompile Include="Update\UpdateShadowPass.cpp" />
-    <ClCompile Include="Update\UpdateSkinnedMesh.cpp" />
     <ClCompile Include="Update\UpdateSSAO.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Models\External\LoadModel.h" />
     <ClInclude Include="Objects\Camera.h" />
     <ClInclude Include="D3D12\D3DApp.h" />
     <ClInclude Include="D3D12\D3DUtil.h" />
     <ClInclude Include="D3D12\D3Dx12.h" />
     <ClInclude Include="Models\External\DDSTextureLoader.h" />
-    <ClInclude Include="Render\Resources\Animation.h" />
+    <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Utilities\GameTimer.h" />
@@ -143,9 +139,8 @@
     <ClInclude Include="Render\Resources\FrameResource.h" />
     <ClInclude Include="Objects\Object.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
-    <ClInclude Include="Render\Resources\SkinnedModelInstance.h" />
+    <ClInclude Include="Render\Resources\Animation.h" />
     <ClInclude Include="Render\Passes\ShadowMap.h" />
-    <ClInclude Include="Render\Resources\SkinnedData.h" />
     <ClInclude Include="Render\Passes\Ssao.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

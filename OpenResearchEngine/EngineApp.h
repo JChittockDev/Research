@@ -5,14 +5,13 @@
 #include "Common/UploadBuffer.h"
 #include "Objects/Camera.h"
 #include "Objects/Object.h"
-#include "Models/External/LoadModel.h"
 #include "Models/Internal/GeometryGenerator.h"
 #include "Render/Resources/FrameResource.h"
+#include "Render/Resources/Mesh.h"
 #include "Render/Passes/ShadowMap.h"
 #include "Render/Passes/Ssao.h"
-#include "Render/Resources/SkinnedData.h"
 #include "Render/Resources/RenderItem.h"
-#include "Render/Resources/SkinnedModelInstance.h"
+#include "Render/Resources/Animation.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -47,12 +46,12 @@ private:
     void UpdateSsaoCB(const GameTimer& gt);
 
     void LoadTextures();
+    void BuildMesh();
     void BuildRootSignature();
     void BuildSsaoRootSignature();
     void BuildDescriptorHeaps();
     void BuildShadersAndInputLayout();
     void BuildGenericGeometry();
-    void BuildMesh();
     void BuildPSOs();
     void BuildFrameResources();
     void BuildMaterials();
@@ -110,11 +109,10 @@ private:
 
     UINT mSkinnedSrvHeapStart = 0;
     std::string mSkinnedModelFilename = "Models\\test.fbx";
-    std::unique_ptr<SkinnedModelInstance> mSkinnedModelInst;
-    SkinnedData mSkinnedInfo;
-    std::vector<ModelLoader::Subset> mSkinnedSubsets;
-    std::vector<ModelLoader::ModelMaterial> mSkinnedMats;
+    std::vector<Subset> mSkinnedSubsets;
+    std::vector<ModelMaterial> mSkinnedMats;
     std::vector<std::string> mSkinnedTextureNames;
+    std::vector<Mesh> skinnedMesh;
 
     Camera mCamera;
 

@@ -9,30 +9,6 @@ void EngineApp::BuildGenericGeometry()
 	GeometryGenerator::MeshData cylinder = geoGen.CreateCylinder(0.5f, 0.3f, 3.0f, 20, 20);
 	GeometryGenerator::MeshData quad = geoGen.CreateQuad(0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-
-	std::vector<ModelLoader::Vertex> verticesML;
-	std::vector<std::uint16_t> indicesML;
-	std::vector<ModelLoader::Subset> subsetsML;
-	std::vector<ModelLoader::ModelMaterial> matsML;
-
-
-	ModelLoader modelLoader;
-	modelLoader.LoadModel(mSkinnedModelFilename, verticesML, indicesML, subsetsML, matsML);
-
-	quad.Vertices.resize(verticesML.size());
-	for (int i = 0; i < verticesML.size(); ++i)
-	{
-		GeometryGenerator::Vertex vert;
-		vert.Position = verticesML[i].Pos;
-		quad.Vertices[i] = vert;
-	}
-
-	quad.Indices32.resize(indicesML.size());
-	for (int i = 0; i < indicesML.size(); ++i)
-	{
-		quad.Indices32[i] = indicesML[i];
-	}
-
 	//
 	// We are concatenating all the geometry into one big vertex/index buffer.  So
 	// define the regions in the buffer each submesh covers.
@@ -97,7 +73,7 @@ void EngineApp::BuildGenericGeometry()
 		vertices[k].Pos = box.Vertices[i].Position;
 		vertices[k].Normal = box.Vertices[i].Normal;
 		vertices[k].TexC = box.Vertices[i].TexC;
-		vertices[k].TangentU = box.Vertices[i].TangentU;
+		vertices[k].TangentU = XMFLOAT4(box.Vertices[i].TangentU.x, box.Vertices[i].TangentU.y, box.Vertices[i].TangentU.z, 0.0);
 	}
 
 	for (size_t i = 0; i < grid.Vertices.size(); ++i, ++k)
@@ -105,7 +81,7 @@ void EngineApp::BuildGenericGeometry()
 		vertices[k].Pos = grid.Vertices[i].Position;
 		vertices[k].Normal = grid.Vertices[i].Normal;
 		vertices[k].TexC = grid.Vertices[i].TexC;
-		vertices[k].TangentU = grid.Vertices[i].TangentU;
+		vertices[k].TangentU = XMFLOAT4(grid.Vertices[i].TangentU.x, grid.Vertices[i].TangentU.y, grid.Vertices[i].TangentU.z, 0.0);
 	}
 
 	for (size_t i = 0; i < sphere.Vertices.size(); ++i, ++k)
@@ -113,7 +89,7 @@ void EngineApp::BuildGenericGeometry()
 		vertices[k].Pos = sphere.Vertices[i].Position;
 		vertices[k].Normal = sphere.Vertices[i].Normal;
 		vertices[k].TexC = sphere.Vertices[i].TexC;
-		vertices[k].TangentU = sphere.Vertices[i].TangentU;
+		vertices[k].TangentU = XMFLOAT4(sphere.Vertices[i].TangentU.x, sphere.Vertices[i].TangentU.y, sphere.Vertices[i].TangentU.z, 0.0);
 	}
 
 	for (size_t i = 0; i < cylinder.Vertices.size(); ++i, ++k)
@@ -121,7 +97,7 @@ void EngineApp::BuildGenericGeometry()
 		vertices[k].Pos = cylinder.Vertices[i].Position;
 		vertices[k].Normal = cylinder.Vertices[i].Normal;
 		vertices[k].TexC = cylinder.Vertices[i].TexC;
-		vertices[k].TangentU = cylinder.Vertices[i].TangentU;
+		vertices[k].TangentU = XMFLOAT4(cylinder.Vertices[i].TangentU.x, cylinder.Vertices[i].TangentU.y, cylinder.Vertices[i].TangentU.z, 0.0);
 	}
 
 	for (int i = 0; i < quad.Vertices.size(); ++i, ++k)
@@ -129,7 +105,7 @@ void EngineApp::BuildGenericGeometry()
 		vertices[k].Pos = quad.Vertices[i].Position;
 		vertices[k].Normal = quad.Vertices[i].Normal;
 		vertices[k].TexC = quad.Vertices[i].TexC;
-		vertices[k].TangentU = quad.Vertices[i].TangentU;
+		vertices[k].TangentU = XMFLOAT4(quad.Vertices[i].TangentU.x, quad.Vertices[i].TangentU.y, quad.Vertices[i].TangentU.z, 0.0);
 	}
 
 	std::vector<std::uint16_t> indices;

@@ -21,7 +21,7 @@ void EngineApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::v
 
         cmdList->SetGraphicsRootConstantBufferView(0, objCBAddress);
 
-        if (ri->SkinnedModelInst != nullptr)
+        if (ri->AnimationInstance != nullptr)
         {
             D3D12_GPU_VIRTUAL_ADDRESS skinnedCBAddress = skinnedCB->GetGPUVirtualAddress() + ri->SkinnedCBIndex * skinnedCBByteSize;
             cmdList->SetGraphicsRootConstantBufferView(1, skinnedCBAddress);

@@ -48,13 +48,10 @@
     <ClCompile Include="Render\Passes\Ssao.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\SkinnedData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Build\BuildGenericGeometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildMesh.cpp">
+    <ClCompile Include="Render\Resources\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Resources\StaticSamplers.cpp">
@@ -102,9 +99,6 @@
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Update\UpdateSkinnedMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Update\UpdateRenderItems.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -117,16 +111,13 @@
     <ClCompile Include="Draw\DrawShadowMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Models\External\LoadModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Render\Resources\Skeleton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Animation.cpp">
+    <ClCompile Include="Build\BuildMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Joint.cpp">
+    <ClCompile Include="Update\UpdateSkinnedMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -167,9 +158,6 @@
     <ClInclude Include="Render\Passes\Ssao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\SkinnedData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Objects\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -179,22 +167,19 @@
     <ClInclude Include="Render\Resources\RenderItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\SkinnedModelInstance.h">
+    <ClInclude Include="Render\Resources\Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Structures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Models\External\LoadModel.h">
+    <ClInclude Include="Render\Resources\Joint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\Skeleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Animation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Resources\Joint.h">
+    <ClInclude Include="Render\Resources\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FrameResource.h"
-#include "SkinnedModelInstance.h"
+#include "Animation.h"
 #include "../../Objects/Object.h"
 
 // Lightweight structure stores parameters to draw a shape.  This will
@@ -41,6 +41,5 @@ struct RenderItem
 	// Only applicable to skinned render-items.
 	UINT SkinnedCBIndex = -1;
 
-	// nullptr if this render-item is not animated by skinned mesh.
-	SkinnedModelInstance* SkinnedModelInst = nullptr;
+	Animation* AnimationInstance = nullptr;
 };

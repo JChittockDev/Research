@@ -1,48 +1,31 @@
 #pragma once
-#include <vector>
-#include <string>
-#include "Joint.h"
 
-class Animation
+#include "Skeleton.h"
+
+struct Animation
 {
-public:
-	Animation();
-	~Animation();
+    Skeleton* skeleton;
+    aiNode* rootNode;
+    aiAnimation* animation;
+    std::vector<DirectX::XMFLOAT4X4> transforms;
+    float TimePos = 0.0f;
+    bool Loop = true;
+    float Speed = 1.0f;
 
-	// Get the length of the animation
-	unsigned int GetAnimationLength();
+    void UpdateSkinnedAnimation(float dt)
+    {
+        dt *= Speed;
+        TimePos += dt;
 
-	// Get the number of bones affected by this animation
-	unsigned int GetBoneAmount();
-
-	// Get the animation name
-	std::string GetName();
-
-	// Get the vector which contains all the bones affected by the animation, as reference
-	std::vector<Joint>& GetBonesVector();
-
-	// Get the specifik joint at an index, as a reference
-	Joint& GetBoneAtIndex(unsigned int boneIndex);
-
-	// Set the animations length
-	void SetAnimationLength(unsigned int length);
-
-	// Set the number of bones
-	void SetNumberOfBones(unsigned int number);
-
-	// Set the animations name
-	void SetAnimationName(std::string name);
-
-private:
-	// Animation length
-	unsigned int length;
-
-	// bone amount
-	unsigned int boneAmount;
-
-	// Animation name
-	std::string name;
-
-	// Affected bones
-	std::vector<Joint> bones;
+        if (Loop)
+        {
+            float duration = animation->mDuration;
+            if (TimePos > duration)
+            {
+                TimePos = 0.0;
+            }
+        }
+        
+        skeleton->GetTransforms(TimePos, rootNode, animation, aiMatrix4x4(), rootNode->mTransformation.Inverse(), transforms);
+    }
 };

@@ -2,19 +2,18 @@
 
 void EngineApp::UpdateSkinnedCBs(const GameTimer& gt)
 {
+    SkinnedConstants skinnedConstants;
     auto currSkinnedCB = mCurrFrameResource->SkinnedCB.get();
 
-    // We only have one skinned model being animated.
-    mSkinnedModelInst->UpdateSkinnedAnimation(gt.DeltaTime());
-
-    SkinnedConstants skinnedConstants;
-
-    std::copy(
-        std::begin(mSkinnedModelInst->FinalTransforms),
-        std::end(mSkinnedModelInst->FinalTransforms),
-        &skinnedConstants.BoneTransforms[0]);
-
+    int transformCounter = 0;
+    for (UINT x = 0; x < skinnedMesh.size(); ++x)
+    {
+        std::vector<DirectX::XMFLOAT4X4> transforms;
+        skinnedMesh[x].UpdateSkinnedCB(gt.DeltaTime(), transforms);
+        
+        std::copy(std::begin(transforms), std::end(transforms), &skinnedConstants.BoneTransforms[transformCounter]);
+        transformCounter += transforms.size();
+    }
 
     currSkinnedCB->CopyData(0, skinnedConstants);
-
 }
