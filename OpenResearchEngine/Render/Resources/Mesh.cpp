@@ -68,7 +68,6 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, Skeleton* m
 		{
 			aiVertexWeight* weights = meshList[x]->mBones[i]->mWeights;
 			const unsigned int& numWeights = meshList[x]->mBones[i]->mNumWeights;
-
 			std::string boneName(meshList[x]->mBones[i]->mName.C_Str());
 
 			for (UINT w = 0; w < numWeights; ++w)
@@ -166,19 +165,16 @@ void Mesh::ReadSkeleton(const aiScene* scene, Skeleton* mSkeleton)
 	{
 		for (UINT i = 0; i < meshList[x]->mNumBones; ++i)
 		{
-			aiString& boneName = meshList[x]->mBones[i]->mName;
-			std::string cBoneName(meshList[x]->mBones[i]->mName.C_Str());
-
-			bool exists = mSkeleton->bones.find(cBoneName) != mSkeleton->bones.end();
+			std::string boneName(meshList[x]->mBones[i]->mName.C_Str());
+			bool exists = mSkeleton->bones.find(boneName) != mSkeleton->bones.end();
 
 			if (!exists)
 			{
 				aiMatrix4x4& offsetMatrix = meshList[x]->mBones[i]->mOffsetMatrix;
-				Joint joint(cBoneName, boneCount, offsetMatrix);
-				mSkeleton->bones[cBoneName] = joint;
+				Joint joint(boneName, boneCount, offsetMatrix);
+				mSkeleton->bones[boneName] = joint;
 				boneCount += 1;
 			}
-
 		}
 	}
 }
@@ -202,6 +198,10 @@ Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID
 	std::vector<std::uint16_t> indices;
 
 	Assimp::Importer* imp = new Assimp::Importer();
+
+	//imp->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
+	//imp->SetPropertyBool(AI_CONFIG_IMPORT_FBX_OPTIMIZE_EMPTY_ANIMATION_CURVES, false);
+
 	const aiScene* scene = imp->ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
 	
 	Skeleton* mSkeleton = new Skeleton();

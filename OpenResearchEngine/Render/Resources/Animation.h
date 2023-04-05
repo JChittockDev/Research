@@ -27,5 +27,6 @@ struct Animation
         }
         
         skeleton->GetTransforms(TimePos, rootNode, animation, aiMatrix4x4(), rootNode->mTransformation.Inverse(), transforms);
+
     }
 };
