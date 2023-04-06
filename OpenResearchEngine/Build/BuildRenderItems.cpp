@@ -6,7 +6,7 @@ void EngineApp::BuildRenderItems()
 	auto skyRitem = std::make_unique<RenderItem>();
 	XMStoreFloat4x4(&skyRitem->World, XMMatrixScaling(5000.0f, 5000.0f, 5000.0f));
 	skyRitem->TexTransform = Math::Identity4x4();
-	skyRitem->ObjCBIndex = 0;
+	skyRitem->ObjCBIndex = ObjectCBIndex++;
 	skyRitem->Mat = mMaterials["sky"].get();
 	skyRitem->Geo = mGeometries["shapeGeo"].get();
 	skyRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -20,7 +20,7 @@ void EngineApp::BuildRenderItems()
 	auto quadRitem = std::make_unique<RenderItem>();
 	quadRitem->World = Math::Identity4x4();
 	quadRitem->TexTransform = Math::Identity4x4();
-	quadRitem->ObjCBIndex = 1;
+	quadRitem->ObjCBIndex = ObjectCBIndex++;
 	quadRitem->Mat = mMaterials["bricks0"].get();
 	quadRitem->Geo = mGeometries["shapeGeo"].get();
 	quadRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -34,7 +34,7 @@ void EngineApp::BuildRenderItems()
 	auto boxRitem = std::make_unique<RenderItem>();
 	XMStoreFloat4x4(&boxRitem->World, XMMatrixScaling(2.0f, 1.0f, 2.0f) * XMMatrixTranslation(0.0f, 0.5f, 0.0f));
 	XMStoreFloat4x4(&boxRitem->TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
-	boxRitem->ObjCBIndex = 2;
+	boxRitem->ObjCBIndex = ObjectCBIndex++;
 	boxRitem->Mat = mMaterials["bricks0"].get();
 	boxRitem->Geo = mGeometries["shapeGeo"].get();
 	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -48,7 +48,7 @@ void EngineApp::BuildRenderItems()
 	auto gridRitem = std::make_unique<RenderItem>();
 	gridRitem->World = Math::Identity4x4();
 	XMStoreFloat4x4(&gridRitem->TexTransform, XMMatrixScaling(8.0f, 8.0f, 1.0f));
-	gridRitem->ObjCBIndex = 3;
+	gridRitem->ObjCBIndex = ObjectCBIndex++;
 	gridRitem->Mat = mMaterials["tile0"].get();
 	gridRitem->Geo = mGeometries["shapeGeo"].get();
 	gridRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -76,7 +76,7 @@ void EngineApp::BuildRenderItems()
 
 		XMStoreFloat4x4(&leftCylRitem->World, rightCylWorld);
 		XMStoreFloat4x4(&leftCylRitem->TexTransform, brickTexTransform);
-		leftCylRitem->ObjCBIndex = objCBIndex++;
+		leftCylRitem->ObjCBIndex = ObjectCBIndex++;
 		leftCylRitem->Mat = mMaterials["bricks0"].get();
 		leftCylRitem->Geo = mGeometries["shapeGeo"].get();
 		leftCylRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -86,7 +86,7 @@ void EngineApp::BuildRenderItems()
 
 		XMStoreFloat4x4(&rightCylRitem->World, leftCylWorld);
 		XMStoreFloat4x4(&rightCylRitem->TexTransform, brickTexTransform);
-		rightCylRitem->ObjCBIndex = objCBIndex++;
+		rightCylRitem->ObjCBIndex = ObjectCBIndex++;
 		rightCylRitem->Mat = mMaterials["bricks0"].get();
 		rightCylRitem->Geo = mGeometries["shapeGeo"].get();
 		rightCylRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -96,7 +96,7 @@ void EngineApp::BuildRenderItems()
 
 		XMStoreFloat4x4(&leftSphereRitem->World, leftSphereWorld);
 		leftSphereRitem->TexTransform = Math::Identity4x4();
-		leftSphereRitem->ObjCBIndex = objCBIndex++;
+		leftSphereRitem->ObjCBIndex = ObjectCBIndex++;
 		leftSphereRitem->Mat = mMaterials["mirror0"].get();
 		leftSphereRitem->Geo = mGeometries["shapeGeo"].get();
 		leftSphereRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -106,7 +106,7 @@ void EngineApp::BuildRenderItems()
 
 		XMStoreFloat4x4(&rightSphereRitem->World, rightSphereWorld);
 		rightSphereRitem->TexTransform = Math::Identity4x4();
-		rightSphereRitem->ObjCBIndex = objCBIndex++;
+		rightSphereRitem->ObjCBIndex = ObjectCBIndex++;
 		rightSphereRitem->Mat = mMaterials["mirror0"].get();
 		rightSphereRitem->Geo = mGeometries["shapeGeo"].get();
 		rightSphereRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -138,7 +138,7 @@ void EngineApp::BuildRenderItems()
 		XMStoreFloat4x4(&ritem->World, modelScale * modelRot * modelOffset);
 
 		ritem->TexTransform = Math::Identity4x4();
-		ritem->ObjCBIndex = objCBIndex++;
+		ritem->ObjCBIndex = ObjectCBIndex++;
 
 		std::string currentMesh = mSkinnedSubsets[i].MeshName;
 		ritem->Geo = mGeometries[currentMesh].get();
@@ -151,7 +151,7 @@ void EngineApp::BuildRenderItems()
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
 		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
 
-		ritem->SkinnedCBIndex = 0;
+		ritem->SkinnedCBIndex = mSkinnedMesh[currentMesh].SkinnedCBIndex;
 		ritem->AnimationInstance = mSkinnedMesh[currentMesh].mAnimation;
 
 		mRitemLayer[(int)RenderLayer::SkinnedOpaque].push_back(ritem.get());

@@ -138,4 +138,7 @@ private:
     XMFLOAT3 mRotatedLightDirections[3];
 
     POINT mLastMousePos;
+
+    UINT SkinnedCBIndex = 0;
+    UINT ObjectCBIndex = 0;
 };
