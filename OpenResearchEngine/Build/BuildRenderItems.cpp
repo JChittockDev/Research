@@ -139,7 +139,9 @@ void EngineApp::BuildRenderItems()
 
 		ritem->TexTransform = Math::Identity4x4();
 		ritem->ObjCBIndex = objCBIndex++;
-		ritem->Geo = mGeometries[mSkinnedModelFilename].get();
+
+		std::string currentMesh = mSkinnedSubsets[i].MeshName;
+		ritem->Geo = mGeometries[currentMesh].get();
 
 		UINT materialIndex = ritem->Geo->DrawArgs[submeshName].MaterialIndex;
 		ritem->Mat = mMaterials[mSkinnedMats[materialIndex].Name].get();
@@ -150,7 +152,7 @@ void EngineApp::BuildRenderItems()
 		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
 
 		ritem->SkinnedCBIndex = 0;
-		ritem->AnimationInstance = skinnedMesh[0].mAnimation;
+		ritem->AnimationInstance = mSkinnedMesh[currentMesh].mAnimation;
 
 		mRitemLayer[(int)RenderLayer::SkinnedOpaque].push_back(ritem.get());
 		mAllRitems.push_back(std::move(ritem));

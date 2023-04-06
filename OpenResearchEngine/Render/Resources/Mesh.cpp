@@ -103,7 +103,7 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, Skeleton* m
 
 }
 
-void Mesh::ReadSubsetTable(const aiScene* scene, std::vector<Subset>& subsets)
+void Mesh::ReadSubsetTable(const aiScene* scene, std::vector<Subset>& subsets, const std::string& mesh)
 {
 	int vertexCounter = 0;
 	int indexCounter = 0;
@@ -119,6 +119,7 @@ void Mesh::ReadSubsetTable(const aiScene* scene, std::vector<Subset>& subsets)
 		sb.IndexStart = indexCounter;
 		sb.IndexCount = numIndicies;
 		sb.MaterialIndex = scene->mMeshes[i]->mMaterialIndex;
+		sb.MeshName = mesh;
 		vertexCounter += numVertices;
 		indexCounter += numIndicies;
 
@@ -215,7 +216,7 @@ Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID
 	Skeleton* mSkeleton = new Skeleton();
 	ReadSkeleton(scene, mSkeleton);
 	ReadMaterials(scene, mats);
-	ReadSubsetTable(scene, subsets);
+	ReadSubsetTable(scene, subsets, filename);
 	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices);
 	ReadSkinningData(scene->mNumMeshes, scene->mMeshes, mSkeleton, vertices);
 	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices);

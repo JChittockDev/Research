@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include "D3D12/D3DApp.h"
 #include "Common/Math.h"
 #include "Common/UploadBuffer.h"
@@ -108,11 +109,10 @@ private:
     PassConstants mShadowPassCB;// index 1 of pass cbuffer.
 
     UINT mSkinnedSrvHeapStart = 0;
-    std::string mSkinnedModelFilename = "Models\\test.fbx";
     std::vector<Subset> mSkinnedSubsets;
     std::vector<ModelMaterial> mSkinnedMats;
     std::vector<std::string> mSkinnedTextureNames;
-    std::vector<Mesh> skinnedMesh;
+    std::map<std::string, Mesh> mSkinnedMesh;
 
     Camera mCamera;
 

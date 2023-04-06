@@ -12,6 +12,8 @@
 class Mesh
 {
 public:
+    Mesh() {};
+
     Mesh(std::string filename, std::string animClip,
         Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
@@ -26,7 +28,7 @@ private:
     void ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Vertex>& vertices);
     void ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<SkinnedVertex>& vertices);
     void ReadSkinningData(unsigned int numMesh, aiMesh** meshList, Skeleton* mSkeleton, std::vector<SkinnedVertex>& vertices);
-    void ReadSubsetTable(const aiScene* scene, std::vector<Subset>& subsets);
+    void ReadSubsetTable(const aiScene* scene, std::vector<Subset>& subsets, const std::string& mesh);
     void ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<USHORT>& indices);
     void ReadMaterials(const aiScene* scene, std::vector<ModelMaterial>& mats);
     void ReadSkeleton(const aiScene* scene, Skeleton* mSkeleton);

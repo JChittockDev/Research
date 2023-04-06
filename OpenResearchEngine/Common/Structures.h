@@ -142,6 +142,7 @@ struct Subset
     UINT IndexStart = 0;
     UINT IndexCount = 0;
     UINT MaterialIndex = 0;
+    std::string MeshName;
 };
 
 struct ModelMaterial
