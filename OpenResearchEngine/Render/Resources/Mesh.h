@@ -20,6 +20,7 @@ public:
 
     void UpdateSkinnedCB(float time, std::vector<DirectX::XMFLOAT4X4>& cbTransforms);
     Animation* mAnimation;
+    const aiScene* scene;
 
 private:
     void ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Vertex>& vertices);
@@ -30,4 +31,5 @@ private:
     void ReadMaterials(const aiScene* scene, std::vector<ModelMaterial>& mats);
     void ReadSkeleton(const aiScene* scene, Skeleton* mSkeleton);
     void ReadAnimations(const aiScene* scene, std::unordered_map<std::string, aiAnimation*> animations);
+    int FindAnimIndex(int numAnim, aiAnimation** animations, const std::string& animationName);
 };

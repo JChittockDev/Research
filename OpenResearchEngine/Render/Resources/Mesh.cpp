@@ -189,6 +189,18 @@ void Mesh::ReadAnimations(const aiScene* scene, std::unordered_map<std::string, 
 	}
 }
 
+int Mesh::FindAnimIndex(int numAnim, aiAnimation** animations, const std::string& animationName)
+{
+	for (unsigned int i = 0; i < numAnim; ++i)
+	{
+		if (animations[i]->mName.data == animationName)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
+
 Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, 
 										Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, 
 										std::unordered_map<std::string, std::unique_ptr<MeshGeometry>>& geometries, 
@@ -198,11 +210,7 @@ Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID
 	std::vector<std::uint16_t> indices;
 
 	Assimp::Importer* imp = new Assimp::Importer();
-
-	//imp->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
-	//imp->SetPropertyBool(AI_CONFIG_IMPORT_FBX_OPTIMIZE_EMPTY_ANIMATION_CURVES, false);
-
-	const aiScene* scene = imp->ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
+	scene = imp->ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
 	
 	Skeleton* mSkeleton = new Skeleton();
 	ReadSkeleton(scene, mSkeleton);
@@ -219,7 +227,9 @@ Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID
 	mAnimation->Speed = 10.0f;
 	mAnimation->Loop = true;
 	mAnimation->rootNode = scene->mRootNode;
-	mAnimation->animation = scene->mAnimations[0];
+
+	int animationIndex = FindAnimIndex(scene->mNumAnimations, scene->mAnimations, animClip);
+	mAnimation->animation = scene->mAnimations[animationIndex];
 
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(SkinnedVertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
