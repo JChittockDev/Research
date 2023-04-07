@@ -32,4 +32,8 @@ public:
 		UINT& ObjectCBIndex, UINT& SkinnedCBIndex, const std::unordered_map<std::string, std::vector<Subset>>& subsets, const std::unordered_map<std::string, std::unique_ptr<MeshGeometry>>& geometry,
 		const std::unordered_map<std::string, std::unique_ptr<Material>>& materials, const std::vector<ModelMaterial>& modelMaterials, const std::unordered_map<std::string, Mesh>& skinnedMesh,
 		std::vector<RenderItem*>& renderLayers, std::vector<std::unique_ptr<RenderItem>>& renderItems);
+
+	static void BuildRenderItem(const std::string& meshName, const std::string& subMeshName, const std::string& materialName, const DirectX::XMFLOAT3& translation, const DirectX::XMFLOAT4& rotation, 
+		const DirectX::XMFLOAT3& scaling, UINT& ObjectCBIndex, const std::unordered_map<std::string, std::unique_ptr<MeshGeometry>>& geometry, const std::unordered_map<std::string, std::unique_ptr<Material>>& materials,
+		std::vector<RenderItem*>& renderLayers, std::vector<std::unique_ptr<RenderItem>>& renderItems);
 };
