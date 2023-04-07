@@ -103,7 +103,7 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, Skeleton* m
 
 }
 
-void Mesh::ReadSubsetTable(const aiScene* scene, std::vector<Subset>& subsets, const std::string& mesh)
+void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string, std::vector<Subset>>& subsets, const std::string& mesh)
 {
 	int vertexCounter = 0;
 	int indexCounter = 0;
@@ -123,7 +123,7 @@ void Mesh::ReadSubsetTable(const aiScene* scene, std::vector<Subset>& subsets, c
 		vertexCounter += numVertices;
 		indexCounter += numIndicies;
 
-		subsets.push_back(sb);
+		subsets[mesh].push_back(sb);
 	}
 }
 
@@ -205,7 +205,7 @@ int Mesh::FindAnimIndex(int numAnim, aiAnimation** animations, const std::string
 Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, 
 										Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, 
 										std::unordered_map<std::string, std::unique_ptr<MeshGeometry>>& geometries, 
-										std::vector<Subset>& subsets, std::vector<ModelMaterial>& mats)
+										std::unordered_map<std::string, std::vector<Subset>>& subsets, std::vector<ModelMaterial>& mats)
 {
 	std::vector<SkinnedVertex> vertices;
 	std::vector<std::uint16_t> indices;
@@ -255,15 +255,15 @@ Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID
 	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
 	geo->IndexBufferByteSize = ibByteSize;
 
-	for (UINT i = 0; i < (UINT)subsets.size(); ++i)
+	for (UINT i = 0; i < (UINT)subsets[filename].size(); ++i)
 	{
 		SubmeshGeometry submesh;
 		std::string name = "sm_" + std::to_string(i);
 
-		submesh.IndexCount = (UINT)subsets[i].IndexCount;
-		submesh.StartIndexLocation = subsets[i].IndexStart;
-		submesh.BaseVertexLocation = subsets[i].VertexStart;
-		submesh.MaterialIndex = subsets[i].MaterialIndex;
+		submesh.IndexCount = (UINT)subsets[filename][i].IndexCount;
+		submesh.StartIndexLocation = subsets[filename][i].IndexStart;
+		submesh.BaseVertexLocation = subsets[filename][i].VertexStart;
+		submesh.MaterialIndex = subsets[filename][i].MaterialIndex;
 		geo->DrawArgs[name] = submesh;
 	}
 

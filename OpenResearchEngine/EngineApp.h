@@ -85,7 +85,7 @@ private:
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
 
-    std::vector<Subset> mSkinnedSubsets;
+    std::unordered_map<std::string, std::vector<Subset>> mSkinnedSubsets;
     std::vector<ModelMaterial> mSkinnedMats;
     std::vector<std::string> mSkinnedTextureNames;
     std::unordered_map<std::string, Mesh> mSkinnedMesh;

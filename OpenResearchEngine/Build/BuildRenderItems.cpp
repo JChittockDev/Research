@@ -125,36 +125,37 @@ void EngineApp::BuildRenderItems()
 		mAllRitems.push_back(std::move(rightSphereRitem));
 	}
 
-	for (UINT i = 0; i < mSkinnedSubsets.size(); ++i)
+	for (auto mesh : mSkinnedSubsets)
 	{
-		std::string submeshName = "sm_" + std::to_string(i);
+		for (UINT i = 0; i < mesh.second.size(); ++i)
+		{
+			std::string submeshName = "sm_" + std::to_string(i);
 
-		auto ritem = std::make_unique<RenderItem>();
+			auto ritem = std::make_unique<RenderItem>();
 
-		// Reflect to change coordinate system from the RHS the data was exported out as.
-		XMMATRIX modelScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
-		XMMATRIX modelRot = XMMatrixRotationY(Math::Pi);
-		XMMATRIX modelOffset = XMMatrixTranslation(0.0f, 0.0f, -5.0f);
-		XMStoreFloat4x4(&ritem->World, modelScale * modelRot * modelOffset);
+			// Reflect to change coordinate system from the RHS the data was exported out as.
+			XMMATRIX modelScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
+			XMMATRIX modelRot = XMMatrixRotationY(Math::Pi);
+			XMMATRIX modelOffset = XMMatrixTranslation(0.0f, 0.0f, -5.0f);
+			XMStoreFloat4x4(&ritem->World, modelScale * modelRot * modelOffset);
 
-		ritem->TexTransform = Math::Identity4x4();
-		ritem->ObjCBIndex = ObjectCBIndex++;
+			ritem->TexTransform = Math::Identity4x4();
+			ritem->ObjCBIndex = ObjectCBIndex++;
+			ritem->Geo = mGeometries[mesh.first].get();
 
-		std::string currentMesh = mSkinnedSubsets[i].MeshName;
-		ritem->Geo = mGeometries[currentMesh].get();
+			UINT materialIndex = ritem->Geo->DrawArgs[submeshName].MaterialIndex;
+			ritem->Mat = mMaterials[mSkinnedMats[materialIndex].Name].get();
 
-		UINT materialIndex = ritem->Geo->DrawArgs[submeshName].MaterialIndex;
-		ritem->Mat = mMaterials[mSkinnedMats[materialIndex].Name].get();
+			ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+			ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
+			ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
+			ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
 
-		ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
-		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
-		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
+			ritem->SkinnedCBIndex = 0;
+			ritem->AnimationInstance = mSkinnedMesh[mesh.first].mAnimation;
 
-		ritem->SkinnedCBIndex = 0;
-		ritem->AnimationInstance = mSkinnedMesh[currentMesh].mAnimation;
-
-		mRitemLayer[(int)RenderLayer::SkinnedOpaque].push_back(ritem.get());
-		mAllRitems.push_back(std::move(ritem));
+			mRitemLayer[(int)RenderLayer::SkinnedOpaque].push_back(ritem.get());
+			mAllRitems.push_back(std::move(ritem));
+		}
 	}
 }
