@@ -85,6 +85,11 @@ private:
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
 
+    std::vector<Subset> mSkinnedSubsets;
+    std::vector<ModelMaterial> mSkinnedMats;
+    std::vector<std::string> mSkinnedTextureNames;
+    std::unordered_map<std::string, Mesh> mSkinnedMesh;
+
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
 
@@ -109,10 +114,6 @@ private:
     PassConstants mShadowPassCB;// index 1 of pass cbuffer.
 
     UINT mSkinnedSrvHeapStart = 0;
-    std::vector<Subset> mSkinnedSubsets;
-    std::vector<ModelMaterial> mSkinnedMats;
-    std::vector<std::string> mSkinnedTextureNames;
-    std::map<std::string, Mesh> mSkinnedMesh;
 
     Camera mCamera;
 

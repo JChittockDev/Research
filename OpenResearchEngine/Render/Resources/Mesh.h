@@ -23,7 +23,6 @@ public:
     void UpdateSkinnedCB(float time, std::vector<DirectX::XMFLOAT4X4>& cbTransforms);
     Animation* mAnimation;
     const aiScene* scene;
-    int SkinnedCBIndex = 0;
 
 private:
     void ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Vertex>& vertices);

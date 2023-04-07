@@ -151,7 +151,7 @@ void EngineApp::BuildRenderItems()
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
 		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
 
-		ritem->SkinnedCBIndex = mSkinnedMesh[currentMesh].SkinnedCBIndex;
+		ritem->SkinnedCBIndex = 0;
 		ritem->AnimationInstance = mSkinnedMesh[currentMesh].mAnimation;
 
 		mRitemLayer[(int)RenderLayer::SkinnedOpaque].push_back(ritem.get());
