@@ -4,7 +4,7 @@
 void EngineApp::BuildRenderItems()
 {
 	auto skyRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&skyRitem->World, XMMatrixScaling(5000.0f, 5000.0f, 5000.0f));
+	XMStoreFloat4x4(&skyRitem->World, DirectX::XMMatrixScaling(5000.0f, 5000.0f, 5000.0f));
 	skyRitem->TexTransform = Math::Identity4x4();
 	skyRitem->ObjCBIndex = ObjectCBIndex++;
 	skyRitem->Mat = mMaterials["sky"].get();
@@ -32,8 +32,8 @@ void EngineApp::BuildRenderItems()
 	mAllRitems.push_back(std::move(quadRitem));
 
 	auto boxRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&boxRitem->World, XMMatrixScaling(2.0f, 1.0f, 2.0f) * XMMatrixTranslation(0.0f, 0.5f, 0.0f));
-	XMStoreFloat4x4(&boxRitem->TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
+	XMStoreFloat4x4(&boxRitem->World, DirectX::XMMatrixScaling(2.0f, 1.0f, 2.0f) * DirectX::XMMatrixTranslation(0.0f, 0.5f, 0.0f));
+	XMStoreFloat4x4(&boxRitem->TexTransform, DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f));
 	boxRitem->ObjCBIndex = ObjectCBIndex++;
 	boxRitem->Mat = mMaterials["bricks0"].get();
 	boxRitem->Geo = mGeometries["shapeGeo"].get();
@@ -47,7 +47,7 @@ void EngineApp::BuildRenderItems()
 
 	auto gridRitem = std::make_unique<RenderItem>();
 	gridRitem->World = Math::Identity4x4();
-	XMStoreFloat4x4(&gridRitem->TexTransform, XMMatrixScaling(8.0f, 8.0f, 1.0f));
+	XMStoreFloat4x4(&gridRitem->TexTransform, DirectX::XMMatrixScaling(8.0f, 8.0f, 1.0f));
 	gridRitem->ObjCBIndex = ObjectCBIndex++;
 	gridRitem->Mat = mMaterials["tile0"].get();
 	gridRitem->Geo = mGeometries["shapeGeo"].get();
@@ -59,7 +59,7 @@ void EngineApp::BuildRenderItems()
 	mRitemLayer[(int)RenderLayer::Opaque].push_back(gridRitem.get());
 	mAllRitems.push_back(std::move(gridRitem));
 
-	XMMATRIX brickTexTransform = XMMatrixScaling(1.5f, 2.0f, 1.0f);
+	DirectX::XMMATRIX brickTexTransform = DirectX::XMMatrixScaling(1.5f, 2.0f, 1.0f);
 	UINT objCBIndex = 4;
 	for (int i = 0; i < 5; ++i)
 	{
@@ -68,11 +68,11 @@ void EngineApp::BuildRenderItems()
 		auto leftSphereRitem = std::make_unique<RenderItem>();
 		auto rightSphereRitem = std::make_unique<RenderItem>();
 
-		XMMATRIX leftCylWorld = XMMatrixTranslation(-5.0f, 1.5f, -10.0f + i * 5.0f);
-		XMMATRIX rightCylWorld = XMMatrixTranslation(+5.0f, 1.5f, -10.0f + i * 5.0f);
+		DirectX::XMMATRIX leftCylWorld = DirectX::XMMatrixTranslation(-5.0f, 1.5f, -10.0f + i * 5.0f);
+		DirectX::XMMATRIX rightCylWorld = DirectX::XMMatrixTranslation(+5.0f, 1.5f, -10.0f + i * 5.0f);
 
-		XMMATRIX leftSphereWorld = XMMatrixTranslation(-5.0f, 3.5f, -10.0f + i * 5.0f);
-		XMMATRIX rightSphereWorld = XMMatrixTranslation(+5.0f, 3.5f, -10.0f + i * 5.0f);
+		DirectX::XMMATRIX leftSphereWorld = DirectX::XMMatrixTranslation(-5.0f, 3.5f, -10.0f + i * 5.0f);
+		DirectX::XMMATRIX rightSphereWorld = DirectX::XMMatrixTranslation(+5.0f, 3.5f, -10.0f + i * 5.0f);
 
 		XMStoreFloat4x4(&leftCylRitem->World, rightCylWorld);
 		XMStoreFloat4x4(&leftCylRitem->TexTransform, brickTexTransform);
@@ -125,37 +125,6 @@ void EngineApp::BuildRenderItems()
 		mAllRitems.push_back(std::move(rightSphereRitem));
 	}
 
-	for (auto mesh : mSkinnedSubsets)
-	{
-		for (UINT i = 0; i < mesh.second.size(); ++i)
-		{
-			std::string submeshName = "sm_" + std::to_string(i);
-
-			auto ritem = std::make_unique<RenderItem>();
-
-			// Reflect to change coordinate system from the RHS the data was exported out as.
-			XMMATRIX modelScale = XMMatrixScaling(0.05f, 0.05f, -0.05f);
-			XMMATRIX modelRot = XMMatrixRotationY(Math::Pi);
-			XMMATRIX modelOffset = XMMatrixTranslation(0.0f, 0.0f, -5.0f);
-			XMStoreFloat4x4(&ritem->World, modelScale * modelRot * modelOffset);
-
-			ritem->TexTransform = Math::Identity4x4();
-			ritem->ObjCBIndex = ObjectCBIndex++;
-			ritem->Geo = mGeometries[mesh.first].get();
-
-			UINT materialIndex = ritem->Geo->DrawArgs[submeshName].MaterialIndex;
-			ritem->Mat = mMaterials[mSkinnedMats[materialIndex].Name].get();
-
-			ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-			ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
-			ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
-			ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
-
-			ritem->SkinnedCBIndex = 0;
-			ritem->AnimationInstance = mSkinnedMesh[mesh.first].mAnimation;
-
-			mRitemLayer[(int)RenderLayer::SkinnedOpaque].push_back(ritem.get());
-			mAllRitems.push_back(std::move(ritem));
-		}
-	}
+	RenderItem::BuildRenderItems("Models\\test.fbx", DirectX::XMFLOAT3(0.0f, 0.0f, -5.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0), DirectX::XMFLOAT3(0.05f, 0.05f, -0.05f),
+								ObjectCBIndex, SkinnedCBIndex, mSkinnedSubsets, mGeometries, mMaterials, mSkinnedMats, mSkinnedMesh, mRitemLayer[(int)RenderLayer::SkinnedOpaque], mAllRitems);
 }

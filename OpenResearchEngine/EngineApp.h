@@ -5,7 +5,6 @@
 #include "Common/Math.h"
 #include "Common/UploadBuffer.h"
 #include "Objects/Camera.h"
-#include "Objects/Object.h"
 #include "Models/Internal/GeometryGenerator.h"
 #include "Render/Resources/FrameResource.h"
 #include "Render/Resources/Mesh.h"
@@ -125,18 +124,18 @@ private:
 
     float mLightNearZ = 0.0f;
     float mLightFarZ = 0.0f;
-    XMFLOAT3 mLightPosW;
-    XMFLOAT4X4 mLightView = Math::Identity4x4();
-    XMFLOAT4X4 mLightProj = Math::Identity4x4();
-    XMFLOAT4X4 mShadowTransform = Math::Identity4x4();
+    DirectX::XMFLOAT3 mLightPosW;
+    DirectX::XMFLOAT4X4 mLightView = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 mLightProj = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 mShadowTransform = Math::Identity4x4();
 
     float mLightRotationAngle = 0.0f;
-    XMFLOAT3 mBaseLightDirections[3] = {
-        XMFLOAT3(0.57735f, -0.57735f, 0.57735f),
-        XMFLOAT3(-0.57735f, -0.57735f, 0.57735f),
-        XMFLOAT3(0.0f, -0.707f, -0.707f)
+    DirectX::XMFLOAT3 mBaseLightDirections[3] = {
+        DirectX::XMFLOAT3(0.57735f, -0.57735f, 0.57735f),
+        DirectX::XMFLOAT3(-0.57735f, -0.57735f, 0.57735f),
+        DirectX::XMFLOAT3(0.0f, -0.707f, -0.707f)
     };
-    XMFLOAT3 mRotatedLightDirections[3];
+    DirectX::XMFLOAT3 mRotatedLightDirections[3];
 
     POINT mLastMousePos;
 

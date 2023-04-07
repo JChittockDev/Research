@@ -9,8 +9,8 @@ void EngineApp::UpdateObjectCBs(const GameTimer& gt)
 		// This needs to be tracked per frame resource.
 		if (e->NumFramesDirty > 0)
 		{
-			XMMATRIX world = XMLoadFloat4x4(&e->World);
-			XMMATRIX texTransform = XMLoadFloat4x4(&e->TexTransform);
+			DirectX::XMMATRIX world = XMLoadFloat4x4(&e->World);
+			DirectX::XMMATRIX texTransform = XMLoadFloat4x4(&e->TexTransform);
 
 			ObjectConstants objConstants;
 			XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));

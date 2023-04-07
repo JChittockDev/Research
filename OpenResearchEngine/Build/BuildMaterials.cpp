@@ -7,8 +7,8 @@ void EngineApp::BuildMaterials()
 	bricks0->MatCBIndex = 0;
 	bricks0->DiffuseSrvHeapIndex = 0;
 	bricks0->NormalSrvHeapIndex = 1;
-	bricks0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	bricks0->FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
+	bricks0->DiffuseAlbedo = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	bricks0->FresnelR0 = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
 	bricks0->Roughness = 0.3f;
 
 	auto tile0 = std::make_unique<Material>();
@@ -16,8 +16,8 @@ void EngineApp::BuildMaterials()
 	tile0->MatCBIndex = 1;
 	tile0->DiffuseSrvHeapIndex = 2;
 	tile0->NormalSrvHeapIndex = 3;
-	tile0->DiffuseAlbedo = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-	tile0->FresnelR0 = XMFLOAT3(0.2f, 0.2f, 0.2f);
+	tile0->DiffuseAlbedo = DirectX::XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	tile0->FresnelR0 = DirectX::XMFLOAT3(0.2f, 0.2f, 0.2f);
 	tile0->Roughness = 0.1f;
 
 	auto mirror0 = std::make_unique<Material>();
@@ -25,8 +25,8 @@ void EngineApp::BuildMaterials()
 	mirror0->MatCBIndex = 2;
 	mirror0->DiffuseSrvHeapIndex = 4;
 	mirror0->NormalSrvHeapIndex = 5;
-	mirror0->DiffuseAlbedo = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-	mirror0->FresnelR0 = XMFLOAT3(0.98f, 0.97f, 0.95f);
+	mirror0->DiffuseAlbedo = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	mirror0->FresnelR0 = DirectX::XMFLOAT3(0.98f, 0.97f, 0.95f);
 	mirror0->Roughness = 0.1f;
 
 	auto sky = std::make_unique<Material>();
@@ -34,8 +34,8 @@ void EngineApp::BuildMaterials()
 	sky->MatCBIndex = 3;
 	sky->DiffuseSrvHeapIndex = 6;
 	sky->NormalSrvHeapIndex = 7;
-	sky->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	sky->FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
+	sky->DiffuseAlbedo = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	sky->FresnelR0 = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
 	sky->Roughness = 1.0f;
 
 	mMaterials["bricks0"] = std::move(bricks0);

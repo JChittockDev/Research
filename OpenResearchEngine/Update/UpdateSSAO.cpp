@@ -4,10 +4,10 @@ void EngineApp::UpdateSsaoCB(const GameTimer& gt)
 {
     SsaoConstants ssaoCB;
 
-    XMMATRIX P = mCamera.GetProj();
+    DirectX::XMMATRIX P = mCamera.GetProj();
 
     // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
-    XMMATRIX T(
+    DirectX::XMMATRIX T(
         0.5f, 0.0f, 0.0f, 0.0f,
         0.0f, -0.5f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
@@ -20,11 +20,11 @@ void EngineApp::UpdateSsaoCB(const GameTimer& gt)
     mSsao->GetOffsetVectors(ssaoCB.OffsetVectors);
 
     auto blurWeights = mSsao->CalcGaussWeights(2.5f);
-    ssaoCB.BlurWeights[0] = XMFLOAT4(&blurWeights[0]);
-    ssaoCB.BlurWeights[1] = XMFLOAT4(&blurWeights[4]);
-    ssaoCB.BlurWeights[2] = XMFLOAT4(&blurWeights[8]);
+    ssaoCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
+    ssaoCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
+    ssaoCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
 
-    ssaoCB.InvRenderTargetSize = XMFLOAT2(1.0f / mSsao->SsaoMapWidth(), 1.0f / mSsao->SsaoMapHeight());
+    ssaoCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSsao->SsaoMapWidth(), 1.0f / mSsao->SsaoMapHeight());
 
     // Coordinates given in view space.
     ssaoCB.OcclusionRadius = 0.5f;

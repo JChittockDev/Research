@@ -10,7 +10,7 @@ void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 		Material* mat = e.second.get();
 		if (mat->NumFramesDirty > 0)
 		{
-			XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
+			DirectX::XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
 
 			MaterialData matData;
 			matData.DiffuseAlbedo = mat->DiffuseAlbedo;

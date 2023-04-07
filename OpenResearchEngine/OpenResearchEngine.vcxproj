@@ -99,6 +99,7 @@
     <ClCompile Include="D3D12\D3DApp.cpp" />
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
+    <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Update\UpdateSkinnedMesh.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
@@ -137,7 +138,6 @@
     <ClInclude Include="Common\UploadBuffer.h" />
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="Render\Resources\FrameResource.h" />
-    <ClInclude Include="Objects\Object.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
     <ClInclude Include="Render\Resources\Animation.h" />
     <ClInclude Include="Render\Passes\ShadowMap.h" />

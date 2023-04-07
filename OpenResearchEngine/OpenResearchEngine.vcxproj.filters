@@ -120,6 +120,9 @@
     <ClCompile Include="Update\UpdateSkinnedMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Render\Resources\RenderItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects\Camera.h">
@@ -156,9 +159,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Passes\Ssao.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EngineApp.h">
