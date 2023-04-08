@@ -131,6 +131,7 @@
     <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
+    <ClInclude Include="Render\Resources\TransformNode.h" />
     <ClInclude Include="Utilities\GameTimer.h" />
     <ClInclude Include="Models\Internal\GeometryGenerator.h" />
     <ClInclude Include="Common\Math.h" />

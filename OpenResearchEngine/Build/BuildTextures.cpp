@@ -27,8 +27,8 @@ void EngineApp::LoadTextures()
     // Add skinned model textures to list so we can reference by name later.
     for (UINT i = 0; i < mSkinnedMats.size(); ++i)
     {
-        std::string diffuseName = mSkinnedMats[i].DiffuseMapName;
-        std::string normalName = mSkinnedMats[i].NormalMapName;
+        std::string diffuseName = mSkinnedMats[i]->DiffuseMapName;
+        std::string normalName = mSkinnedMats[i]->NormalMapName;
 
         std::wstring diffuseFilename = L"Textures/" + AnsiToWString(diffuseName);
         std::wstring normalFilename = L"Textures/" + AnsiToWString(normalName);

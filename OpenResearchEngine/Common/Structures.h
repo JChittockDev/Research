@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <unordered_map>
 #include <DirectXCollision.h>
@@ -8,6 +9,10 @@
 #include "Math.h"
 #include "UploadBuffer.h"
 #include "../Models/External/DDSTextureLoader.h"
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+#include <math.h>
 
 #define MaxLights 16
 
@@ -295,9 +300,17 @@ struct Texture
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadHeap = nullptr;
 };
 
-struct Node
+struct AnimationNode
 {
     std::string name;
-    std::string parent;
-    std::vector<std::string> children;
+    std::vector<std::unique_ptr<aiVectorKey>> positionKeys;
+    std::vector<std::unique_ptr<aiQuatKey>> rotationKeys;
+    std::vector<std::unique_ptr<aiVectorKey>> scalingKeys;
+};
+
+struct Animation
+{
+    std::string name;
+    std::unordered_map<std::string, std::unique_ptr<AnimationNode>> animationNodes;
+    float duration;
 };

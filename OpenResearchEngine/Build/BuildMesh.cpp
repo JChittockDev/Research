@@ -2,7 +2,7 @@
 
 void EngineApp::BuildMesh()
 {
-    std::string testFBX = "Models\\test.fbx";
-    Mesh mesh(testFBX, "mixamo.com", md3dDevice, mCommandList, mGeometries, mSkinnedSubsets, mSkinnedMats);
-    mSkinnedMesh[testFBX] = mesh;
+    std::string filename = "Models\\test.fbx";
+    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(filename, md3dDevice, mCommandList, mGeometries, mSkinnedSubsets, mSkinnedMats, mSkeletons, mAnimations, mTransforms);
+    mSkinnedMesh[filename] = std::move(mesh);
 }

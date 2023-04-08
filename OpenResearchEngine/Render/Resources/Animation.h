@@ -2,12 +2,14 @@
 
 #include "Skeleton.h"
 
-struct Animation
+class AnimationController
 {
-    Skeleton* skeleton;
-    aiNode* rootNode;
-    aiAnimation* animation;
+public:
+    std::shared_ptr<Skeleton> skeleton = nullptr;
+    std::shared_ptr<Animation> animation = nullptr;
+    std::shared_ptr<TransformNode> rooNode = nullptr;
     std::vector<DirectX::XMFLOAT4X4> transforms;
+    
     float TimePos = 0.0f;
     bool Loop = true;
     float Speed = 1.0f;
@@ -19,14 +21,14 @@ struct Animation
 
         if (Loop)
         {
-            float duration = animation->mDuration;
+            float duration = animation->duration;
             if (TimePos > duration)
             {
                 TimePos = 0.0;
             }
         }
         
-        skeleton->GetTransforms(TimePos, rootNode, animation, aiMatrix4x4(), rootNode->mTransformation.Inverse(), transforms);
+        skeleton->GetTransforms(TimePos, rooNode, animation, DirectX::XMMatrixIdentity(), DirectX::XMMatrixInverse(nullptr, rooNode->transform), transforms);
 
     }
 };

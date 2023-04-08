@@ -182,5 +182,8 @@
     <ClInclude Include="Render\Resources\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Render\Resources\TransformNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

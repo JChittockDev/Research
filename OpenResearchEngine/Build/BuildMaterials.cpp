@@ -48,13 +48,13 @@ void EngineApp::BuildMaterials()
 	for (UINT i = 0; i < mSkinnedMats.size(); ++i)
 	{
 		auto mat = std::make_unique<Material>();
-		mat->Name = mSkinnedMats[i].Name;
+		mat->Name = mSkinnedMats[i]->Name;
 		mat->MatCBIndex = matCBIndex++;
 		mat->DiffuseSrvHeapIndex = srvHeapIndex++;
 		mat->NormalSrvHeapIndex = srvHeapIndex++;
-		mat->DiffuseAlbedo = mSkinnedMats[i].DiffuseAlbedo;
-		mat->FresnelR0 = mSkinnedMats[i].FresnelR0;
-		mat->Roughness = mSkinnedMats[i].Roughness;
+		mat->DiffuseAlbedo = mSkinnedMats[i]->DiffuseAlbedo;
+		mat->FresnelR0 = mSkinnedMats[i]->FresnelR0;
+		mat->Roughness = mSkinnedMats[i]->Roughness;
 
 		mMaterials[mat->Name] = std::move(mat);
 	}

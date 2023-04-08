@@ -57,7 +57,7 @@ void Mesh::ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Ski
 	}
 }
 
-void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, Skeleton* mSkeleton, std::vector<SkinnedVertex>& vertices)
+void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared_ptr<Skeleton>& mSkeleton, std::vector<SkinnedVertex>& vertices)
 {
 	int vertexCounter = 0;
 	std::vector<SkinWeight> dynamicWeights(vertices.size());
@@ -74,7 +74,7 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, Skeleton* m
 			{
 				int vertexID = vertexCounter + weights[w].mVertexId;
 				dynamicWeights[vertexID].BoneWeights.push_back(weights[w].mWeight);
-				dynamicWeights[vertexID].BoneIndices.push_back(mSkeleton->bones[boneName].index);
+				dynamicWeights[vertexID].BoneIndices.push_back(mSkeleton->bones[boneName]->index);
 			}
 		}
 		vertexCounter += numVertices;
@@ -103,27 +103,27 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, Skeleton* m
 
 }
 
-void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string, std::vector<Subset>>& subsets, const std::string& mesh)
+void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, const std::string& mesh)
 {
 	int vertexCounter = 0;
 	int indexCounter = 0;
 	for (UINT i = 0; i < scene->mNumMeshes; ++i)
 	{
-		Subset sb;
+		std::shared_ptr<Subset> sb = std::make_shared<Subset>();
 		int numVertices = scene->mMeshes[i]->mNumVertices;
 		int numIndicies = scene->mMeshes[i]->mNumFaces * 3;
 
-		sb.Id = i;
-		sb.VertexStart = vertexCounter;
-		sb.VertexCount = numVertices;
-		sb.IndexStart = indexCounter;
-		sb.IndexCount = numIndicies;
-		sb.MaterialIndex = scene->mMeshes[i]->mMaterialIndex;
-		sb.MeshName = mesh;
+		sb->Id = i;
+		sb->VertexStart = vertexCounter;
+		sb->VertexCount = numVertices;
+		sb->IndexStart = indexCounter;
+		sb->IndexCount = numIndicies;
+		sb->MaterialIndex = scene->mMeshes[i]->mMaterialIndex;
+		sb->MeshName = mesh;
 		vertexCounter += numVertices;
 		indexCounter += numIndicies;
 
-		subsets[mesh].push_back(sb);
+		subsets[mesh].push_back(std::move(sb));
 	}
 }
 
@@ -141,22 +141,22 @@ void Mesh::ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<US
 	}
 }
 
-void Mesh::ReadMaterials(const aiScene* scene, std::vector<ModelMaterial>& mats)
+void Mesh::ReadMaterials(const aiScene* scene, std::vector<std::shared_ptr<ModelMaterial>>& mats)
 {
 	unsigned int numMaterials = scene->mNumMaterials;
-	mats.resize(numMaterials);
-
 	aiMaterial** materials = scene->mMaterials;
 	for (UINT i = 0; i < numMaterials; ++i)
 	{
-		mats[i].Name = std::string(materials[i]->GetName().C_Str());
-		mats[i].MaterialTypeName = "Skinned";
-		mats[i].DiffuseMapName = "default_diffuse.dds";
-		mats[i].NormalMapName = "default_nmap.dds";
+		std::shared_ptr<ModelMaterial> mat = std::make_shared<ModelMaterial>();
+		mat->Name = std::string(materials[i]->GetName().C_Str());
+		mat->MaterialTypeName = "Skinned";
+		mat->DiffuseMapName = "default_diffuse.dds";
+		mat->NormalMapName = "default_nmap.dds";
+		mats.push_back(std::move(mat));
 	}
 }
 
-void Mesh::ReadSkeleton(const aiScene* scene, Skeleton* mSkeleton)
+void Mesh::ReadSkeleton(const aiScene* scene, std::shared_ptr<Skeleton>& mSkeleton)
 {
 	unsigned int numMesh = scene->mNumMeshes;
 	aiMesh** meshList = scene->mMeshes;
@@ -171,41 +171,92 @@ void Mesh::ReadSkeleton(const aiScene* scene, Skeleton* mSkeleton)
 
 			if (!exists)
 			{
-				aiMatrix4x4& offsetMatrix = meshList[x]->mBones[i]->mOffsetMatrix;
-				Joint joint(boneName, boneCount, offsetMatrix);
-				mSkeleton->bones[boneName] = joint;
+				DirectX::XMMATRIX inverseBindMatrix = DirectX::XMMATRIX(&meshList[x]->mBones[i]->mOffsetMatrix.a1);
+				std::shared_ptr<Joint> joint = std::make_shared<Joint>(boneName, boneCount, inverseBindMatrix);
+				mSkeleton->bones[boneName] = std::move(joint);
 				boneCount += 1;
 			}
 		}
 	}
 }
 
-void Mesh::ReadAnimations(const aiScene* scene, std::unordered_map<std::string, aiAnimation*> animations)
+void Mesh::ReadAnimations(const aiScene* scene, std::unordered_map<std::string, std::shared_ptr<Animation>>& animations)
 {
 	unsigned int numAnim = scene->mNumAnimations;
 
 	for (UINT x = 0; x < numAnim; ++x)
 	{
-		animations[scene->mAnimations[x]->mName.C_Str()] = scene->mAnimations[x];
-	}
-}
+		std::shared_ptr<Animation> animation = std::make_shared<Animation>();
+		animation->name = scene->mAnimations[x]->mName.data;
+		animation->duration = scene->mAnimations[x]->mDuration;
 
-int Mesh::FindAnimIndex(int numAnim, aiAnimation** animations, const std::string& animationName)
-{
-	for (unsigned int i = 0; i < numAnim; ++i)
-	{
-		if (animations[i]->mName.data == animationName)
+		for (UINT y = 0; y < scene->mAnimations[x]->mNumChannels; ++y)
 		{
-			return i;
+			std::unique_ptr<AnimationNode> animationNode = std::make_unique<AnimationNode>();
+			animationNode->name = scene->mAnimations[x]->mChannels[y]->mNodeName.data;
+
+			for (UINT z = 0; z < scene->mAnimations[x]->mChannels[y]->mNumPositionKeys; ++z)
+			{
+				std::unique_ptr<aiVectorKey> positionKey = std::make_unique<aiVectorKey>(scene->mAnimations[x]->mChannels[y]->mPositionKeys[z]);
+				animationNode->positionKeys.push_back(std::move(positionKey));
+			}
+
+			for (UINT z = 0; z < scene->mAnimations[x]->mChannels[y]->mNumRotationKeys; ++z)
+			{
+				std::unique_ptr<aiQuatKey> rotationKey = std::make_unique<aiQuatKey>(scene->mAnimations[x]->mChannels[y]->mRotationKeys[z]);
+				animationNode->rotationKeys.push_back(std::move(rotationKey));
+			}
+
+			for (UINT z = 0; z < scene->mAnimations[x]->mChannels[y]->mNumScalingKeys; ++z)
+			{
+				std::unique_ptr<aiVectorKey> scaleKey = std::make_unique<aiVectorKey>(scene->mAnimations[x]->mChannels[y]->mScalingKeys[z]);
+				animationNode->scalingKeys.push_back(std::move(scaleKey));
+			}
+		
+			animation->animationNodes[animationNode->name] = (std::move(animationNode));
 		}
+
+		animations[scene->mAnimations[x]->mName.data] = std::move(animation);
 	}
-	return 0;
 }
 
-Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, 
-										Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, 
-										std::unordered_map<std::string, std::unique_ptr<MeshGeometry>>& geometries, 
-										std::unordered_map<std::string, std::vector<Subset>>& subsets, std::vector<ModelMaterial>& mats)
+void Mesh::LinkTransformNodes(aiNode* node, std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms)
+{
+	std::string nodeName = node->mName.data;
+	if (node->mParent != nullptr)
+	{
+		transforms[nodeName]->parent = transforms[node->mParent->mName.data];
+	}
+
+	for (UINT x = 0; x < node->mNumChildren; ++x)
+	{
+		std::string childNodeName = node->mChildren[x]->mName.data;
+		transforms[nodeName]->children.push_back(transforms[childNodeName]);
+		LinkTransformNodes(node->mChildren[x], transforms);
+	}
+}
+
+void Mesh::ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms)
+{
+	std::shared_ptr<TransformNode> transformNode = std::make_shared<TransformNode>();
+	transformNode->name = node->mName.data;
+	transformNode->transform = DirectX::XMMATRIX(&node->mTransformation.a1);
+	transforms[transformNode->name] = (std::move(transformNode));
+
+	for (UINT x = 0; x < node->mNumChildren; ++x)
+	{
+		ReadTransformNodes(node->mChildren[x], transforms);
+	}
+}
+
+Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, 
+			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, 
+			std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
+			std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, 
+			std::vector<std::shared_ptr<ModelMaterial>>& mats,
+			std::unordered_map<std::string, std::shared_ptr<Skeleton>>& skeletons,
+			std::unordered_map<std::string, std::shared_ptr<Animation>>& animations,
+			std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms)
 {
 	std::vector<SkinnedVertex> vertices;
 	std::vector<std::uint16_t> indices;
@@ -213,24 +264,18 @@ Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID
 	Assimp::Importer* imp = new Assimp::Importer();
 	scene = imp->ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
 	
-	Skeleton* mSkeleton = new Skeleton();
+	std::shared_ptr<Skeleton> mSkeleton = std::make_shared<Skeleton>();
+	mSkeleton->rootNodeName = scene->mRootNode->mName.data;
 	ReadSkeleton(scene, mSkeleton);
 	ReadMaterials(scene, mats);
 	ReadSubsetTable(scene, subsets, filename);
 	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices);
 	ReadSkinningData(scene->mNumMeshes, scene->mMeshes, mSkeleton, vertices);
 	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices);
-
-	mAnimation = new Animation();
-	mAnimation->skeleton = mSkeleton;
-	mAnimation->transforms.resize(mSkeleton->bones.size());
-	mAnimation->TimePos = 0.0f;
-	mAnimation->Speed = 10.0f;
-	mAnimation->Loop = true;
-	mAnimation->rootNode = scene->mRootNode;
-
-	int animationIndex = FindAnimIndex(scene->mNumAnimations, scene->mAnimations, animClip);
-	mAnimation->animation = scene->mAnimations[animationIndex];
+	ReadAnimations(scene, animations);
+	ReadTransformNodes(scene->mRootNode, transforms);
+	LinkTransformNodes(scene->mRootNode, transforms);
+	skeletons[filename] = std::move(mSkeleton);
 
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(SkinnedVertex);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
@@ -259,19 +304,12 @@ Mesh::Mesh(std::string filename, std::string animClip, Microsoft::WRL::ComPtr<ID
 	{
 		SubmeshGeometry submesh;
 		std::string name = "sm_" + std::to_string(i);
-
-		submesh.IndexCount = (UINT)subsets[filename][i].IndexCount;
-		submesh.StartIndexLocation = subsets[filename][i].IndexStart;
-		submesh.BaseVertexLocation = subsets[filename][i].VertexStart;
-		submesh.MaterialIndex = subsets[filename][i].MaterialIndex;
+		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
+		submesh.StartIndexLocation = subsets[filename][i]->IndexStart;
+		submesh.BaseVertexLocation = subsets[filename][i]->VertexStart;
+		submesh.MaterialIndex = subsets[filename][i]->MaterialIndex;
 		geo->DrawArgs[name] = submesh;
 	}
 
 	geometries[geo->Name] = std::move(geo);
-}
-
-void Mesh::UpdateSkinnedCB(float time, std::vector<DirectX::XMFLOAT4X4>& cbTransforms)
-{
-	mAnimation->UpdateSkinnedAnimation(time);
-	cbTransforms = mAnimation->transforms;
 }

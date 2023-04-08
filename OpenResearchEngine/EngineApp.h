@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include "D3D12/D3DApp.h"
 #include "Common/Math.h"
 #include "Common/UploadBuffer.h"
@@ -68,77 +67,67 @@ private:
     std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
 private:
-
+    POINT mLastMousePos;
+    Camera mCamera;
     std::vector<std::unique_ptr<FrameResource>> mFrameResources;
     FrameResource* mCurrFrameResource = nullptr;
     int mCurrFrameResourceIndex = 0;
 
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
-
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
+    CD3DX12_GPU_DESCRIPTOR_HANDLE mNullSrv;
 
-    std::unordered_map<std::string, std::unique_ptr<MeshGeometry>> mGeometries;
-    std::unordered_map<std::string, std::unique_ptr<Material>> mMaterials;
-    std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
+    std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
+    std::unordered_map<std::string, std::shared_ptr<Texture>> mTextures;
+    std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
+    std::unordered_map<std::string, std::shared_ptr<Skeleton>> mSkeletons;
+    std::unordered_map<std::string, std::shared_ptr<Animation>> mAnimations;
+    std::unordered_map<std::string, std::shared_ptr<AnimationController>> mAnimationControllers;
+    std::unordered_map<std::string, std::shared_ptr<Mesh>> mSkinnedMesh;
+    std::unordered_map<std::string, std::shared_ptr<TransformNode>> mTransforms;
+
+    std::vector<std::shared_ptr<ModelMaterial>> mSkinnedMats;
+    std::vector<std::string> mSkinnedTextureNames;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSkinnedSubsets;
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
-
-    std::unordered_map<std::string, std::vector<Subset>> mSkinnedSubsets;
-    std::vector<ModelMaterial> mSkinnedMats;
-    std::vector<std::string> mSkinnedTextureNames;
-    std::unordered_map<std::string, Mesh> mSkinnedMesh;
 
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
 
-    // List of all the render items.
     std::vector<std::unique_ptr<RenderItem>> mAllRitems;
-
-    // Render items divided by PSO.
     std::vector<RenderItem*> mRitemLayer[(int)RenderLayer::Count];
 
     UINT mSkyTexHeapIndex = 0;
     UINT mShadowMapHeapIndex = 0;
     UINT mSsaoHeapIndexStart = 0;
     UINT mSsaoAmbientMapIndex = 0;
-
     UINT mNullCubeSrvIndex = 0;
     UINT mNullTexSrvIndex1 = 0;
     UINT mNullTexSrvIndex2 = 0;
-
-    CD3DX12_GPU_DESCRIPTOR_HANDLE mNullSrv;
-
-    PassConstants mMainPassCB;  // index 0 of pass cbuffer.
-    PassConstants mShadowPassCB;// index 1 of pass cbuffer.
-
     UINT mSkinnedSrvHeapStart = 0;
+    UINT SkinnedCBIndex = 0;
+    UINT ObjectCBIndex = 0;
 
-    Camera mCamera;
-
+    PassConstants mMainPassCB;
+    PassConstants mShadowPassCB;
     std::unique_ptr<ShadowMap> mShadowMap;
-
     std::unique_ptr<Ssao> mSsao;
-
     DirectX::BoundingSphere mSceneBounds;
 
     float mLightNearZ = 0.0f;
     float mLightFarZ = 0.0f;
+    float mLightRotationAngle = 0.0f;
     DirectX::XMFLOAT3 mLightPosW;
     DirectX::XMFLOAT4X4 mLightView = Math::Identity4x4();
     DirectX::XMFLOAT4X4 mLightProj = Math::Identity4x4();
     DirectX::XMFLOAT4X4 mShadowTransform = Math::Identity4x4();
-
-    float mLightRotationAngle = 0.0f;
-    DirectX::XMFLOAT3 mBaseLightDirections[3] = {
+    DirectX::XMFLOAT3 mBaseLightDirections[3] = 
+    {
         DirectX::XMFLOAT3(0.57735f, -0.57735f, 0.57735f),
         DirectX::XMFLOAT3(-0.57735f, -0.57735f, 0.57735f),
         DirectX::XMFLOAT3(0.0f, -0.707f, -0.707f)
     };
     DirectX::XMFLOAT3 mRotatedLightDirections[3];
-
-    POINT mLastMousePos;
-
-    UINT SkinnedCBIndex = 0;
-    UINT ObjectCBIndex = 0;
 };
