@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::LoadTextures()
+void EngineApp::BuildTextures()
 {
     std::vector<std::string> texNames =
     {

@@ -7,13 +7,10 @@
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace DirectX::PackedVector;
-
 const int gNumFrameResources = 3;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
-    PSTR cmdLine, int showCmd)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-    // Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -34,13 +31,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     }
 }
 
-EngineApp::EngineApp(HINSTANCE hInstance)
-    : D3DApp(hInstance)
+EngineApp::EngineApp(HINSTANCE hInstance) : D3DApp(hInstance)
 {
-    // Estimate the scene bounding sphere manually since we know how the scene was constructed.
-    // The grid is the "widest object" with a width of 20 and depth of 30.0f, and centered at
-    // the world space origin.  In general, you need to loop over every world space vertex
-    // position and compute the bounding sphere.
     mSceneBounds.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
     mSceneBounds.Radius = sqrtf(10.0f*10.0f + 15.0f*15.0f);
 }
@@ -53,46 +45,22 @@ EngineApp::~EngineApp()
 
 bool EngineApp::Initialize()
 {
-    if(!D3DApp::Initialize())
-        return false;
+    if(!D3DApp::Initialize()) { return false; }
 
-    // set application settings
-
-    this->mMainWndCaption = L"Open Research Engine";
-
-    // Reset the command list to prep for initialization commands.
+    this->mMainWndCaption = L"GRAPE";
     ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
-	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
- 
-    mShadowMap = std::make_unique<ShadowMap>(md3dDevice.Get(),
-        2048, 2048);
+	mCamera.SetPosition(0.0f, 2.0f, 15.0f);
+    mCamera.RotateY(3.25f);
 
-    mSsao = std::make_unique<Ssao>(
-        md3dDevice.Get(),
-        mCommandList.Get(),
-        mClientWidth, mClientHeight);
-
-    BuildMesh();
-	LoadTextures();
-    BuildRootSignature();
-    BuildSsaoRootSignature();
-	BuildDescriptorHeaps();
-    BuildShadersAndInputLayout();
-    BuildGenericGeometry();
-	BuildMaterials();
-    BuildRenderItems();
-    BuildFrameResources();
-    BuildPSOs();
-
+    mShadowMap = std::make_unique<ShadowMap>(md3dDevice.Get(), 2048, 2048);
+    mSsao = std::make_unique<Ssao>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    BuildRenderAssets();
     mSsao->SetPSOs(mPSOs["ssao"].Get(), mPSOs["ssaoBlur"].Get());
-
-    // Execute the initialization commands.
+    
     ThrowIfFailed(mCommandList->Close());
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-    // Wait until initialization is complete.
     FlushCommandQueue();
 
     return true;
@@ -101,14 +69,11 @@ bool EngineApp::Initialize()
 void EngineApp::OnResize()
 {
     D3DApp::OnResize();
-
 	mCamera.SetLens(0.25f*Math::Pi, AspectRatio(), 1.0f, 1000.0f);
 
     if(mSsao != nullptr)
     {
         mSsao->OnResize(mClientWidth, mClientHeight);
-
-        // Resources changed, so need to rebuild descriptors.
         mSsao->RebuildDescriptors(mDepthStencilBuffer.Get());
     }
 }
@@ -117,12 +82,9 @@ void EngineApp::Update(const GameTimer& gt)
 {
     OnKeyboardInput(gt);
 
-    // Cycle through the circular frame resource array.
     mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
     mCurrFrameResource = mFrameResources[mCurrFrameResourceIndex].get();
 
-    // Has the GPU finished processing the commands of the current frame resource?
-    // If not, wait until the GPU has completed commands up to this fence point.
     if(mCurrFrameResource->Fence != 0 && mFence->GetCompletedValue() < mCurrFrameResource->Fence)
     {
         HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
@@ -130,29 +92,8 @@ void EngineApp::Update(const GameTimer& gt)
         WaitForSingleObject(eventHandle, INFINITE);
         CloseHandle(eventHandle);
     }
-
-    //
-    // Animate the lights (and hence shadows).
-    //
-
-    mLightRotationAngle += 0.1f*gt.DeltaTime();
-
-    XMMATRIX R = XMMatrixRotationY(mLightRotationAngle);
-    for(int i = 0; i < 3; ++i)
-    {
-        XMVECTOR lightDir = XMLoadFloat3(&mBaseLightDirections[i]);
-        lightDir = XMVector3TransformNormal(lightDir, R);
-        XMStoreFloat3(&mRotatedLightDirections[i], lightDir);
-    }
  
-	AnimateMaterials(gt);
-	UpdateObjectCBs(gt);
-    UpdateSkinnedCBs(gt);
-	UpdateMaterialBuffer(gt);
-    UpdateShadowTransform(gt);
-	UpdateMainPassCB(gt);
-    UpdateShadowPassCB(gt);
-    UpdateSsaoCB(gt);
+    UpdateRenderAssets(gt);
 }
 
 void EngineApp::Draw(const GameTimer& gt)
@@ -283,11 +224,6 @@ void EngineApp::Draw(const GameTimer& gt)
     // Because we are on the GPU timeline, the new fence point won't be 
     // set until the GPU finishes processing all the commands prior to this Signal().
     mCommandQueue->Signal(mFence.Get(), mCurrentFence);
-}
- 
-void EngineApp::AnimateMaterials(const GameTimer& gt)
-{
-	
 }
  
 CD3DX12_CPU_DESCRIPTOR_HANDLE EngineApp::GetCpuSrv(int index)const

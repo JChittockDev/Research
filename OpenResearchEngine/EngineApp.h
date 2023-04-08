@@ -29,13 +29,12 @@ private:
     virtual void OnResize()override;
     virtual void Update(const GameTimer& gt)override;
     virtual void Draw(const GameTimer& gt)override;
-
     virtual void OnMouseDown(WPARAM btnState, int x, int y)override;
     virtual void OnMouseUp(WPARAM btnState, int x, int y)override;
     virtual void OnMouseMove(WPARAM btnState, int x, int y)override;
-
     void OnKeyboardInput(const GameTimer& gt);
-    void AnimateMaterials(const GameTimer& gt);
+    
+    void UpdateRenderAssets(const GameTimer& gt);
     void UpdateObjectCBs(const GameTimer& gt);
     void UpdateSkinnedCBs(const GameTimer& gt);
     void UpdateMaterialBuffer(const GameTimer& gt);
@@ -43,8 +42,10 @@ private:
     void UpdateMainPassCB(const GameTimer& gt);
     void UpdateShadowPassCB(const GameTimer& gt);
     void UpdateSsaoCB(const GameTimer& gt);
+    void UpdateLights(const GameTimer& gt);
 
-    void LoadTextures();
+    void BuildRenderAssets();
+    void BuildTextures();
     void BuildMesh();
     void BuildRootSignature();
     void BuildSsaoRootSignature();
@@ -55,6 +56,7 @@ private:
     void BuildFrameResources();
     void BuildMaterials();
     void BuildRenderItems();
+   
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
     void DrawSceneToShadowMap();
     void DrawNormalsAndDepth();

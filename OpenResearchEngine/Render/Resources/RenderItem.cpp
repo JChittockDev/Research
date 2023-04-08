@@ -28,7 +28,7 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 	mAnimationController->animation = animations.at(animationClip);
 	mAnimationController->transforms.resize(mAnimationController->skeleton->bones.size());
 	mAnimationController->TimePos = 0.0f;
-	mAnimationController->Speed = 10.0f;
+	mAnimationController->Speed = 20.0f;
 	mAnimationController->Loop = true;
 	
 	for (UINT i = 0; i < subsets.at(meshName).size(); ++i)

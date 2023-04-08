@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Build\BuildRenderAssets.cpp" />
     <ClCompile Include="Build\BuildDescriptorHeaps.cpp" />
     <ClCompile Include="Build\BuildFrameResources.cpp" />
     <ClCompile Include="Build\BuildMaterials.cpp" />
@@ -101,6 +102,8 @@
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
+    <ClCompile Include="Update\UpdateLights.cpp" />
+    <ClCompile Include="Update\UpdateRenderAssets.cpp" />
     <ClCompile Include="Update\UpdateSkinnedMesh.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
