@@ -253,6 +253,60 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, 
 			std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
 			std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, 
+			std::vector<std::shared_ptr<ModelMaterial>>& mats)
+{
+	std::vector<Vertex> vertices;
+	std::vector<std::uint16_t> indices;
+
+	Assimp::Importer imp;
+	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
+	
+	ReadMaterials(scene, mats);
+	ReadSubsetTable(scene, subsets, filename);
+	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices);
+	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices);
+
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(SkinnedVertex);
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+	auto geo = std::make_unique<MeshGeometry>();
+	geo->Name = filename;
+
+	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+	geo->VertexByteStride = sizeof(SkinnedVertex);
+	geo->VertexBufferByteSize = vbByteSize;
+	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexBufferByteSize = ibByteSize;
+
+	for (UINT i = 0; i < (UINT)subsets[filename].size(); ++i)
+	{
+		SubmeshGeometry submesh;
+		std::string name = "sm_" + std::to_string(i);
+		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
+		submesh.StartIndexLocation = subsets[filename][i]->IndexStart;
+		submesh.BaseVertexLocation = subsets[filename][i]->VertexStart;
+		submesh.MaterialIndex = subsets[filename][i]->MaterialIndex;
+		geo->DrawArgs[name] = submesh;
+	}
+
+	geometries[geo->Name] = std::move(geo);
+}
+
+Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, 
+			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, 
+			std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
+			std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, 
 			std::vector<std::shared_ptr<ModelMaterial>>& mats,
 			std::unordered_map<std::string, std::shared_ptr<Skeleton>>& skeletons,
 			std::unordered_map<std::string, std::shared_ptr<Animation>>& animations,
@@ -261,8 +315,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::vector<SkinnedVertex> vertices;
 	std::vector<std::uint16_t> indices;
 
-	Assimp::Importer* imp = new Assimp::Importer();
-	scene = imp->ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
+	Assimp::Importer imp;
+	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
 	
 	std::shared_ptr<Skeleton> mSkeleton = std::make_shared<Skeleton>();
 	mSkeleton->rootNodeName = scene->mRootNode->mName.data;

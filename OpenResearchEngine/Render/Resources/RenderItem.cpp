@@ -56,7 +56,7 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 
 void RenderItem::BuildRenderItem(const std::string& meshName, const std::string& subMeshName, const std::string& materialName, const DirectX::XMFLOAT3& translation, const DirectX::XMFLOAT4& rotation, const DirectX::XMFLOAT3& scaling,
 									UINT& ObjectCBIndex, const std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometry, const std::unordered_map<std::string, std::shared_ptr<Material>>& materials, 
-									std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms, std::vector<RenderItem*>& renderLayers, std::vector<std::unique_ptr<RenderItem>>& renderItems)
+									std::vector<RenderItem*>& renderLayers, std::vector<std::unique_ptr<RenderItem>>& renderItems)
 {
 	auto ritem = std::make_unique<RenderItem>();
 	DirectX::XMFLOAT4X4& transformMatrix = CreateTransformMatrix(translation, rotation, scaling);
