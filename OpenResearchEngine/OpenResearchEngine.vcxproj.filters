@@ -60,7 +60,7 @@
     <ClCompile Include="Build\BuildMaterials.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildRenderItems.cpp">
+    <ClCompile Include="Build\BuildLevel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\BuildPso.cpp">
