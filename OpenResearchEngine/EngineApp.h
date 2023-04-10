@@ -11,6 +11,7 @@
 #include "Render/Passes/Ssao.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Animation.h"
+#include "Serialize/LevelReader.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -55,7 +56,7 @@ private:
     void BuildPSOs();
     void BuildFrameResources();
     void BuildMaterials();
-    void BuildRenderItems();
+    void BuildLevel();
    
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
     void DrawSceneToShadowMap();

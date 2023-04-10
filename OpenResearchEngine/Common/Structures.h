@@ -3,6 +3,8 @@
 #include <map>
 #include <string>
 #include <unordered_map>
+#include <iostream>
+#include <fstream>
 #include <DirectXCollision.h>
 #include "../D3D12/D3Dx12.h"
 #include "../D3D12/D3DUtil.h"
@@ -313,4 +315,45 @@ struct Animation
     std::string name;
     std::unordered_map<std::string, std::unique_ptr<AnimationNode>> animationNodes;
     float duration;
+};
+
+struct StaticRenderItemData
+{
+    std::string item_name;
+    std::string geometry;
+    std::string mesh;
+    std::string material;
+    std::vector<double> position;
+    std::vector<double> rotation;
+    std::vector<double> scale;
+    int render_layer;
+};
+
+struct SkinnedRenderItemData
+{
+    std::string item_name;
+    std::string geometry;
+    std::string animation;
+    std::string material;
+    std::vector<double> position;
+    std::vector<double> rotation;
+    std::vector<double> scale;
+    int render_layer;
+};
+
+struct RenderItemData
+{
+    std::unique_ptr<std::unordered_map<std::string, StaticRenderItemData>> staticRenderItemDataDict;
+    std::unique_ptr<std::unordered_map<std::string, SkinnedRenderItemData>> skinnedRenderItemDataDict;
+};
+
+struct AssetData
+{
+    std::unique_ptr<RenderItemData> renderItemData;
+};
+
+struct LevelData
+{
+    std::string name;
+    std::unique_ptr<AssetData> data;
 };

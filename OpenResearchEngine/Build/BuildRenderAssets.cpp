@@ -10,7 +10,7 @@ void EngineApp::BuildRenderAssets()
     BuildShadersAndInputLayout();
     BuildGenericGeometry();
     BuildMaterials();
-    BuildRenderItems();
+    BuildLevel();
     BuildFrameResources();
     BuildPSOs();
 }

@@ -1,36 +1,35 @@
 #include "../EngineApp.h"
 
 
-void EngineApp::BuildRenderItems()
+void EngineApp::BuildLevel()
 {
-	RenderItem::BuildRenderItem("shapeGeo", "sphere", "sky", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0), 
-		DirectX::XMFLOAT3(5000.0f, 5000.0f, 5000.0f), ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[(int)RenderLayer::Sky], mAllRitems);
+	LevelReader levelData("E:\\Personal Work\\Research\\OpenResearchEngine\\Levels\\DemoLevel.json");
+	
+	auto& staticRenderItemDataDict = *levelData.level->data->renderItemData->staticRenderItemDataDict;
+	auto& skinnedRenderItemDataDict = *levelData.level->data->renderItemData->skinnedRenderItemDataDict;
 
-	RenderItem::BuildRenderItem("shapeGeo", "quad", "bricks0", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0),
-		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[(int)RenderLayer::Debug], mAllRitems);
-
-	RenderItem::BuildRenderItem("shapeGeo", "box", "bricks0", DirectX::XMFLOAT3(0.0f, 0.5f, 0.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0),
-		DirectX::XMFLOAT3(2.0f, 1.0f, 2.0f), ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[(int)RenderLayer::Opaque], mAllRitems);
-
-	RenderItem::BuildRenderItem("shapeGeo", "grid", "tile0", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0),
-		DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[(int)RenderLayer::Opaque], mAllRitems);
-
-	for (int i = 0; i < 5; ++i)
+	for (const auto& item : staticRenderItemDataDict)
 	{
-		RenderItem::BuildRenderItem("shapeGeo", "cylinder", "bricks0", DirectX::XMFLOAT3(-5.0f, 1.5f, -10.0f + i * 5.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0),
-			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[(int)RenderLayer::Opaque], mAllRitems);
+		const std::string& itemName = item.first;
+		const StaticRenderItemData& staticRenderItemData = item.second;
 
-		RenderItem::BuildRenderItem("shapeGeo", "cylinder", "bricks0", DirectX::XMFLOAT3(5.0f, 1.5f, -10.0f + i * 5.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0),
-			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[(int)RenderLayer::Opaque], mAllRitems);
-
-		RenderItem::BuildRenderItem("shapeGeo", "sphere", "mirror0", DirectX::XMFLOAT3(-5.0f, 3.5f, -10.0f + i * 5.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0),
-			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[(int)RenderLayer::Opaque], mAllRitems);
-
-		RenderItem::BuildRenderItem("shapeGeo", "sphere", "mirror0", DirectX::XMFLOAT3(5.0f, 3.5f, -10.0f + i * 5.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0),
-			DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[(int)RenderLayer::Opaque], mAllRitems);
+		RenderItem::BuildRenderItem(staticRenderItemData.geometry, staticRenderItemData.mesh, staticRenderItemData.material, 
+			DirectX::XMFLOAT3(staticRenderItemData.position[0], staticRenderItemData.position[1], staticRenderItemData.position[2]), 
+			DirectX::XMFLOAT4(staticRenderItemData.rotation[0], staticRenderItemData.rotation[1], staticRenderItemData.rotation[2], staticRenderItemData.rotation[3]),
+			DirectX::XMFLOAT3(staticRenderItemData.scale[0], staticRenderItemData.scale[1], staticRenderItemData.scale[2]),
+			ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[staticRenderItemData.render_layer], mAllRitems);
 	}
 
-	RenderItem::BuildRenderItems("Models\\test.fbx", "mixamo.com", DirectX::XMFLOAT3(0.0f, 0.0f, -5.0f), DirectX::XMFLOAT4(0.0, 0.0, 0.0, 1.0), DirectX::XMFLOAT3(0.05f, 0.05f, -0.05f),
-								ObjectCBIndex, SkinnedCBIndex, mSkinnedSubsets, mGeometries, mMaterials, mSkinnedMats, mSkinnedMesh, mSkeletons, mAnimations, mTransforms, mAnimationControllers,
-								mRitemLayer[(int)RenderLayer::SkinnedOpaque], mAllRitems);
+	for (const auto& item : skinnedRenderItemDataDict)
+	{
+		const std::string& itemName = item.first;
+		const SkinnedRenderItemData& staticRenderItemData = item.second;
+
+		RenderItem::BuildRenderItems(staticRenderItemData.geometry, staticRenderItemData.animation,
+			DirectX::XMFLOAT3(staticRenderItemData.position[0], staticRenderItemData.position[1], staticRenderItemData.position[2]),
+			DirectX::XMFLOAT4(staticRenderItemData.rotation[0], staticRenderItemData.rotation[1], staticRenderItemData.rotation[2], staticRenderItemData.rotation[3]),
+			DirectX::XMFLOAT3(staticRenderItemData.scale[0], staticRenderItemData.scale[1], staticRenderItemData.scale[2]),
+			ObjectCBIndex, SkinnedCBIndex, mSkinnedSubsets, mGeometries, mMaterials, mSkinnedMats, mSkinnedMesh, mSkeletons, mAnimations, 
+			mTransforms, mAnimationControllers, mRitemLayer[staticRenderItemData.render_layer], mAllRitems);
+	}
 }
