@@ -2,6 +2,8 @@
 
 void EngineApp::BuildRenderAssets()
 {
+    BuildLights();
+    BuildShaderPreRequisites();
     BuildMesh();
     BuildTextures();
     BuildRootSignature();

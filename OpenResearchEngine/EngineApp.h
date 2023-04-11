@@ -7,6 +7,7 @@
 #include "Models/Internal/GeometryGenerator.h"
 #include "Render/Resources/FrameResource.h"
 #include "Render/Resources/Mesh.h"
+#include "Shaders/Compiler/ShaderCompiler.h"
 #include "Render/Passes/ShadowMap.h"
 #include "Render/Passes/Ssao.h"
 #include "Render/Resources/RenderItem.h"
@@ -45,6 +46,8 @@ private:
     void UpdateSsaoCB(const GameTimer& gt);
     void UpdateLights(const GameTimer& gt);
 
+    void BuildLights();
+    void BuildShaderPreRequisites();
     void BuildRenderAssets();
     void BuildTextures();
     void BuildMesh();
@@ -58,6 +61,7 @@ private:
     void BuildMaterials();
     void BuildLevel();
    
+    void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights);
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
     void DrawSceneToShadowMap();
     void DrawNormalsAndDepth();
@@ -70,6 +74,8 @@ private:
     std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
 private:
+    DynamicLights dynamicLights;
+
     POINT mLastMousePos;
     Camera mCamera;
     std::vector<std::unique_ptr<FrameResource>> mFrameResources;
@@ -126,11 +132,4 @@ private:
     DirectX::XMFLOAT4X4 mLightView = Math::Identity4x4();
     DirectX::XMFLOAT4X4 mLightProj = Math::Identity4x4();
     DirectX::XMFLOAT4X4 mShadowTransform = Math::Identity4x4();
-    DirectX::XMFLOAT3 mBaseLightDirections[3] = 
-    {
-        DirectX::XMFLOAT3(0.57735f, -0.57735f, 0.57735f),
-        DirectX::XMFLOAT3(-0.57735f, -0.57735f, 0.57735f),
-        DirectX::XMFLOAT3(0.0f, -0.707f, -0.707f)
-    };
-    DirectX::XMFLOAT3 mRotatedLightDirections[3];
 };

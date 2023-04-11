@@ -33,8 +33,8 @@ void EngineApp::UpdateShadowTransform(const GameTimer& gt)
 {
     // Only the first "main" light casts a shadow.
     float bounds = -2.0f * mSceneBounds.Radius;
-    DirectX::XMFLOAT3 fauxPosition = DirectX::XMFLOAT3(bounds * mRotatedLightDirections[0].x, bounds * mRotatedLightDirections[0].y, bounds * mRotatedLightDirections[0].z);
-    DirectX::XMVECTOR lightDir = XMLoadFloat3(&mRotatedLightDirections[0]);
+    DirectX::XMFLOAT3 fauxPosition = DirectX::XMFLOAT3(bounds * mMainPassCB.Lights[0].Direction.x, bounds * mMainPassCB.Lights[0].Direction.y, bounds * mMainPassCB.Lights[0].Direction.z);
+    DirectX::XMVECTOR lightDir = XMLoadFloat3(&mMainPassCB.Lights[0].Direction);
     DirectX::XMVECTOR lightPos = XMLoadFloat3(&fauxPosition);
     DirectX::XMVECTOR targetPos = XMLoadFloat3(&mSceneBounds.Center);
     DirectX::XMVECTOR lightUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);

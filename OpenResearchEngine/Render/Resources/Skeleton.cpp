@@ -1,10 +1,5 @@
 #include "Skeleton.h"
 
-float clamp(const float& f)
-{
-    return (f < 0.0f) ? 0.0f : ((f > 1.0f) ? 1.0f : f);
-}
-
 int Skeleton::FindPositionKey(float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim)
 {
     for (int i = 0; i < pNodeAnim->positionKeys.size() - 1; i++) {
@@ -47,7 +42,7 @@ void Skeleton::CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, st
     int NextPositionIndex = (PositionIndex + 1);
     
     float DeltaTime = (float)(pNodeAnim->positionKeys[NextPositionIndex]->mTime - pNodeAnim->positionKeys[PositionIndex]->mTime);
-    float Factor = clamp((AnimationTime - (float)pNodeAnim->positionKeys[PositionIndex]->mTime) / DeltaTime);
+    float Factor = Math::Clamp((AnimationTime - (float)pNodeAnim->positionKeys[PositionIndex]->mTime) / DeltaTime, 0.0f, 1.0f);
    
     const aiVector3D& Start = pNodeAnim->positionKeys[PositionIndex]->mValue;
     const aiVector3D& End = pNodeAnim->positionKeys[NextPositionIndex]->mValue;
@@ -67,7 +62,7 @@ void Skeleton::CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, 
     int NextRotationIndex = (RotationIndex + 1);
     
     float DeltaTime = (float)(pNodeAnim->rotationKeys[NextRotationIndex]->mTime - pNodeAnim->rotationKeys[RotationIndex]->mTime);
-    float Factor = clamp((AnimationTime - (float)pNodeAnim->rotationKeys[RotationIndex]->mTime) / DeltaTime);
+    float Factor = Math::Clamp((AnimationTime - (float)pNodeAnim->rotationKeys[RotationIndex]->mTime) / DeltaTime, 0.0f, 1.0f);
     
     const aiQuaternion& StartRotationQ = pNodeAnim->rotationKeys[RotationIndex]->mValue;
     const aiQuaternion& EndRotationQ = pNodeAnim->rotationKeys[NextRotationIndex]->mValue;
@@ -87,7 +82,7 @@ void Skeleton::CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, std
     int NextScalingIndex = (ScalingIndex + 1);
     
     float DeltaTime = (float)(pNodeAnim->scalingKeys[NextScalingIndex]->mTime - pNodeAnim->scalingKeys[ScalingIndex]->mTime);
-    float Factor = clamp((AnimationTime - (float)pNodeAnim->scalingKeys[ScalingIndex]->mTime) / DeltaTime);
+    float Factor = Math::Clamp((AnimationTime - (float)pNodeAnim->scalingKeys[ScalingIndex]->mTime) / DeltaTime, 0.0f, 1.0f);
     
     const aiVector3D& Start = pNodeAnim->scalingKeys[ScalingIndex]->mValue;
     const aiVector3D& End = pNodeAnim->scalingKeys[NextScalingIndex]->mValue;
