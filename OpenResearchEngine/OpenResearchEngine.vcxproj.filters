@@ -138,9 +138,6 @@
     <ClCompile Include="Shaders\Compiler\ShaderCompiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildShaderPreRequisites.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Build\BuildLights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

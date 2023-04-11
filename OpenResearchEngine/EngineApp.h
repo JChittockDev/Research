@@ -47,7 +47,6 @@ private:
     void UpdateLights(const GameTimer& gt);
 
     void BuildLights();
-    void BuildShaderPreRequisites();
     void BuildRenderAssets();
     void BuildTextures();
     void BuildMesh();
@@ -95,12 +94,11 @@ private:
     std::unordered_map<std::string, std::shared_ptr<AnimationController>> mAnimationControllers;
     std::unordered_map<std::string, std::shared_ptr<Mesh>> mSkinnedMesh;
     std::unordered_map<std::string, std::shared_ptr<TransformNode>> mTransforms;
-
-    std::vector<std::shared_ptr<ModelMaterial>> mSkinnedMats;
-    std::vector<std::string> mSkinnedTextureNames;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSkinnedSubsets;
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
+    std::vector<std::shared_ptr<ModelMaterial>> mSkinnedMats;
+    std::vector<std::string> mSkinnedTextureNames;
 
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;

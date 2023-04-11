@@ -86,7 +86,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Build\BuildLights.cpp" />
-    <ClCompile Include="Build\BuildShaderPreRequisites.cpp" />
     <ClCompile Include="Build\BuildRenderAssets.cpp" />
     <ClCompile Include="Build\BuildDescriptorHeaps.cpp" />
     <ClCompile Include="Build\BuildFrameResources.cpp" />

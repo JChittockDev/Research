@@ -2,21 +2,41 @@
 
 void EngineApp::BuildShadersAndInputLayout()
 {
-    const D3D_SHADER_MACRO alphaTestDefines[] =
-    {
-        "ALPHA_TEST", "1",
-        NULL, NULL
-    };
+    std::string numDirectionalLights = std::to_string(dynamicLights.DirectionalLights.size());
+    std::string numPointLights = std::to_string(dynamicLights.PointLights.size());
+    std::string numSpotLights = std::to_string(dynamicLights.SpotLights.size());
 
-    const D3D_SHADER_MACRO skinnedDefines[] =
-    {
-        "SKINNED", "1",
-        NULL, NULL
-    };
+    D3D_SHADER_MACRO directionalLightMacro;
+    directionalLightMacro.Name = "NUM_DIR_LIGHTS";
+    directionalLightMacro.Definition = numDirectionalLights.c_str();
+
+    D3D_SHADER_MACRO pointLightMacro;
+    pointLightMacro.Name = "NUM_POINT_LIGHTS";
+    pointLightMacro.Definition = numPointLights.c_str();
+
+    D3D_SHADER_MACRO spotLightMacro;
+    spotLightMacro.Name = "NUM_SPOT_LIGHTS";
+    spotLightMacro.Definition = numSpotLights.c_str();
+
+    D3D_SHADER_MACRO skinningMacro;
+    skinningMacro.Name = "SKINNED";
+    skinningMacro.Definition = "1";
+
+    D3D_SHADER_MACRO alphaMacro;
+    alphaMacro.Name = "ALPHA_TEST";
+    alphaMacro.Definition = "1";
+
+    D3D_SHADER_MACRO null;
+    null.Name = NULL;
+    null.Definition = NULL;
+
+    const D3D_SHADER_MACRO opaqueDefines[4] = {directionalLightMacro, pointLightMacro, spotLightMacro, null};
+    const D3D_SHADER_MACRO alphaTestDefines[2] = {alphaMacro, null};
+    const D3D_SHADER_MACRO skinnedDefines[2] = {skinningMacro, null};
 
     mShaders["standardVS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["skinnedVS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", skinnedDefines, "VS", "vs_5_1");
-    mShaders["opaquePS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "PS", "ps_5_1");
+    mShaders["opaquePS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", opaqueDefines, "PS", "ps_5_1");
 
     mShaders["shadowVS"] = d3dUtil::CompileShader(L"Shaders\\Shadows.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["skinnedShadowVS"] = d3dUtil::CompileShader(L"Shaders\\Shadows.hlsl", skinnedDefines, "VS", "vs_5_1");
