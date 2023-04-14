@@ -78,13 +78,11 @@ void EngineApp::BuildPSOs()
     skinnedSmapPsoDesc.InputLayout = { mSkinnedInputLayout.data(), (UINT)mSkinnedInputLayout.size() };
     skinnedSmapPsoDesc.VS =
     {
-        reinterpret_cast<BYTE*>(mShaders["skinnedShadowVS"]->GetBufferPointer()),
-        mShaders["skinnedShadowVS"]->GetBufferSize()
+        reinterpret_cast<BYTE*>(mShaders["skinnedShadowVS"]->GetBufferPointer()), mShaders["skinnedShadowVS"]->GetBufferSize()
     };
     skinnedSmapPsoDesc.PS =
     {
-        reinterpret_cast<BYTE*>(mShaders["shadowOpaquePS"]->GetBufferPointer()),
-        mShaders["shadowOpaquePS"]->GetBufferSize()
+        reinterpret_cast<BYTE*>(mShaders["shadowOpaquePS"]->GetBufferPointer()),mShaders["shadowOpaquePS"]->GetBufferSize()
     };
     ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&skinnedSmapPsoDesc, IID_PPV_ARGS(&mPSOs["skinnedShadow_opaque"])));
 

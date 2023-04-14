@@ -46,6 +46,10 @@ private:
     void UpdateSsaoCB(const GameTimer& gt);
     void UpdateLights(const GameTimer& gt);
 
+    void UpdateShadowPassCB2(const GameTimer& gt);
+    void UpdateShadowTransform2(const GameTimer& gt);
+
+
     void BuildLights();
     void BuildRenderAssets();
     void BuildTextures();
@@ -63,6 +67,7 @@ private:
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights);
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
     void DrawSceneToShadowMap();
+    void DrawSceneToShadowMap2();
     void DrawNormalsAndDepth();
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuSrv(int index)const;
@@ -108,6 +113,7 @@ private:
 
     UINT mSkyTexHeapIndex = 0;
     UINT mShadowMapHeapIndex = 0;
+    UINT mShadowMapHeapIndex2 = 0;
     UINT mSsaoHeapIndexStart = 0;
     UINT mSsaoAmbientMapIndex = 0;
     UINT mNullCubeSrvIndex = 0;
@@ -120,6 +126,10 @@ private:
     PassConstants mMainPassCB;
     PassConstants mShadowPassCB;
     std::unique_ptr<ShadowMap> mShadowMap;
+
+    PassConstants mShadowPassCB2;
+    std::unique_ptr<ShadowMap> mShadowMap2;
+
     std::unique_ptr<Ssao> mSsao;
     DirectX::BoundingSphere mSceneBounds;
 
@@ -130,4 +140,12 @@ private:
     DirectX::XMFLOAT4X4 mLightView = Math::Identity4x4();
     DirectX::XMFLOAT4X4 mLightProj = Math::Identity4x4();
     DirectX::XMFLOAT4X4 mShadowTransform = Math::Identity4x4();
+
+    float mLightNearZ2 = 0.0f;
+    float mLightFarZ2 = 0.0f;
+    float mLightRotationAngle2 = 0.0f;
+    DirectX::XMFLOAT3 mLightPosW2;
+    DirectX::XMFLOAT4X4 mLightView2 = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 mLightProj2 = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 mShadowTransform2 = Math::Identity4x4();
 };

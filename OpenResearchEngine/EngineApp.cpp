@@ -54,6 +54,7 @@ bool EngineApp::Initialize()
     mCamera.RotateY(3.25f);
 
     mShadowMap = std::make_unique<ShadowMap>(md3dDevice.Get(), 2048, 2048);
+    mShadowMap2 = std::make_unique<ShadowMap>(md3dDevice.Get(), 2048, 2048);
     mSsao = std::make_unique<Ssao>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
     BuildRenderAssets();
     mSsao->SetPSOs(mPSOs["ssao"].Get(), mPSOs["ssaoBlur"].Get());
@@ -131,6 +132,7 @@ void EngineApp::Draw(const GameTimer& gt)
     mCommandList->SetGraphicsRootDescriptorTable(5, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
     DrawSceneToShadowMap();
+    DrawSceneToShadowMap2();
 
 	//
 	// Normal/depth pass.

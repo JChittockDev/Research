@@ -97,6 +97,7 @@
     <ClCompile Include="Build\BuildShaders.cpp" />
     <ClCompile Include="Build\BuildSSAORootSignature.cpp" />
     <ClCompile Include="Build\BuildTextures.cpp" />
+    <ClCompile Include="Draw\DrawShadowMap2.cpp" />
     <ClCompile Include="Objects\Camera.cpp" />
     <ClCompile Include="D3D12\D3DApp.cpp" />
     <ClCompile Include="D3D12\D3DUtil.cpp" />
@@ -107,6 +108,7 @@
     <ClCompile Include="Shaders\Compiler\ShaderCompiler.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
+    <ClCompile Include="Update\UpdateShadowPass2.cpp" />
     <ClCompile Include="Update\UpdateSkinnedMesh.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
