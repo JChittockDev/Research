@@ -34,8 +34,9 @@ struct VertexOut
 {
 	float4 PosH    : SV_POSITION;
     float4 ShadowPosH : POSITION0;
-    float4 SsaoPosH   : POSITION1;
-    float3 PosW    : POSITION2;
+    float4 ShadowPosH2 : POSITION1;
+    float4 SsaoPosH   : POSITION2;
+    float3 PosW    : POSITION3;
     float3 NormalW : NORMAL;
 	float3 TangentW : TANGENT;
 	float2 TexC    : TEXCOORD;
@@ -96,7 +97,8 @@ VertexOut VS(VertexIn vin)
 
     // Generate projective tex-coords to project shadow map onto scene.
     vout.ShadowPosH = mul(posW, gShadowTransform);
-	
+    vout.ShadowPosH2 = mul(posW, gShadowTransform2);
+    
     return vout;
 }
 
@@ -142,7 +144,7 @@ float4 PS(VertexOut pin) : SV_Target
     // Only the first light casts a shadow.
     float shadowFactor[MaxLights];
     shadowFactor[0] = CalcShadowFactor(pin.ShadowPosH, gShadowMap);
-    shadowFactor[1] = CalcShadowFactor(pin.ShadowPosH, gShadowMap2);
+    shadowFactor[1] = CalcShadowFactor(pin.ShadowPosH2, gShadowMap2);
     shadowFactor[2] = 0.0;
     shadowFactor[3] = 0.0;
 

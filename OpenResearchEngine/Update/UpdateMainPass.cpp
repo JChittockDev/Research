@@ -19,6 +19,7 @@ void EngineApp::UpdateMainPassCB(const GameTimer& gt)
 
 	DirectX::XMMATRIX viewProjTex = XMMatrixMultiply(viewProj, T);
 	DirectX::XMMATRIX shadowTransform = XMLoadFloat4x4(&mShadowTransform);
+	DirectX::XMMATRIX shadowTransform2 = XMLoadFloat4x4(&mShadowTransform2);
 
 	XMStoreFloat4x4(&mMainPassCB.View, XMMatrixTranspose(view));
 	XMStoreFloat4x4(&mMainPassCB.InvView, XMMatrixTranspose(invView));
@@ -28,6 +29,7 @@ void EngineApp::UpdateMainPassCB(const GameTimer& gt)
 	XMStoreFloat4x4(&mMainPassCB.InvViewProj, XMMatrixTranspose(invViewProj));
 	XMStoreFloat4x4(&mMainPassCB.ViewProjTex, XMMatrixTranspose(viewProjTex));
 	XMStoreFloat4x4(&mMainPassCB.ShadowTransform, XMMatrixTranspose(shadowTransform));
+	XMStoreFloat4x4(&mMainPassCB.ShadowTransform2, XMMatrixTranspose(shadowTransform2));
 	mMainPassCB.EyePosW = mCamera.GetPosition3f();
 	mMainPassCB.RenderTargetSize = DirectX::XMFLOAT2((float)mClientWidth, (float)mClientHeight);
 	mMainPassCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mClientWidth, 1.0f / mClientHeight);

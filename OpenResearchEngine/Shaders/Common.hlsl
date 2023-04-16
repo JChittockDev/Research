@@ -79,6 +79,7 @@ cbuffer cbPass : register(b2)
     float4x4 gInvViewProj;
     float4x4 gViewProjTex;
     float4x4 gShadowTransform;
+    float4x4 gShadowTransform2;
     float3 gEyePosW;
     float cbPerObjectPad1;
     float2 gRenderTargetSize;
