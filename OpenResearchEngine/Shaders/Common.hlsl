@@ -32,22 +32,7 @@ struct MaterialData
 
 TextureCube gCubeMap : register(t0);
 
-Texture2D gShadowMap1 : register(t1);
-Texture2D gShadowMap2 : register(t2);
-Texture2D gShadowMap3 : register(t3);
-Texture2D gShadowMap4 : register(t4);
-Texture2D gShadowMap5 : register(t5);
-Texture2D gShadowMap6 : register(t6);
-Texture2D gShadowMap7 : register(t7);
-Texture2D gShadowMap8 : register(t8);
-Texture2D gShadowMap9 : register(t9);
-Texture2D gShadowMap10 : register(t10);
-Texture2D gShadowMap11 : register(t11);
-Texture2D gShadowMap12 : register(t12);
-Texture2D gShadowMap13 : register(t13);
-Texture2D gShadowMap14 : register(t14);
-Texture2D gShadowMap15 : register(t15);
-Texture2D gShadowMap16 : register(t16);
+Texture2D gShadowMap[16] : register(t1);
 
 Texture2D gSsaoMap   : register(t17);
 

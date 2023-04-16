@@ -35,7 +35,6 @@ struct VertexOut
 	float4 PosH    : SV_POSITION;
     float4 SsaoPosH   : POSITION1;
     float3 PosW    : POSITION2;
-    float4 PosL : POSITION3;
     float3 NormalW : NORMAL;
 	float3 TangentW : TANGENT;
 	float2 TexC    : TEXCOORD;
@@ -94,8 +93,6 @@ VertexOut VS(VertexIn vin)
 	float4 texC = mul(float4(vin.TexC, 0.0f, 1.0f), gTexTransform);
 	vout.TexC = mul(texC, matData.MatTransform).xy;
     
-    vout.PosL = posW;
-    
     return vout;
 }
 
@@ -141,10 +138,10 @@ float4 PS(VertexOut pin) : SV_Target
     // Only the first light casts a shadow.
     float shadowFactor[MaxLights];
     
-    shadowFactor[0] = CalcShadowFactor(mul(pin.PosL, gShadowTransform[0]), gShadowMap1);
-    shadowFactor[1] = CalcShadowFactor(mul(pin.PosL, gShadowTransform[1]), gShadowMap2);
-    shadowFactor[2] = CalcShadowFactor(mul(pin.PosL, gShadowTransform[2]), gShadowMap3);
-    shadowFactor[3] = 0.0;
+    for (int i = 0; i < (NUM_DIR_LIGHTS + NUM_POINT_LIGHTS + NUM_SPOT_LIGHTS); ++i)
+    {
+        shadowFactor[i] = CalcShadowFactor(mul(float4(pin.PosW, 1.0), gShadowTransform[i]), gShadowMap[i]);
+    }
 
     const float shininess = (1.0f - roughness) * normalMapSample.a;
     Material mat = { diffuseAlbedo, fresnelR0, shininess };
