@@ -122,7 +122,7 @@ float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, floa
 //---------------------------------------------------------------------------------------
 //#define SMAP_SIZE = (2048.0f)
 //#define SMAP_DX = (1.0f / SMAP_SIZE)
-float CalcShadowFactor(float4 shadowPosH)
+float CalcShadowFactor(float4 shadowPosH, Texture2D shadowMap)
 {
     // Complete projection by doing division by w.
     shadowPosH.xyz /= shadowPosH.w;
@@ -131,7 +131,7 @@ float CalcShadowFactor(float4 shadowPosH)
     float depth = shadowPosH.z;
 
     uint width, height, numMips;
-    gShadowMap.GetDimensions(0, width, height, numMips);
+    shadowMap.GetDimensions(0, width, height, numMips);
 
     // Texel size.
     float dx = 1.0f / (float)width;
@@ -147,7 +147,7 @@ float CalcShadowFactor(float4 shadowPosH)
     [unroll]
     for(int i = 0; i < 9; ++i)
     {
-        percentLit += gShadowMap.SampleCmpLevelZero(gsamShadow,
+        percentLit += shadowMap.SampleCmpLevelZero(gsamShadow,
             shadowPosH.xy + offsets[i], depth).r;
     }
     
