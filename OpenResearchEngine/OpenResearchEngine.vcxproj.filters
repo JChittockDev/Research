@@ -141,10 +141,7 @@
     <ClCompile Include="Build\BuildLights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Update\UpdateShadowPass2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Draw\DrawShadowMap2.cpp">
+    <ClCompile Include="Build\BuildRenderPasses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

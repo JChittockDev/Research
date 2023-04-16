@@ -38,11 +38,18 @@ struct SkinnedConstants
 struct Light
 {
     DirectX::XMFLOAT3 Strength = { 0.0f, 0.0f, 0.0f };
-    float FalloffStart = 1.0f;                          // point/spot light only
-    DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f };// directional/spot light only
-    float FalloffEnd = 10.0f;                           // point/spot light only
-    DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
-    float SpotPower = 64.0f;                            // spot light only
+    DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT3 LocalPosition = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT3 WorldPosition = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT4X4 ViewMatrix = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 ProjectionMatrix = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 ViewProjectionMatrix = Math::Identity4x4();
+    
+    float FalloffStart = 1.0f;
+    float FalloffEnd = 10.0f;
+    float SpotPower = 64.0f;
+    float NearZ = 0.0f;
+    float FarZ = 0.0f;
 };
 
 class DynamicLights
@@ -51,6 +58,7 @@ public:
     std::vector<Light> DirectionalLights;
     std::vector<Light> PointLights;
     std::vector<Light> SpotLights;
+    int GetNumLights() { return (int)(DirectionalLights.size() + PointLights.size() + SpotLights.size()); }
 };
 
 struct PassConstants
@@ -62,8 +70,7 @@ struct PassConstants
     DirectX::XMFLOAT4X4 ViewProj = Math::Identity4x4();
     DirectX::XMFLOAT4X4 InvViewProj = Math::Identity4x4();
     DirectX::XMFLOAT4X4 ViewProjTex = Math::Identity4x4();
-    DirectX::XMFLOAT4X4 ShadowTransform = Math::Identity4x4();
-    DirectX::XMFLOAT4X4 ShadowTransform2 = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 LightTransforms[MaxLights];
     DirectX::XMFLOAT3 EyePosW = { 0.0f, 0.0f, 0.0f };
     float cbPerObjectPad1 = 0.0f;
     DirectX::XMFLOAT2 RenderTargetSize = { 0.0f, 0.0f };

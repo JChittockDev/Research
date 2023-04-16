@@ -31,13 +31,28 @@ struct MaterialData
 };
 
 TextureCube gCubeMap : register(t0);
-Texture2D gShadowMap : register(t1);
+Texture2D gShadowMap1 : register(t1);
 Texture2D gShadowMap2 : register(t2);
-Texture2D gSsaoMap   : register(t3);
+Texture2D gShadowMap3 : register(t3);
+Texture2D gShadowMap4 : register(t4);
+Texture2D gShadowMap5 : register(t5);
+Texture2D gShadowMap6 : register(t6);
+Texture2D gShadowMap7 : register(t7);
+Texture2D gShadowMap8 : register(t8);
+Texture2D gShadowMap9 : register(t9);
+Texture2D gShadowMap10 : register(t10);
+Texture2D gShadowMap11 : register(t11);
+Texture2D gShadowMap12 : register(t12);
+Texture2D gShadowMap13 : register(t13);
+Texture2D gShadowMap14 : register(t14);
+Texture2D gShadowMap15 : register(t15);
+Texture2D gShadowMap16 : register(t16);
+
+Texture2D gSsaoMap   : register(t17);
 
 // An array of textures, which is only supported in shader model 5.1+.  Unlike Texture2DArray, the textures
 // in this array can be different sizes and formats, making it more flexible than texture arrays.
-Texture2D gTextureMaps[48] : register(t4);
+Texture2D gTextureMaps[48] : register(t18);
 
 // Put in space1, so the texture array does not overlap with these resources.  
 // The texture array will occupy registers t0, t1, ..., t3 in space0. 
@@ -78,8 +93,7 @@ cbuffer cbPass : register(b2)
     float4x4 gViewProj;
     float4x4 gInvViewProj;
     float4x4 gViewProjTex;
-    float4x4 gShadowTransform;
-    float4x4 gShadowTransform2;
+    float4x4 gShadowTransform[MaxLights];
     float3 gEyePosW;
     float cbPerObjectPad1;
     float2 gRenderTargetSize;
