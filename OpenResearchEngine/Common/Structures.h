@@ -45,12 +45,23 @@ struct Light
     float SpotPower = 64.0f;                            // spot light only
 };
 
+struct LightTransform
+{
+    DirectX::XMFLOAT4X4 ViewMatrix = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 ProjectionMatrix = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 ViewProjectionMatrix = Math::Identity4x4();
+    float NearZ = 0.0f;
+    float FarZ = 0.0f;
+};
+
 class DynamicLights
 {
 public:
     std::vector<Light> DirectionalLights;
     std::vector<Light> PointLights;
     std::vector<Light> SpotLights;
+    std::vector<LightTransform> LightTransforms;
+    int GetNumLights() { return (int)(DirectionalLights.size() + PointLights.size() + SpotLights.size()); }
 };
 
 struct PassConstants
@@ -62,8 +73,7 @@ struct PassConstants
     DirectX::XMFLOAT4X4 ViewProj = Math::Identity4x4();
     DirectX::XMFLOAT4X4 InvViewProj = Math::Identity4x4();
     DirectX::XMFLOAT4X4 ViewProjTex = Math::Identity4x4();
-    DirectX::XMFLOAT4X4 ShadowTransform = Math::Identity4x4();
-    DirectX::XMFLOAT4X4 ShadowTransform2 = Math::Identity4x4();
+    DirectX::XMFLOAT4X4 LightTransforms[MaxLights];
     DirectX::XMFLOAT3 EyePosW = { 0.0f, 0.0f, 0.0f };
     float cbPerObjectPad1 = 0.0f;
     DirectX::XMFLOAT2 RenderTargetSize = { 0.0f, 0.0f };

@@ -45,8 +45,9 @@ void EngineApp::BuildLights()
 
 	Light light3;
 	light3.Direction = DirectX::XMFLOAT3(0.0f, -0.707f, -0.707f);
-	light3.Strength = DirectX::XMFLOAT3(0.2f, 0.2f, 0.2f);
+	light3.Strength = DirectX::XMFLOAT3(0.65f, 0.65f, 0.65f);
 	dynamicLights.DirectionalLights.push_back(light3);
 
     SetLights(dynamicLights.DirectionalLights, dynamicLights.PointLights, dynamicLights.SpotLights);
+    dynamicLights.LightTransforms.resize(dynamicLights.GetNumLights());
 }

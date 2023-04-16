@@ -3,6 +3,7 @@
 void EngineApp::BuildRenderAssets()
 {
     BuildLights();
+    BuildRenderPasses();
     BuildMesh();
     BuildTextures();
     BuildRootSignature();
