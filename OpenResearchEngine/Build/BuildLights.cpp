@@ -49,4 +49,5 @@ void EngineApp::BuildLights()
 	dynamicLights.DirectionalLights.push_back(light3);
 
     SetLights(dynamicLights.DirectionalLights, dynamicLights.PointLights, dynamicLights.SpotLights);
+    dynamicLights.LightTransforms.resize(dynamicLights.GetNumLights());
 }

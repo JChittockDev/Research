@@ -31,6 +31,7 @@ struct MaterialData
 };
 
 TextureCube gCubeMap : register(t0);
+
 Texture2D gShadowMap1 : register(t1);
 Texture2D gShadowMap2 : register(t2);
 Texture2D gShadowMap3 : register(t3);

@@ -45,7 +45,7 @@ private:
     void UpdateShadowPassCB(const GameTimer& gt);
     void UpdateSsaoCB(const GameTimer& gt);
     void UpdateLights(const GameTimer& gt);
-    void UpdateLightTransforms(const std::vector<Light>& lights, DirectX::XMFLOAT4X4* LightTransforms);
+    void UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms);
 
     void BuildLights();
     void BuildRenderAssets();

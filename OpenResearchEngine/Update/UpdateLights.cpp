@@ -10,4 +10,7 @@ void EngineApp::UpdateLights(const GameTimer& gt)
     //    lightDir = XMVector3TransformNormal(lightDir, R);
     //    XMStoreFloat3(&mRotatedLightDirections[i], lightDir);
     //}
+
+
+
 }

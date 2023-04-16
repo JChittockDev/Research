@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::UpdateLightTransforms(const std::vector<Light>& lights, DirectX::XMFLOAT4X4* LightTransforms)
+void EngineApp::UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms)
 {
 	for (int i = 0; i < lights.size(); i++)
 	{
@@ -33,7 +33,7 @@ void EngineApp::UpdateMainPassCB(const GameTimer& gt)
 	XMStoreFloat4x4(&mMainPassCB.ViewProj, XMMatrixTranspose(viewProj));
 	XMStoreFloat4x4(&mMainPassCB.InvViewProj, XMMatrixTranspose(invViewProj));
 	XMStoreFloat4x4(&mMainPassCB.ViewProjTex, XMMatrixTranspose(viewProjTex));
-	UpdateLightTransforms(dynamicLights.DirectionalLights, mMainPassCB.LightTransforms);
+	UpdateLightTransforms(dynamicLights.LightTransforms, mMainPassCB.LightTransforms);
 	
 	mMainPassCB.EyePosW = mCamera.GetPosition3f();
 	mMainPassCB.RenderTargetSize = DirectX::XMFLOAT2((float)mClientWidth, (float)mClientHeight);
@@ -43,14 +43,6 @@ void EngineApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
 	mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
-	
-	// animate lights here
-	//mMainPassCB.Lights[0].Direction = mRotatedLightDirections[0];
-	//mMainPassCB.Lights[0].Strength = { 0.9f, 0.9f, 0.7f };
-	//mMainPassCB.Lights[1].Direction = mRotatedLightDirections[1];
-	//mMainPassCB.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
-	//mMainPassCB.Lights[2].Direction = mRotatedLightDirections[2];
-	//mMainPassCB.Lights[2].Strength = { 0.2f, 0.2f, 0.2f };
 
 	auto currPassCB = mCurrFrameResource->PassCB.get();
 	currPassCB->CopyData(0, mMainPassCB);
