@@ -13,7 +13,7 @@ void EngineApp::CreateRtvAndDsvDescriptorHeaps()
 
 	// Add +1 DSV for shadow map.
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
-	dsvHeapDesc.NumDescriptors = 2;
+	dsvHeapDesc.NumDescriptors = 3;
 	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	dsvHeapDesc.NodeMask = 0;
@@ -84,7 +84,8 @@ void EngineApp::BuildDescriptorHeaps()
 
 	mSkyTexHeapIndex = (UINT)tex2DList.size();
 	mShadowMapHeapIndex = mSkyTexHeapIndex + 1;
-	mSsaoHeapIndexStart = mShadowMapHeapIndex + 1;
+	mShadowMapHeapIndex2 = mShadowMapHeapIndex + 1;
+	mSsaoHeapIndexStart = mShadowMapHeapIndex2 + 1;
 	mSsaoAmbientMapIndex = mSsaoHeapIndexStart + 3;
 	mNullCubeSrvIndex = mSsaoHeapIndexStart + 5;
 	mNullTexSrvIndex1 = mNullCubeSrvIndex + 1;
@@ -102,20 +103,11 @@ void EngineApp::BuildDescriptorHeaps()
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 	md3dDevice->CreateShaderResourceView(nullptr, &srvDesc, nullSrv);
-
 	nullSrv.Offset(1, mCbvSrvUavDescriptorSize);
 	md3dDevice->CreateShaderResourceView(nullptr, &srvDesc, nullSrv);
 
-	mShadowMap->BuildDescriptors(
-		GetCpuSrv(mShadowMapHeapIndex),
-		GetGpuSrv(mShadowMapHeapIndex),
-		GetDsv(1));
+	mShadowMap->BuildDescriptors(GetCpuSrv(mShadowMapHeapIndex), GetGpuSrv(mShadowMapHeapIndex), GetDsv(1));
+	mShadowMap2->BuildDescriptors(GetCpuSrv(mShadowMapHeapIndex2), GetGpuSrv(mShadowMapHeapIndex2), GetDsv(2));
 
-	mSsao->BuildDescriptors(
-		mDepthStencilBuffer.Get(),
-		GetCpuSrv(mSsaoHeapIndexStart),
-		GetGpuSrv(mSsaoHeapIndexStart),
-		GetRtv(SwapChainBufferCount),
-		mCbvSrvUavDescriptorSize,
-		mRtvDescriptorSize);
+	mSsao->BuildDescriptors(mDepthStencilBuffer.Get(), GetCpuSrv(mSsaoHeapIndexStart), GetGpuSrv(mSsaoHeapIndexStart), GetRtv(SwapChainBufferCount), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
 }

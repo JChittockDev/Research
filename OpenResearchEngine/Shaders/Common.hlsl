@@ -32,11 +32,12 @@ struct MaterialData
 
 TextureCube gCubeMap : register(t0);
 Texture2D gShadowMap : register(t1);
-Texture2D gSsaoMap   : register(t2);
+Texture2D gShadowMap2 : register(t2);
+Texture2D gSsaoMap   : register(t3);
 
 // An array of textures, which is only supported in shader model 5.1+.  Unlike Texture2DArray, the textures
 // in this array can be different sizes and formats, making it more flexible than texture arrays.
-Texture2D gTextureMaps[48] : register(t3);
+Texture2D gTextureMaps[48] : register(t4);
 
 // Put in space1, so the texture array does not overlap with these resources.  
 // The texture array will occupy registers t0, t1, ..., t3 in space0. 
@@ -78,6 +79,7 @@ cbuffer cbPass : register(b2)
     float4x4 gInvViewProj;
     float4x4 gViewProjTex;
     float4x4 gShadowTransform;
+    float4x4 gShadowTransform2;
     float3 gEyePosW;
     float cbPerObjectPad1;
     float2 gRenderTargetSize;
@@ -121,7 +123,7 @@ float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, floa
 //---------------------------------------------------------------------------------------
 //#define SMAP_SIZE = (2048.0f)
 //#define SMAP_DX = (1.0f / SMAP_SIZE)
-float CalcShadowFactor(float4 shadowPosH)
+float CalcShadowFactor(float4 shadowPosH, Texture2D shadowMap)
 {
     // Complete projection by doing division by w.
     shadowPosH.xyz /= shadowPosH.w;
@@ -130,7 +132,7 @@ float CalcShadowFactor(float4 shadowPosH)
     float depth = shadowPosH.z;
 
     uint width, height, numMips;
-    gShadowMap.GetDimensions(0, width, height, numMips);
+    shadowMap.GetDimensions(0, width, height, numMips);
 
     // Texel size.
     float dx = 1.0f / (float)width;
@@ -146,7 +148,7 @@ float CalcShadowFactor(float4 shadowPosH)
     [unroll]
     for(int i = 0; i < 9; ++i)
     {
-        percentLit += gShadowMap.SampleCmpLevelZero(gsamShadow,
+        percentLit += shadowMap.SampleCmpLevelZero(gsamShadow,
             shadowPosH.xy + offsets[i], depth).r;
     }
     
