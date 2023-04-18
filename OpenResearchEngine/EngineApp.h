@@ -94,13 +94,13 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Skeleton>> mSkeletons;
     std::unordered_map<std::string, std::shared_ptr<Animation>> mAnimations;
     std::unordered_map<std::string, std::shared_ptr<AnimationController>> mAnimationControllers;
-    std::unordered_map<std::string, std::shared_ptr<Mesh>> mSkinnedMesh;
+    std::unordered_map<std::string, std::shared_ptr<Mesh>> mMesh;
     std::unordered_map<std::string, std::shared_ptr<TransformNode>> mTransforms;
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSkinnedSubsets;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSubsets;
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
-    std::vector<std::shared_ptr<ModelMaterial>> mSkinnedMats;
-    std::vector<std::string> mSkinnedTextureNames;
+    std::vector<std::shared_ptr<ModelMaterial>> mMats;
+    std::vector<std::string> mTextureNames;
 
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;

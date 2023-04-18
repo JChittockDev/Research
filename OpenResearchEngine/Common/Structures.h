@@ -15,6 +15,7 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include <math.h>
+#include "../Objects/ViewFrustum.h"
 
 #define MaxLights 16
 
@@ -38,11 +39,15 @@ struct SkinnedConstants
 struct Light
 {
     DirectX::XMFLOAT3 Strength = { 0.0f, 0.0f, 0.0f };
-    float FalloffStart = 1.0f;                          // point/spot light only
-    DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f };// directional/spot light only
-    float FalloffEnd = 10.0f;                           // point/spot light only
-    DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };  // point/spot light only
-    float SpotPower = 64.0f;                            // spot light only
+    float FalloffStart = 1.0f;
+    DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f };
+    float FalloffEnd = 10.0f;                         
+    DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };
+    float InnerConeAngle = 0.0f;
+    float OuterConeAngle = 64.0f;
+    float Pad1 = 0.0f;
+    float Pad2 = 0.0f;
+    float Pad3 = 0.0f;
 };
 
 struct LightTransform
@@ -50,8 +55,8 @@ struct LightTransform
     DirectX::XMFLOAT4X4 ViewMatrix = Math::Identity4x4();
     DirectX::XMFLOAT4X4 ProjectionMatrix = Math::Identity4x4();
     DirectX::XMFLOAT4X4 ViewProjectionMatrix = Math::Identity4x4();
-    float NearZ = 0.0f;
-    float FarZ = 0.0f;
+    float NearZ = 0.1f;
+    float FarZ = 1000.0f;
 };
 
 class DynamicLights
@@ -336,22 +341,11 @@ struct Animation
     float duration;
 };
 
-struct StaticRenderItemData
+struct ItemData
 {
     std::string item_name;
     std::string geometry;
     std::string mesh;
-    std::string material;
-    std::vector<double> position;
-    std::vector<double> rotation;
-    std::vector<double> scale;
-    int render_layer;
-};
-
-struct SkinnedRenderItemData
-{
-    std::string item_name;
-    std::string geometry;
     std::string animation;
     std::string material;
     std::vector<double> position;
@@ -362,8 +356,7 @@ struct SkinnedRenderItemData
 
 struct RenderItemData
 {
-    std::unique_ptr<std::unordered_map<std::string, StaticRenderItemData>> staticRenderItemDataDict;
-    std::unique_ptr<std::unordered_map<std::string, SkinnedRenderItemData>> skinnedRenderItemDataDict;
+    std::unique_ptr<std::unordered_map<std::string, ItemData>> renderItemDataDict;
 };
 
 struct AssetData

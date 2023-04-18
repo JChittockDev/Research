@@ -49,13 +49,12 @@ void EngineApp::BuildDescriptorHeaps()
 
 	mSkinnedSrvHeapStart = (UINT)tex2DList.size();
 
-	for (UINT i = 0; i < (UINT)mSkinnedTextureNames.size(); ++i)
+	for (UINT i = 0; i < (UINT)mTextureNames.size(); ++i)
 	{
-		auto texResource = mTextures[mSkinnedTextureNames[i]]->Resource;
+		auto texResource = mTextures[mTextureNames[i]]->Resource;
 		assert(texResource != nullptr);
 		tex2DList.push_back(texResource);
 	}
-
 
 	auto skyCubeMap = mTextures["skyCubeMap"]->Resource;
 

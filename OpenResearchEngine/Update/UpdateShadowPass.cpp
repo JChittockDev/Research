@@ -76,4 +76,21 @@ void EngineApp::UpdateShadowTransform(const GameTimer& gt)
         XMStoreFloat4x4(&dynamicLights.LightTransforms[lightIndex].ProjectionMatrix, lightProj);
         XMStoreFloat4x4(&dynamicLights.LightTransforms[lightIndex].ViewProjectionMatrix, S);
     }
+
+    for (int i = 0; i < dynamicLights.SpotLights.size(); i++, lightIndex++)
+    {
+        DirectX::XMVECTOR lightDir = XMLoadFloat3(&mMainPassCB.Lights[lightIndex].Direction);
+        DirectX::XMVECTOR lightPos = XMLoadFloat3(&mMainPassCB.Lights[lightIndex].Position);
+        DirectX::XMVECTOR lightUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+        DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, DirectX::XMVectorAdd(lightPos, lightDir), lightUp);
+
+        // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+        DirectX::XMMATRIX T(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f);
+        DirectX::XMMATRIX lightProj = DirectX::XMMatrixPerspectiveFovLH(mMainPassCB.Lights[lightIndex].OuterConeAngle, 1.0f, dynamicLights.LightTransforms[lightIndex].NearZ, dynamicLights.LightTransforms[lightIndex].FarZ);
+
+        DirectX::XMMATRIX S = lightView * lightProj * T;
+        XMStoreFloat4x4(&dynamicLights.LightTransforms[lightIndex].ViewMatrix, lightView);
+        XMStoreFloat4x4(&dynamicLights.LightTransforms[lightIndex].ProjectionMatrix, lightProj);
+        XMStoreFloat4x4(&dynamicLights.LightTransforms[lightIndex].ViewProjectionMatrix, S);
+    }
 }

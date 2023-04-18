@@ -102,6 +102,7 @@
     <ClCompile Include="D3D12\D3DApp.cpp" />
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
+    <ClCompile Include="Objects\ViewFrustum.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="D3D12\D3DUtil.h" />
     <ClInclude Include="D3D12\D3Dx12.h" />
     <ClInclude Include="Models\External\DDSTextureLoader.h" />
+    <ClInclude Include="Objects\ViewFrustum.h" />
     <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />

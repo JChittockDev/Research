@@ -5,31 +5,39 @@ void EngineApp::BuildLevel()
 {
 	LevelReader levelData("E:\\Personal Work\\Research\\OpenResearchEngine\\Levels\\DemoLevel.json");
 	
-	auto& staticRenderItemDataDict = *levelData.level->data->renderItemData->staticRenderItemDataDict;
-	auto& skinnedRenderItemDataDict = *levelData.level->data->renderItemData->skinnedRenderItemDataDict;
+	auto& renderItemDataDict = *levelData.level->data->renderItemData->renderItemDataDict;
 
-	for (const auto& item : staticRenderItemDataDict)
+	for (const auto& item : renderItemDataDict)
 	{
 		const std::string& itemName = item.first;
-		const StaticRenderItemData& staticRenderItemData = item.second;
+		const ItemData& renderItemData = item.second;
 
-		RenderItem::BuildRenderItem(staticRenderItemData.geometry, staticRenderItemData.mesh, staticRenderItemData.material, 
-			DirectX::XMFLOAT3(staticRenderItemData.position[0], staticRenderItemData.position[1], staticRenderItemData.position[2]), 
-			DirectX::XMFLOAT4(staticRenderItemData.rotation[0], staticRenderItemData.rotation[1], staticRenderItemData.rotation[2], staticRenderItemData.rotation[3]),
-			DirectX::XMFLOAT3(staticRenderItemData.scale[0], staticRenderItemData.scale[1], staticRenderItemData.scale[2]),
-			ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[staticRenderItemData.render_layer], mAllRitems);
-	}
-
-	for (const auto& item : skinnedRenderItemDataDict)
-	{
-		const std::string& itemName = item.first;
-		const SkinnedRenderItemData& staticRenderItemData = item.second;
-
-		RenderItem::BuildRenderItems(staticRenderItemData.geometry, staticRenderItemData.animation,
-			DirectX::XMFLOAT3(staticRenderItemData.position[0], staticRenderItemData.position[1], staticRenderItemData.position[2]),
-			DirectX::XMFLOAT4(staticRenderItemData.rotation[0], staticRenderItemData.rotation[1], staticRenderItemData.rotation[2], staticRenderItemData.rotation[3]),
-			DirectX::XMFLOAT3(staticRenderItemData.scale[0], staticRenderItemData.scale[1], staticRenderItemData.scale[2]),
-			ObjectCBIndex, SkinnedCBIndex, mSkinnedSubsets, mGeometries, mMaterials, mSkinnedMats, mSkinnedMesh, mSkeletons, mAnimations, 
-			mTransforms, mAnimationControllers, mRitemLayer[staticRenderItemData.render_layer], mAllRitems);
+		if (renderItemData.animation.empty())
+		{
+			if (renderItemData.mesh.empty())
+			{
+				RenderItem::BuildRenderItems(renderItemData.geometry, DirectX::XMFLOAT3(renderItemData.position[0], renderItemData.position[1], renderItemData.position[2]),
+					DirectX::XMFLOAT4(renderItemData.rotation[0], renderItemData.rotation[1], renderItemData.rotation[2], renderItemData.rotation[3]),
+					DirectX::XMFLOAT3(renderItemData.scale[0], renderItemData.scale[1], renderItemData.scale[2]),
+					ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMats, mMesh, mRitemLayer[renderItemData.render_layer], mAllRitems);
+			}
+			else
+			{
+				RenderItem::BuildRenderItem(renderItemData.geometry, renderItemData.mesh, renderItemData.material,
+					DirectX::XMFLOAT3(renderItemData.position[0], renderItemData.position[1], renderItemData.position[2]),
+					DirectX::XMFLOAT4(renderItemData.rotation[0], renderItemData.rotation[1], renderItemData.rotation[2], renderItemData.rotation[3]),
+					DirectX::XMFLOAT3(renderItemData.scale[0], renderItemData.scale[1], renderItemData.scale[2]),
+					ObjectCBIndex, mGeometries, mMaterials, mRitemLayer[renderItemData.render_layer], mAllRitems);
+			}
+		}
+		else
+		{
+			RenderItem::BuildRenderItems(renderItemData.geometry, renderItemData.animation,
+				DirectX::XMFLOAT3(renderItemData.position[0], renderItemData.position[1], renderItemData.position[2]),
+				DirectX::XMFLOAT4(renderItemData.rotation[0], renderItemData.rotation[1], renderItemData.rotation[2], renderItemData.rotation[3]),
+				DirectX::XMFLOAT3(renderItemData.scale[0], renderItemData.scale[1], renderItemData.scale[2]),
+				ObjectCBIndex, SkinnedCBIndex, mSubsets, mGeometries, mMaterials, mMats, mMesh, mSkeletons, mAnimations,
+				mTransforms, mAnimationControllers, mRitemLayer[renderItemData.render_layer], mAllRitems);
+		}
 	}
 }

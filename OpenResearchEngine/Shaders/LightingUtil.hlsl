@@ -14,7 +14,11 @@ struct Light
     float3 Direction; // directional/spot light only
     float FalloffEnd; // point/spot light only
     float3 Position; // point light only
-    float SpotPower; // spot light only
+    float InnerConeAngle; // spot light only
+    float OuterConeAngle; // spot light only
+    float Pad1;
+    float Pad2;
+    float Pad3;
 };
 
 struct Material
@@ -130,8 +134,14 @@ float3 ComputeSpotLight(Light L, Material mat, float3 pos, float3 normal, float3
     lightStrength *= att;
 
     // Scale by spotlight
-    float spotFactor = pow(max(dot(-lightVec, L.Direction), 0.0f), L.SpotPower);
-    lightStrength *= spotFactor;
+    float spotAngle = dot(-lightVec, L.Direction);
+    
+    if (spotAngle > L.OuterConeAngle)
+    {
+        float epsilon = abs(L.InnerConeAngle - L.OuterConeAngle);
+        float coneAttenuation = clamp((spotAngle - L.OuterConeAngle) / epsilon, 0.0f, 1.0f);
+        lightStrength *= coneAttenuation;
+    }
 
     return BlinnPhong(lightStrength, lightVec, normal, toEye, mat);
 }

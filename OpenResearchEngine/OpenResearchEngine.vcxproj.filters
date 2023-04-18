@@ -144,6 +144,9 @@
     <ClCompile Include="Build\BuildRenderPasses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Objects\ViewFrustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects\Camera.h">
@@ -210,6 +213,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shaders\Compiler\ShaderCompiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\ViewFrustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

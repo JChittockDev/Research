@@ -2,7 +2,7 @@
 
 using namespace nlohmann;
 
-void LevelReader::SetStaticRenderItemData(const json& item_data, StaticRenderItemData& renderItemStruct)
+void LevelReader::SetStaticRenderItemData(const json& item_data, ItemData& renderItemStruct)
 {
     if (item_data.contains("Position"))
     {
@@ -37,7 +37,7 @@ void LevelReader::SetStaticRenderItemData(const json& item_data, StaticRenderIte
     }
 }
 
-void LevelReader::SetSkinnedRenderItemData(const json& item_data, SkinnedRenderItemData& renderItemStruct)
+void LevelReader::SetSkinnedRenderItemData(const json& item_data, ItemData& renderItemStruct)
 {
     if (item_data.contains("Position"))
     {
@@ -85,31 +85,29 @@ LevelReader::LevelReader(const std::string& filename)
         json render_items = assets["RenderItems"];
         json static_render_items = render_items["StaticRenderItems"];
         json skinned_render_items = render_items["SkinnedRenderItems"];
-        std::unordered_map<std::string, StaticRenderItemData> staticRenderItemsDict;
-        std::unordered_map<std::string, SkinnedRenderItemData> skinnedRenderItemsDict;
+        std::unordered_map<std::string, ItemData> renderItemsDict;
 
         for (const auto& item : static_render_items.items()) 
         {
-            StaticRenderItemData renderItemData;
+           ItemData renderItemData;
             std::string item_name = item.key();
             json item_data = item.value();
             SetStaticRenderItemData(item_data, renderItemData);
-            staticRenderItemsDict[item_name] = renderItemData;
+            renderItemsDict[item_name] = renderItemData;
         }
 
         for (const auto& item : skinned_render_items.items())
         {
-            SkinnedRenderItemData renderItemData;
+            ItemData renderItemData;
             std::string item_name = item.key();
             json item_data = item.value();
             SetSkinnedRenderItemData(item_data, renderItemData);
-            skinnedRenderItemsDict[item_name] = renderItemData;
+            renderItemsDict[item_name] = renderItemData;
         }
 
         level->name = level_name;
         std::unique_ptr<RenderItemData> renderItems = std::make_unique<RenderItemData>();
-        renderItems->staticRenderItemDataDict = std::make_unique<std::unordered_map<std::string, StaticRenderItemData>>(staticRenderItemsDict);
-        renderItems->skinnedRenderItemDataDict = std::make_unique<std::unordered_map<std::string, SkinnedRenderItemData>>(skinnedRenderItemsDict);
+        renderItems->renderItemDataDict = std::make_unique<std::unordered_map<std::string, ItemData>>(renderItemsDict);
         std::unique_ptr<AssetData> assetData = std::make_unique<AssetData>();
         assetData->renderItemData = std::move(renderItems);
         level->data = std::move(assetData);

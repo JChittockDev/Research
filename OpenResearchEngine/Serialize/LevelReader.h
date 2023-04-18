@@ -12,6 +12,6 @@ public:
     std::unique_ptr<LevelData> level = nullptr;
 
 private:
-    void SetStaticRenderItemData(const json& item_data, StaticRenderItemData& renderItemStruct);
-    void SetSkinnedRenderItemData(const json& item_data, SkinnedRenderItemData& renderItemStruct);
+    void SetStaticRenderItemData(const json& item_data, ItemData& renderItemStruct);
+    void SetSkinnedRenderItemData(const json& item_data, ItemData& renderItemStruct);
 };

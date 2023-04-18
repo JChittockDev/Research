@@ -25,10 +25,10 @@ void EngineApp::BuildTextures()
     };
 
     // Add skinned model textures to list so we can reference by name later.
-    for (UINT i = 0; i < mSkinnedMats.size(); ++i)
+    for (UINT i = 0; i < mMats.size(); ++i)
     {
-        std::string diffuseName = mSkinnedMats[i]->DiffuseMapName;
-        std::string normalName = mSkinnedMats[i]->NormalMapName;
+        std::string diffuseName = mMats[i]->DiffuseMapName;
+        std::string normalName = mMats[i]->NormalMapName;
 
         std::wstring diffuseFilename = L"Textures/" + AnsiToWString(diffuseName);
         std::wstring normalFilename = L"Textures/" + AnsiToWString(normalName);
@@ -37,11 +37,11 @@ void EngineApp::BuildTextures()
         diffuseName = diffuseName.substr(0, diffuseName.find_last_of("."));
         normalName = normalName.substr(0, normalName.find_last_of("."));
 
-        mSkinnedTextureNames.push_back(diffuseName);
+        mTextureNames.push_back(diffuseName);
         texNames.push_back(diffuseName);
         texFilenames.push_back(diffuseFilename);
 
-        mSkinnedTextureNames.push_back(normalName);
+        mTextureNames.push_back(normalName);
         texNames.push_back(normalName);
         texFilenames.push_back(normalFilename);
     }
