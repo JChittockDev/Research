@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildShadersAndInputLayout()
+void EngineApp::CompileShaders ()
 {
     std::string numDirectionalLights = std::to_string(dynamicLights.DirectionalLights.size());
     std::string numPointLights = std::to_string(dynamicLights.PointLights.size());

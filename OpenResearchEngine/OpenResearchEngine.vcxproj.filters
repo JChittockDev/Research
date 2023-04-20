@@ -48,7 +48,7 @@
     <ClCompile Include="Render\Passes\Ssao.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildGenericGeometry.cpp">
+    <ClCompile Include="Build\PushGenericMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Resources\Mesh.cpp">
@@ -57,31 +57,31 @@
     <ClCompile Include="Render\Resources\StaticSamplers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildMaterials.cpp">
+    <ClCompile Include="Build\PushMaterials.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildLevel.cpp">
+    <ClCompile Include="Build\PushRenderItems.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildPso.cpp">
+    <ClCompile Include="Build\SetPipelineStates.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildShaders.cpp">
+    <ClCompile Include="Build\CompileShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildTextures.cpp">
+    <ClCompile Include="Build\ImportTextures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildRootSignature.cpp">
+    <ClCompile Include="Build\SetGenericRootSignature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildSSAORootSignature.cpp">
+    <ClCompile Include="Build\SetSSAORootSignature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildDescriptorHeaps.cpp">
+    <ClCompile Include="Build\PopulateDescriptorHeaps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildFrameResources.cpp">
+    <ClCompile Include="Build\SetFenceResources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Controls\Controls.cpp">
@@ -114,7 +114,7 @@
     <ClCompile Include="Render\Resources\Skeleton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildMesh.cpp">
+    <ClCompile Include="Build\PushMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Update\UpdateSkinnedMesh.cpp">
@@ -126,7 +126,7 @@
     <ClCompile Include="Update\UpdateRenderAssets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildRenderAssets.cpp">
+    <ClCompile Include="Build\BuildScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Update\UpdateLights.cpp">
@@ -138,13 +138,16 @@
     <ClCompile Include="Shaders\Compiler\ShaderCompiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\BuildLights.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Build\BuildRenderPasses.cpp">
+    <ClCompile Include="Build\PushLights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Objects\ViewFrustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Build\SerializeLevel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Build\SetRootSignatures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

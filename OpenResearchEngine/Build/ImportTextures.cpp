@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildTextures()
+void EngineApp::ImportTextures()
 {
     std::vector<std::string> texNames =
     {
@@ -24,12 +24,10 @@ void EngineApp::BuildTextures()
         L"Textures/desertcube1024.dds"
     };
 
-    // Add skinned model textures to list so we can reference by name later.
     for (UINT i = 0; i < mMats.size(); ++i)
     {
         std::string diffuseName = mMats[i]->DiffuseMapName;
         std::string normalName = mMats[i]->NormalMapName;
-
         std::wstring diffuseFilename = L"Textures/" + AnsiToWString(diffuseName);
         std::wstring normalFilename = L"Textures/" + AnsiToWString(normalName);
 
@@ -48,16 +46,12 @@ void EngineApp::BuildTextures()
 
     for (int i = 0; i < (int)texNames.size(); ++i)
     {
-        // Don't create duplicates.
         if (mTextures.find(texNames[i]) == std::end(mTextures))
         {
             auto texMap = std::make_unique<Texture>();
             texMap->Name = texNames[i];
             texMap->Filename = texFilenames[i];
-            ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-                mCommandList.Get(), texMap->Filename.c_str(),
-                texMap->Resource, texMap->UploadHeap));
-
+            ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(), mCommandList.Get(), texMap->Filename.c_str(), texMap->Resource, texMap->UploadHeap));
             mTextures[texMap->Name] = std::move(texMap);
         }
     }

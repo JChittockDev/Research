@@ -355,18 +355,18 @@ struct ItemData
     int render_layer;
 };
 
-struct RenderItemData
+struct LevelItemData
 {
     std::unique_ptr<std::unordered_map<std::string, ItemData>> renderItemDataDict;
 };
 
-struct AssetData
+struct LevelAssetData
 {
-    std::unique_ptr<RenderItemData> renderItemData;
+    std::unique_ptr<LevelItemData> renderItemData;
 };
 
 struct LevelData
 {
     std::string name;
-    std::unique_ptr<AssetData> data;
+    std::unique_ptr<LevelAssetData> data;
 };

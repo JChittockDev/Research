@@ -34,7 +34,7 @@ void EngineApp::SetLights(const std::vector<Light>& DirectionalLights, const std
     }
 };
 
-void EngineApp::BuildLights()
+void EngineApp::PushLights()
 {
 	Light light1;
     light1.Position = DirectX::XMFLOAT3(0.0, 20.0, 0.0);
@@ -61,4 +61,10 @@ void EngineApp::BuildLights()
     dynamicLights.LightTransforms.resize(dynamicLights.GetNumLights());
     SetLights(dynamicLights.DirectionalLights, dynamicLights.PointLights, dynamicLights.SpotLights, dynamicLights.LightTransforms);
 
+    int numLights = dynamicLights.GetNumLights();
+    for (int i = 0; i < dynamicLights.GetNumLights(); i++)
+    {
+        mShadowMaps.push_back(std::make_unique<ShadowMap>(md3dDevice.Get(), 2048, 2048));
+    }
+    mShadowPassCBs.resize(numLights);
 }

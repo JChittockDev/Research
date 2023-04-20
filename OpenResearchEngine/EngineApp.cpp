@@ -52,11 +52,11 @@ bool EngineApp::Initialize()
 
 	mCamera.SetPosition(0.0f, 2.0f, 15.0f);
     mCamera.RotateY(3.25f);
-
     mSsao = std::make_unique<Ssao>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
-    BuildRenderAssets();
-    mSsao->SetPSOs(mPSOs["ssao"].Get(), mPSOs["ssaoBlur"].Get());
     
+    BuildScene();
+    
+    mSsao->SetPSOs(mPSOs["ssao"].Get(), mPSOs["ssaoBlur"].Get());
     ThrowIfFailed(mCommandList->Close());
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);

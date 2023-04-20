@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildPSOs()
+void EngineApp::SetPipelineStates()
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
 

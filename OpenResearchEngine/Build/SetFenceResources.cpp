@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildFrameResources()
+void EngineApp::SetFenceResources()
 {
     for (int i = 0; i < gNumFrameResources; ++i)
     {

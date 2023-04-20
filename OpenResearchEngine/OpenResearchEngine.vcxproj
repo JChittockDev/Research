@@ -85,19 +85,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Build\BuildLights.cpp" />
-    <ClCompile Include="Build\BuildRenderAssets.cpp" />
-    <ClCompile Include="Build\BuildDescriptorHeaps.cpp" />
-    <ClCompile Include="Build\BuildFrameResources.cpp" />
-    <ClCompile Include="Build\BuildMaterials.cpp" />
-    <ClCompile Include="Build\BuildMesh.cpp" />
-    <ClCompile Include="Build\BuildPso.cpp" />
-    <ClCompile Include="Build\BuildLevel.cpp" />
-    <ClCompile Include="Build\BuildRenderPasses.cpp" />
-    <ClCompile Include="Build\BuildRootSignature.cpp" />
-    <ClCompile Include="Build\BuildShaders.cpp" />
-    <ClCompile Include="Build\BuildSSAORootSignature.cpp" />
-    <ClCompile Include="Build\BuildTextures.cpp" />
+    <ClCompile Include="Build\PushLights.cpp" />
+    <ClCompile Include="Build\BuildScene.cpp" />
+    <ClCompile Include="Build\PopulateDescriptorHeaps.cpp" />
+    <ClCompile Include="Build\SetFenceResources.cpp" />
+    <ClCompile Include="Build\PushMaterials.cpp" />
+    <ClCompile Include="Build\PushMesh.cpp" />
+    <ClCompile Include="Build\SetPipelineStates.cpp" />
+    <ClCompile Include="Build\PushRenderItems.cpp" />
+    <ClCompile Include="Build\SetGenericRootSignature.cpp" />
+    <ClCompile Include="Build\CompileShader.cpp" />
+    <ClCompile Include="Build\SetRootSignatures.cpp" />
+    <ClCompile Include="Build\SetSSAORootSignature.cpp" />
+    <ClCompile Include="Build\ImportTextures.cpp" />
+    <ClCompile Include="Build\SerializeLevel.cpp" />
     <ClCompile Include="Objects\Camera.cpp" />
     <ClCompile Include="D3D12\D3DApp.cpp" />
     <ClCompile Include="D3D12\D3DUtil.cpp" />
@@ -118,7 +119,7 @@
     <ClCompile Include="Draw\DrawRenderItems.cpp" />
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
-    <ClCompile Include="Build\BuildGenericGeometry.cpp" />
+    <ClCompile Include="Build\PushGenericMesh.cpp" />
     <ClCompile Include="Render\Resources\Mesh.cpp" />
     <ClCompile Include="Render\Passes\ShadowMap.cpp" />
     <ClCompile Include="EngineApp.cpp" />

@@ -1,11 +1,7 @@
 #include "../EngineApp.h"
 
-
-void EngineApp::BuildLevel()
+void EngineApp::PushRenderItems()
 {
-	LevelReader levelData("E:\\Personal Work\\Research\\OpenResearchEngine\\Levels\\DemoLevel.json");
-	auto& renderItemDataDict = *levelData.level->data->renderItemData->renderItemDataDict;
-
 	for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++)
 	{
 		RenderItem::BuildRenderItems("Models\\directionallight.obj", std::to_string(i), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
@@ -20,7 +16,7 @@ void EngineApp::BuildLevel()
 			mSubsets, mGeometries, mMaterials, mMats, mMesh, mRenderItemLayer[(int)RenderLayer::Opaque], mRenderItems, mLightRenderItemMap);
 	}
 
-	for (const auto& item : renderItemDataDict)
+	for (const auto& item : mLevelRenderItems["DemoLevel"])
 	{
 		const std::string& itemName = item.first;
 		const ItemData& renderItemData = item.second;

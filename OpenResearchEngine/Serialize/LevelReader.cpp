@@ -106,9 +106,9 @@ LevelReader::LevelReader(const std::string& filename)
         }
 
         level->name = level_name;
-        std::unique_ptr<RenderItemData> renderItems = std::make_unique<RenderItemData>();
+        std::unique_ptr<LevelItemData> renderItems = std::make_unique<LevelItemData>();
         renderItems->renderItemDataDict = std::make_unique<std::unordered_map<std::string, ItemData>>(renderItemsDict);
-        std::unique_ptr<AssetData> assetData = std::make_unique<AssetData>();
+        std::unique_ptr<LevelAssetData> assetData = std::make_unique<LevelAssetData>();
         assetData->renderItemData = std::move(renderItems);
         level->data = std::move(assetData);
     }

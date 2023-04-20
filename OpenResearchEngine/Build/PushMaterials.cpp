@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildMaterials()
+void EngineApp::PushMaterials()
 {
 	auto bricks0 = std::make_unique<Material>();
 	bricks0->Name = "bricks0";
@@ -55,7 +55,6 @@ void EngineApp::BuildMaterials()
 		mat->DiffuseAlbedo = mMats[i]->DiffuseAlbedo;
 		mat->FresnelR0 = mMats[i]->FresnelR0;
 		mat->Roughness = mMats[i]->Roughness;
-
 		mMaterials[mat->Name] = std::move(mat);
 	}
 }

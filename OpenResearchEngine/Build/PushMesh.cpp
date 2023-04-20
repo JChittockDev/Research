@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildMesh()
+void EngineApp::PushMesh()
 {
     std::string filename = "Models\\test.fbx";
     std::shared_ptr<Mesh> skinnedMesh = std::make_shared<Mesh>(filename, md3dDevice, mCommandList, mGeometries, mSubsets, mMats, mSkeletons, mAnimations, mTransforms);

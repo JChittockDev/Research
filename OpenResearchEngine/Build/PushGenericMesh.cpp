@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildGenericGeometry()
+void EngineApp::PushGenericMesh()
 {
 	GeometryGenerator geoGen;
 	GeometryGenerator::MeshData box = geoGen.CreateBox(1.0f, 1.0f, 1.0f, 3);

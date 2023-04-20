@@ -47,21 +47,22 @@ private:
     void UpdateLights(const GameTimer& gt);
     void UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms);
 
-    void BuildLights();
-    void BuildRenderAssets();
-    void BuildRenderPasses();
-    void BuildTextures();
-    void BuildMesh();
-    void BuildRootSignature();
-    void BuildSsaoRootSignature();
-    void BuildDescriptorHeaps();
-    void BuildShadersAndInputLayout();
-    void BuildGenericGeometry();
-    void BuildPSOs();
-    void BuildFrameResources();
-    void BuildMaterials();
-    void BuildLevel();
-   
+    void PushLights();
+    void PushMesh();
+    void PushGenericMesh();
+    void PushMaterials();
+    void PushRenderItems();
+    void ImportTextures();
+    void PopulateDescriptorHeaps();
+    void CompileShaders();
+    void SetPipelineStates();
+    void SetFenceResources();
+    void SetRootSignatures();
+    void SetGenericRootSignature();
+    void SetSsaoRootSignature();
+    void SerializeLevel();
+    void BuildScene();
+
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& ritems);
     void DrawSceneToShadowMap();
@@ -108,8 +109,8 @@ private:
     std::vector<std::shared_ptr<RenderItem>> mRenderItems;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mMeshRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mLightRenderItemMap;
-
     std::vector<std::shared_ptr<RenderItem>> mRenderItemLayer[(int)RenderLayer::Count];
+    std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;
 
     UINT mSkyTexHeapIndex = 0;
     UINT mShadowMapHeapIndex = 0;

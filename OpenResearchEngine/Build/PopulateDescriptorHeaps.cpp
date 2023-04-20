@@ -21,7 +21,7 @@ void EngineApp::CreateRtvAndDsvDescriptorHeaps()
 		&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
 }
 
-void EngineApp::BuildDescriptorHeaps()
+void EngineApp::PopulateDescriptorHeaps()
 {
 	//
 	// Create the SRV heap.

@@ -1,6 +1,6 @@
 #include "../EngineApp.h"
 
-void EngineApp::BuildRootSignature()
+void EngineApp::SetGenericRootSignature()
 {
     CD3DX12_DESCRIPTOR_RANGE texTable0;
     texTable0.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 18, 0, 0);
