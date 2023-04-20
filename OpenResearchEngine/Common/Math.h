@@ -95,6 +95,18 @@ public:
 	static const float Infinity;
 	static const float Pi;
 
-
+	static DirectX::XMFLOAT4X4 CreateTransformMatrix(const DirectX::XMFLOAT3& translation, const DirectX::XMFLOAT4& rotation, const DirectX::XMFLOAT3& scaling)
+	{
+		DirectX::XMFLOAT4X4 matrix;
+		DirectX::XMVECTOR translationVector = DirectX::XMLoadFloat3(&translation);
+		DirectX::XMVECTOR rotationQuaternion = DirectX::XMLoadFloat4(&rotation);
+		DirectX::XMVECTOR scalingVector = DirectX::XMLoadFloat3(&scaling);
+		DirectX::XMMATRIX scalingMatrix = DirectX::XMMatrixScalingFromVector(scalingVector);
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotationQuaternion);
+		DirectX::XMMATRIX translationMatrix = DirectX::XMMatrixTranslationFromVector(translationVector);
+		DirectX::XMMATRIX transformMatrix = scalingMatrix * rotationMatrix * translationMatrix;
+		DirectX::XMStoreFloat4x4(&matrix, transformMatrix);
+		return matrix;
+	}
 };
 

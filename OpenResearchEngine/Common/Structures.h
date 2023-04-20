@@ -41,10 +41,10 @@ struct Light
     DirectX::XMFLOAT3 Strength = { 0.0f, 0.0f, 0.0f };
     float FalloffStart = 1.0f;
     DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f };
-    float FalloffEnd = 10.0f;                         
+    float FalloffEnd = 100.0f;                         
     DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };
-    float InnerConeAngle = 0.0f;
-    float OuterConeAngle = 64.0f;
+    float InnerConeAngle = 5.0f;
+    float OuterConeAngle = 250.0f;
     float Pad1 = 0.0f;
     float Pad2 = 0.0f;
     float Pad3 = 0.0f;
@@ -52,11 +52,12 @@ struct Light
 
 struct LightTransform
 {
+    DirectX::XMFLOAT3 ReferencePosition = { 0.0f, 0.0f, 0.0f };
     DirectX::XMFLOAT4X4 ViewMatrix = Math::Identity4x4();
     DirectX::XMFLOAT4X4 ProjectionMatrix = Math::Identity4x4();
     DirectX::XMFLOAT4X4 ViewProjectionMatrix = Math::Identity4x4();
     float NearZ = 0.1f;
-    float FarZ = 1000.0f;
+    float FarZ = 100.0f;
 };
 
 class DynamicLights

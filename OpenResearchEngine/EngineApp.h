@@ -62,8 +62,8 @@ private:
     void BuildMaterials();
     void BuildLevel();
    
-    void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights);
-    void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
+    void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
+    void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& ritems);
     void DrawSceneToShadowMap();
     void DrawNormalsAndDepth();
 
@@ -105,8 +105,11 @@ private:
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
 
-    std::vector<std::unique_ptr<RenderItem>> mAllRitems;
-    std::vector<RenderItem*> mRitemLayer[(int)RenderLayer::Count];
+    std::vector<std::shared_ptr<RenderItem>> mRenderItems;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mMeshRenderItemMap;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mLightRenderItemMap;
+
+    std::vector<std::shared_ptr<RenderItem>> mRenderItemLayer[(int)RenderLayer::Count];
 
     UINT mSkyTexHeapIndex = 0;
     UINT mShadowMapHeapIndex = 0;

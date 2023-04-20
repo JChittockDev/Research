@@ -1,16 +1,5 @@
 #include "../EngineApp.h"
 
-void EngineApp::UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms)
-{
-	for (int i = 0; i < lights.size(); i++)
-	{
-		DirectX::XMMATRIX transposeMatrix = XMMatrixTranspose(XMLoadFloat4x4(&lights[i].ViewProjectionMatrix));
-		DirectX::XMFLOAT4X4 out;
-		XMStoreFloat4x4(&out, transposeMatrix);
-		LightTransforms[i] = out;
-	}
-}
-
 void EngineApp::UpdateMainPassCB(const GameTimer& gt)
 {
 	DirectX::XMMATRIX view = mCamera.GetView();
@@ -33,7 +22,6 @@ void EngineApp::UpdateMainPassCB(const GameTimer& gt)
 	XMStoreFloat4x4(&mMainPassCB.ViewProj, XMMatrixTranspose(viewProj));
 	XMStoreFloat4x4(&mMainPassCB.InvViewProj, XMMatrixTranspose(invViewProj));
 	XMStoreFloat4x4(&mMainPassCB.ViewProjTex, XMMatrixTranspose(viewProjTex));
-	UpdateLightTransforms(dynamicLights.LightTransforms, mMainPassCB.LightTransforms);
 	
 	mMainPassCB.EyePosW = mCamera.GetPosition3f();
 	mMainPassCB.RenderTargetSize = DirectX::XMFLOAT2((float)mClientWidth, (float)mClientHeight);

@@ -133,15 +133,15 @@ float3 ComputeSpotLight(Light L, Material mat, float3 pos, float3 normal, float3
     float att = CalcAttenuation(d, L.FalloffStart, L.FalloffEnd);
     lightStrength *= att;
 
-    // Scale by spotlight
-    float spotAngle = dot(-lightVec, L.Direction);
+    //float spotFactor = pow(max(dot(-lightVec, L.Direction), 0.0f), L.OuterConeAngle);
+    //lightStrength *= spotFactor;
     
-    if (spotAngle > L.OuterConeAngle)
-    {
-        float epsilon = abs(L.InnerConeAngle - L.OuterConeAngle);
-        float coneAttenuation = clamp((spotAngle - L.OuterConeAngle) / epsilon, 0.0f, 1.0f);
-        lightStrength *= coneAttenuation;
-    }
+    // Scale by spotlight
+    float spotAngle = dot(lightVec, -L.Direction);
+    
+    float epsilon = abs(L.InnerConeAngle - L.OuterConeAngle);
+    float coneAttenuation = clamp((spotAngle - L.OuterConeAngle) / epsilon, 0.0f, 1.0f);
+    lightStrength *= coneAttenuation;
 
     return BlinnPhong(lightStrength, lightVec, normal, toEye, mat);
 }
@@ -162,14 +162,14 @@ float4 ComputeLighting(Light gLights[MaxLights], Material mat, float3 pos, float
 #if (NUM_POINT_LIGHTS > 0)
     for(i = NUM_DIR_LIGHTS; i < NUM_DIR_LIGHTS+NUM_POINT_LIGHTS; ++i)
     {
-        result += ComputePointLight(gLights[i], mat, pos, normal, toEye);
+        result += shadowFactor[i] * ComputePointLight(gLights[i], mat, pos, normal, toEye);
     }
 #endif
 
 #if (NUM_SPOT_LIGHTS > 0)
     for(i = NUM_DIR_LIGHTS + NUM_POINT_LIGHTS; i < NUM_DIR_LIGHTS + NUM_POINT_LIGHTS + NUM_SPOT_LIGHTS; ++i)
     {
-        result += ComputeSpotLight(gLights[i], mat, pos, normal, toEye);
+        result += shadowFactor[i] * ComputeSpotLight(gLights[i], mat, pos, normal, toEye);
     }
 #endif 
 

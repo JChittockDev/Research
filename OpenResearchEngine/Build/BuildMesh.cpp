@@ -9,4 +9,8 @@ void EngineApp::BuildMesh()
 	filename = "Models\\directionallight.obj";
 	std::shared_ptr<Mesh> directionalLightMesh = std::make_shared<Mesh>(filename, md3dDevice, mCommandList, mGeometries, mSubsets, mMats);
 	mMesh[filename] = std::move(directionalLightMesh);
+
+	filename = "Models\\spotlight.obj";
+	std::shared_ptr<Mesh> spotLightMesh = std::make_shared<Mesh>(filename, md3dDevice, mCommandList, mGeometries, mSubsets, mMats);
+	mMesh[filename] = std::move(spotLightMesh);
 }

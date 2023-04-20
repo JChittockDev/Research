@@ -7,7 +7,6 @@ void EngineApp::UpdateShadowPassCB(const GameTimer& gt)
     int lightIndex = 0;
     for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++, lightIndex++)
     {
-
         DirectX::XMMATRIX view = XMLoadFloat4x4(&dynamicLights.LightTransforms[lightIndex].ViewMatrix);
         DirectX::XMMATRIX proj = XMLoadFloat4x4(&dynamicLights.LightTransforms[lightIndex].ProjectionMatrix);
 
@@ -16,8 +15,8 @@ void EngineApp::UpdateShadowPassCB(const GameTimer& gt)
         DirectX::XMMATRIX invProj = XMMatrixInverse(&XMMatrixDeterminant(proj), proj);
         DirectX::XMMATRIX invViewProj = XMMatrixInverse(&XMMatrixDeterminant(viewProj), viewProj);
 
-        UINT w = mShadowMaps[i]->Width();
-        UINT h = mShadowMaps[i]->Height();
+        UINT w = mShadowMaps[lightIndex]->Width();
+        UINT h = mShadowMaps[lightIndex]->Height();
 
         XMStoreFloat4x4(&mShadowPassCBs[lightIndex].View, XMMatrixTranspose(view));
         XMStoreFloat4x4(&mShadowPassCBs[lightIndex].InvView, XMMatrixTranspose(invView));
@@ -26,6 +25,34 @@ void EngineApp::UpdateShadowPassCB(const GameTimer& gt)
         XMStoreFloat4x4(&mShadowPassCBs[lightIndex].ViewProj, XMMatrixTranspose(viewProj));
         XMStoreFloat4x4(&mShadowPassCBs[lightIndex].InvViewProj, XMMatrixTranspose(invViewProj));
         mShadowPassCBs[lightIndex].EyePosW = dynamicLights.DirectionalLights[i].Position;
+        mShadowPassCBs[lightIndex].RenderTargetSize = DirectX::XMFLOAT2((float)w, (float)h);
+        mShadowPassCBs[lightIndex].InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / w, 1.0f / h);
+        mShadowPassCBs[lightIndex].NearZ = dynamicLights.LightTransforms[lightIndex].NearZ;
+        mShadowPassCBs[lightIndex].FarZ = dynamicLights.LightTransforms[lightIndex].FarZ;
+
+        currPassCB->CopyData(lightIndex + 1, mShadowPassCBs[lightIndex]);
+    }
+
+    for (int i = 0; i < dynamicLights.SpotLights.size(); i++, lightIndex++)
+    {
+        DirectX::XMMATRIX view = XMLoadFloat4x4(&dynamicLights.LightTransforms[lightIndex].ViewMatrix);
+        DirectX::XMMATRIX proj = XMLoadFloat4x4(&dynamicLights.LightTransforms[lightIndex].ProjectionMatrix);
+
+        DirectX::XMMATRIX viewProj = XMMatrixMultiply(view, proj);
+        DirectX::XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
+        DirectX::XMMATRIX invProj = XMMatrixInverse(&XMMatrixDeterminant(proj), proj);
+        DirectX::XMMATRIX invViewProj = XMMatrixInverse(&XMMatrixDeterminant(viewProj), viewProj);
+
+        UINT w = mShadowMaps[lightIndex]->Width();
+        UINT h = mShadowMaps[lightIndex]->Height();
+
+        XMStoreFloat4x4(&mShadowPassCBs[lightIndex].View, XMMatrixTranspose(view));
+        XMStoreFloat4x4(&mShadowPassCBs[lightIndex].InvView, XMMatrixTranspose(invView));
+        XMStoreFloat4x4(&mShadowPassCBs[lightIndex].Proj, XMMatrixTranspose(proj));
+        XMStoreFloat4x4(&mShadowPassCBs[lightIndex].InvProj, XMMatrixTranspose(invProj));
+        XMStoreFloat4x4(&mShadowPassCBs[lightIndex].ViewProj, XMMatrixTranspose(viewProj));
+        XMStoreFloat4x4(&mShadowPassCBs[lightIndex].InvViewProj, XMMatrixTranspose(invViewProj));
+        mShadowPassCBs[lightIndex].EyePosW = dynamicLights.SpotLights[i].Position;
         mShadowPassCBs[lightIndex].RenderTargetSize = DirectX::XMFLOAT2((float)w, (float)h);
         mShadowPassCBs[lightIndex].InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / w, 1.0f / h);
         mShadowPassCBs[lightIndex].NearZ = dynamicLights.LightTransforms[lightIndex].NearZ;
@@ -44,7 +71,6 @@ void EngineApp::UpdateShadowTransform(const GameTimer& gt)
     for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++, lightIndex++)
     {
         DirectX::XMFLOAT3 fauxPosition = DirectX::XMFLOAT3(bounds * mMainPassCB.Lights[lightIndex].Direction.x, bounds * mMainPassCB.Lights[lightIndex].Direction.y, bounds * mMainPassCB.Lights[lightIndex].Direction.z);
-        DirectX::XMVECTOR lightDir = XMLoadFloat3(&mMainPassCB.Lights[lightIndex].Direction);
         DirectX::XMVECTOR lightPos = XMLoadFloat3(&fauxPosition);
         DirectX::XMVECTOR targetPos = XMLoadFloat3(&mSceneBounds.Center);
         DirectX::XMVECTOR lightUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -79,13 +105,19 @@ void EngineApp::UpdateShadowTransform(const GameTimer& gt)
 
     for (int i = 0; i < dynamicLights.SpotLights.size(); i++, lightIndex++)
     {
+        DirectX::XMFLOAT3 up = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
         DirectX::XMVECTOR lightDir = XMLoadFloat3(&mMainPassCB.Lights[lightIndex].Direction);
         DirectX::XMVECTOR lightPos = XMLoadFloat3(&mMainPassCB.Lights[lightIndex].Position);
-        DirectX::XMVECTOR lightUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-        DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, DirectX::XMVectorAdd(lightPos, lightDir), lightUp);
+        
+        DirectX::XMVECTOR lightUp = XMLoadFloat3(&up);
+        DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, DirectX::XMVectorAdd(lightPos,  DirectX::XMVector3Normalize(lightDir)), lightUp);
+
+        dynamicLights.LightTransforms[lightIndex].NearZ = 10.0f;
+        dynamicLights.LightTransforms[lightIndex].FarZ = 80.0f;
 
         // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
         DirectX::XMMATRIX T(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f);
+            
         DirectX::XMMATRIX lightProj = DirectX::XMMatrixPerspectiveFovLH(mMainPassCB.Lights[lightIndex].OuterConeAngle, 1.0f, dynamicLights.LightTransforms[lightIndex].NearZ, dynamicLights.LightTransforms[lightIndex].FarZ);
 
         DirectX::XMMATRIX S = lightView * lightProj * T;
