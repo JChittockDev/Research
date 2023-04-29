@@ -107,7 +107,6 @@
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
-    <ClCompile Include="Shaders\Compiler\ShaderCompiler.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
     <ClCompile Include="Update\UpdateSkinnedMesh.cpp" />
@@ -143,7 +142,6 @@
     <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Render\Resources\TransformNode.h" />
     <ClInclude Include="Serialize\LevelReader.h" />
-    <ClInclude Include="Shaders\Compiler\ShaderCompiler.h" />
     <ClInclude Include="Utilities\GameTimer.h" />
     <ClInclude Include="Models\Internal\GeometryGenerator.h" />
     <ClInclude Include="Common\Math.h" />
