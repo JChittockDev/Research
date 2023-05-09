@@ -62,7 +62,7 @@ protected:
 
 	void FlushCommandQueue();
 
-	ID3D12Resource* CurrentBackBuffer()const;
+    Microsoft::WRL::ComPtr<ID3D12Resource> CurrentBackBuffer() const;
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
 
@@ -111,7 +111,7 @@ protected:
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
 
     D3D12_VIEWPORT mScreenViewport; 
-    D3D12_RECT mScissorRect;
+    D3D12_RECT mScreenScissorRect;
 
 	UINT mRtvDescriptorSize = 0;
 	UINT mDsvDescriptorSize = 0;

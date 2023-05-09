@@ -95,6 +95,7 @@
     <ClCompile Include="Build\PushRenderItems.cpp" />
     <ClCompile Include="Build\SetGenericRootSignature.cpp" />
     <ClCompile Include="Build\CompileShader.cpp" />
+    <ClCompile Include="Build\SetRenderPassResources.cpp" />
     <ClCompile Include="Build\SetRootSignatures.cpp" />
     <ClCompile Include="Build\SetSSAORootSignature.cpp" />
     <ClCompile Include="Build\ImportTextures.cpp" />
@@ -104,8 +105,13 @@
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
     <ClCompile Include="Objects\ViewFrustum.cpp" />
+    <ClCompile Include="Render\Passes\DepthPass.cpp" />
+    <ClCompile Include="Render\Passes\DiffusePass.cpp" />
+    <ClCompile Include="Render\Manager\Render.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
+    <ClCompile Include="Render\Passes\ShadowPass.cpp" />
+    <ClCompile Include="Render\Passes\SsaoPass.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
@@ -113,16 +119,13 @@
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
     <ClCompile Include="Common\Math.cpp" />
-    <ClCompile Include="Draw\DrawShadowMap.cpp" />
-    <ClCompile Include="Draw\DrawNormalsDepth.cpp" />
-    <ClCompile Include="Draw\DrawRenderItems.cpp" />
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
     <ClCompile Include="Build\PushGenericMesh.cpp" />
     <ClCompile Include="Render\Resources\Mesh.cpp" />
-    <ClCompile Include="Render\Passes\ShadowMap.cpp" />
+    <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="EngineApp.cpp" />
-    <ClCompile Include="Render\Passes\Ssao.cpp" />
+    <ClCompile Include="Render\Resources\Ssao.cpp" />
     <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp" />
@@ -151,8 +154,8 @@
     <ClInclude Include="Render\Resources\FrameResource.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
     <ClInclude Include="Render\Resources\Animation.h" />
-    <ClInclude Include="Render\Passes\ShadowMap.h" />
-    <ClInclude Include="Render\Passes\Ssao.h" />
+    <ClInclude Include="Render\Resources\ShadowMap.h" />
+    <ClInclude Include="Render\Resources\Ssao.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

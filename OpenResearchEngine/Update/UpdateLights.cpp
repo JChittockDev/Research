@@ -20,7 +20,7 @@ void EngineApp::UpdateLights(const GameTimer& gt)
     for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++)
     {
         DirectX::XMVECTOR lightPos = DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMVectorSet(dynamicLights.SpotLights[i].Direction.x, 
-                                                                                                              -dynamicLights.SpotLights[i].Direction.y, 
+                                                                                                              -dynamicLights.SpotLights[i].Direction.y,
                                                                                                               dynamicLights.SpotLights[i].Direction.z, 0.f)), bounds);
         DirectX::XMVECTOR targetPos = XMLoadFloat3(&mSceneBounds.Center);
         DirectX::XMVECTOR lightUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -31,19 +31,19 @@ void EngineApp::UpdateLights(const GameTimer& gt)
         DirectX::XMFLOAT4X4 transformMatrix = Math::CreateTransformMatrix(dynamicLights.LightTransforms[i].ReferencePosition, rotation, scale);
         std::string renderItemPath = "Models\\directionallight.obj_" + std::to_string(i);
 
-        for (int b = 0; b < mLightRenderItemMap[renderItemPath].size(); b++)
+        for (int b = 0; b < mLightRenderItemMap.at(renderItemPath).size(); b++)
         {
-            if (mLightRenderItemMap[renderItemPath][b]->NumFramesDirty > 0)
+            if (mLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty > 0)
             {
                 DirectX::XMMATRIX transform = DirectX::XMLoadFloat4x4(&transformMatrix);
                 ObjectConstants objConstants;
                 XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(transform));
-                XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(DirectX::XMLoadFloat4x4(&mLightRenderItemMap[renderItemPath][b]->TexTransform)));
-                objConstants.MaterialIndex = mLightRenderItemMap[renderItemPath][b]->Mat->MatCBIndex;
-                currObjectCB->CopyData(mLightRenderItemMap[renderItemPath][b]->ObjCBIndex, objConstants);
+                XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(DirectX::XMLoadFloat4x4(&mLightRenderItemMap.at(renderItemPath)[b]->TexTransform)));
+                objConstants.MaterialIndex = mLightRenderItemMap.at(renderItemPath)[b]->Mat->MatCBIndex;
+                currObjectCB->CopyData(mLightRenderItemMap.at(renderItemPath)[b]->ObjCBIndex, objConstants);
 
                 // Next FrameResource need to be updated too.
-                mLightRenderItemMap[renderItemPath][b]->NumFramesDirty--;
+                mLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty--;
             }
         }
     }
@@ -61,19 +61,19 @@ void EngineApp::UpdateLights(const GameTimer& gt)
         DirectX::XMFLOAT4X4 transformMatrix = Math::CreateTransformMatrix(dynamicLights.SpotLights[i].Position, rotation, scale);
         std::string renderItemPath = "Models\\spotlight.obj_" + std::to_string(i);
 
-        for (int b = 0; b < mLightRenderItemMap[renderItemPath].size(); b++)
+        for (int b = 0; b < mLightRenderItemMap.at(renderItemPath).size(); b++)
         {
-            if (mLightRenderItemMap[renderItemPath][b]->NumFramesDirty > 0)
+            if (mLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty > 0)
             {
                 DirectX::XMMATRIX transform = DirectX::XMLoadFloat4x4(&transformMatrix);
                 ObjectConstants objConstants;
                 XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(transform));
-                XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(DirectX::XMLoadFloat4x4(&mLightRenderItemMap[renderItemPath][b]->TexTransform)));
-                objConstants.MaterialIndex = mLightRenderItemMap[renderItemPath][b]->Mat->MatCBIndex;
-                currObjectCB->CopyData(mLightRenderItemMap[renderItemPath][b]->ObjCBIndex, objConstants);
+                XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(DirectX::XMLoadFloat4x4(&mLightRenderItemMap.at(renderItemPath)[b]->TexTransform)));
+                objConstants.MaterialIndex = mLightRenderItemMap.at(renderItemPath)[b]->Mat->MatCBIndex;
+                currObjectCB->CopyData(mLightRenderItemMap.at(renderItemPath)[b]->ObjCBIndex, objConstants);
 
                 // Next FrameResource need to be updated too.
-                mLightRenderItemMap[renderItemPath][b]->NumFramesDirty--;
+                mLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty--;
             }
         }
     }

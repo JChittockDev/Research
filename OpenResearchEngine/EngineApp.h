@@ -7,9 +7,8 @@
 #include "Models/Internal/GeometryGenerator.h"
 #include "Render/Resources/FrameResource.h"
 #include "Render/Resources/Mesh.h"
-#include "Shaders/Compiler/ShaderCompiler.h"
-#include "Render/Passes/ShadowMap.h"
-#include "Render/Passes/Ssao.h"
+#include "Render/Resources/ShadowMap.h"
+#include "Render/Resources/Ssao.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Animation.h"
 #include "Serialize/LevelReader.h"
@@ -61,9 +60,17 @@ private:
     void SetGenericRootSignature();
     void SetSsaoRootSignature();
     void SerializeLevel();
+    void SetRenderPassResources();
     void BuildScene();
 
+    void Render(FrameResource* currentFrameResource);
+    void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
+    void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
+    void DepthPass(const D3D12_CPU_DESCRIPTOR_HANDLE& dsv, FrameResource* currentFrameResource);
+    void SsaoPass(int blurCount, FrameResource* currentFrameResource);
+    void DiffusePass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource);
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
+    
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& ritems);
     void DrawSceneToShadowMap();
     void DrawNormalsAndDepth();
@@ -76,19 +83,16 @@ private:
     std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
 private:
-    DynamicLights dynamicLights;
-
     POINT mLastMousePos;
     Camera mCamera;
-    std::vector<std::unique_ptr<FrameResource>> mFrameResources;
-    FrameResource* mCurrFrameResource = nullptr;
-    int mCurrFrameResourceIndex = 0;
 
+    DirectX::BoundingSphere mSceneBounds;
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mNullSrv;
 
+    DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
     std::unordered_map<std::string, std::shared_ptr<Texture>> mTextures;
     std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
@@ -106,28 +110,21 @@ private:
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
 
+    int mCurrFrameResourceIndex = 0;
+    FrameResource* mCurrFrameResource = nullptr;
     std::vector<std::shared_ptr<RenderItem>> mRenderItems;
+    std::vector<std::shared_ptr<FrameResource>> mFrameResources;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mMeshRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mLightRenderItemMap;
-    std::vector<std::shared_ptr<RenderItem>> mRenderItemLayer[(int)RenderLayer::Count];
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mRenderItemLayers;
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;
+    std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndicies;
 
-    UINT mSkyTexHeapIndex = 0;
-    UINT mShadowMapHeapIndex = 0;
-    UINT mShadowMapHeapIndex2 = 0;
-    UINT mSsaoHeapIndexStart = 0;
-    UINT mSsaoAmbientMapIndex = 0;
-    UINT mNullCubeSrvIndex = 0;
-    UINT mNullTexSrvIndex1 = 0;
-    UINT mNullTexSrvIndex2 = 0;
-    UINT mSkinnedSrvHeapStart = 0;
     UINT SkinnedCBIndex = 0;
     UINT ObjectCBIndex = 0;
 
     PassConstants mMainPassCB;
+    std::unique_ptr<Ssao> mSsao;
     std::vector<PassConstants> mShadowPassCBs;
     std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
-
-    std::unique_ptr<Ssao> mSsao;
-    DirectX::BoundingSphere mSceneBounds;
 };

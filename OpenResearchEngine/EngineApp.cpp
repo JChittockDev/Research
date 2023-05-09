@@ -1,7 +1,3 @@
-//***************************************************************************************
-// EngineApp.cpp by Frank Luna (C) 2015 All Rights Reserved.
-//***************************************************************************************
-
 #include "EngineApp.h"
 
 using Microsoft::WRL::ComPtr;
@@ -45,18 +41,20 @@ EngineApp::~EngineApp()
 
 bool EngineApp::Initialize()
 {
-    if(!D3DApp::Initialize()) { return false; }
+    if(!D3DApp::Initialize()) 
+    { 
+        return false; 
+    }
 
     this->mMainWndCaption = L"GRAPE";
     ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
 	mCamera.SetPosition(0.0f, 2.0f, 15.0f);
     mCamera.RotateY(3.25f);
-    mSsao = std::make_unique<Ssao>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
-    
+
     BuildScene();
+    SetRenderPassResources();
     
-    mSsao->SetPSOs(mPSOs["ssao"].Get(), mPSOs["ssaoBlur"].Get());
     ThrowIfFailed(mCommandList->Close());
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
@@ -70,7 +68,7 @@ void EngineApp::OnResize()
     D3DApp::OnResize();
 	mCamera.SetLens(0.25f*Math::Pi, AspectRatio(), 1.0f, 1000.0f);
 
-    if(mSsao != nullptr)
+    if (mSsao != nullptr)
     {
         mSsao->OnResize(mClientWidth, mClientHeight);
         mSsao->RebuildDescriptors(mDepthStencilBuffer.Get());
@@ -97,131 +95,13 @@ void EngineApp::Update(const GameTimer& gt)
 
 void EngineApp::Draw(const GameTimer& gt)
 {
-    auto cmdListAlloc = mCurrFrameResource->CmdListAlloc;
+    Render(mCurrFrameResource);
 
-    // Reuse the memory associated with command recording.
-    // We can only reset when the associated command lists have finished execution on the GPU.
-    ThrowIfFailed(cmdListAlloc->Reset());
-
-    // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
-    // Reusing the command list reuses memory.
-    ThrowIfFailed(mCommandList->Reset(cmdListAlloc.Get(), mPSOs["opaque"].Get()));
-
-    ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
-    mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
-    mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-
-	//
-	// Shadow map pass.
-	//
-
-    // Bind all the materials used in this scene.  For structured buffers, we can bypass the heap and 
-    // set as a root descriptor.
-    auto matBuffer = mCurrFrameResource->MaterialBuffer->Resource();
-    mCommandList->SetGraphicsRootShaderResourceView(3, matBuffer->GetGPUVirtualAddress());
-	
-    // Bind null SRV for shadow map pass.
-    mCommandList->SetGraphicsRootDescriptorTable(4, mNullSrv);	 
-
-    // Bind all the textures used in this scene.  Observe
-    // that we only have to specify the first descriptor in the table.  
-    // The root signature knows how many descriptors are expected in the table.
-    mCommandList->SetGraphicsRootDescriptorTable(5, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-
-    DrawSceneToShadowMap();
-
-	//
-	// Normal/depth pass.
-	//
-	
-	DrawNormalsAndDepth();
-	
-	//
-	//
-	// 
-	
-    mCommandList->SetGraphicsRootSignature(mSsaoRootSignature.Get());
-    mSsao->ComputeSsao(mCommandList.Get(), mCurrFrameResource, 2);
-	
-	//
-	// Main rendering pass.
-	//
-	
-    mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-
-    // Rebind state whenever graphics root signature changes.
-
-    // Bind all the materials used in this scene.  For structured buffers, we can bypass the heap and 
-    // set as a root descriptor.
-    matBuffer = mCurrFrameResource->MaterialBuffer->Resource();
-    mCommandList->SetGraphicsRootShaderResourceView(3, matBuffer->GetGPUVirtualAddress());
-
-
-    mCommandList->RSSetViewports(1, &mScreenViewport);
-    mCommandList->RSSetScissorRects(1, &mScissorRect);
-
-    // Indicate a state transition on the resource usage.
-	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-
-    // Clear the back buffer and depth buffer.
-    mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
-    mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-    // Specify the buffers we are going to render to.
-    mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
-
-	// Bind all the textures used in this scene.  Observe
-    // that we only have to specify the first descriptor in the table.  
-    // The root signature knows how many descriptors are expected in the table.
-    mCommandList->SetGraphicsRootDescriptorTable(5, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-	
-    auto passCB = mCurrFrameResource->PassCB->Resource();
-	mCommandList->SetGraphicsRootConstantBufferView(2, passCB->GetGPUVirtualAddress());
-
-    // Bind the sky cube map.  For our demos, we just use one "world" cube map representing the environment
-    // from far away, so all objects will use the same cube map and we only need to set it once per-frame.  
-    // If we wanted to use "local" cube maps, we would have to change them per-object, or dynamically
-    // index into an array of cube maps.
-
-    CD3DX12_GPU_DESCRIPTOR_HANDLE skyTexDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-    skyTexDescriptor.Offset(mSkyTexHeapIndex, mCbvSrvUavDescriptorSize);
-    mCommandList->SetGraphicsRootDescriptorTable(4, skyTexDescriptor);
-
-    mCommandList->SetPipelineState(mPSOs["opaque"].Get());
-    DrawRenderItems(mCommandList.Get(), mRenderItemLayer[(int)RenderLayer::Opaque]);
-
-    mCommandList->SetPipelineState(mPSOs["skinnedOpaque"].Get());
-    DrawRenderItems(mCommandList.Get(), mRenderItemLayer[(int)RenderLayer::SkinnedOpaque]);
-
-    mCommandList->SetPipelineState(mPSOs["debug"].Get());
-    DrawRenderItems(mCommandList.Get(), mRenderItemLayer[(int)RenderLayer::Debug]);
-
-	mCommandList->SetPipelineState(mPSOs["sky"].Get());
-	DrawRenderItems(mCommandList.Get(), mRenderItemLayer[(int)RenderLayer::Sky]);
-
-    // Indicate a state transition on the resource usage.
-	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-
-    // Done recording commands.
-    ThrowIfFailed(mCommandList->Close());
-
-    // Add the command list to the queue for execution.
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-    // Swap the back and front buffers
     ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
-
-    // Advance the fence value to mark commands up to this fence point.
     mCurrFrameResource->Fence = ++mCurrentFence;
-
-    // Add an instruction to the command queue to set a new fence point. 
-    // Because we are on the GPU timeline, the new fence point won't be 
-    // set until the GPU finishes processing all the commands prior to this Signal().
     mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 }
  

@@ -46,7 +46,7 @@ void EngineApp::ImportTextures()
 
     for (int i = 0; i < (int)texNames.size(); ++i)
     {
-        if (mTextures.find(texNames[i]) == std::end(mTextures))
+        if (mTextures.find(texNames[i]) == mTextures.end())
         {
             auto texMap = std::make_unique<Texture>();
             texMap->Name = texNames[i];

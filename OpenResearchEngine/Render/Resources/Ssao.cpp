@@ -91,9 +91,19 @@ CD3DX12_GPU_DESCRIPTOR_HANDLE Ssao::NormalMapSrv()const
     return mhNormalMapGpuSrv;
 }
 
+CD3DX12_CPU_DESCRIPTOR_HANDLE Ssao::AmbientMapRtv()const
+{
+    return mhAmbientMap0CpuRtv;
+}
+
 CD3DX12_GPU_DESCRIPTOR_HANDLE Ssao::AmbientMapSrv()const
 {
     return mhAmbientMap0GpuSrv;
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE Ssao::RandomVectorMapSrv()const
+{
+    return mhRandomVectorMapGpuSrv;
 }
 
 void Ssao::BuildDescriptors(
@@ -163,6 +173,11 @@ void Ssao::SetPSOs(ID3D12PipelineState* ssaoPso, ID3D12PipelineState* ssaoBlurPs
 {
     mSsaoPso = ssaoPso;
     mBlurPso = ssaoBlurPso;
+}
+
+ID3D12PipelineState* Ssao::GetPSO()
+{
+    return mSsaoPso;
 }
 
 void Ssao::OnResize(UINT newWidth, UINT newHeight)
