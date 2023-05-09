@@ -45,7 +45,7 @@
     <ClCompile Include="EngineApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Ssao.cpp">
+    <ClCompile Include="Render\Resources\SsaoMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\PushGenericMesh.cpp">
@@ -191,7 +191,7 @@
     <ClInclude Include="Render\Resources\ShadowMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Ssao.h">
+    <ClInclude Include="Render\Resources\SsaoMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EngineApp.h">

@@ -17,14 +17,14 @@ void EngineApp::UpdateSsaoCB(const GameTimer& gt)
     ssaoCB.InvProj = mMainPassCB.InvProj;
     XMStoreFloat4x4(&ssaoCB.ProjTex, XMMatrixTranspose(P * T));
 
-    mSsao->GetOffsetVectors(ssaoCB.OffsetVectors);
+    mSsaoMap->GetOffsetVectors(ssaoCB.OffsetVectors);
 
-    auto blurWeights = mSsao->CalcGaussWeights(2.5f);
+    auto blurWeights = mSsaoMap->CalcGaussWeights(2.5f);
     ssaoCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
     ssaoCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
     ssaoCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
 
-    ssaoCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSsao->SsaoMapWidth(), 1.0f / mSsao->SsaoMapHeight());
+    ssaoCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSsaoMap->SsaoMapWidth(), 1.0f / mSsaoMap->SsaoMapHeight());
 
     // Coordinates given in view space.
     ssaoCB.OcclusionRadius = 0.5f;

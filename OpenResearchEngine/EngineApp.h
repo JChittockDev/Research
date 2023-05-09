@@ -8,7 +8,7 @@
 #include "Render/Resources/FrameResource.h"
 #include "Render/Resources/Mesh.h"
 #include "Render/Resources/ShadowMap.h"
-#include "Render/Resources/Ssao.h"
+#include "Render/Resources/SsaoMap.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Animation.h"
 #include "Serialize/LevelReader.h"
@@ -124,7 +124,8 @@ private:
     UINT ObjectCBIndex = 0;
 
     PassConstants mMainPassCB;
-    std::unique_ptr<Ssao> mSsao;
     std::vector<PassConstants> mShadowPassCBs;
+    
+    std::unique_ptr<SsaoMap> mSsaoMap;
     std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
 };

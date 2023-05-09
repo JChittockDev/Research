@@ -11,16 +11,16 @@
 #include "../Resources/FrameResource.h"
  
  
-class Ssao
+class SsaoMap
 {
 public:
 
-	Ssao(ID3D12Device* device, 
+    SsaoMap(ID3D12Device* device,
         ID3D12GraphicsCommandList* cmdList, 
         UINT width, UINT height);
-    Ssao(const Ssao& rhs) = delete;
-    Ssao& operator=(const Ssao& rhs) = delete;
-    ~Ssao() = default; 
+    SsaoMap(const SsaoMap& rhs) = delete;
+    SsaoMap& operator=(const SsaoMap& rhs) = delete;
+    ~SsaoMap() = default;
 
     static const DXGI_FORMAT AmbientMapFormat = DXGI_FORMAT_R16_UNORM;
     static const DXGI_FORMAT NormalMapFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -60,17 +60,6 @@ public:
 	/// Call when the backbuffer is resized.  
 	///</summary>
 	void OnResize(UINT newWidth, UINT newHeight);
-  
-    ///<summary>
-    /// Changes the render target to the Ambient render target and draws a fullscreen
-    /// quad to kick off the pixel shader to compute the AmbientMap.  We still keep the
-    /// main depth buffer binded to the pipeline, but depth buffer read/writes
-    /// are disabled, as we do not need the depth buffer computing the Ambient map.
-    ///</summary>
-	void ComputeSsao(
-        ID3D12GraphicsCommandList* cmdList, 
-        FrameResource* currFrame, 
-        int blurCount);
 
     void BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, FrameResource* currFrame, int blurCount);
 	void BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, bool horzBlur);
