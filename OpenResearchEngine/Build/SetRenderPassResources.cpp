@@ -9,13 +9,13 @@ void EngineApp::SetRenderPassResources()
     }
     mShadowPassCBs.resize(numLights);
 
-    mSsao = std::make_unique<Ssao>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
-    mSsao->SetPSOs(mPSOs["ssao"].Get(), mPSOs["ssaoBlur"].Get());
+    mSsaoMap = std::make_unique<SsaoMap>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mSsaoMap->SetPSOs(mPSOs["ssao"].Get(), mPSOs["ssaoBlur"].Get());
 
     for (int i = 0; i < dynamicLights.GetNumLights(); i++)
     {
         mShadowMaps[i]->BuildDescriptors(GetCpuSrv(mLayoutIndicies["mShadowMapHeapIndex"].first + i), GetGpuSrv(mLayoutIndicies["mShadowMapHeapIndex"].first + i), GetDsv(i + 1));
     }
 
-    mSsao->BuildDescriptors(mDepthStencilBuffer.Get(), GetCpuSrv(mLayoutIndicies["mSsaoHeapIndexStart"].first), GetGpuSrv(mLayoutIndicies["mSsaoHeapIndexStart"].first), GetRtv(SwapChainBufferCount), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
+    mSsaoMap->BuildDescriptors(mDepthStencilBuffer.Get(), GetCpuSrv(mLayoutIndicies["mSsaoHeapIndexStart"].first), GetGpuSrv(mLayoutIndicies["mSsaoHeapIndexStart"].first), GetRtv(SwapChainBufferCount), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
 }

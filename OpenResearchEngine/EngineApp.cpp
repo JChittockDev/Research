@@ -68,10 +68,10 @@ void EngineApp::OnResize()
     D3DApp::OnResize();
 	mCamera.SetLens(0.25f*Math::Pi, AspectRatio(), 1.0f, 1000.0f);
 
-    if (mSsao != nullptr)
+    if (mSsaoMap != nullptr)
     {
-        mSsao->OnResize(mClientWidth, mClientHeight);
-        mSsao->RebuildDescriptors(mDepthStencilBuffer.Get());
+        mSsaoMap->OnResize(mClientWidth, mClientHeight);
+        mSsaoMap->RebuildDescriptors(mDepthStencilBuffer.Get());
     }
 }
 

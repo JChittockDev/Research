@@ -2,43 +2,41 @@
 // Ssao.cpp by Frank Luna (C) 2011 All Rights Reserved.
 //***************************************************************************************
 
-#include "Ssao.h"
+#include "SsaoMap.h"
 #include <DirectXPackedVector.h>
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 using namespace Microsoft::WRL;
 
-Ssao::Ssao(
+SsaoMap::SsaoMap(
     ID3D12Device* device,
     ID3D12GraphicsCommandList* cmdList, 
     UINT width, UINT height)
 
 {
     md3dDevice = device;
-
     OnResize(width, height);
-
 	BuildOffsetVectors();
 	BuildRandomVectorTexture(cmdList);
 }
 
-UINT Ssao::SsaoMapWidth()const
+UINT SsaoMap::SsaoMapWidth()const
 {
     return mRenderTargetWidth / 2;
 }
 
-UINT Ssao::SsaoMapHeight()const
+UINT SsaoMap::SsaoMapHeight()const
 {
     return mRenderTargetHeight / 2;
 }
 
-void Ssao::GetOffsetVectors(DirectX::XMFLOAT4 offsets[14])
+void SsaoMap::GetOffsetVectors(DirectX::XMFLOAT4 offsets[14])
 {
     std::copy(&mOffsets[0], &mOffsets[14], &offsets[0]);
 }
 
-std::vector<float> Ssao::CalcGaussWeights(float sigma)
+std::vector<float> SsaoMap::CalcGaussWeights(float sigma)
 {
     float twoSigma2 = 2.0f*sigma*sigma;
 
@@ -71,42 +69,42 @@ std::vector<float> Ssao::CalcGaussWeights(float sigma)
     return weights;
 }
 
-ID3D12Resource* Ssao::NormalMap()
+ID3D12Resource* SsaoMap::NormalMap()
 {
     return mNormalMap.Get();
 }
 
-ID3D12Resource* Ssao::AmbientMap()
+ID3D12Resource* SsaoMap::AmbientMap()
 {
     return mAmbientMap0.Get();
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE Ssao::NormalMapRtv()const
+CD3DX12_CPU_DESCRIPTOR_HANDLE SsaoMap::NormalMapRtv()const
 {
     return mhNormalMapCpuRtv;
 }
 
-CD3DX12_GPU_DESCRIPTOR_HANDLE Ssao::NormalMapSrv()const
+CD3DX12_GPU_DESCRIPTOR_HANDLE SsaoMap::NormalMapSrv()const
 {
     return mhNormalMapGpuSrv;
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE Ssao::AmbientMapRtv()const
+CD3DX12_CPU_DESCRIPTOR_HANDLE SsaoMap::AmbientMapRtv()const
 {
     return mhAmbientMap0CpuRtv;
 }
 
-CD3DX12_GPU_DESCRIPTOR_HANDLE Ssao::AmbientMapSrv()const
+CD3DX12_GPU_DESCRIPTOR_HANDLE SsaoMap::AmbientMapSrv()const
 {
     return mhAmbientMap0GpuSrv;
 }
 
-CD3DX12_GPU_DESCRIPTOR_HANDLE Ssao::RandomVectorMapSrv()const
+CD3DX12_GPU_DESCRIPTOR_HANDLE SsaoMap::RandomVectorMapSrv()const
 {
     return mhRandomVectorMapGpuSrv;
 }
 
-void Ssao::BuildDescriptors(
+void SsaoMap::BuildDescriptors(
     ID3D12Resource* depthStencilBuffer,
     CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuSrv,
     CD3DX12_GPU_DESCRIPTOR_HANDLE hGpuSrv,
@@ -137,7 +135,7 @@ void Ssao::BuildDescriptors(
     RebuildDescriptors(depthStencilBuffer);
 }
 
-void Ssao::RebuildDescriptors(ID3D12Resource* depthStencilBuffer)
+void SsaoMap::RebuildDescriptors(ID3D12Resource* depthStencilBuffer)
 {
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -169,18 +167,18 @@ void Ssao::RebuildDescriptors(ID3D12Resource* depthStencilBuffer)
     md3dDevice->CreateRenderTargetView(mAmbientMap1.Get(), &rtvDesc, mhAmbientMap1CpuRtv);
 }
 
-void Ssao::SetPSOs(ID3D12PipelineState* ssaoPso, ID3D12PipelineState* ssaoBlurPso)
+void SsaoMap::SetPSOs(ID3D12PipelineState* ssaoPso, ID3D12PipelineState* ssaoBlurPso)
 {
     mSsaoPso = ssaoPso;
     mBlurPso = ssaoBlurPso;
 }
 
-ID3D12PipelineState* Ssao::GetPSO()
+ID3D12PipelineState* SsaoMap::GetPSO()
 {
     return mSsaoPso;
 }
 
-void Ssao::OnResize(UINT newWidth, UINT newHeight)
+void SsaoMap::OnResize(UINT newWidth, UINT newHeight)
 {
     if(mRenderTargetWidth != newWidth || mRenderTargetHeight != newHeight)
     {
@@ -200,54 +198,8 @@ void Ssao::OnResize(UINT newWidth, UINT newHeight)
         BuildResources();
     }
 }
-
-void Ssao::ComputeSsao(
-    ID3D12GraphicsCommandList* cmdList,
-    FrameResource* currFrame, 
-    int blurCount)
-{
-	cmdList->RSSetViewports(1, &mViewport);
-    cmdList->RSSetScissorRects(1, &mScissorRect);
-
-	// We compute the initial SSAO to AmbientMap0.
-
-    // Change to RENDER_TARGET.
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mAmbientMap0.Get(),
-        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET));
-  
-	float clearValue[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    cmdList->ClearRenderTargetView(mhAmbientMap0CpuRtv, clearValue, 0, nullptr);
-     
-	// Specify the buffers we are going to render to.
-    cmdList->OMSetRenderTargets(1, &mhAmbientMap0CpuRtv, true, nullptr);
-
-    // Bind the constant buffer for this pass.
-    auto ssaoCBAddress = currFrame->SsaoCB->Resource()->GetGPUVirtualAddress();
-    cmdList->SetGraphicsRootConstantBufferView(0, ssaoCBAddress);
-    cmdList->SetGraphicsRoot32BitConstant(1, 0, 0);
-
-	// Bind the normal and depth maps.
-    cmdList->SetGraphicsRootDescriptorTable(2, mhNormalMapGpuSrv);
-
-    // Bind the random vector map.
-    cmdList->SetGraphicsRootDescriptorTable(3, mhRandomVectorMapGpuSrv);
-
-    cmdList->SetPipelineState(mSsaoPso);
-
-	// Draw fullscreen quad.
-	cmdList->IASetVertexBuffers(0, 0, nullptr);
-    cmdList->IASetIndexBuffer(nullptr);
-    cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	cmdList->DrawInstanced(6, 1, 0, 0);
-   
-	// Change back to GENERIC_READ so we can read the texture in a shader.
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mAmbientMap0.Get(),
-        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ));
-
-    BlurAmbientMap(cmdList, currFrame, blurCount);
-}
  
-void Ssao::BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, FrameResource* currFrame, int blurCount)
+void SsaoMap::BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, FrameResource* currFrame, int blurCount)
 {
     cmdList->SetPipelineState(mBlurPso);
 
@@ -261,7 +213,7 @@ void Ssao::BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, FrameResource* cur
     }
 }
 
-void Ssao::BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, bool horzBlur)
+void SsaoMap::BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, bool horzBlur)
 {
 	ID3D12Resource* output = nullptr;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE inputSrv;
@@ -311,7 +263,7 @@ void Ssao::BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, bool horzBlur)
         D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ));
 }
  
-void Ssao::BuildResources()
+void SsaoMap::BuildResources()
 {
 	// Free the old resources if they exist.
     mNormalMap = nullptr;
@@ -326,7 +278,7 @@ void Ssao::BuildResources()
     texDesc.Height = mRenderTargetHeight;
     texDesc.DepthOrArraySize = 1;
     texDesc.MipLevels = 1;
-    texDesc.Format = Ssao::NormalMapFormat;
+    texDesc.Format = SsaoMap::NormalMapFormat;
     texDesc.SampleDesc.Count = 1;
     texDesc.SampleDesc.Quality = 0;
     texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -346,7 +298,7 @@ void Ssao::BuildResources()
 	// Ambient occlusion maps are at half resolution.
     texDesc.Width = mRenderTargetWidth / 2;
     texDesc.Height = mRenderTargetHeight / 2;
-    texDesc.Format = Ssao::AmbientMapFormat;
+    texDesc.Format = SsaoMap::AmbientMapFormat;
 
     float ambientClearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
     optClear = CD3DX12_CLEAR_VALUE(AmbientMapFormat, ambientClearColor);
@@ -368,7 +320,7 @@ void Ssao::BuildResources()
         IID_PPV_ARGS(&mAmbientMap1)));
 }
 
-void Ssao::BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList)
+void SsaoMap::BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList)
 {
     D3D12_RESOURCE_DESC texDesc;
     ZeroMemory(&texDesc, sizeof(D3D12_RESOURCE_DESC));
@@ -439,7 +391,7 @@ void Ssao::BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList)
         D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ));
 }
  
-void Ssao::BuildOffsetVectors()
+void SsaoMap::BuildOffsetVectors()
 {
     // Start with 14 uniformly distributed vectors.  We choose the 8 corners of the cube
 	// and the 6 center points along each cube face.  We always alternate the points on 

@@ -125,7 +125,7 @@
     <ClCompile Include="Render\Resources\Mesh.cpp" />
     <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="EngineApp.cpp" />
-    <ClCompile Include="Render\Resources\Ssao.cpp" />
+    <ClCompile Include="Render\Resources\SsaoMap.cpp" />
     <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp" />
@@ -155,7 +155,7 @@
     <ClInclude Include="Render\Resources\RenderItem.h" />
     <ClInclude Include="Render\Resources\Animation.h" />
     <ClInclude Include="Render\Resources\ShadowMap.h" />
-    <ClInclude Include="Render\Resources\Ssao.h" />
+    <ClInclude Include="Render\Resources\SsaoMap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

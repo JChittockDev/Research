@@ -5,8 +5,8 @@ void EngineApp::DepthPass(const D3D12_CPU_DESCRIPTOR_HANDLE& dsv, FrameResource*
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
 
-    auto normalMap = mSsao->NormalMap();
-    auto normalMapRtv = mSsao->NormalMapRtv();
+    auto normalMap = mSsaoMap->NormalMap();
+    auto normalMapRtv = mSsaoMap->NormalMapRtv();
 
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(normalMap, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET));
     float clearValue[] = { 0.0f, 0.0f, 1.0f, 0.0f };

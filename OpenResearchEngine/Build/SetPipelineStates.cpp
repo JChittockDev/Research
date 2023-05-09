@@ -70,7 +70,7 @@ void EngineApp::SetPipelineStates()
     D3D12_GRAPHICS_PIPELINE_STATE_DESC drawNormalsPsoDesc = opaquePsoDesc;
     drawNormalsPsoDesc.VS = {reinterpret_cast<BYTE*>(mShaders["drawNormalsVS"]->GetBufferPointer()), mShaders["drawNormalsVS"]->GetBufferSize()};
     drawNormalsPsoDesc.PS = {reinterpret_cast<BYTE*>(mShaders["drawNormalsPS"]->GetBufferPointer()), mShaders["drawNormalsPS"]->GetBufferSize()};
-    drawNormalsPsoDesc.RTVFormats[0] = Ssao::NormalMapFormat;
+    drawNormalsPsoDesc.RTVFormats[0] = SsaoMap::NormalMapFormat;
     drawNormalsPsoDesc.SampleDesc.Count = 1;
     drawNormalsPsoDesc.SampleDesc.Quality = 0;
     drawNormalsPsoDesc.DSVFormat = mDepthStencilFormat;
@@ -94,7 +94,7 @@ void EngineApp::SetPipelineStates()
     // SSAO effect does not need the depth buffer.
     ssaoPsoDesc.DepthStencilState.DepthEnable = false;
     ssaoPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
-    ssaoPsoDesc.RTVFormats[0] = Ssao::AmbientMapFormat;
+    ssaoPsoDesc.RTVFormats[0] = SsaoMap::AmbientMapFormat;
     ssaoPsoDesc.SampleDesc.Count = 1;
     ssaoPsoDesc.SampleDesc.Quality = 0;
     ssaoPsoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
