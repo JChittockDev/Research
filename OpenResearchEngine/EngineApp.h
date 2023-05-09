@@ -7,9 +7,9 @@
 #include "Models/Internal/GeometryGenerator.h"
 #include "Render/Resources/FrameResource.h"
 #include "Render/Resources/Mesh.h"
-#include "Shaders/Compiler/ShaderCompiler.h"
 #include "Render/Passes/ShadowMap.h"
 #include "Render/Passes/Ssao.h"
+#include "Render/RenderCore.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Animation.h"
 #include "Serialize/LevelReader.h"
@@ -61,9 +61,11 @@ private:
     void SetGenericRootSignature();
     void SetSsaoRootSignature();
     void SerializeLevel();
+    void SetRenderPassResources();
     void BuildScene();
 
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
+
     void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& ritems);
     void DrawSceneToShadowMap();
     void DrawNormalsAndDepth();
@@ -80,7 +82,7 @@ private:
 
     POINT mLastMousePos;
     Camera mCamera;
-    std::vector<std::unique_ptr<FrameResource>> mFrameResources;
+    std::vector<std::shared_ptr<FrameResource>> mFrameResources;
     FrameResource* mCurrFrameResource = nullptr;
     int mCurrFrameResourceIndex = 0;
 
@@ -109,25 +111,17 @@ private:
     std::vector<std::shared_ptr<RenderItem>> mRenderItems;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mMeshRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mLightRenderItemMap;
-    std::vector<std::shared_ptr<RenderItem>> mRenderItemLayer[(int)RenderLayer::Count];
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mRenderItemLayers;
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;
+    std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndicies;
 
-    UINT mSkyTexHeapIndex = 0;
-    UINT mShadowMapHeapIndex = 0;
-    UINT mShadowMapHeapIndex2 = 0;
-    UINT mSsaoHeapIndexStart = 0;
-    UINT mSsaoAmbientMapIndex = 0;
-    UINT mNullCubeSrvIndex = 0;
-    UINT mNullTexSrvIndex1 = 0;
-    UINT mNullTexSrvIndex2 = 0;
-    UINT mSkinnedSrvHeapStart = 0;
     UINT SkinnedCBIndex = 0;
     UINT ObjectCBIndex = 0;
 
+    std::shared_ptr<RenderCore> renderCore;
+
     PassConstants mMainPassCB;
     std::vector<PassConstants> mShadowPassCBs;
-    std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
 
-    std::unique_ptr<Ssao> mSsao;
     DirectX::BoundingSphere mSceneBounds;
 };

@@ -39,7 +39,9 @@ public:
 	
     CD3DX12_CPU_DESCRIPTOR_HANDLE NormalMapRtv()const;
 	CD3DX12_GPU_DESCRIPTOR_HANDLE NormalMapSrv()const;
+    CD3DX12_CPU_DESCRIPTOR_HANDLE AmbientMapRtv()const;
     CD3DX12_GPU_DESCRIPTOR_HANDLE AmbientMapSrv()const;
+    CD3DX12_GPU_DESCRIPTOR_HANDLE RandomVectorMapSrv()const;
 
 	void BuildDescriptors(
         ID3D12Resource* depthStencilBuffer,
@@ -52,6 +54,7 @@ public:
     void RebuildDescriptors(ID3D12Resource* depthStencilBuffer);
 
     void SetPSOs(ID3D12PipelineState* ssaoPso, ID3D12PipelineState* ssaoBlurPso);
+    ID3D12PipelineState* GetPSO();
 
 	///<summary>
 	/// Call when the backbuffer is resized.  
@@ -68,15 +71,7 @@ public:
         ID3D12GraphicsCommandList* cmdList, 
         FrameResource* currFrame, 
         int blurCount);
- 
 
-private:
- 
-    ///<summary>
-    /// Blurs the ambient map to smooth out the noise caused by only taking a
-    /// few random samples per pixel.  We use an edge preserving blur so that 
-    /// we do not blur across discontinuities--we want edges to remain edges.
-    ///</summary>
     void BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, FrameResource* currFrame, int blurCount);
 	void BlurAmbientMap(ID3D12GraphicsCommandList* cmdList, bool horzBlur);
 

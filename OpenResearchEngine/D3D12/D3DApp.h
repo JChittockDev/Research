@@ -62,7 +62,7 @@ protected:
 
 	void FlushCommandQueue();
 
-	ID3D12Resource* CurrentBackBuffer()const;
+    Microsoft::WRL::ComPtr<ID3D12Resource> CurrentBackBuffer() const;
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
 

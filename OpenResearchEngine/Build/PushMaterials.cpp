@@ -44,7 +44,7 @@ void EngineApp::PushMaterials()
 	mMaterials["sky"] = std::move(sky);
 
 	UINT matCBIndex = 4;
-	UINT srvHeapIndex = mSkinnedSrvHeapStart;
+	UINT srvHeapIndex = mLayoutIndicies["mSkinnedSrvHeapStart"].first;
 	for (UINT i = 0; i < mMats.size(); ++i)
 	{
 		auto mat = std::make_unique<Material>();

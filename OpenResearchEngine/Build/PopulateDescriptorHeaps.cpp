@@ -47,7 +47,7 @@ void EngineApp::PopulateDescriptorHeaps()
 		mTextures["defaultNormalMap"]->Resource
 	};
 
-	mSkinnedSrvHeapStart = (UINT)tex2DList.size();
+	mLayoutIndicies["mSkinnedSrvHeapStart"] = std::make_pair((UINT)tex2DList.size(), mCbvSrvUavDescriptorSize);
 
 	for (UINT i = 0; i < (UINT)mTextureNames.size(); ++i)
 	{
@@ -81,16 +81,16 @@ void EngineApp::PopulateDescriptorHeaps()
 	srvDesc.Format = skyCubeMap->GetDesc().Format;
 	md3dDevice->CreateShaderResourceView(skyCubeMap.Get(), &srvDesc, hDescriptor);
 
-	mSkyTexHeapIndex = (UINT)tex2DList.size();
-	mShadowMapHeapIndex = mSkyTexHeapIndex + 1;
-	mSsaoHeapIndexStart = mShadowMapHeapIndex + dynamicLights.GetNumLights();
-	mSsaoAmbientMapIndex = mSsaoHeapIndexStart + 3;
-	mNullCubeSrvIndex = mSsaoHeapIndexStart + 5;
-	mNullTexSrvIndex1 = mNullCubeSrvIndex + 1;
-	mNullTexSrvIndex2 = mNullTexSrvIndex1 + 1;
+	mLayoutIndicies["mSkyTexHeapIndex"] = std::make_pair((UINT)tex2DList.size(), mCbvSrvUavDescriptorSize);
+	mLayoutIndicies["mShadowMapHeapIndex"] = std::make_pair(mLayoutIndicies["mSkyTexHeapIndex"].first + 1, mCbvSrvUavDescriptorSize);
+	mLayoutIndicies["mSsaoHeapIndexStart"] = std::make_pair(mLayoutIndicies["mShadowMapHeapIndex"].first + dynamicLights.GetNumLights(), mCbvSrvUavDescriptorSize);
+	mLayoutIndicies["mSsaoAmbientMapIndex"] = std::make_pair(mLayoutIndicies["mSsaoHeapIndexStart"].first + 3, mCbvSrvUavDescriptorSize);
+	mLayoutIndicies["mNullCubeSrvIndex"] = std::make_pair(mLayoutIndicies["mSsaoAmbientMapIndex"].first + 5, mCbvSrvUavDescriptorSize);
+	mLayoutIndicies["mNullTexSrvIndex1"] = std::make_pair(mLayoutIndicies["mNullCubeSrvIndex"].first + 1, mCbvSrvUavDescriptorSize);
+	mLayoutIndicies["mNullTexSrvIndex2"] = std::make_pair(mLayoutIndicies["mNullTexSrvIndex1"].first + 1, mCbvSrvUavDescriptorSize);
 
-	auto nullSrv = GetCpuSrv(mNullCubeSrvIndex);
-	mNullSrv = GetGpuSrv(mNullCubeSrvIndex);
+	auto nullSrv = GetCpuSrv(mLayoutIndicies["mNullCubeSrvIndex"].first);
+	mNullSrv = GetGpuSrv(mLayoutIndicies["mNullCubeSrvIndex"].first);
 
 	md3dDevice->CreateShaderResourceView(nullptr, &srvDesc, nullSrv);
 	nullSrv.Offset(1, mCbvSrvUavDescriptorSize);
@@ -103,11 +103,4 @@ void EngineApp::PopulateDescriptorHeaps()
 	md3dDevice->CreateShaderResourceView(nullptr, &srvDesc, nullSrv);
 	nullSrv.Offset(1, mCbvSrvUavDescriptorSize);
 	md3dDevice->CreateShaderResourceView(nullptr, &srvDesc, nullSrv);
-
-	for (int i = 0; i < dynamicLights.GetNumLights(); i++)
-	{
-		mShadowMaps[i]->BuildDescriptors(GetCpuSrv(mShadowMapHeapIndex + i), GetGpuSrv(mShadowMapHeapIndex + i), GetDsv(i + 1));
-	}
-
-	mSsao->BuildDescriptors(mDepthStencilBuffer.Get(), GetCpuSrv(mSsaoHeapIndexStart), GetGpuSrv(mSsaoHeapIndexStart), GetRtv(SwapChainBufferCount), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
 }

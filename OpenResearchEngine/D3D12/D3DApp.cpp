@@ -555,9 +555,9 @@ void D3DApp::FlushCommandQueue()
 	}
 }
 
-ID3D12Resource* D3DApp::CurrentBackBuffer()const
+ComPtr<ID3D12Resource> D3DApp::CurrentBackBuffer()const
 {
-	return mSwapChainBuffer[mCurrBackBuffer].Get();
+	return mSwapChainBuffer[mCurrBackBuffer];
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE D3DApp::CurrentBackBufferView()const

@@ -197,15 +197,6 @@ struct SkinWeight
     std::vector<int> BoneIndices;
 };
 
-enum class RenderLayer : int
-{
-    Opaque = 0,
-    SkinnedOpaque,
-    Debug,
-    Sky,
-    Count
-};
-
 // Defines a subrange of geometry in a MeshGeometry.This is for when multiple
 // geometries are stored in one vertex and index buffer.  It provides the offsets
 // and data needed to draw a subset of geometry stores in the vertex and index 
@@ -352,7 +343,7 @@ struct ItemData
     std::vector<double> position;
     std::vector<double> rotation;
     std::vector<double> scale;
-    int render_layer;
+    std::string render_layer;
 };
 
 struct LevelItemData

@@ -105,6 +105,7 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared
 
 void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, const std::string& mesh)
 {
+
 	int vertexCounter = 0;
 	int indexCounter = 0;
 	for (UINT i = 0; i < scene->mNumMeshes; ++i)
@@ -241,7 +242,7 @@ void Mesh::ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std:
 	std::shared_ptr<TransformNode> transformNode = std::make_shared<TransformNode>();
 	transformNode->name = node->mName.data;
 	transformNode->transform = DirectX::XMMATRIX(&node->mTransformation.a1);
-	transforms[transformNode->name] = (std::move(transformNode));
+	transforms[transformNode->name] = std::move(transformNode);
 
 	for (UINT x = 0; x < node->mNumChildren; ++x)
 	{
@@ -249,11 +250,11 @@ void Mesh::ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std:
 	}
 }
 
-Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, 
-			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, 
-			std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
-			std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, 
-			std::vector<std::shared_ptr<ModelMaterial>>& mats)
+Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
+	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
+	std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets,
+	std::vector<std::shared_ptr<ModelMaterial>>& mats)
 {
 	std::vector<Vertex> vertices;
 	std::vector<std::uint16_t> indices;
@@ -303,14 +304,14 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	geometries[geo->Name] = std::move(geo);
 }
 
-Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, 
-			Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, 
-			std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
-			std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, 
-			std::vector<std::shared_ptr<ModelMaterial>>& mats,
-			std::unordered_map<std::string, std::shared_ptr<Skeleton>>& skeletons,
-			std::unordered_map<std::string, std::shared_ptr<Animation>>& animations,
-			std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms)
+Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
+	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
+	std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets,
+	std::vector<std::shared_ptr<ModelMaterial>>& mats,
+	std::unordered_map<std::string, std::shared_ptr<Skeleton>>& skeletons,
+	std::unordered_map<std::string, std::shared_ptr<Animation>>& animations,
+	std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms)
 {
 	std::vector<SkinnedVertex> vertices;
 	std::vector<std::uint16_t> indices;

@@ -95,6 +95,7 @@
     <ClCompile Include="Build\PushRenderItems.cpp" />
     <ClCompile Include="Build\SetGenericRootSignature.cpp" />
     <ClCompile Include="Build\CompileShader.cpp" />
+    <ClCompile Include="Build\SetRenderPassResources.cpp" />
     <ClCompile Include="Build\SetRootSignatures.cpp" />
     <ClCompile Include="Build\SetSSAORootSignature.cpp" />
     <ClCompile Include="Build\ImportTextures.cpp" />
@@ -104,8 +105,13 @@
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
     <ClCompile Include="Objects\ViewFrustum.cpp" />
+    <ClCompile Include="Render\DepthPass.cpp" />
+    <ClCompile Include="Render\DiffusePass.cpp" />
+    <ClCompile Include="Render\RenderCore.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
+    <ClCompile Include="Render\ShadowPass.cpp" />
+    <ClCompile Include="Render\SsaoPass.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
@@ -113,9 +119,6 @@
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
     <ClCompile Include="Common\Math.cpp" />
-    <ClCompile Include="Draw\DrawShadowMap.cpp" />
-    <ClCompile Include="Draw\DrawNormalsDepth.cpp" />
-    <ClCompile Include="Draw\DrawRenderItems.cpp" />
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
     <ClCompile Include="Build\PushGenericMesh.cpp" />
@@ -137,6 +140,7 @@
     <ClInclude Include="D3D12\D3Dx12.h" />
     <ClInclude Include="Models\External\DDSTextureLoader.h" />
     <ClInclude Include="Objects\ViewFrustum.h" />
+    <ClInclude Include="Render\RenderCore.h" />
     <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
