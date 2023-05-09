@@ -1,7 +1,3 @@
-//***************************************************************************************
-// EngineApp.cpp by Frank Luna (C) 2015 All Rights Reserved.
-//***************************************************************************************
-
 #include "EngineApp.h"
 
 using Microsoft::WRL::ComPtr;
@@ -57,10 +53,6 @@ bool EngineApp::Initialize()
     mCamera.RotateY(3.25f);
 
     BuildScene();
-
-    renderCore = std::make_shared<RenderCore>();
-    renderCore->Initialize(CurrentBackBuffer().Get(), CurrentBackBufferView(), DepthStencilView(), mNullSrv, mCommandList.Get(), mRootSignature.Get(), mSsaoRootSignature.Get(), mSrvDescriptorHeap.Get(), mLayoutIndicies, mPSOs, mRenderItems, mRenderItemLayers, dynamicLights);
-    
     SetRenderPassResources();
     
     ThrowIfFailed(mCommandList->Close());
@@ -76,13 +68,10 @@ void EngineApp::OnResize()
     D3DApp::OnResize();
 	mCamera.SetLens(0.25f*Math::Pi, AspectRatio(), 1.0f, 1000.0f);
 
-    if(renderCore != nullptr)
+    if (mSsao != nullptr)
     {
-        if (renderCore->ssao != nullptr)
-        {
-            renderCore->ssao->OnResize(mClientWidth, mClientHeight);
-            renderCore->ssao->RebuildDescriptors(mDepthStencilBuffer.Get());
-        }
+        mSsao->OnResize(mClientWidth, mClientHeight);
+        mSsao->RebuildDescriptors(mDepthStencilBuffer.Get());
     }
 }
 
@@ -106,9 +95,7 @@ void EngineApp::Update(const GameTimer& gt)
 
 void EngineApp::Draw(const GameTimer& gt)
 {
-    renderCore->Render(mCurrFrameResource);
-
-
+    Render(mCurrFrameResource);
 
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);

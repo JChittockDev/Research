@@ -39,13 +39,13 @@
     <ClCompile Include="Render\Resources\FrameResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Passes\ShadowMap.cpp">
+    <ClCompile Include="Render\Resources\ShadowMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EngineApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Passes\Ssao.cpp">
+    <ClCompile Include="Render\Resources\Ssao.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\PushGenericMesh.cpp">
@@ -138,19 +138,19 @@
     <ClCompile Include="Build\SetRootSignatures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\RenderCore.cpp">
+    <ClCompile Include="Render\Manager\Render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\ShadowPass.cpp">
+    <ClCompile Include="Render\Passes\ShadowPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\DepthPass.cpp">
+    <ClCompile Include="Render\Passes\DepthPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\SsaoPass.cpp">
+    <ClCompile Include="Render\Passes\SsaoPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\DiffusePass.cpp">
+    <ClCompile Include="Render\Passes\DiffusePass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\SetRenderPassResources.cpp">
@@ -188,10 +188,10 @@
     <ClInclude Include="Render\Resources\FrameResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Passes\ShadowMap.h">
+    <ClInclude Include="Render\Resources\ShadowMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Passes\Ssao.h">
+    <ClInclude Include="Render\Resources\Ssao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EngineApp.h">
@@ -222,9 +222,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\ViewFrustum.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\RenderCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
