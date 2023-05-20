@@ -3,5 +3,6 @@
 void EngineApp::SetRootSignatures()
 {
 	SetGenericRootSignature();
+	SetComputeRootSignature();
 	SetSsaoRootSignature();
 }

@@ -30,6 +30,14 @@ struct MaterialData
 	uint     MatPad2;
 };
 
+struct Vertex
+{
+    float3 position;
+    float3 normal;
+    float2 texCoord;
+    float3 tangent;
+};
+
 TextureCube gCubeMap : register(t0);
 
 Texture2D gShadowMap[16] : register(t1);
@@ -44,6 +52,7 @@ Texture2D gTextureMaps[48] : register(t18);
 // The texture array will occupy registers t0, t1, ..., t3 in space0. 
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
 
+StructuredBuffer<Vertex> gSkinnedVertex : register(t0, space2);
 
 SamplerState gsamPointWrap        : register(s0);
 SamplerState gsamPointClamp       : register(s1);
@@ -52,6 +61,7 @@ SamplerState gsamLinearClamp      : register(s3);
 SamplerState gsamAnisotropicWrap  : register(s4);
 SamplerState gsamAnisotropicClamp : register(s5);
 SamplerComparisonState gsamShadow : register(s6);
+
 
 // Constant data that varies per frame.
 cbuffer cbPerObject : register(b0)
@@ -64,13 +74,8 @@ cbuffer cbPerObject : register(b0)
 	uint gObjPad2;
 };
 
-cbuffer cbSkinned : register(b1)
-{
-    float4x4 gBoneTransforms[55];
-};
-
 // Constant data that varies per material.
-cbuffer cbPass : register(b2)
+cbuffer cbPass : register(b1)
 {
     float4x4 gView;
     float4x4 gInvView;

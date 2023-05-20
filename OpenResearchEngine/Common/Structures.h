@@ -148,22 +148,10 @@ struct Vertex
     }
 };
 
-struct SkinnedVertex
+struct SkinningInfo
 {
-    DirectX::XMFLOAT3 Pos;
-    DirectX::XMFLOAT3 Normal;
-    DirectX::XMFLOAT2 TexC;
-    DirectX::XMFLOAT4 TangentU;
     DirectX::XMFLOAT4 BoneWeights;
     BYTE BoneIndices[4];
-
-    SkinnedVertex()
-    {
-        Pos = DirectX::XMFLOAT3(0.0, 0.0, 0.0);
-        Normal = DirectX::XMFLOAT3(0.0, 1.0, 0.0);
-        TexC = DirectX::XMFLOAT2(0.0, 0.0);
-        TangentU = DirectX::XMFLOAT4(1.0, 0.0, 0.0, 0.0);
-    }
 };
 
 struct Subset
@@ -203,6 +191,7 @@ struct SkinWeight
 // buffers so that we can implement the technique described by Figure 6.3.
 struct SubmeshGeometry
 {
+    UINT VertexCount = 0;
     UINT IndexCount = 0;
     UINT StartIndexLocation = 0;
     INT BaseVertexLocation = 0;
@@ -222,18 +211,26 @@ struct MeshGeometry
     // It is up to the client to cast appropriately.  
     Microsoft::WRL::ComPtr<ID3DBlob> VertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> IndexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SkinningBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SkinnedVertexBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferUploader = nullptr;
 
     // Data about the buffers.
     UINT VertexByteStride = 0;
     UINT VertexBufferByteSize = 0;
     DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
     UINT IndexBufferByteSize = 0;
+    UINT SkinningByteStride = 0;
+    UINT SkinningBufferByteSize = 0;
 
     // A MeshGeometry may store multiple geometries in one vertex/index buffer.
     // Use this container to define the Submesh geometries so we can draw
@@ -260,11 +257,33 @@ struct MeshGeometry
         return ibv;
     }
 
+    D3D12_VERTEX_BUFFER_VIEW SkinningBufferView()const
+    {
+        D3D12_VERTEX_BUFFER_VIEW svbv;
+        svbv.BufferLocation = SkinningBufferGPU->GetGPUVirtualAddress();
+        svbv.StrideInBytes = SkinningByteStride;
+        svbv.SizeInBytes = SkinningBufferByteSize;
+
+        return svbv;
+    }
+
+    D3D12_VERTEX_BUFFER_VIEW SkinnedVertexBufferView()const
+    {
+        D3D12_VERTEX_BUFFER_VIEW svbv;
+        svbv.BufferLocation = SkinnedVertexBufferGPU->GetGPUVirtualAddress();
+        svbv.StrideInBytes = VertexByteStride;
+        svbv.SizeInBytes = VertexBufferByteSize;
+
+        return svbv;
+    }
+
     // We can free this memory after we finish upload to the GPU.
     void DisposeUploaders()
     {
         VertexBufferUploader = nullptr;
         IndexBufferUploader = nullptr;
+        SkinningBufferUploader = nullptr;
+        SkinnedVertexBufferUploader = nullptr;
     }
 };
 

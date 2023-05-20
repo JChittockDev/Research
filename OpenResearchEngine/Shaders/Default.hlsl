@@ -24,10 +24,6 @@ struct VertexIn
     float3 NormalL : NORMAL;
 	float2 TexC    : TEXCOORD;
 	float3 TangentL : TANGENT;
-#ifdef SKINNED
-    float4 BoneWeights : WEIGHTS;
-    uint4 BoneIndices  : BONEINDICES;
-#endif
 };
 
 struct VertexOut
@@ -40,42 +36,18 @@ struct VertexOut
 	float2 TexC    : TEXCOORD;
 };
 
-VertexOut VS(VertexIn vin)
+VertexOut VS(VertexIn vin, uint vertexID : SV_VertexID)
 {
 	VertexOut vout = (VertexOut)0.0f;
-
+   
 	// Fetch the material data.
-	MaterialData matData = gMaterialData[gMaterialIndex];
 	
-#ifdef SKINNED
-    float weights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    weights[0] = vin.BoneWeights.x;
-    weights[1] = vin.BoneWeights.y;
-    weights[2] = vin.BoneWeights.z;
-    weights[3] = vin.BoneWeights.w;
-
-    float3 posL = float3(0.0f, 0.0f, 0.0f);
-    float3 normalL = float3(0.0f, 0.0f, 0.0f);
-    float3 tangentL = float3(0.0f, 0.0f, 0.0f);
+    MaterialData matData = gMaterialData[gMaterialIndex];
     
-    
-    for(int i = 0; i < 4; ++i)
-    {
-        // Assume no nonuniform scaling when transforming normals, so 
-        // that we do not have to use the inverse-transpose.
-        // something is wrong with the bone indicies
-        posL += weights[i] * mul(float4(vin.PosL, 1.0f), gBoneTransforms[vin.BoneIndices[i]]).xyz;
-        normalL += weights[i] * mul(vin.NormalL, (float3x3)gBoneTransforms[vin.BoneIndices[i]]);
-        tangentL += weights[i] * mul(vin.TangentL.xyz, (float3x3)gBoneTransforms[vin.BoneIndices[i]]);
-    }
-
-    vin.PosL = posL;
-    vin.NormalL = normalL;
-    vin.TangentL.xyz = tangentL;
-#endif
+    float3 position = gSkinnedVertex[vertexID].position;
 
     // Transform to world space.
-    float4 posW = mul(float4(vin.PosL, 1.0f), gWorld);
+    float4 posW = mul(float4(position, 1.0f), gWorld);
     vout.PosW = posW.xyz;
 
     // Assumes nonuniform scaling; otherwise, need to use inverse-transpose of world matrix.

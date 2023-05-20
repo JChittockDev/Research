@@ -28,39 +28,12 @@ void Mesh::ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Ver
 	}
 }
 
-void Mesh::ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<SkinnedVertex>& vertices)
-{
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		for (UINT i = 0; i < meshList[x]->mNumVertices; ++i)
-		{
-			SkinnedVertex vertex;
-
-			if (meshList[x]->HasPositions())
-			{
-				vertex.Pos = *reinterpret_cast<DirectX::XMFLOAT3*>(&meshList[x]->mVertices[i]);
-			}
-			if (meshList[x]->HasNormals())
-			{
-				vertex.Normal = *reinterpret_cast<DirectX::XMFLOAT3*>(&meshList[x]->mNormals[i]);
-			}
-			if (meshList[x]->HasTangentsAndBitangents())
-			{
-				vertex.TangentU = *reinterpret_cast<DirectX::XMFLOAT4*>(&meshList[x]->mTangents[i]);
-			}
-			if (meshList[x]->HasTextureCoords(0))
-			{
-				vertex.TexC = *reinterpret_cast<DirectX::XMFLOAT2*>(&meshList[x]->mTextureCoords[0][i]);
-			}
-			vertices.push_back(vertex);
-		}
-	}
-}
-
-void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared_ptr<Skeleton>& mSkeleton, std::vector<SkinnedVertex>& vertices)
+void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared_ptr<Skeleton>& mSkeleton, std::vector<Vertex>& vertices, std::vector<SkinningInfo>& skinning)
 {
 	int vertexCounter = 0;
 	std::vector<SkinWeight> dynamicWeights(vertices.size());
+	std::vector<SkinningInfo> skinningWeights(vertices.size());
+
 	for (UINT x = 0; x < numMesh; ++x)
 	{
 		int numVertices = meshList[x]->mNumVertices;
@@ -94,13 +67,14 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared
 			}
 		}
 
-		vertices[x].BoneWeights = DirectX::XMFLOAT4(weightData.BoneWeights[0], weightData.BoneWeights[1], weightData.BoneWeights[2], weightData.BoneWeights[3]);
+		skinningWeights[x].BoneWeights = DirectX::XMFLOAT4(weightData.BoneWeights[0], weightData.BoneWeights[1], weightData.BoneWeights[2], weightData.BoneWeights[3]);
 		for (UINT y = 0; y < 4; ++y)
 		{
-			vertices[x].BoneIndices[y] = weightData.BoneIndices[y];
+			skinningWeights[x].BoneIndices[y] = weightData.BoneIndices[y];
 		}
 	}
 
+	skinning = skinningWeights;
 }
 
 void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, const std::string& mesh)
@@ -279,11 +253,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
 	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
 
-	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
-
-	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
 
 	geo->VertexByteStride = sizeof(Vertex);
 	geo->VertexBufferByteSize = vbByteSize;
@@ -294,6 +265,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	{
 		SubmeshGeometry submesh;
 		std::string name = "sm_" + std::to_string(i);
+		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
 		submesh.StartIndexLocation = subsets[filename][i]->IndexStart;
 		submesh.BaseVertexLocation = subsets[filename][i]->VertexStart;
@@ -313,7 +285,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::unordered_map<std::string, std::shared_ptr<Animation>>& animations,
 	std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms)
 {
-	std::vector<SkinnedVertex> vertices;
+	std::vector<Vertex> vertices;
+	std::vector<SkinningInfo> skinning;
 	std::vector<std::uint16_t> indices;
 
 	Assimp::Importer imp;
@@ -325,14 +298,15 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	ReadMaterials(scene, mats);
 	ReadSubsetTable(scene, subsets, filename);
 	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices);
-	ReadSkinningData(scene->mNumMeshes, scene->mMeshes, mSkeleton, vertices);
+	ReadSkinningData(scene->mNumMeshes, scene->mMeshes, mSkeleton, vertices, skinning);
 	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices);
 	ReadAnimations(scene, animations);
 	ReadTransformNodes(scene->mRootNode, transforms);
 	LinkTransformNodes(scene->mRootNode, transforms);
 	skeletons[filename] = std::move(mSkeleton);
 
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(SkinnedVertex);
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+	const UINT sbByteSize = (UINT)skinning.size() * sizeof(SkinningInfo);
 	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
 	auto geo = std::make_unique<MeshGeometry>();
@@ -341,24 +315,41 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
 	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
 
+	ThrowIfFailed(D3DCreateBlob(sbByteSize, &geo->SkinningBufferCPU));
+	CopyMemory(geo->SkinningBufferCPU->GetBufferPointer(), skinning.data(), sbByteSize);
+
+	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->SkinnedVertexBufferCPU));
+	CopyMemory(geo->SkinnedVertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
 	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
 	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
 
-	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+	geo->SkinningBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), skinning.data(), sbByteSize, geo->SkinningBufferUploader);
+	geo->SkinnedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->SkinnedVertexBufferUploader);
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
 
-	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+	CD3DX12_RESOURCE_BARRIER vertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	mCommandList->ResourceBarrier(1, &vertexBufferBarrier);
 
-	geo->VertexByteStride = sizeof(SkinnedVertex);
+	CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
+
+	CD3DX12_RESOURCE_BARRIER skinningBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinningBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	mCommandList->ResourceBarrier(1, &skinningBufferBarrier);
+
+	geo->VertexByteStride = sizeof(Vertex);
 	geo->VertexBufferByteSize = vbByteSize;
 	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
 	geo->IndexBufferByteSize = ibByteSize;
+	geo->SkinningByteStride = sizeof(SkinningInfo);
+	geo->SkinningBufferByteSize = sbByteSize;
 
 	for (UINT i = 0; i < (UINT)subsets[filename].size(); ++i)
 	{
 		SubmeshGeometry submesh;
 		std::string name = "sm_" + std::to_string(i);
+		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
 		submesh.StartIndexLocation = subsets[filename][i]->IndexStart;
 		submesh.BaseVertexLocation = subsets[filename][i]->VertexStart;

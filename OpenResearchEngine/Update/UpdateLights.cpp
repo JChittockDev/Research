@@ -19,9 +19,9 @@ void EngineApp::UpdateLights(const GameTimer& gt)
     float bounds = -2.0f * mSceneBounds.Radius;
     for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++)
     {
-        DirectX::XMVECTOR lightPos = DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMVectorSet(dynamicLights.SpotLights[i].Direction.x, 
-                                                                                                              -dynamicLights.SpotLights[i].Direction.y,
-                                                                                                              dynamicLights.SpotLights[i].Direction.z, 0.f)), bounds);
+        DirectX::XMVECTOR lightPos = DirectX::XMVectorScale(DirectX::XMVector3Normalize(DirectX::XMVectorSet(dynamicLights.DirectionalLights[i].Direction.x,
+                                                                                                              -dynamicLights.DirectionalLights[i].Direction.y,
+                                                                                                              dynamicLights.DirectionalLights[i].Direction.z, 0.f)), bounds);
         DirectX::XMVECTOR targetPos = XMLoadFloat3(&mSceneBounds.Center);
         DirectX::XMVECTOR lightUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
         DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, targetPos, lightUp);

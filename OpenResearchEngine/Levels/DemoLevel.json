@@ -284,7 +284,7 @@
           "Position" : [0.0, 0.0, -5.0],
           "Rotation" : [0.0, 0.0, 0.0, 1.0],
           "Scale" : [0.05, 0.05, -0.05],
-          "RenderLayer" : "SkinnedOpaque" }
+          "RenderLayer" : "Opaque" }
       }
     }
   }
