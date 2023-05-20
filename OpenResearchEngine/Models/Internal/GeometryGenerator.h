@@ -31,7 +31,7 @@ public:
         Vertex(
             const DirectX::XMFLOAT3& p, 
             const DirectX::XMFLOAT3& n, 
-            const DirectX::XMFLOAT3& t, 
+            const DirectX::XMFLOAT4& t, 
             const DirectX::XMFLOAT2& uv) :
             Position(p), 
             Normal(n), 
@@ -40,16 +40,16 @@ public:
 		Vertex(
 			float px, float py, float pz, 
 			float nx, float ny, float nz,
-			float tx, float ty, float tz,
+			float tx, float ty, float tz, float tw,
 			float u, float v) : 
             Position(px,py,pz), 
             Normal(nx,ny,nz),
-			TangentU(tx, ty, tz), 
+			TangentU(tx, ty, tz, tw), 
             TexC(u,v){}
 
         DirectX::XMFLOAT3 Position;
         DirectX::XMFLOAT3 Normal;
-        DirectX::XMFLOAT3 TangentU;
+        DirectX::XMFLOAT4 TangentU;
         DirectX::XMFLOAT2 TexC;
 	};
 

@@ -18,6 +18,7 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 		UINT materialIndex = ritem->Geo->DrawArgs[submeshName].MaterialIndex;
 		ritem->Mat = materials.at(modelMaterials.at(materialIndex)->Name).get();
 		ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		ritem->VertexCount = ritem->Geo->DrawArgs[submeshName].VertexCount;
 		ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
 		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
@@ -65,6 +66,7 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 		UINT materialIndex = ritem->Geo->DrawArgs[submeshName].MaterialIndex;
 		ritem->Mat = materials.at(modelMaterials.at(materialIndex)->Name).get();
 		ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		ritem->VertexCount = ritem->Geo->DrawArgs[submeshName].VertexCount;
 		ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
 		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
@@ -99,6 +101,7 @@ void RenderItem::BuildRenderItem(const std::string& meshName, const std::string&
 	ritem->Mat = materials.at(materialName).get();
 	ritem->Geo = geometry.at(meshName).get();
 	ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	ritem->VertexCount = ritem->Geo->DrawArgs[subMeshName].VertexCount;
 	ritem->IndexCount = ritem->Geo->DrawArgs[subMeshName].IndexCount;
 	ritem->StartIndexLocation = ritem->Geo->DrawArgs[subMeshName].StartIndexLocation;
 	ritem->BaseVertexLocation = ritem->Geo->DrawArgs[subMeshName].BaseVertexLocation;

@@ -5,12 +5,11 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     // Init render command list
     ThrowIfFailed(currentFrameResource->CmdListAlloc->Reset());
     ThrowIfFailed(mCommandList->Reset(currentFrameResource->CmdListAlloc.Get(), mPSOs.at("opaque").Get()));
-    ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get()};
+    ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
     mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-    mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-    auto matBuffer = currentFrameResource->MaterialBuffer->Resource();
 
     // Add render pass instructions
+    DeformationPass(currentFrameResource);
     ShadowPass(dynamicLights, currentFrameResource);
     DepthPass(DepthStencilView(), currentFrameResource);
     SsaoPass(2, currentFrameResource);
@@ -19,30 +18,63 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     ThrowIfFailed(mCommandList->Close());
 }
 
-void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource)
+void EngineApp::DeformationPass(FrameResource* currentFrameResource)
 {
-    UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
-    UINT skinnedCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(SkinnedConstants));
-    auto objectCB = currentFrameResource->ObjectCB->Resource();
-    auto skinnedCB = currentFrameResource->SkinnedCB->Resource();
+    mCommandList->SetComputeRootSignature(mSkinnedRootSignature.Get());
+    mCommandList->SetPipelineState(mPSOs.at("skinned").Get());
+    ComputeSkinning(mCommandList.Get(), mRenderItemLayers.at("Opaque"), currentFrameResource);
+}
 
+void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource)
+{
+    UINT skinnedCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(SkinnedConstants));
+    auto skinnedCB = currentFrameResource->SkinnedCB->Resource();
     for (size_t i = 0; i < renderItems.size(); ++i)
     {
         auto ri = renderItems[i];
-        cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
-        cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
-        cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
-        cmdList->SetGraphicsRootConstantBufferView(0, objectCB->GetGPUVirtualAddress() + ri->ObjCBIndex * objCBByteSize);
 
         if (ri->AnimationInstance != nullptr)
         {
-            cmdList->SetGraphicsRootConstantBufferView(1, skinnedCB->GetGPUVirtualAddress() + ri->SkinnedCBIndex * skinnedCBByteSize);
+            cmdList->SetComputeRootConstantBufferView(0, skinnedCB->GetGPUVirtualAddress() + ri->SkinnedCBIndex * skinnedCBByteSize);
+            cmdList->SetComputeRootShaderResourceView(1, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+            cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SkinningBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(SkinningInfo));
+
+            CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+            mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
+
+            cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+
+            const UINT threadGroupSizeX = 64;
+            const UINT threadGroupSizeY = 1;
+            const UINT threadGroupSizeZ = 1;
+            cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
+
+            skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+            mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
+        }
+    }
+}
+
+void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource)
+{
+    UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+    auto objectCB = currentFrameResource->ObjectCB->Resource();
+    for (size_t i = 0; i < renderItems.size(); ++i)
+    {
+        auto ri = renderItems[i];
+
+        if (ri->AnimationInstance != nullptr)
+        {
+            cmdList->IASetVertexBuffers(0, 1, &ri->Geo->SkinnedVertexBufferView());
         }
         else
         {
-            cmdList->SetGraphicsRootConstantBufferView(1, 0);
+            cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
         }
-
+        
+        cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
+        cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
+        cmdList->SetGraphicsRootConstantBufferView(0, objectCB->GetGPUVirtualAddress() + ri->ObjCBIndex * objCBByteSize);
         cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
     }
 }

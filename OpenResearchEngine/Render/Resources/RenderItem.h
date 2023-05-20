@@ -17,6 +17,7 @@ public:
 	Material* Mat = nullptr;
 	MeshGeometry* Geo = nullptr;
 
+	UINT VertexCount = 0;
 	UINT IndexCount = 0;
 	UINT StartIndexLocation = 0;
 	int BaseVertexLocation = 0;
