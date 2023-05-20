@@ -39,7 +39,7 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::v
             cmdList->SetComputeRootShaderResourceView(1, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress());
             cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SkinningBufferGPU->GetGPUVirtualAddress());
 
-            CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+            CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
             mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
 
             cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress());
@@ -49,7 +49,7 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::v
             const UINT threadGroupSizeZ = 1;
             cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
 
-            skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+            skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
             mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
         }
     }
@@ -63,19 +63,13 @@ void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::ve
     {
         auto ri = renderItems[i];
 
-        D3D12_VERTEX_BUFFER_VIEW vbv;
-        vbv.StrideInBytes = ri->Geo->VertexByteStride;
-        vbv.SizeInBytes = ri->Geo->VertexBufferByteSize;
-
         if (ri->AnimationInstance != nullptr)
         {
-            vbv.BufferLocation = ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress();
-            cmdList->IASetVertexBuffers(0, 1, &vbv);
+            cmdList->IASetVertexBuffers(0, 1, &ri->Geo->SkinnedVertexBufferView());
         }
         else
         {
-            vbv.BufferLocation = ri->Geo->VertexBufferGPU->GetGPUVirtualAddress();
-            cmdList->IASetVertexBuffers(0, 1, &vbv);
+            cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
         }
         
         cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());

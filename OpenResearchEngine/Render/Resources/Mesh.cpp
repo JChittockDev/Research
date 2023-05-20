@@ -17,9 +17,7 @@ void Mesh::ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Ver
 			}
 			if (meshList[x]->HasTangentsAndBitangents())
 			{
-				vertex.TangentU.x = meshList[x]->mTangents[i].x;
-				vertex.TangentU.y = meshList[x]->mTangents[i].y;
-				vertex.TangentU.z = meshList[x]->mTangents[i].z;
+				vertex.TangentU = *reinterpret_cast<DirectX::XMFLOAT4*>(&meshList[x]->mTangents[i]);
 			}
 			if (meshList[x]->HasTextureCoords(0))
 			{
@@ -334,7 +332,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	CD3DX12_RESOURCE_BARRIER vertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 	mCommandList->ResourceBarrier(1, &vertexBufferBarrier);
 
-	CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 	mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
 
 	CD3DX12_RESOURCE_BARRIER skinningBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinningBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);

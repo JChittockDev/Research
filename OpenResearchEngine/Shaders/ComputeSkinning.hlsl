@@ -4,7 +4,7 @@ struct Vertex
     float3 position;
     float3 normal;
     float2 texCoord;
-    float3 tangent;
+    float4 tangent;
 };
 
 struct SkinningInfo
@@ -38,7 +38,7 @@ Vertex SkinVertex(Vertex input, SkinningInfo skinning)
     // apply skinning transformation to position
     output.position = mul(float4(input.position, 1.0f), skinningMatrix).xyz;
     output.normal = mul(float4(input.normal, 0.0f), skinningMatrix).xyz;
-    output.tangent = mul(float4(input.tangent, 0.0f), skinningMatrix).xyz;
+    output.tangent = mul(input.tangent, skinningMatrix);
 
     return output;
 }
