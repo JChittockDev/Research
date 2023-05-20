@@ -1,16 +1,16 @@
 // Define your shader input and output structures
 struct Vertex
 {
-    float3 position;
-    float3 normal;
-    float2 texCoord;
-    float4 tangent;
+    float3 position : POSITION;
+    float3 normal : NORMAL;
+    float2 texCoord : TEXCOORD;
+    float4 tangent : TANGENT;
 };
 
 struct SkinningInfo
 {
-    float4 boneWeights;
-    uint4 boneIndices;
+    float4 boneWeights : BONEWEIGHTS;
+    uint4 boneIndices : BONEINDICES;
 };
 
 // Define the constant buffer structure
@@ -23,32 +23,26 @@ StructuredBuffer<Vertex> inputVertexBuffer : register(t0);
 StructuredBuffer<SkinningInfo> skinningBuffer : register(t1);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 
-// Define your skinning function
-Vertex SkinVertex(Vertex input, SkinningInfo skinning)
-{
-    Vertex output = (Vertex) 0;
-
-    // Perform skinning calculations using bone matrices
-    float4x4 skinningMatrix =
-        boneMatrices[skinning.boneIndices.x] * skinning.boneWeights.x +
-        boneMatrices[skinning.boneIndices.y] * skinning.boneWeights.y +
-        boneMatrices[skinning.boneIndices.z] * skinning.boneWeights.z +
-        boneMatrices[skinning.boneIndices.w] * skinning.boneWeights.w;
-
-    // apply skinning transformation to position
-    output.position = mul(float4(input.position, 1.0f), skinningMatrix).xyz;
-    output.normal = mul(float4(input.normal, 0.0f), skinningMatrix).xyz;
-    output.tangent = mul(input.tangent, skinningMatrix);
-
-    return output;
-}
-
 // Define the compute shader entry point
 [numthreads(256, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
-    Vertex inputVertex = inputVertexBuffer[dispatchThreadID.x];
-    SkinningInfo skinning = skinningBuffer[dispatchThreadID.x];
-    Vertex outputVertex = SkinVertex(inputVertex, skinning);
-    outputVertexBuffer[dispatchThreadID.x] = outputVertex;
+    int vertexID = dispatchThreadID.x;
+    Vertex inputVertex = inputVertexBuffer[vertexID];
+    SkinningInfo skinning = skinningBuffer[vertexID];
+
+    float3 position = float3(0.0f, 0.0f, 0.0f);
+    float3 normal = float3(0.0f, 0.0f, 0.0f);
+    float3 tangent = float4(0.0f, 0.0f, 0.0f, 0.f);
+    
+    for(int i = 0; i < 4; ++i)
+    {
+        position += skinning.boneWeights[i] * mul(float4(inputVertex.position, 1.0f), boneMatrices[skinning.boneIndices[i]]).xyz;
+        normal += skinning.boneWeights[i] * mul(inputVertex.normal, (float3x3) boneMatrices[skinning.boneIndices[i]]);
+        tangent += skinning.boneWeights[i] * mul(inputVertex.tangent.xyz, (float3x3) boneMatrices[skinning.boneIndices[i]]);
+    }
+
+    outputVertexBuffer[vertexID].position = position;
+    outputVertexBuffer[vertexID].normal = normal;
+    outputVertexBuffer[vertexID].tangent = float4(tangent, 0.0f);
 }
