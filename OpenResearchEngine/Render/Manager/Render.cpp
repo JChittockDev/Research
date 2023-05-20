@@ -44,7 +44,7 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::v
 
             cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
 
-            const UINT threadGroupSizeX = 256;
+            const UINT threadGroupSizeX = 64;
             const UINT threadGroupSizeY = 1;
             const UINT threadGroupSizeZ = 1;
             cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);

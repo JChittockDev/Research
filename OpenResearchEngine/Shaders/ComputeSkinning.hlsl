@@ -24,7 +24,7 @@ StructuredBuffer<SkinningInfo> skinningBuffer : register(t1);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 
 // Define the compute shader entry point
-[numthreads(256, 1, 1)]
+[numthreads(64, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     int vertexID = dispatchThreadID.x;
