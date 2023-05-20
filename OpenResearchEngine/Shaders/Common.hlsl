@@ -30,14 +30,6 @@ struct MaterialData
 	uint     MatPad2;
 };
 
-struct Vertex
-{
-    float3 position;
-    float3 normal;
-    float2 texCoord;
-    float3 tangent;
-};
-
 TextureCube gCubeMap : register(t0);
 
 Texture2D gShadowMap[16] : register(t1);
@@ -51,8 +43,6 @@ Texture2D gTextureMaps[48] : register(t18);
 // Put in space1, so the texture array does not overlap with these resources.  
 // The texture array will occupy registers t0, t1, ..., t3 in space0. 
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
-
-StructuredBuffer<Vertex> gSkinnedVertex : register(t0, space2);
 
 SamplerState gsamPointWrap        : register(s0);
 SamplerState gsamPointClamp       : register(s1);

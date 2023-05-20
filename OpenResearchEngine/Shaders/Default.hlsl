@@ -43,11 +43,9 @@ VertexOut VS(VertexIn vin, uint vertexID : SV_VertexID)
 	// Fetch the material data.
 	
     MaterialData matData = gMaterialData[gMaterialIndex];
-    
-    float3 position = gSkinnedVertex[vertexID].position;
 
     // Transform to world space.
-    float4 posW = mul(float4(position, 1.0f), gWorld);
+    float4 posW = mul(float4(vin.PosL, 1.0f), gWorld);
     vout.PosW = posW.xyz;
 
     // Assumes nonuniform scaling; otherwise, need to use inverse-transpose of world matrix.

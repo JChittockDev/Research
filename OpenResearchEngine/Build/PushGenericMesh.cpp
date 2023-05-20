@@ -73,7 +73,7 @@ void EngineApp::PushGenericMesh()
 		vertices[k].Pos = box.Vertices[i].Position;
 		vertices[k].Normal = box.Vertices[i].Normal;
 		vertices[k].TexC = box.Vertices[i].TexC;
-		vertices[k].TangentU = DirectX::XMFLOAT4(box.Vertices[i].TangentU.x, box.Vertices[i].TangentU.y, box.Vertices[i].TangentU.z, 0.0);
+		vertices[k].TangentU = DirectX::XMFLOAT3(box.Vertices[i].TangentU.x, box.Vertices[i].TangentU.y, box.Vertices[i].TangentU.z);
 	}
 
 	for (size_t i = 0; i < grid.Vertices.size(); ++i, ++k)
@@ -81,7 +81,7 @@ void EngineApp::PushGenericMesh()
 		vertices[k].Pos = grid.Vertices[i].Position;
 		vertices[k].Normal = grid.Vertices[i].Normal;
 		vertices[k].TexC = grid.Vertices[i].TexC;
-		vertices[k].TangentU = DirectX::XMFLOAT4(grid.Vertices[i].TangentU.x, grid.Vertices[i].TangentU.y, grid.Vertices[i].TangentU.z, 0.0);
+		vertices[k].TangentU = DirectX::XMFLOAT3(grid.Vertices[i].TangentU.x, grid.Vertices[i].TangentU.y, grid.Vertices[i].TangentU.z);
 	}
 
 	for (size_t i = 0; i < sphere.Vertices.size(); ++i, ++k)
@@ -89,7 +89,7 @@ void EngineApp::PushGenericMesh()
 		vertices[k].Pos = sphere.Vertices[i].Position;
 		vertices[k].Normal = sphere.Vertices[i].Normal;
 		vertices[k].TexC = sphere.Vertices[i].TexC;
-		vertices[k].TangentU = DirectX::XMFLOAT4(sphere.Vertices[i].TangentU.x, sphere.Vertices[i].TangentU.y, sphere.Vertices[i].TangentU.z, 0.0);
+		vertices[k].TangentU = DirectX::XMFLOAT3(sphere.Vertices[i].TangentU.x, sphere.Vertices[i].TangentU.y, sphere.Vertices[i].TangentU.z);
 	}
 
 	for (size_t i = 0; i < cylinder.Vertices.size(); ++i, ++k)
@@ -97,7 +97,7 @@ void EngineApp::PushGenericMesh()
 		vertices[k].Pos = cylinder.Vertices[i].Position;
 		vertices[k].Normal = cylinder.Vertices[i].Normal;
 		vertices[k].TexC = cylinder.Vertices[i].TexC;
-		vertices[k].TangentU = DirectX::XMFLOAT4(cylinder.Vertices[i].TangentU.x, cylinder.Vertices[i].TangentU.y, cylinder.Vertices[i].TangentU.z, 0.0);
+		vertices[k].TangentU = DirectX::XMFLOAT3(cylinder.Vertices[i].TangentU.x, cylinder.Vertices[i].TangentU.y, cylinder.Vertices[i].TangentU.z);
 	}
 
 	for (int i = 0; i < quad.Vertices.size(); ++i, ++k)
@@ -105,7 +105,7 @@ void EngineApp::PushGenericMesh()
 		vertices[k].Pos = quad.Vertices[i].Position;
 		vertices[k].Normal = quad.Vertices[i].Normal;
 		vertices[k].TexC = quad.Vertices[i].TexC;
-		vertices[k].TangentU = DirectX::XMFLOAT4(quad.Vertices[i].TangentU.x, quad.Vertices[i].TangentU.y, quad.Vertices[i].TangentU.z, 0.0);
+		vertices[k].TangentU = DirectX::XMFLOAT3(quad.Vertices[i].TangentU.x, quad.Vertices[i].TangentU.y, quad.Vertices[i].TangentU.z);
 	}
 
 	std::vector<std::uint16_t> indices;

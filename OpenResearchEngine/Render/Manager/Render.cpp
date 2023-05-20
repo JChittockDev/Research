@@ -9,7 +9,7 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     // Add render pass instructions
-    //DeformationPass(currentFrameResource);
+    DeformationPass(currentFrameResource);
     ShadowPass(dynamicLights, currentFrameResource);
     DepthPass(DepthStencilView(), currentFrameResource);
     SsaoPass(2, currentFrameResource);
@@ -44,7 +44,7 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::v
 
             cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress());
 
-            const UINT threadGroupSizeX = 64;
+            const UINT threadGroupSizeX = 256;
             const UINT threadGroupSizeY = 1;
             const UINT threadGroupSizeZ = 1;
             cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
@@ -62,19 +62,25 @@ void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::ve
     for (size_t i = 0; i < renderItems.size(); ++i)
     {
         auto ri = renderItems[i];
-        cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
+
+        D3D12_VERTEX_BUFFER_VIEW vbv;
+        vbv.StrideInBytes = ri->Geo->VertexByteStride;
+        vbv.SizeInBytes = ri->Geo->VertexBufferByteSize;
+
+        if (ri->AnimationInstance != nullptr)
+        {
+            vbv.BufferLocation = ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress();
+            cmdList->IASetVertexBuffers(0, 1, &vbv);
+        }
+        else
+        {
+            vbv.BufferLocation = ri->Geo->VertexBufferGPU->GetGPUVirtualAddress();
+            cmdList->IASetVertexBuffers(0, 1, &vbv);
+        }
+        
         cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
         cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
         cmdList->SetGraphicsRootConstantBufferView(0, objectCB->GetGPUVirtualAddress() + ri->ObjCBIndex * objCBByteSize);
         cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
-
-        if (ri->AnimationInstance != nullptr)
-        {
-            cmdList->SetGraphicsRootShaderResourceView(5, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress());
-        }
-        else
-        {
-            cmdList->SetGraphicsRootShaderResourceView(5, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress());
-        }
     }
 }

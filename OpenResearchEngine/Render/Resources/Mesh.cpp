@@ -17,7 +17,9 @@ void Mesh::ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Ver
 			}
 			if (meshList[x]->HasTangentsAndBitangents())
 			{
-				vertex.TangentU = *reinterpret_cast<DirectX::XMFLOAT4*>(&meshList[x]->mTangents[i]);
+				vertex.TangentU.x = meshList[x]->mTangents[i].x;
+				vertex.TangentU.y = meshList[x]->mTangents[i].y;
+				vertex.TangentU.z = meshList[x]->mTangents[i].z;
 			}
 			if (meshList[x]->HasTextureCoords(0))
 			{

@@ -21,7 +21,7 @@ cbuffer cbCompute : register(b0)
 
 StructuredBuffer<Vertex> inputVertexBuffer : register(t0);
 StructuredBuffer<SkinningInfo> skinningBuffer : register(t1);
-RWStructuredBuffer<Vertex> outputVertexBuffer : register(u2);
+RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 
 // Define your skinning function
 Vertex SkinVertex(Vertex input, SkinningInfo skinning)
@@ -35,20 +35,16 @@ Vertex SkinVertex(Vertex input, SkinningInfo skinning)
         boneMatrices[skinning.boneIndices.z] * skinning.boneWeights.z +
         boneMatrices[skinning.boneIndices.w] * skinning.boneWeights.w;
 
-    // Apply skinning transformation to position
-    //output.position = mul(float4(input.position, 1.0f), skinningMatrix);
-    //output.normal = mul(float4(input.normal, 0.0f), skinningMatrix);
-    //output.tangent = mul(float4(input.tangent, 0.0f), skinningMatrix);
-    
-    output.position = float3(0.0f, 100.0f, 100.0f);
-    output.normal = input.normal;
-    output.tangent = input.tangent;
+    // apply skinning transformation to position
+    output.position = mul(float4(input.position, 1.0f), skinningMatrix).xyz;
+    output.normal = mul(float4(input.normal, 0.0f), skinningMatrix).xyz;
+    output.tangent = mul(float4(input.tangent, 0.0f), skinningMatrix).xyz;
 
     return output;
 }
 
 // Define the compute shader entry point
-[numthreads(64, 1, 1)]
+[numthreads(256, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     Vertex inputVertex = inputVertexBuffer[dispatchThreadID.x];
