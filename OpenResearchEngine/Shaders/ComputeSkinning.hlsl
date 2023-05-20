@@ -10,7 +10,7 @@ struct Vertex
 struct SkinningInfo
 {
     float4 boneWeights : BONEWEIGHTS;
-    uint4 boneIndices : BONEINDICES;
+    float4 boneIndices : BONEINDICES;
 };
 
 // Define the constant buffer structure
@@ -37,9 +37,9 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     
     for(int i = 0; i < 4; ++i)
     {
-        position += skinning.boneWeights[i] * mul(float4(inputVertex.position, 1.0f), boneMatrices[skinning.boneIndices[i]]).xyz;
-        normal += skinning.boneWeights[i] * mul(inputVertex.normal, (float3x3) boneMatrices[skinning.boneIndices[i]]);
-        tangent += skinning.boneWeights[i] * mul(inputVertex.tangent.xyz, (float3x3) boneMatrices[skinning.boneIndices[i]]);
+        position += skinning.boneWeights[i] * mul(float4(inputVertex.position, 1.0f), boneMatrices[(int)skinning.boneIndices[i]]).xyz;
+        normal += skinning.boneWeights[i] * mul(inputVertex.normal, (float3x3) boneMatrices[(int)skinning.boneIndices[i]]);
+        tangent += skinning.boneWeights[i] * mul(inputVertex.tangent.xyz, (float3x3) boneMatrices[(int)skinning.boneIndices[i]]);
     }
 
     outputVertexBuffer[vertexID].position = position;

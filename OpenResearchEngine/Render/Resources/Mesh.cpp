@@ -68,10 +68,7 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared
 		}
 
 		skinningWeights[x].BoneWeights = DirectX::XMFLOAT4(weightData.BoneWeights[0], weightData.BoneWeights[1], weightData.BoneWeights[2], weightData.BoneWeights[3]);
-		for (UINT y = 0; y < 4; ++y)
-		{
-			skinningWeights[x].BoneIndices[y] = weightData.BoneIndices[y];
-		}
+		skinningWeights[x].BoneIndices = DirectX::XMFLOAT4(weightData.BoneIndices[0], weightData.BoneIndices[1], weightData.BoneIndices[2], weightData.BoneIndices[3]);
 	}
 
 	skinning = skinningWeights;

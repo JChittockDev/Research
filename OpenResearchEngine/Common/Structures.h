@@ -151,7 +151,7 @@ struct Vertex
 struct SkinningInfo
 {
     DirectX::XMFLOAT4 BoneWeights;
-    BYTE BoneIndices[4];
+    DirectX::XMFLOAT4 BoneIndices;
 };
 
 struct Subset
