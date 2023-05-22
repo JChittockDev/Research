@@ -22,37 +22,83 @@ void EngineApp::DeformationPass(FrameResource* currentFrameResource)
 {
     mCommandList->SetComputeRootSignature(mSkinnedRootSignature.Get());
     mCommandList->SetPipelineState(mPSOs.at("skinned").Get());
-    ComputeSkinning(mCommandList.Get(), mRenderItemLayers.at("Opaque"), currentFrameResource);
+
+    auto& renderItems = mRenderItemLayers.at("Opaque");
+    for (size_t i = 0; i < renderItems.size(); ++i)
+    {
+        if (renderItems[i]->AnimationInstance != nullptr)
+        {
+            mCommandList->SetComputeRootSignature(mSkinnedRootSignature.Get());
+            mCommandList->SetPipelineState(mPSOs.at("skinned").Get());
+            ComputeSkinning(mCommandList.Get(), renderItems[i], currentFrameResource);
+            
+            if (renderItems[i]->Geo->Simulation)
+            {
+                mCommandList->SetComputeRootSignature(mVerletSolverRootSignature.Get());
+                mCommandList->SetPipelineState(mPSOs.at("verletSolver").Get());
+                ComputeVertletSolver(mCommandList.Get(), renderItems[i], currentFrameResource);
+            }
+        }
+    }
 }
 
-void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource)
+void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
     UINT skinnedCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(SkinnedConstants));
     auto skinnedCB = currentFrameResource->SkinnedCB->Resource();
-    for (size_t i = 0; i < renderItems.size(); ++i)
+    
+    cmdList->SetComputeRootConstantBufferView(0, skinnedCB->GetGPUVirtualAddress() + ri->SkinnedCBIndex * skinnedCBByteSize);
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SkinningBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(SkinningInfo));
+    
+    if (!ri->Geo->Simulation)
     {
-        auto ri = renderItems[i];
-
-        if (ri->AnimationInstance != nullptr)
-        {
-            cmdList->SetComputeRootConstantBufferView(0, skinnedCB->GetGPUVirtualAddress() + ri->SkinnedCBIndex * skinnedCBByteSize);
-            cmdList->SetComputeRootShaderResourceView(1, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
-            cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SkinningBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(SkinningInfo));
-
-            CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-            mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
-
-            cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
-
-            const UINT threadGroupSizeX = 64;
-            const UINT threadGroupSizeY = 1;
-            const UINT threadGroupSizeZ = 1;
-            cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
-
-            skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-            mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
-        }
+        CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+        cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
     }
+    else
+    {
+        CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+        cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
+    }
+
+    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+
+    const UINT threadGroupSizeX = 64;
+    const UINT threadGroupSizeY = 1;
+    const UINT threadGroupSizeZ = 1;
+    cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
+
+    if (!ri->Geo->Simulation)
+    {
+        CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+        cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
+    }
+    else
+    {
+        CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+        cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
+    }
+}
+
+void EngineApp::ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+{
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->AdjacencyBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(std::uint16_t) * 8);
+
+    CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
+
+    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+
+    const UINT threadGroupSizeX = 64;
+    const UINT threadGroupSizeY = 1;
+    const UINT threadGroupSizeZ = 1;
+    cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
+
+    CD3DX12_RESOURCE_BARRIER resetTransformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    cmdList->ResourceBarrier(1, &resetTransformedBufferBarrier);
 }
 
 void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource)
@@ -65,7 +111,14 @@ void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::ve
 
         if (ri->AnimationInstance != nullptr)
         {
-            cmdList->IASetVertexBuffers(0, 1, &ri->Geo->SkinnedVertexBufferView());
+            if (!ri->Geo->Simulation)
+            {
+                cmdList->IASetVertexBuffers(0, 1, &ri->Geo->SkinnedVertexBufferView());
+            }
+            else
+            {
+                cmdList->IASetVertexBuffers(0, 1, &ri->Geo->TransformedVertexBufferView());
+            }
         }
         else
         {

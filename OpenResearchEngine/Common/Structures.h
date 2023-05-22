@@ -196,9 +196,6 @@ struct SubmeshGeometry
     UINT StartIndexLocation = 0;
     INT BaseVertexLocation = 0;
     UINT MaterialIndex = 0;
-
-    // Bounding box of the geometry defined by this submesh. 
-    // This is used in later chapters of the book.
     DirectX::BoundingBox Bounds;
 };
 
@@ -213,24 +210,30 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> IndexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SkinningBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SkinnedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> AdjacencyBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> TransformedVertexBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> AdjacencyBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> TransformedVertexBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> AdjacencyBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> TransformedVertexBufferUploader = nullptr;
 
     // Data about the buffers.
     UINT VertexByteStride = 0;
     UINT VertexBufferByteSize = 0;
     DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
     UINT IndexBufferByteSize = 0;
-    UINT SkinningByteStride = 0;
-    UINT SkinningBufferByteSize = 0;
+
+    bool Simulation = true;
 
     // A MeshGeometry may store multiple geometries in one vertex/index buffer.
     // Use this container to define the Submesh geometries so we can draw
@@ -257,20 +260,20 @@ struct MeshGeometry
         return ibv;
     }
 
-    D3D12_VERTEX_BUFFER_VIEW SkinningBufferView()const
-    {
-        D3D12_VERTEX_BUFFER_VIEW svbv;
-        svbv.BufferLocation = SkinningBufferGPU->GetGPUVirtualAddress();
-        svbv.StrideInBytes = SkinningByteStride;
-        svbv.SizeInBytes = SkinningBufferByteSize;
-
-        return svbv;
-    }
-
     D3D12_VERTEX_BUFFER_VIEW SkinnedVertexBufferView()const
     {
         D3D12_VERTEX_BUFFER_VIEW svbv;
         svbv.BufferLocation = SkinnedVertexBufferGPU->GetGPUVirtualAddress();
+        svbv.StrideInBytes = VertexByteStride;
+        svbv.SizeInBytes = VertexBufferByteSize;
+
+        return svbv;
+    }
+
+    D3D12_VERTEX_BUFFER_VIEW TransformedVertexBufferView()const
+    {
+        D3D12_VERTEX_BUFFER_VIEW svbv;
+        svbv.BufferLocation = TransformedVertexBufferGPU->GetGPUVirtualAddress();
         svbv.StrideInBytes = VertexByteStride;
         svbv.SizeInBytes = VertexBufferByteSize;
 
@@ -284,6 +287,8 @@ struct MeshGeometry
         IndexBufferUploader = nullptr;
         SkinningBufferUploader = nullptr;
         SkinnedVertexBufferUploader = nullptr;
+        AdjacencyBufferUploader = nullptr;
+        TransformedVertexBufferUploader = nullptr;
     }
 };
 

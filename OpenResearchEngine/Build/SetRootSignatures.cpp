@@ -3,6 +3,7 @@
 void EngineApp::SetRootSignatures()
 {
 	SetGenericRootSignature();
-	SetComputeRootSignature();
+	SetSkinnedRootSignature();
+	SetVerletSolverRootSignature();
 	SetSsaoRootSignature();
 }

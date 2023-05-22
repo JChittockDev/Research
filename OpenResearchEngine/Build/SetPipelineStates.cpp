@@ -11,6 +11,14 @@ void EngineApp::SetPipelineStates()
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&skinnedComputePSO, IID_PPV_ARGS(&mPSOs["skinned"])));
 
     //
+    // PSO for Compute Shader Verlet Intergration
+    //
+    D3D12_COMPUTE_PIPELINE_STATE_DESC verletSolverComputePSO = {};
+    verletSolverComputePSO.pRootSignature = mVerletSolverRootSignature.Get();
+    verletSolverComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["verletSolverCS"]->GetBufferPointer()), mShaders["verletSolverCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&verletSolverComputePSO, IID_PPV_ARGS(&mPSOs["verletSolver"])));
+
+    //
     // PSO for opaque objects.
     //
     D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;

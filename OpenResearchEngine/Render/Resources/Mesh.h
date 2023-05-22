@@ -36,4 +36,7 @@ private:
     void ReadMaterials(const aiScene* scene, std::vector<std::shared_ptr<ModelMaterial>>& mats);
     void ReadSkeleton(const aiScene* scene, std::shared_ptr<Skeleton>& mSkeleton);
     void ReadAnimations(const aiScene* scene, std::unordered_map<std::string, std::shared_ptr<Animation>>& animations);
+    void GetSolverConstraints(std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& solverConstraints, const std::vector<std::uint16_t>& triangles);
+    void AddConstraint(std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& solverConstraints, const std::uint16_t& vertexIndexA, const std::uint16_t& vertexIndexB);
+    void GetConstraintData(const int vertexCount, const std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& inputGraph, std::vector<std::uint16_t>& graphData, const int referenceVertices);
 };

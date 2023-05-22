@@ -221,6 +221,92 @@ void Mesh::ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std:
 	}
 }
 
+void Mesh::GetSolverConstraints(std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& solverConstraints, const std::vector<std::uint16_t>& triangles)
+{
+	for (size_t t = 0; t < triangles.size(); t += 3)
+	{
+		const int index1 = triangles[t];
+		const int index2 = triangles[t + 1];
+		const int index3 = triangles[t + 2];
+
+		AddConstraint(solverConstraints, index1, index2);
+		AddConstraint(solverConstraints, index1, index3);
+		AddConstraint(solverConstraints, index2, index3);
+	}
+	
+	//const size_t triangleCount = triangles.size() / 3;
+
+	//for (size_t t = 0; t < triangleCount; ++t) {
+	//	const size_t currentTriangleID = t * 3;
+
+	//	for (size_t i = 0; i < 3; ++i) {
+	//		AddConstraint(solverConstraints, triangles[currentTriangleID + i], triangles[currentTriangleID + ((i + 1) % 3)]);
+	//		AddConstraint(solverConstraints, triangles[currentTriangleID + i], triangles[currentTriangleID + ((i + 2) % 3)]);
+	//	}
+
+	//	for (size_t t2 = 0; t2 < triangleCount; ++t2) {
+	//		const size_t currentTriangleID2 = t2 * 3;
+	//		if (t == t2) {
+	//			continue;
+	//		}
+
+	//		for (size_t i = 0; i < 3; ++i) {
+	//			AddConstraint(solverConstraints, triangles[currentTriangleID + i], triangles[currentTriangleID2 + i]);
+	//		}
+	//	}
+	//}
+}
+
+void Mesh::AddConstraint(std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& solverConstraints, const std::uint16_t& vertexIndexA, const std::uint16_t& vertexIndexB)
+{
+	if (solverConstraints.find(vertexIndexA) == solverConstraints.end())
+	{
+		solverConstraints[vertexIndexA] = { vertexIndexB };
+	}
+	else if (std::find(solverConstraints[vertexIndexA].begin(), solverConstraints[vertexIndexA].end(), vertexIndexB) == solverConstraints[vertexIndexA].end())
+	{
+		solverConstraints[vertexIndexA].push_back(vertexIndexB);
+	}
+	else if (solverConstraints.find(vertexIndexB) == solverConstraints.end())
+	{
+		solverConstraints[vertexIndexB] = { vertexIndexA };
+	}
+	else if (std::find(solverConstraints[vertexIndexB].begin(), solverConstraints[vertexIndexB].end(), vertexIndexA) == solverConstraints[vertexIndexB].end())
+	{
+		solverConstraints[vertexIndexB].push_back(vertexIndexA);
+	}
+}
+
+void Mesh::GetConstraintData(const int vertexCount, const std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& inputGraph, std::vector<std::uint16_t>& graphData, const int referenceVertices = 8)
+{
+	for (int x = 0; x < vertexCount; x++)
+	{
+		for (int y = 0; y < referenceVertices; y++)
+		{
+			graphData.push_back(x);
+		}
+	}
+
+	for (const auto& adjacencyData : inputGraph)
+	{
+		std::vector<std::uint16_t> adjacentVertices = adjacencyData.second;
+
+		if (adjacentVertices.size() < referenceVertices)
+		{
+			int remainder = referenceVertices - adjacentVertices.size();
+			for (int z = 0; z < remainder; z++)
+			{
+				adjacentVertices.push_back(adjacencyData.first);
+			}
+		}
+
+		for (int y = 0; y < adjacentVertices.size(); y++)
+		{
+			graphData[adjacencyData.first * referenceVertices + y] = adjacentVertices[y];
+		}
+	}
+}
+
 Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
 	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
@@ -329,18 +415,47 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	CD3DX12_RESOURCE_BARRIER vertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 	mCommandList->ResourceBarrier(1, &vertexBufferBarrier);
 
-	CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-	mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
-
 	CD3DX12_RESOURCE_BARRIER skinningBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinningBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 	mCommandList->ResourceBarrier(1, &skinningBufferBarrier);
+
+	if (geo->Simulation)
+	{
+		std::unordered_map<std::uint16_t, std::vector<std::uint16_t>> solverGraph;
+		GetSolverConstraints(solverGraph, indices);
+
+		std::vector<std::uint16_t> solverConstraints;
+		GetConstraintData(vertices.size(), solverGraph, solverConstraints);
+
+		const UINT abByteSize = (UINT)solverConstraints.size() * sizeof(std::uint16_t);
+		
+		ThrowIfFailed(D3DCreateBlob(abByteSize, &geo->AdjacencyBufferCPU));
+		CopyMemory(geo->AdjacencyBufferCPU->GetBufferPointer(), solverConstraints.data(), abByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->TransformedVertexBufferCPU));
+		CopyMemory(geo->TransformedVertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+		geo->AdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), solverConstraints.data(), abByteSize, geo->AdjacencyBufferUploader);
+		geo->TransformedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->TransformedVertexBufferUploader);
+		
+		CD3DX12_RESOURCE_BARRIER adjacencyBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->AdjacencyBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &adjacencyBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER transformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		mCommandList->ResourceBarrier(1, &transformedBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
+	}
+	else
+	{
+		CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
+	}
 
 	geo->VertexByteStride = sizeof(Vertex);
 	geo->VertexBufferByteSize = vbByteSize;
 	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
 	geo->IndexBufferByteSize = ibByteSize;
-	geo->SkinningByteStride = sizeof(SkinningInfo);
-	geo->SkinningBufferByteSize = sbByteSize;
 
 	for (UINT i = 0; i < (UINT)subsets[filename].size(); ++i)
 	{

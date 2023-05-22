@@ -57,6 +57,7 @@ void EngineApp::CompileShaders ()
     mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
 
     mShaders["skinnedCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeSkinning.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["verletSolverCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeVerletSolver.hlsl", nullptr, "CS", "cs_5_1");
 
     mInputLayout = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
