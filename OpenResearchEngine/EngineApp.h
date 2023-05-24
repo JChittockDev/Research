@@ -123,6 +123,7 @@ private:
     std::vector<std::shared_ptr<RenderItem>> mRenderItems;
     std::vector<std::shared_ptr<FrameResource>> mFrameResources;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mMeshRenderItemMap;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mDeformedRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mLightRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mRenderItemLayers;
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;

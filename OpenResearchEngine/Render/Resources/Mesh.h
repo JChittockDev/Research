@@ -32,11 +32,11 @@ private:
     void ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Vertex>& vertices);
     void ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared_ptr<Skeleton>& mSkeleton, std::vector<Vertex>& vertices, std::vector<SkinningInfo>& skinning);
     void ReadSubsetTable(const aiScene* scene,std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, const std::string& mesh);
-    void ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<USHORT>& indices);
+    void ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<UINT>& indices);
     void ReadMaterials(const aiScene* scene, std::vector<std::shared_ptr<ModelMaterial>>& mats);
     void ReadSkeleton(const aiScene* scene, std::shared_ptr<Skeleton>& mSkeleton);
     void ReadAnimations(const aiScene* scene, std::unordered_map<std::string, std::shared_ptr<Animation>>& animations);
-    void GetSolverConstraints(std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& solverConstraints, const std::vector<std::uint16_t>& triangles);
-    void AddConstraint(std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& solverConstraints, const std::uint16_t& vertexIndexA, const std::uint16_t& vertexIndexB);
-    void GetConstraintData(const int vertexCount, const std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& inputGraph, std::vector<std::uint16_t>& graphData, const int referenceVertices);
+    void GetSolverConstraints(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const std::vector<UINT>& triangles);
+    void AddConstraint(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const UINT& vertexIndexA, const UINT& vertexIndexB);
+    void GetConstraintData(const int vertexCount, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& graphData, const int referenceVertices);
 };

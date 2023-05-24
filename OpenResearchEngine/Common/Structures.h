@@ -21,6 +21,12 @@
 
 extern const int gNumFrameResources;
 
+struct Neighbours
+{
+    UINT index[8];
+};
+
+
 struct ObjectConstants
 {
     DirectX::XMFLOAT4X4 World = Math::Identity4x4();

@@ -99,7 +99,7 @@ void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string,
 	}
 }
 
-void Mesh::ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<USHORT>& indices)
+void Mesh::ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<UINT>& indices)
 {
 	for (UINT x = 0; x < numMesh; ++x)
 	{
@@ -221,13 +221,13 @@ void Mesh::ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std:
 	}
 }
 
-void Mesh::GetSolverConstraints(std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& solverConstraints, const std::vector<std::uint16_t>& triangles)
+void Mesh::GetSolverConstraints(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const std::vector<UINT>& triangles)
 {
 	for (size_t t = 0; t < triangles.size(); t += 3)
 	{
-		const int index1 = triangles[t];
-		const int index2 = triangles[t + 1];
-		const int index3 = triangles[t + 2];
+		const UINT index1 = triangles[t];
+		const UINT index2 = triangles[t + 1];
+		const UINT index3 = triangles[t + 2];
 
 		AddConstraint(solverConstraints, index1, index2);
 		AddConstraint(solverConstraints, index1, index3);
@@ -257,7 +257,7 @@ void Mesh::GetSolverConstraints(std::unordered_map<std::uint16_t, std::vector<st
 	//}
 }
 
-void Mesh::AddConstraint(std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& solverConstraints, const std::uint16_t& vertexIndexA, const std::uint16_t& vertexIndexB)
+void Mesh::AddConstraint(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const UINT& vertexIndexA, const UINT& vertexIndexB)
 {
 	if (solverConstraints.find(vertexIndexA) == solverConstraints.end())
 	{
@@ -277,20 +277,22 @@ void Mesh::AddConstraint(std::unordered_map<std::uint16_t, std::vector<std::uint
 	}
 }
 
-void Mesh::GetConstraintData(const int vertexCount, const std::unordered_map<std::uint16_t, std::vector<std::uint16_t>>& inputGraph, std::vector<std::uint16_t>& graphData, const int referenceVertices = 8)
+void Mesh::GetConstraintData(const int vertexCount, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& graphData, const int referenceVertices = 8)
 {
 	for (int x = 0; x < vertexCount; x++)
 	{
+		Neighbours vertexNeighbours;
 		for (int y = 0; y < referenceVertices; y++)
 		{
-			graphData.push_back(x);
+			vertexNeighbours.index[y] = x;
 		}
+
+		graphData.push_back(vertexNeighbours);
 	}
 
 	for (const auto& adjacencyData : inputGraph)
 	{
-		std::vector<std::uint16_t> adjacentVertices = adjacencyData.second;
-
+		std::vector<UINT> adjacentVertices = adjacencyData.second;
 		if (adjacentVertices.size() < referenceVertices)
 		{
 			int remainder = referenceVertices - adjacentVertices.size();
@@ -302,7 +304,7 @@ void Mesh::GetConstraintData(const int vertexCount, const std::unordered_map<std
 
 		for (int y = 0; y < adjacentVertices.size(); y++)
 		{
-			graphData[adjacencyData.first * referenceVertices + y] = adjacentVertices[y];
+			graphData[adjacencyData.first].index[y] = adjacentVertices[y];
 		}
 	}
 }
@@ -314,7 +316,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::vector<std::shared_ptr<ModelMaterial>>& mats)
 {
 	std::vector<Vertex> vertices;
-	std::vector<std::uint16_t> indices;
+	std::vector<UINT> indices;
 
 	Assimp::Importer imp;
 	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_FlipWindingOrder);
@@ -325,7 +327,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices);
 
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(UINT);
 
 	auto geo = std::make_unique<MeshGeometry>();
 	geo->Name = filename;
@@ -341,7 +343,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 	geo->VertexByteStride = sizeof(Vertex);
 	geo->VertexBufferByteSize = vbByteSize;
-	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexFormat = DXGI_FORMAT_R32_UINT;
 	geo->IndexBufferByteSize = ibByteSize;
 
 	for (UINT i = 0; i < (UINT)subsets[filename].size(); ++i)
@@ -370,7 +372,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 {
 	std::vector<Vertex> vertices;
 	std::vector<SkinningInfo> skinning;
-	std::vector<std::uint16_t> indices;
+	std::vector<UINT> indices;
 
 	Assimp::Importer imp;
 	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
@@ -390,7 +392,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 	const UINT sbByteSize = (UINT)skinning.size() * sizeof(SkinningInfo);
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(UINT);
 
 	auto geo = std::make_unique<MeshGeometry>();
 	geo->Name = filename;
@@ -420,21 +422,21 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 	if (geo->Simulation)
 	{
-		std::unordered_map<std::uint16_t, std::vector<std::uint16_t>> solverGraph;
+		std::unordered_map<UINT, std::vector<UINT>> solverGraph;
 		GetSolverConstraints(solverGraph, indices);
 
-		std::vector<std::uint16_t> solverConstraints;
-		GetConstraintData(vertices.size(), solverGraph, solverConstraints);
+		std::vector<Neighbours> neighbours;
+		GetConstraintData(vertices.size(), solverGraph, neighbours);
 
-		const UINT abByteSize = (UINT)solverConstraints.size() * sizeof(std::uint16_t);
+		const UINT abByteSize = (UINT)neighbours.size() * sizeof(Neighbours);
 		
 		ThrowIfFailed(D3DCreateBlob(abByteSize, &geo->AdjacencyBufferCPU));
-		CopyMemory(geo->AdjacencyBufferCPU->GetBufferPointer(), solverConstraints.data(), abByteSize);
+		CopyMemory(geo->AdjacencyBufferCPU->GetBufferPointer(), neighbours.data(), abByteSize);
 
 		ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->TransformedVertexBufferCPU));
 		CopyMemory(geo->TransformedVertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
 
-		geo->AdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), solverConstraints.data(), abByteSize, geo->AdjacencyBufferUploader);
+		geo->AdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), neighbours.data(), abByteSize, geo->AdjacencyBufferUploader);
 		geo->TransformedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->TransformedVertexBufferUploader);
 		
 		CD3DX12_RESOURCE_BARRIER adjacencyBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->AdjacencyBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
@@ -454,7 +456,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 	geo->VertexByteStride = sizeof(Vertex);
 	geo->VertexBufferByteSize = vbByteSize;
-	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexFormat = DXGI_FORMAT_R32_UINT;
 	geo->IndexBufferByteSize = ibByteSize;
 
 	for (UINT i = 0; i < (UINT)subsets[filename].size(); ++i)

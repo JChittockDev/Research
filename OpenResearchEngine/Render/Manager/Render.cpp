@@ -85,7 +85,7 @@ void EngineApp::ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::sh
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
-    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->AdjacencyBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(std::uint16_t) * 8);
+    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->AdjacencyBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Neighbours));
 
     CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
     cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
