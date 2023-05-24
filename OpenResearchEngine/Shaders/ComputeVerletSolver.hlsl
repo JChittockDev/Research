@@ -27,19 +27,23 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     for (int i = 0; i < 8; ++i)
     {
         uint neighbour = adjacencyBuffer[vertexID].index[i];
-        Vertex constraintInputVertex = inputVertexBuffer[neighbour];
-        Vertex constraintSkinnedVertex = skinnedVertexBuffer[neighbour];
         
-        float3 constraintDisplacement = inputVertex.position - constraintInputVertex.position;
-        float3 constraintSkinnedDisplacement = skinnedVertex.position - constraintSkinnedVertex.position;
+        if (neighbour != vertexID)
+        {
+            Vertex constraintInputVertex = inputVertexBuffer[neighbour];
+            Vertex constraintSkinnedVertex = skinnedVertexBuffer[neighbour];
         
-        float constraintLength = length(constraintDisplacement);
-        float constraintSkinnedLength = length(constraintSkinnedDisplacement);
+            float3 constraintDisplacement = inputVertex.position - constraintInputVertex.position;
+            float3 constraintSkinnedDisplacement = skinnedVertex.position - constraintSkinnedVertex.position;
         
-        float3 correctionVector = constraintSkinnedDisplacement * (1 - constraintLength / constraintSkinnedLength);
+            float constraintLength = length(constraintDisplacement);
+            float constraintSkinnedLength = length(constraintSkinnedDisplacement);
         
-        skinnedVertex.position += correctionVector * 0.1;
+            float3 correctionVector = constraintSkinnedDisplacement * (1 - constraintLength / constraintSkinnedLength);
+        
+            skinnedVertex.position += correctionVector;
+        }
     }
         
-    outputVertexBuffer[vertexID].position = skinnedVertex.position;
+    outputVertexBuffer[vertexID] = skinnedVertex;
 }

@@ -106,9 +106,9 @@ void Mesh::ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<UI
 		for (UINT i = 0; i < meshList[x]->mNumFaces; ++i)
 		{
 			const aiFace& face = meshList[x]->mFaces[i];
-			indices.push_back((USHORT)face.mIndices[0]);
-			indices.push_back((USHORT)face.mIndices[1]);
-			indices.push_back((USHORT)face.mIndices[2]);
+			indices.push_back(face.mIndices[0]);
+			indices.push_back(face.mIndices[1]);
+			indices.push_back(face.mIndices[2]);
 		}
 	}
 }
