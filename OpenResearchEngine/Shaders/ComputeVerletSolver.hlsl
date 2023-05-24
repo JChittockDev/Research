@@ -41,9 +41,12 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         
             float3 correctionVector = constraintSkinnedDisplacement * (1 - constraintLength / constraintSkinnedLength);
         
-            skinnedVertex.position += correctionVector;
+            skinnedVertex.position += correctionVector * 0.05;
         }
     }
-        
-    outputVertexBuffer[vertexID] = skinnedVertex;
+    
+    outputVertexBuffer[vertexID].position = skinnedVertex.position;
+    outputVertexBuffer[vertexID].normal = skinnedVertex.normal;
+    outputVertexBuffer[vertexID].tangent = skinnedVertex.tangent;
+    outputVertexBuffer[vertexID].texCoord = skinnedVertex.texCoord;
 }

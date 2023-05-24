@@ -99,6 +99,102 @@ void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string,
 	}
 }
 
+void Mesh::ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<UINT>& indices, std::vector<std::vector<UINT>>& segmentedIndices)
+{
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::vector<UINT> sectionIndexList;
+
+		for (UINT i = 0; i < meshList[x]->mNumFaces; ++i)
+		{
+			const aiFace& face = meshList[x]->mFaces[i];
+			indices.push_back(face.mIndices[0]);
+			indices.push_back(face.mIndices[1]);
+			indices.push_back(face.mIndices[2]);
+			sectionIndexList.push_back(face.mIndices[0]);
+			sectionIndexList.push_back(face.mIndices[1]);
+			sectionIndexList.push_back(face.mIndices[2]);
+		}
+		segmentedIndices.push_back(sectionIndexList);
+	}
+}
+
+void Mesh::GetSegmentedConstraints(unsigned int numMesh, aiMesh** meshList, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<Neighbours>& output)
+{
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::unordered_map<UINT, std::vector<UINT>> solverGraph;
+		GetSolverConstraints(solverGraph, segmentedIndices[x]);
+
+		std::vector<Neighbours> neighbours;
+		GetConstraintData(meshList[x]->mNumVertices, solverGraph, neighbours, 8);
+
+		for (UINT y = 0; y < neighbours.size(); ++y)
+		{
+			output.push_back(neighbours[x]);
+		}
+	}
+}
+
+void Mesh::GetSolverConstraints(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const std::vector<UINT>& triangles)
+{
+	for (size_t t = 0; t < triangles.size(); t += 3)
+	{
+		const UINT index1 = triangles[t];
+		const UINT index2 = triangles[t + 1];
+		const UINT index3 = triangles[t + 2];
+
+		AddConstraint(solverConstraints, index1, index2);
+		AddConstraint(solverConstraints, index1, index3);
+		AddConstraint(solverConstraints, index2, index3);
+	}
+
+}
+
+void Mesh::AddConstraint(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const UINT& vertexIndexA, const UINT& vertexIndexB)
+{
+	if (solverConstraints.find(vertexIndexA) == solverConstraints.end())
+	{
+		solverConstraints[vertexIndexA] = { vertexIndexB };
+	}
+	else if (std::find(solverConstraints[vertexIndexA].begin(), solverConstraints[vertexIndexA].end(), vertexIndexB) == solverConstraints[vertexIndexA].end())
+	{
+		solverConstraints[vertexIndexA].push_back(vertexIndexB);
+	}
+}
+
+void Mesh::GetConstraintData(const int vertexCount, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& graphData, const int referenceVertices = 8)
+{
+	for (int x = 0; x < vertexCount; x++)
+	{
+		Neighbours vertexNeighbours;
+		for (int y = 0; y < referenceVertices; y++)
+		{
+			vertexNeighbours.index[y] = x;
+		}
+
+		graphData.push_back(vertexNeighbours);
+	}
+
+	for (const auto& adjacencyData : inputGraph)
+	{
+		std::vector<UINT> adjacentVertices = adjacencyData.second;
+		if (adjacentVertices.size() < referenceVertices)
+		{
+			int remainder = referenceVertices - adjacentVertices.size();
+			for (int z = 0; z < remainder; z++)
+			{
+				adjacentVertices.push_back(adjacencyData.first);
+			}
+		}
+
+		for (int y = 0; y < adjacentVertices.size(); y++)
+		{
+			graphData[adjacencyData.first].index[y] = adjacentVertices[y];
+		}
+	}
+}
+
 void Mesh::ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<UINT>& indices)
 {
 	for (UINT x = 0; x < numMesh; ++x)
@@ -221,94 +317,6 @@ void Mesh::ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std:
 	}
 }
 
-void Mesh::GetSolverConstraints(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const std::vector<UINT>& triangles)
-{
-	for (size_t t = 0; t < triangles.size(); t += 3)
-	{
-		const UINT index1 = triangles[t];
-		const UINT index2 = triangles[t + 1];
-		const UINT index3 = triangles[t + 2];
-
-		AddConstraint(solverConstraints, index1, index2);
-		AddConstraint(solverConstraints, index1, index3);
-		AddConstraint(solverConstraints, index2, index3);
-	}
-	
-	//const size_t triangleCount = triangles.size() / 3;
-
-	//for (size_t t = 0; t < triangleCount; ++t) {
-	//	const size_t currentTriangleID = t * 3;
-
-	//	for (size_t i = 0; i < 3; ++i) {
-	//		AddConstraint(solverConstraints, triangles[currentTriangleID + i], triangles[currentTriangleID + ((i + 1) % 3)]);
-	//		AddConstraint(solverConstraints, triangles[currentTriangleID + i], triangles[currentTriangleID + ((i + 2) % 3)]);
-	//	}
-
-	//	for (size_t t2 = 0; t2 < triangleCount; ++t2) {
-	//		const size_t currentTriangleID2 = t2 * 3;
-	//		if (t == t2) {
-	//			continue;
-	//		}
-
-	//		for (size_t i = 0; i < 3; ++i) {
-	//			AddConstraint(solverConstraints, triangles[currentTriangleID + i], triangles[currentTriangleID2 + i]);
-	//		}
-	//	}
-	//}
-}
-
-void Mesh::AddConstraint(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const UINT& vertexIndexA, const UINT& vertexIndexB)
-{
-	if (solverConstraints.find(vertexIndexA) == solverConstraints.end())
-	{
-		solverConstraints[vertexIndexA] = { vertexIndexB };
-	}
-	else if (std::find(solverConstraints[vertexIndexA].begin(), solverConstraints[vertexIndexA].end(), vertexIndexB) == solverConstraints[vertexIndexA].end())
-	{
-		solverConstraints[vertexIndexA].push_back(vertexIndexB);
-	}
-	else if (solverConstraints.find(vertexIndexB) == solverConstraints.end())
-	{
-		solverConstraints[vertexIndexB] = { vertexIndexA };
-	}
-	else if (std::find(solverConstraints[vertexIndexB].begin(), solverConstraints[vertexIndexB].end(), vertexIndexA) == solverConstraints[vertexIndexB].end())
-	{
-		solverConstraints[vertexIndexB].push_back(vertexIndexA);
-	}
-}
-
-void Mesh::GetConstraintData(const int vertexCount, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& graphData, const int referenceVertices = 8)
-{
-	for (int x = 0; x < vertexCount; x++)
-	{
-		Neighbours vertexNeighbours;
-		for (int y = 0; y < referenceVertices; y++)
-		{
-			vertexNeighbours.index[y] = x;
-		}
-
-		graphData.push_back(vertexNeighbours);
-	}
-
-	for (const auto& adjacencyData : inputGraph)
-	{
-		std::vector<UINT> adjacentVertices = adjacencyData.second;
-		if (adjacentVertices.size() < referenceVertices)
-		{
-			int remainder = referenceVertices - adjacentVertices.size();
-			for (int z = 0; z < remainder; z++)
-			{
-				adjacentVertices.push_back(adjacencyData.first);
-			}
-		}
-
-		for (int y = 0; y < adjacentVertices.size(); y++)
-		{
-			graphData[adjacencyData.first].index[y] = adjacentVertices[y];
-		}
-	}
-}
-
 Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
 	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
@@ -319,7 +327,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::vector<UINT> indices;
 
 	Assimp::Importer imp;
-	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_FlipWindingOrder);
+	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 	
 	ReadMaterials(scene, mats);
 	ReadSubsetTable(scene, subsets, filename);
@@ -373,9 +381,10 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::vector<Vertex> vertices;
 	std::vector<SkinningInfo> skinning;
 	std::vector<UINT> indices;
+	std::vector<std::vector<UINT>> segmentedIndices;
 
 	Assimp::Importer imp;
-	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
+	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 	
 	std::shared_ptr<Skeleton> mSkeleton = std::make_shared<Skeleton>();
 	mSkeleton->rootNodeName = scene->mRootNode->mName.data;
@@ -384,7 +393,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	ReadSubsetTable(scene, subsets, filename);
 	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices);
 	ReadSkinningData(scene->mNumMeshes, scene->mMeshes, mSkeleton, vertices, skinning);
-	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices);
+	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices, segmentedIndices);
 	ReadAnimations(scene, animations);
 	ReadTransformNodes(scene->mRootNode, transforms);
 	LinkTransformNodes(scene->mRootNode, transforms);
@@ -422,11 +431,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 	if (geo->Simulation)
 	{
-		std::unordered_map<UINT, std::vector<UINT>> solverGraph;
-		GetSolverConstraints(solverGraph, indices);
-
 		std::vector<Neighbours> neighbours;
-		GetConstraintData(vertices.size(), solverGraph, neighbours);
+		GetSegmentedConstraints(scene->mNumMeshes, scene->mMeshes, segmentedIndices, neighbours);
 
 		const UINT abByteSize = (UINT)neighbours.size() * sizeof(Neighbours);
 		
