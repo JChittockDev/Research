@@ -131,7 +131,7 @@ void Mesh::GetSegmentedConstraints(unsigned int numMesh, aiMesh** meshList, std:
 
 		for (UINT y = 0; y < neighbours.size(); ++y)
 		{
-			output.push_back(neighbours[x]);
+			output.push_back(neighbours[y]);
 		}
 	}
 }
