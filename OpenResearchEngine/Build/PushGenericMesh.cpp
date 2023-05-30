@@ -31,27 +31,27 @@ void EngineApp::PushGenericMesh()
 	SubmeshGeometry boxSubmesh;
 	boxSubmesh.IndexCount = (UINT)box.Indices32.size();
 	boxSubmesh.StartIndexLocation = boxIndexOffset;
-	boxSubmesh.BaseVertexLocation = boxVertexOffset;
+	boxSubmesh.StartVertexLocation = boxVertexOffset;
 
 	SubmeshGeometry gridSubmesh;
 	gridSubmesh.IndexCount = (UINT)grid.Indices32.size();
 	gridSubmesh.StartIndexLocation = gridIndexOffset;
-	gridSubmesh.BaseVertexLocation = gridVertexOffset;
+	gridSubmesh.StartVertexLocation = gridVertexOffset;
 
 	SubmeshGeometry sphereSubmesh;
 	sphereSubmesh.IndexCount = (UINT)sphere.Indices32.size();
 	sphereSubmesh.StartIndexLocation = sphereIndexOffset;
-	sphereSubmesh.BaseVertexLocation = sphereVertexOffset;
+	sphereSubmesh.StartVertexLocation = sphereVertexOffset;
 
 	SubmeshGeometry cylinderSubmesh;
 	cylinderSubmesh.IndexCount = (UINT)cylinder.Indices32.size();
 	cylinderSubmesh.StartIndexLocation = cylinderIndexOffset;
-	cylinderSubmesh.BaseVertexLocation = cylinderVertexOffset;
+	cylinderSubmesh.StartVertexLocation = cylinderVertexOffset;
 
 	SubmeshGeometry quadSubmesh;
 	quadSubmesh.IndexCount = (UINT)quad.Indices32.size();
 	quadSubmesh.StartIndexLocation = quadIndexOffset;
-	quadSubmesh.BaseVertexLocation = quadVertexOffset;
+	quadSubmesh.StartVertexLocation = quadVertexOffset;
 
 	//
 	// Extract the vertex elements we are interested in and pack the

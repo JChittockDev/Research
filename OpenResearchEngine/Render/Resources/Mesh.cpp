@@ -79,21 +79,27 @@ void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string,
 
 	int vertexCounter = 0;
 	int indexCounter = 0;
+	int triangleCounter = 0;
 	for (UINT i = 0; i < scene->mNumMeshes; ++i)
 	{
 		std::shared_ptr<Subset> sb = std::make_shared<Subset>();
 		int numVertices = scene->mMeshes[i]->mNumVertices;
-		int numIndicies = scene->mMeshes[i]->mNumFaces * 3;
+		int numTriangles = scene->mMeshes[i]->mNumFaces;
+		int numIndicies = numTriangles * 3;
 
 		sb->Id = i;
 		sb->VertexStart = vertexCounter;
 		sb->VertexCount = numVertices;
 		sb->IndexStart = indexCounter;
 		sb->IndexCount = numIndicies;
+		sb->TriangleStart = triangleCounter;
+		sb->TriangleCount = numTriangles;
 		sb->MaterialIndex = scene->mMeshes[i]->mMaterialIndex;
 		sb->MeshName = mesh;
+		
 		vertexCounter += numVertices;
 		indexCounter += numIndicies;
+		triangleCounter += numTriangles;
 
 		subsets[mesh].push_back(std::move(sb));
 	}
@@ -127,7 +133,24 @@ void Mesh::GetSegmentedConstraints(unsigned int numMesh, aiMesh** meshList, std:
 		GetSolverConstraints(solverGraph, segmentedIndices[x]);
 
 		std::vector<Neighbours> neighbours;
-		GetConstraintData(meshList[x]->mNumVertices, solverGraph, neighbours, 8);
+		GetGraphData(meshList[x]->mNumVertices, solverGraph, neighbours, 8);
+
+		for (UINT y = 0; y < neighbours.size(); ++y)
+		{
+			output.push_back(neighbours[y]);
+		}
+	}
+}
+
+void Mesh::GetSegmentedTriangleMap(unsigned int numMesh, aiMesh** meshList, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<Neighbours>& output)
+{
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::unordered_map<UINT, std::vector<UINT>> map;
+		GetVertexTriangleMap(map, segmentedIndices[x]);
+
+		std::vector<Neighbours> neighbours;
+		GetGraphData(meshList[x]->mNumVertices, map, neighbours, 8);
 
 		for (UINT y = 0; y < neighbours.size(); ++y)
 		{
@@ -144,53 +167,71 @@ void Mesh::GetSolverConstraints(std::unordered_map<UINT, std::vector<UINT>>& sol
 		const UINT index2 = triangles[t + 1];
 		const UINT index3 = triangles[t + 2];
 
-		AddConstraint(solverConstraints, index1, index2);
-		AddConstraint(solverConstraints, index1, index3);
-		AddConstraint(solverConstraints, index2, index3);
+		AddKey(solverConstraints, index1, index2);
+		AddKey(solverConstraints, index1, index3);
+		AddKey(solverConstraints, index2, index3);
 	}
 
 }
 
-void Mesh::AddConstraint(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const UINT& vertexIndexA, const UINT& vertexIndexB)
+void Mesh::GetVertexTriangleMap(std::unordered_map<UINT, std::vector<UINT>>& vertexTriangleMap, const std::vector<UINT>& triangles)
 {
-	if (solverConstraints.find(vertexIndexA) == solverConstraints.end())
+	UINT triangleCount = 0;
+	for (size_t t = 0; t < triangles.size(); t += 3)
 	{
-		solverConstraints[vertexIndexA] = { vertexIndexB };
+		const UINT index1 = triangles[t];
+		const UINT index2 = triangles[t + 1];
+		const UINT index3 = triangles[t + 2];
+
+		AddKey(vertexTriangleMap, index1, triangleCount);
+		AddKey(vertexTriangleMap, index2, triangleCount);
+		AddKey(vertexTriangleMap, index3, triangleCount);
+		
+		triangleCount += 1;
 	}
-	else if (std::find(solverConstraints[vertexIndexA].begin(), solverConstraints[vertexIndexA].end(), vertexIndexB) == solverConstraints[vertexIndexA].end())
+
+}
+
+void Mesh::AddKey(std::unordered_map<UINT, std::vector<UINT>>& map, const UINT& keyA, const UINT& keyB)
+{
+	if (map.find(keyA) == map.end())
 	{
-		solverConstraints[vertexIndexA].push_back(vertexIndexB);
+		map[keyA] = { keyB };
+	}
+	else if (std::find(map[keyA].begin(), map[keyA].end(), keyB) == map[keyA].end())
+	{
+		map[keyA].push_back(keyB);
 	}
 }
 
-void Mesh::GetConstraintData(const int vertexCount, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& graphData, const int referenceVertices = 8)
+void Mesh::GetGraphData(const int count, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& graphData, const int references = 8)
 {
-	for (int x = 0; x < vertexCount; x++)
+	for (int x = 0; x < count; x++)
 	{
-		Neighbours vertexNeighbours;
-		for (int y = 0; y < referenceVertices; y++)
+		Neighbours neighbours;
+		for (int y = 0; y < references; y++)
 		{
-			vertexNeighbours.index[y] = x;
+			neighbours.index[y] = x;
 		}
 
-		graphData.push_back(vertexNeighbours);
+		graphData.push_back(neighbours);
 	}
 
 	for (const auto& adjacencyData : inputGraph)
 	{
-		std::vector<UINT> adjacentVertices = adjacencyData.second;
-		if (adjacentVertices.size() < referenceVertices)
+		std::vector<UINT> adjacentIndicies = adjacencyData.second;
+		if (adjacentIndicies.size() < references)
 		{
-			int remainder = referenceVertices - adjacentVertices.size();
+			int remainder = references - adjacentIndicies.size();
 			for (int z = 0; z < remainder; z++)
 			{
-				adjacentVertices.push_back(adjacencyData.first);
+				adjacentIndicies.push_back(adjacencyData.first);
 			}
 		}
 
-		for (int y = 0; y < adjacentVertices.size(); y++)
+		for (int y = 0; y < adjacentIndicies.size(); y++)
 		{
-			graphData[adjacencyData.first].index[y] = adjacentVertices[y];
+			graphData[adjacencyData.first].index[y] = adjacentIndicies[y];
 		}
 	}
 }
@@ -317,6 +358,7 @@ void Mesh::ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std:
 	}
 }
 
+
 Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
 	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
@@ -361,7 +403,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
 		submesh.StartIndexLocation = subsets[filename][i]->IndexStart;
-		submesh.BaseVertexLocation = subsets[filename][i]->VertexStart;
+		submesh.StartVertexLocation = subsets[filename][i]->VertexStart;
+		submesh.StartTriangleLocation = subsets[filename][i]->TriangleStart;
 		submesh.MaterialIndex = subsets[filename][i]->MaterialIndex;
 		geo->DrawArgs[name] = submesh;
 	}
@@ -431,28 +474,58 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 	if (geo->Simulation)
 	{
-		std::vector<Neighbours> neighbours;
-		GetSegmentedConstraints(scene->mNumMeshes, scene->mMeshes, segmentedIndices, neighbours);
+		std::vector<Neighbours> vertexNeighbours;
+		GetSegmentedConstraints(scene->mNumMeshes, scene->mMeshes, segmentedIndices, vertexNeighbours);
 
-		const UINT abByteSize = (UINT)neighbours.size() * sizeof(Neighbours);
+		std::vector<Neighbours> triangleNeighbours;
+		GetSegmentedTriangleMap(scene->mNumMeshes, scene->mMeshes, segmentedIndices, triangleNeighbours);
+
+		const UINT abByteSize = (UINT)vertexNeighbours.size() * sizeof(Neighbours);
+
+		const int triangleCount = indices.size() / 3;
+		const UINT nbByteSize = (UINT)(triangleCount) * sizeof(TangentNormals);
+
+		std::vector<TangentNormals> normals;
+		normals.resize(triangleCount);
 		
-		ThrowIfFailed(D3DCreateBlob(abByteSize, &geo->AdjacencyBufferCPU));
-		CopyMemory(geo->AdjacencyBufferCPU->GetBufferPointer(), neighbours.data(), abByteSize);
+		ThrowIfFailed(D3DCreateBlob(abByteSize, &geo->VertexAdjacencyBufferCPU));
+		CopyMemory(geo->VertexAdjacencyBufferCPU->GetBufferPointer(), vertexNeighbours.data(), abByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(abByteSize, &geo->TriangleAdjacencyBufferCPU));
+		CopyMemory(geo->TriangleAdjacencyBufferCPU->GetBufferPointer(), triangleNeighbours.data(), abByteSize);
 
 		ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->TransformedVertexBufferCPU));
 		CopyMemory(geo->TransformedVertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
 
-		geo->AdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), neighbours.data(), abByteSize, geo->AdjacencyBufferUploader);
-		geo->TransformedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->TransformedVertexBufferUploader);
-		
-		CD3DX12_RESOURCE_BARRIER adjacencyBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->AdjacencyBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &adjacencyBufferBarrier);
+		ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->TriangleNormalBufferCPU));
+		CopyMemory(geo->TriangleNormalBufferCPU->GetBufferPointer(), normals.data(), nbByteSize);
 
-		CD3DX12_RESOURCE_BARRIER transformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexNormalBufferCPU));
+		CopyMemory(geo->VertexNormalBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+		geo->VertexAdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertexNeighbours.data(), abByteSize, geo->VertexAdjacencyBufferUploader);
+		geo->TriangleAdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), triangleNeighbours.data(), abByteSize, geo->TriangleAdjacencyBufferUploader);
+		geo->TransformedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->TransformedVertexBufferUploader);
+		geo->TriangleNormalBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), normals.data(), nbByteSize, geo->TriangleNormalBufferUploader);
+		geo->VertexNormalBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexNormalBufferUploader);
+		
+		CD3DX12_RESOURCE_BARRIER vertexAdjacencyBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexAdjacencyBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &vertexAdjacencyBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER triangleAdjacencyBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->TriangleAdjacencyBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &triangleAdjacencyBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER transformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &transformedBufferBarrier);
 
 		CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &skinnedBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER triangleNormalBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->TriangleNormalBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &triangleNormalBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER vertexNormalBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexNormalBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+		mCommandList->ResourceBarrier(1, &vertexNormalBufferBarrier);
 	}
 	else
 	{
@@ -471,8 +544,10 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		std::string name = "sm_" + std::to_string(i);
 		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
+		submesh.TriangleCount = (UINT)subsets[filename][i]->TriangleCount;
 		submesh.StartIndexLocation = subsets[filename][i]->IndexStart;
-		submesh.BaseVertexLocation = subsets[filename][i]->VertexStart;
+		submesh.StartVertexLocation = subsets[filename][i]->VertexStart;
+		submesh.StartTriangleLocation = subsets[filename][i]->TriangleStart;
 		submesh.MaterialIndex = subsets[filename][i]->MaterialIndex;
 		geo->DrawArgs[name] = submesh;
 	}

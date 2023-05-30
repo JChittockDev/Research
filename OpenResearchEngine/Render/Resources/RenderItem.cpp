@@ -20,8 +20,10 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 		ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		ritem->VertexCount = ritem->Geo->DrawArgs[submeshName].VertexCount;
 		ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
+		ritem->TriangleCount = ritem->Geo->DrawArgs[submeshName].TriangleCount;
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
-		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
+		ritem->StartVertexLocation = ritem->Geo->DrawArgs[submeshName].StartVertexLocation;
+		ritem->StartTriangleLocation = ritem->Geo->DrawArgs[submeshName].StartTriangleLocation;
 		renderLayers.push_back(ritem);
 		
 		if (uniqueID.empty())
@@ -68,8 +70,10 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 		ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		ritem->VertexCount = ritem->Geo->DrawArgs[submeshName].VertexCount;
 		ritem->IndexCount = ritem->Geo->DrawArgs[submeshName].IndexCount;
+		ritem->TriangleCount = ritem->Geo->DrawArgs[submeshName].TriangleCount;
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
-		ritem->BaseVertexLocation = ritem->Geo->DrawArgs[submeshName].BaseVertexLocation;
+		ritem->StartVertexLocation = ritem->Geo->DrawArgs[submeshName].StartVertexLocation;
+		ritem->StartTriangleLocation = ritem->Geo->DrawArgs[submeshName].StartTriangleLocation;
 		ritem->SkinnedCBIndex = SkinnedCBIndex;
 		ritem->AnimationInstance = mAnimationController;
 		renderLayers.push_back(ritem);
@@ -103,8 +107,10 @@ void RenderItem::BuildRenderItem(const std::string& meshName, const std::string&
 	ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	ritem->VertexCount = ritem->Geo->DrawArgs[subMeshName].VertexCount;
 	ritem->IndexCount = ritem->Geo->DrawArgs[subMeshName].IndexCount;
+	ritem->TriangleCount = ritem->Geo->DrawArgs[subMeshName].TriangleCount;
 	ritem->StartIndexLocation = ritem->Geo->DrawArgs[subMeshName].StartIndexLocation;
-	ritem->BaseVertexLocation = ritem->Geo->DrawArgs[subMeshName].BaseVertexLocation;
+	ritem->StartVertexLocation = ritem->Geo->DrawArgs[subMeshName].StartVertexLocation;
+	ritem->StartTriangleLocation = ritem->Geo->DrawArgs[subMeshName].StartTriangleLocation;
 	renderLayers.push_back(ritem);
 
 	if (uniqueID.empty())

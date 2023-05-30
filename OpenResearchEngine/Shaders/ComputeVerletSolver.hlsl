@@ -13,7 +13,7 @@ struct Neighbours
 
 StructuredBuffer<Vertex> inputVertexBuffer : register(t0);
 StructuredBuffer<Vertex> skinnedVertexBuffer : register(t1);
-StructuredBuffer<Neighbours> adjacencyBuffer : register(t2);
+StructuredBuffer<Neighbours> vertexAdjacencyBuffer : register(t2);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 
 // Define the compute shader entry point
@@ -26,7 +26,7 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     
     for (int i = 0; i < 8; ++i)
     {
-        uint neighbour = adjacencyBuffer[vertexID].index[i];
+        uint neighbour = vertexAdjacencyBuffer[vertexID].index[i];
         
         if (neighbour != vertexID)
         {
@@ -41,7 +41,7 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         
             float3 correctionVector = constraintSkinnedDisplacement * (1 - constraintLength / constraintSkinnedLength);
         
-            skinnedVertex.position += correctionVector * 0.05;
+            skinnedVertex.position += correctionVector;
         }
     }
     

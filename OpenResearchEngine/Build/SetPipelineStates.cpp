@@ -19,6 +19,22 @@ void EngineApp::SetPipelineStates()
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&verletSolverComputePSO, IID_PPV_ARGS(&mPSOs["verletSolver"])));
 
     //
+    // PSO for Compute Shader Verlet Intergration
+    //
+    D3D12_COMPUTE_PIPELINE_STATE_DESC triangleNormalComputePSO = {};
+    triangleNormalComputePSO.pRootSignature = mTriangleNormalRootSignature.Get();
+    triangleNormalComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["triangleNormalCS"]->GetBufferPointer()), mShaders["triangleNormalCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&triangleNormalComputePSO, IID_PPV_ARGS(&mPSOs["triangleNormal"])));
+
+    //
+    // PSO for Compute Shader Verlet Intergration
+    //
+    D3D12_COMPUTE_PIPELINE_STATE_DESC vertexNormalComputePSO = {};
+    vertexNormalComputePSO.pRootSignature = mVertexNormalRootSignature.Get();
+    vertexNormalComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["vertexNormalCS"]->GetBufferPointer()), mShaders["vertexNormalCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&vertexNormalComputePSO, IID_PPV_ARGS(&mPSOs["vertexNormal"])));
+
+    //
     // PSO for opaque objects.
     //
     D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;

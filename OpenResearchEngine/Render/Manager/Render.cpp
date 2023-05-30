@@ -37,6 +37,14 @@ void EngineApp::DeformationPass(FrameResource* currentFrameResource)
                 mCommandList->SetComputeRootSignature(mVerletSolverRootSignature.Get());
                 mCommandList->SetPipelineState(mPSOs.at("verletSolver").Get());
                 ComputeVertletSolver(mCommandList.Get(), renderItems[i], currentFrameResource);
+
+                mCommandList->SetComputeRootSignature(mTriangleNormalRootSignature.Get());
+                mCommandList->SetPipelineState(mPSOs.at("triangleNormal").Get());
+                ComputeTriangleNormals(mCommandList.Get(), renderItems[i], currentFrameResource);
+
+                mCommandList->SetComputeRootSignature(mVertexNormalRootSignature.Get());
+                mCommandList->SetPipelineState(mPSOs.at("vertexNormal").Get());
+                ComputeVertexNormals(mCommandList.Get(), renderItems[i], currentFrameResource);
             }
         }
     }
@@ -48,8 +56,8 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_
     auto skinnedCB = currentFrameResource->SkinnedCB->Resource();
     
     cmdList->SetComputeRootConstantBufferView(0, skinnedCB->GetGPUVirtualAddress() + ri->SkinnedCBIndex * skinnedCBByteSize);
-    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
-    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SkinningBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(SkinningInfo));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SkinningBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(SkinningInfo));
     
     if (!ri->Geo->Simulation)
     {
@@ -62,7 +70,7 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_
         cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
     }
 
-    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
 
     const UINT threadGroupSizeX = 64;
     const UINT threadGroupSizeY = 1;
@@ -83,14 +91,14 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_
 
 void EngineApp::ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
-    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
-    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
-    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->AdjacencyBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Neighbours));
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->VertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->VertexAdjacencyBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Neighbours));
 
     CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
     cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
 
-    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->BaseVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
 
     const UINT threadGroupSizeX = 64;
     const UINT threadGroupSizeY = 1;
@@ -100,6 +108,46 @@ void EngineApp::ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::sh
     CD3DX12_RESOURCE_BARRIER resetTransformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
     cmdList->ResourceBarrier(1, &resetTransformedBufferBarrier);
 }
+
+void EngineApp::ComputeTriangleNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+{
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->IndexBufferGPU->GetGPUVirtualAddress() + ri->StartIndexLocation * sizeof(UINT));
+
+    CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TriangleNormalBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
+
+    cmdList->SetComputeRootUnorderedAccessView(2, ri->Geo->TriangleNormalBufferGPU->GetGPUVirtualAddress() + ri->StartTriangleLocation * sizeof(TangentNormals));
+
+    const UINT threadGroupSizeX = 64;
+    const UINT threadGroupSizeY = 1;
+    const UINT threadGroupSizeZ = 1;
+    cmdList->Dispatch((ri->TriangleCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
+
+    CD3DX12_RESOURCE_BARRIER resetTransformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TriangleNormalBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+    cmdList->ResourceBarrier(1, &resetTransformedBufferBarrier);
+}
+
+void EngineApp::ComputeVertexNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+{
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->TriangleAdjacencyBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Neighbours));
+    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->TriangleNormalBufferGPU->GetGPUVirtualAddress() + ri->StartTriangleLocation * sizeof(TangentNormals));
+
+    CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->VertexNormalBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
+
+    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->VertexNormalBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
+
+    const UINT threadGroupSizeX = 64;
+    const UINT threadGroupSizeY = 1;
+    const UINT threadGroupSizeZ = 1;
+    cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
+
+    CD3DX12_RESOURCE_BARRIER resetTransformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->VertexNormalBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    cmdList->ResourceBarrier(1, &resetTransformedBufferBarrier);
+}
+
 
 void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource)
 {
@@ -117,7 +165,7 @@ void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::ve
             }
             else
             {
-                cmdList->IASetVertexBuffers(0, 1, &ri->Geo->TransformedVertexBufferView());
+                cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexNormalBufferView());
             }
         }
         else
@@ -128,6 +176,6 @@ void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::ve
         cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
         cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
         cmdList->SetGraphicsRootConstantBufferView(0, objectCB->GetGPUVirtualAddress() + ri->ObjCBIndex * objCBByteSize);
-        cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
+        cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->StartIndexLocation, ri->StartVertexLocation, 0);
     }
 }
