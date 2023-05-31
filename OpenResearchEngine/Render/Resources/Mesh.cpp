@@ -485,8 +485,13 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		const int triangleCount = indices.size() / 3;
 		const UINT nbByteSize = (UINT)(triangleCount) * sizeof(TangentNormals);
 
+		const UINT sbByteSize = (UINT)vertices.size() * sizeof(Spring);
+
 		std::vector<TangentNormals> normals;
 		normals.resize(triangleCount);
+
+		std::vector<Spring> springs;
+		springs.resize(vertices.size());
 		
 		ThrowIfFailed(D3DCreateBlob(abByteSize, &geo->VertexAdjacencyBufferCPU));
 		CopyMemory(geo->VertexAdjacencyBufferCPU->GetBufferPointer(), vertexNeighbours.data(), abByteSize);
@@ -503,11 +508,15 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexNormalBufferCPU));
 		CopyMemory(geo->VertexNormalBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
 
+		ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->SpringTransformBufferCPU));
+		CopyMemory(geo->SpringTransformBufferCPU->GetBufferPointer(), springs.data(), sbByteSize);
+
 		geo->VertexAdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertexNeighbours.data(), abByteSize, geo->VertexAdjacencyBufferUploader);
 		geo->TriangleAdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), triangleNeighbours.data(), abByteSize, geo->TriangleAdjacencyBufferUploader);
 		geo->TransformedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->TransformedVertexBufferUploader);
 		geo->TriangleNormalBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), normals.data(), nbByteSize, geo->TriangleNormalBufferUploader);
 		geo->VertexNormalBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexNormalBufferUploader);
+		geo->SpringTransformBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), springs.data(), sbByteSize, geo->SpringTransformBufferUploader);
 		
 		CD3DX12_RESOURCE_BARRIER vertexAdjacencyBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexAdjacencyBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &vertexAdjacencyBufferBarrier);
@@ -526,6 +535,9 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		CD3DX12_RESOURCE_BARRIER vertexNormalBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexNormalBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		mCommandList->ResourceBarrier(1, &vertexNormalBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER springBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SpringTransformBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+		mCommandList->ResourceBarrier(1, &springBufferBarrier);
 	}
 	else
 	{

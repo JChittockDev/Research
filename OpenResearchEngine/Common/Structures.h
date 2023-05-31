@@ -32,6 +32,11 @@ struct TangentNormals
     DirectX::XMFLOAT3 tangent = { 0.0f, 0.0f, 0.0f };
 };
 
+struct Spring
+{
+    DirectX::XMFLOAT3 transform = { 0.0f, 0.0f, 0.0f };
+};
+
 struct ObjectConstants
 {
     DirectX::XMFLOAT4X4 World = Math::Identity4x4();
@@ -230,6 +235,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> TriangleNormalBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> VertexNormalBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> TriangleAdjacencyBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SpringTransformBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferGPU = nullptr;
@@ -240,6 +246,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> TriangleNormalBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexNormalBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> TriangleAdjacencyBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SpringTransformBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferUploader = nullptr;
@@ -250,6 +257,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> TriangleNormalBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexNormalBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> TriangleAdjacencyBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SpringTransformBufferUploader = nullptr;
 
     // Data about the buffers.
     UINT VertexByteStride = 0;

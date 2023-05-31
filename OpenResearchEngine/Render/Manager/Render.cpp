@@ -99,6 +99,7 @@ void EngineApp::ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::sh
     cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
 
     cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootUnorderedAccessView(4, ri->Geo->SpringTransformBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Spring));
 
     const UINT threadGroupSizeX = 64;
     const UINT threadGroupSizeY = 1;

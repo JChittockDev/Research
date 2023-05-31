@@ -1,9 +1,9 @@
 struct Vertex
 {
-    float3 position : POSITION;
-    float3 normal : NORMAL;
-    float2 texCoord : TEXCOORD;
-    float4 tangent : TANGENT;
+    float3 position;
+    float3 normal;
+    float2 texCoord;
+    float4 tangent;
 };
 
 struct Neighbours
