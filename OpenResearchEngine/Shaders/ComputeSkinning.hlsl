@@ -1,16 +1,16 @@
 // Define your shader input and output structures
 struct Vertex
 {
-    float3 position : POSITION;
-    float3 normal : NORMAL;
-    float2 texCoord : TEXCOORD;
-    float4 tangent : TANGENT;
+    float3 position;
+    float3 normal;
+    float2 texCoord;
+    float4 tangent;
 };
 
 struct SkinningInfo
 {
-    float4 boneWeights : BONEWEIGHTS;
-    float4 boneIndices : BONEINDICES;
+    float4 boneWeights;
+    float4 boneIndices;
 };
 
 // Define the constant buffer structure

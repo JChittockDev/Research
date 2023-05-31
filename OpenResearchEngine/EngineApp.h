@@ -64,8 +64,16 @@ private:
     void BuildScene();
 
     void Render(FrameResource* currentFrameResource);
-    void ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
-    void SetComputeRootSignature();
+    void ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeTriangleNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeVertexNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+
+
+    void SetSkinnedRootSignature();
+    void SetVerletSolverRootSignature();
+    void SetTriangleNormalRootSignature();
+    void SetVertexNormalRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -93,6 +101,9 @@ private:
     DirectX::BoundingSphere mSceneBounds;
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSkinnedRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mVerletSolverRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mTriangleNormalRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mVertexNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mNullSrv;
@@ -120,6 +131,7 @@ private:
     std::vector<std::shared_ptr<RenderItem>> mRenderItems;
     std::vector<std::shared_ptr<FrameResource>> mFrameResources;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mMeshRenderItemMap;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mDeformedRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mLightRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mRenderItemLayers;
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;

@@ -19,8 +19,10 @@ public:
 
 	UINT VertexCount = 0;
 	UINT IndexCount = 0;
+	UINT TriangleCount = 0;
 	UINT StartIndexLocation = 0;
-	int BaseVertexLocation = 0;
+	UINT StartVertexLocation = 0;
+	UINT StartTriangleLocation = 0;
 
 	UINT ObjCBIndex = -1;
 	UINT SkinnedCBIndex = -1;
