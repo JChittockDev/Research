@@ -39,9 +39,9 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     outputVertexBuffer[vertexID].position = skinnedVertexPosition + springTransformBuffer[vertexID].transform;
     
     // Set the Pre Solve init positions for the outputBuffer
-    for (int i = 0; i < neighbourCount; ++i)
+    for (int ni = 0; ni < neighbourCount; ++ni)
     {
-        uint neighbour = vertexAdjacencyBuffer[vertexID].index[i];
+        uint neighbour = vertexAdjacencyBuffer[vertexID].index[ni];
         
         if (neighbour != vertexID)
         {
@@ -51,11 +51,11 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
     
     // Solve for the current frame
-    for (int i = 0; i < springIterations; ++i)
+    for (int iter = 0; iter < springIterations; ++iter)
     {
-        for (int i = 0; i < neighbourCount; ++i)
+        for (int ni = 0; ni < neighbourCount; ++ni)
         {
-            uint neighbour = vertexAdjacencyBuffer[vertexID].index[i];
+            uint neighbour = vertexAdjacencyBuffer[vertexID].index[ni];
         
             if (neighbour != vertexID)
             {
@@ -82,9 +82,9 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     }
     
     // Pass the relative solver data to the spring transform buffer so it can initialize the solve during the next frame
-    for (int i = 0; i < neighbourCount; ++i)
+    for (int ni = 0; ni < neighbourCount; ++ni)
     {
-        uint neighbour = vertexAdjacencyBuffer[vertexID].index[i];
+        uint neighbour = vertexAdjacencyBuffer[vertexID].index[ni];
         
         if (neighbour != vertexID)
         {
