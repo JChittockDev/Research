@@ -167,9 +167,9 @@ void Mesh::GetSolverConstraints(std::unordered_map<UINT, std::vector<UINT>>& sol
 		const UINT index2 = triangles[t + 1];
 		const UINT index3 = triangles[t + 2];
 
-		AddKey(solverConstraints, index1, index2);
-		AddKey(solverConstraints, index1, index3);
-		AddKey(solverConstraints, index2, index3);
+		AddKey(solverConstraints, index1, index2, false);
+		AddKey(solverConstraints, index1, index3, false);
+		AddKey(solverConstraints, index2, index3, false);
 	}
 
 }
@@ -183,24 +183,62 @@ void Mesh::GetVertexTriangleMap(std::unordered_map<UINT, std::vector<UINT>>& ver
 		const UINT index2 = triangles[t + 1];
 		const UINT index3 = triangles[t + 2];
 
-		AddKey(vertexTriangleMap, index1, triangleCount);
-		AddKey(vertexTriangleMap, index2, triangleCount);
-		AddKey(vertexTriangleMap, index3, triangleCount);
+		AddKey(vertexTriangleMap, index1, triangleCount, true);
+		AddKey(vertexTriangleMap, index2, triangleCount, true);
+		AddKey(vertexTriangleMap, index3, triangleCount, true);
 		
 		triangleCount += 1;
 	}
 
 }
 
-void Mesh::AddKey(std::unordered_map<UINT, std::vector<UINT>>& map, const UINT& keyA, const UINT& keyB)
+bool CheckPalindromes(std::unordered_map<UINT, std::vector<UINT>>& map, const UINT& keyA, const UINT& keyB)
 {
+	if (map.find(keyB) == map.end())
+	{
+		return false;
+	}
+	else if (std::find(map[keyB].begin(), map[keyB].end(), keyA) == map[keyB].end())
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+void Mesh::AddKey(std::unordered_map<UINT, std::vector<UINT>>& map, const UINT& keyA, const UINT& keyB, bool allowPalindromes = true)
+{
+	bool palindromeExists = CheckPalindromes(map, keyA, keyB);
+
 	if (map.find(keyA) == map.end())
 	{
-		map[keyA] = { keyB };
+		if (!allowPalindromes)
+		{
+			if (!palindromeExists)
+			{
+				map[keyA] = { keyB };
+			}
+		}
+		else
+		{
+			map[keyA] = { keyB };
+		}
 	}
 	else if (std::find(map[keyA].begin(), map[keyA].end(), keyB) == map[keyA].end())
 	{
-		map[keyA].push_back(keyB);
+		if (!allowPalindromes)
+		{
+			if (!palindromeExists)
+			{
+				map[keyA].push_back(keyB);
+			}
+		}
+		else
+		{
+			map[keyA].push_back(keyB);
+		}
 	}
 }
 
