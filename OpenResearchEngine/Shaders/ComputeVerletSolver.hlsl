@@ -24,6 +24,17 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     Vertex inputVertex = inputVertexBuffer[vertexID];
     Vertex skinnedVertex = skinnedVertexBuffer[vertexID];
     
+    float3 neighbourPositions[8];
+    
+    neighbourPositions[0] = skinnedVertexBuffer[vertexAdjacencyBuffer[vertexID].index[0]].position;
+    neighbourPositions[1] = skinnedVertexBuffer[vertexAdjacencyBuffer[vertexID].index[1]].position;
+    neighbourPositions[2] = skinnedVertexBuffer[vertexAdjacencyBuffer[vertexID].index[2]].position;
+    neighbourPositions[3] = skinnedVertexBuffer[vertexAdjacencyBuffer[vertexID].index[3]].position;
+    neighbourPositions[4] = skinnedVertexBuffer[vertexAdjacencyBuffer[vertexID].index[4]].position;
+    neighbourPositions[5] = skinnedVertexBuffer[vertexAdjacencyBuffer[vertexID].index[5]].position;
+    neighbourPositions[6] = skinnedVertexBuffer[vertexAdjacencyBuffer[vertexID].index[6]].position;
+    neighbourPositions[7] = skinnedVertexBuffer[vertexAdjacencyBuffer[vertexID].index[7]].position;
+    
     for (int i = 0; i < 8; ++i)
     {
         uint neighbour = vertexAdjacencyBuffer[vertexID].index[i];
@@ -41,12 +52,20 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         
             float3 correctionVector = constraintSkinnedDisplacement * (1 - constraintLength / constraintSkinnedLength);
         
-            skinnedVertex.position += correctionVector;
+            skinnedVertex.position -= correctionVector * 0.5;
+            neighbourPositions[i] += correctionVector * 0.5;
+            
         }
     }
     
     outputVertexBuffer[vertexID].position = skinnedVertex.position;
-    outputVertexBuffer[vertexID].normal = skinnedVertex.normal;
-    outputVertexBuffer[vertexID].tangent = skinnedVertex.tangent;
-    outputVertexBuffer[vertexID].texCoord = skinnedVertex.texCoord;
+    
+    outputVertexBuffer[vertexAdjacencyBuffer[vertexID].index[0]].position = neighbourPositions[0];
+    outputVertexBuffer[vertexAdjacencyBuffer[vertexID].index[1]].position = neighbourPositions[1];
+    outputVertexBuffer[vertexAdjacencyBuffer[vertexID].index[2]].position = neighbourPositions[2];
+    outputVertexBuffer[vertexAdjacencyBuffer[vertexID].index[3]].position = neighbourPositions[3];
+    outputVertexBuffer[vertexAdjacencyBuffer[vertexID].index[4]].position = neighbourPositions[4];
+    outputVertexBuffer[vertexAdjacencyBuffer[vertexID].index[5]].position = neighbourPositions[5];
+    outputVertexBuffer[vertexAdjacencyBuffer[vertexID].index[6]].position = neighbourPositions[6];
+    outputVertexBuffer[vertexAdjacencyBuffer[vertexID].index[7]].position = neighbourPositions[7];
 }

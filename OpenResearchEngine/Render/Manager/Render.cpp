@@ -95,7 +95,7 @@ void EngineApp::ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::sh
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
     cmdList->SetComputeRootShaderResourceView(2, ri->Geo->VertexAdjacencyBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Neighbours));
 
-    CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
     cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
 
     cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
@@ -105,7 +105,7 @@ void EngineApp::ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::sh
     const UINT threadGroupSizeZ = 1;
     cmdList->Dispatch((ri->VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
 
-    CD3DX12_RESOURCE_BARRIER resetTransformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    CD3DX12_RESOURCE_BARRIER resetTransformedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
     cmdList->ResourceBarrier(1, &resetTransformedBufferBarrier);
 }
 
