@@ -28,6 +28,37 @@ void Mesh::ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Ver
 	}
 }
 
+void Mesh::ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Vertex>& vertices, std::vector<std::vector<Vertex>>& segmentedVertices)
+{
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::vector<Vertex> vertexSegment;
+		for (UINT i = 0; i < meshList[x]->mNumVertices; ++i)
+		{
+			Vertex vertex;
+			if (meshList[x]->HasPositions())
+			{
+				vertex.Pos = *reinterpret_cast<DirectX::XMFLOAT3*>(&meshList[x]->mVertices[i]);
+			}
+			if (meshList[x]->HasNormals())
+			{
+				vertex.Normal = *reinterpret_cast<DirectX::XMFLOAT3*>(&meshList[x]->mNormals[i]);
+			}
+			if (meshList[x]->HasTangentsAndBitangents())
+			{
+				vertex.TangentU = *reinterpret_cast<DirectX::XMFLOAT4*>(&meshList[x]->mTangents[i]);
+			}
+			if (meshList[x]->HasTextureCoords(0))
+			{
+				vertex.TexC = *reinterpret_cast<DirectX::XMFLOAT2*>(&meshList[x]->mTextureCoords[0][i]);
+			}
+			vertices.push_back(vertex);
+			vertexSegment.push_back(vertex);
+		}
+		segmentedVertices.push_back(vertexSegment);
+	}
+}
+
 void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared_ptr<Skeleton>& mSkeleton, std::vector<Vertex>& vertices, std::vector<SkinningInfo>& skinning)
 {
 	int vertexCounter = 0;
@@ -465,20 +496,24 @@ void Mesh::ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std:
 //	}
 //}
 
-void Mesh::GetMeshTransferMap(const std::vector<Vertex>& baseVertices, const std::vector<Vertex>& targetVertices, std::vector<UINT>& map)
+
+void Mesh::GetMeshTransferMap(const std::vector<std::vector<Vertex>>& baseVertices, const std::vector<std::vector<Vertex>>& targetVertices, std::vector<UINT>& map)
 {
-	for (UINT i = 0; i < (UINT)baseVertices.size(); ++i)
+	for (UINT meshIndex = 0; meshIndex < (UINT)baseVertices.size(); ++meshIndex)
 	{
-		const Vertex& baseVertex = baseVertices[i];
-
-		for (UINT x = 0; x < (UINT)targetVertices.size(); ++x)
+		for (UINT vertexID = 0; vertexID < (UINT)baseVertices[meshIndex].size(); ++vertexID)
 		{
-			const Vertex& targetVertex = targetVertices[x];
+			const Vertex& baseVertex = baseVertices[meshIndex][vertexID];
 
-			if (baseVertex.Pos.x == targetVertex.Pos.x && baseVertex.Pos.y == targetVertex.Pos.y && baseVertex.Pos.z == targetVertex.Pos.z)
+			for (UINT targetVertexID = 0; targetVertexID < (UINT)targetVertices[meshIndex].size(); ++targetVertexID)
 			{
-				map.push_back(x);
-				break;
+				const Vertex& targetVertex = targetVertices[meshIndex][targetVertexID];
+
+				if (baseVertex.Pos.x == targetVertex.Pos.x && baseVertex.Pos.y == targetVertex.Pos.y && baseVertex.Pos.z == targetVertex.Pos.z)
+				{
+					map.push_back(targetVertexID);
+					break;
+				}
 			}
 		}
 	}
@@ -550,6 +585,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::vector<SkinningInfo> skinning;
 	std::vector<UINT> indices;
 	std::vector<std::vector<UINT>> segmentedIndices;
+	std::vector<std::vector<Vertex>> segmentedVertices;
 
 	Assimp::Importer imp;
 	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
@@ -558,7 +594,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	mSkeleton->rootNodeName = scene->mRootNode->mName.data;
 	ReadSkeleton(scene, mSkeleton);
 	ReadMaterials(scene, mats);
-	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices);
+	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices, segmentedVertices);
 	ReadSkinningData(scene->mNumMeshes, scene->mMeshes, mSkeleton, vertices, skinning);
 	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices, segmentedIndices);
 	ReadAnimations(scene, animations);
@@ -605,24 +641,27 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		// Simulation Resources
 
 		const int triangleCount = indices.size() / 3;
+		std::vector<UINT> meshTransferIndices;
+		std::vector<UINT> simMeshTransferIndices;
 		std::vector<Vertex> simMeshVertices;
 		std::vector<UINT> simMeshIndices;
 		std::vector<std::vector<UINT>> simMeshSegmentedIndices;
-		std::vector<UINT> transferIndices;
+		std::vector<std::vector<Vertex>> simMeshSegmentedVertices;
+		std::vector<Neighbours> simMeshVertexNeighbours;
 
-		ReadVertices(simScene->mNumMeshes, simScene->mMeshes, simMeshVertices);
+		ReadVertices(simScene->mNumMeshes, simScene->mMeshes, simMeshVertices, simMeshSegmentedVertices);
 		ReadTriangles(simScene->mNumMeshes, simScene->mMeshes, simMeshIndices, simMeshSegmentedIndices);
 		ReadSubsetTable(scene, simScene, subsets, filename);
-
-		std::vector<Neighbours> simMeshVertexNeighbours;
 		GetSegmentedConstraints(simScene->mNumMeshes, simScene->mMeshes, simMeshSegmentedIndices, simMeshVertexNeighbours);
 
-		GetMeshTransferMap(vertices, simMeshVertices, transferIndices);
+		GetMeshTransferMap(segmentedVertices, simMeshSegmentedVertices, meshTransferIndices);
+		GetMeshTransferMap(simMeshSegmentedVertices, segmentedVertices, simMeshTransferIndices);
 
 		const UINT smabByteSize = (UINT)simMeshVertexNeighbours.size() * sizeof(Neighbours);
 		const UINT smsbByteSize = (UINT)simMeshVertices.size() * sizeof(Spring);
 		const UINT smvbByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
-		const UINT smtbByteSize = (UINT)vertices.size() * sizeof(UINT);
+		const UINT smtbByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
+		const UINT mtbByteSize = (UINT)vertices.size() * sizeof(UINT);
 
 		std::vector<Spring> simMeshSprings;
 		simMeshSprings.resize(simMeshVertices.size());
@@ -643,14 +682,18 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		CopyMemory(geo->SimMeshSpringTransformBufferCPU->GetBufferPointer(), simMeshSprings.data(), smsbByteSize);
 
 		ThrowIfFailed(D3DCreateBlob(smtbByteSize, &geo->SimMeshTransferBufferCPU));
-		CopyMemory(geo->SimMeshTransferBufferCPU->GetBufferPointer(), transferIndices.data(), smtbByteSize);
+		CopyMemory(geo->SimMeshTransferBufferCPU->GetBufferPointer(), simMeshTransferIndices.data(), smtbByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(mtbByteSize, &geo->MeshTransferBufferCPU));
+		CopyMemory(geo->MeshTransferBufferCPU->GetBufferPointer(), meshTransferIndices.data(), mtbByteSize);
 
 		geo->SimMeshVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), smvbByteSize, geo->SimMeshVertexBufferUploader);
 		geo->SimMeshSkinnedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), smvbByteSize, geo->SimMeshSkinnedVertexBufferUploader);
 		geo->SimMeshVertexAdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertexNeighbours.data(), smabByteSize, geo->SimMeshVertexAdjacencyBufferUploader);
 		geo->SimMeshTransformedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), smvbByteSize, geo->SimMeshTransformedVertexBufferUploader);
 		geo->SimMeshSpringTransformBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSprings.data(), smsbByteSize, geo->SimMeshSpringTransformBufferUploader);
-		geo->SimMeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), transferIndices.data(), smtbByteSize, geo->SimMeshTransferBufferUploader);
+		geo->SimMeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshTransferIndices.data(), smtbByteSize, geo->SimMeshTransferBufferUploader);
+		geo->MeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), meshTransferIndices.data(), mtbByteSize, geo->MeshTransferBufferUploader);
 
 		CD3DX12_RESOURCE_BARRIER SimMeshVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshVertexBufferBarrier);
@@ -669,6 +712,9 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		CD3DX12_RESOURCE_BARRIER SimMeshTransferBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshTransferBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshTransferBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER MeshTransferBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->MeshTransferBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &MeshTransferBufferBarrier);
 
 		// Normal & Tangent Resources
 

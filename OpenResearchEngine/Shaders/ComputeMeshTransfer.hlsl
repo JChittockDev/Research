@@ -14,8 +14,9 @@ RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 [numthreads(64, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
-    uint vertexID = dispatchThreadID.x;
+    uint simMeshVertexID = dispatchThreadID.x;
+    uint vertexID = transferIndexBuffer[simMeshVertexID];
+    
     Vertex inputVertex = inputVertexBuffer[vertexID];
-    uint simMeshVertexID = transferIndexBuffer[vertexID];
     outputVertexBuffer[simMeshVertexID] = inputVertex;
 }
