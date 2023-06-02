@@ -201,6 +201,23 @@ void Mesh::ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<UI
 	}
 }
 
+void Mesh::GetSegmentedConstraints(unsigned int numMesh, const std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<VertexNeighbours>& output)
+{
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::unordered_map<UINT, std::vector<UINT>> solverGraph;
+		GetSolverConstraints(solverGraph, segmentedIndices[x]);
+
+		std::vector<VertexNeighbours> neighbours;
+		GetGraphData(segmentedVertices[x], solverGraph, neighbours, 8);
+
+		for (UINT y = 0; y < neighbours.size(); ++y)
+		{
+			output.push_back(neighbours[y]);
+		}
+	}
+}
+
 void Mesh::GetSegmentedConstraints(unsigned int numMesh, aiMesh** meshList, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<Neighbours>& output)
 {
 	for (UINT x = 0; x < numMesh; ++x)
@@ -318,6 +335,38 @@ void Mesh::AddKey(std::unordered_map<UINT, std::vector<UINT>>& map, const UINT& 
 	}
 }
 
+void Mesh::GetGraphData(const int count, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<TriangleNeighbours>& graphData, const int references = 8)
+{
+	for (int x = 0; x < count; x++)
+	{
+		TriangleNeighbours neighbours;
+		for (int y = 0; y < references; y++)
+		{
+			neighbours.index[y] = x;
+		}
+
+		graphData.push_back(neighbours);
+	}
+
+	for (const auto& adjacencyData : inputGraph)
+	{
+		std::vector<UINT> adjacentIndicies = adjacencyData.second;
+		if (adjacentIndicies.size() < references)
+		{
+			int remainder = references - adjacentIndicies.size();
+			for (int z = 0; z < remainder; z++)
+			{
+				adjacentIndicies.push_back(adjacencyData.first);
+			}
+		}
+
+		for (int y = 0; y < adjacentIndicies.size(); y++)
+		{
+			graphData[adjacencyData.first].index[y] = adjacentIndicies[y];
+		}
+	}
+}
+
 void Mesh::GetGraphData(const int count, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& graphData, const int references = 8)
 {
 	for (int x = 0; x < count; x++)
@@ -346,6 +395,40 @@ void Mesh::GetGraphData(const int count, const std::unordered_map<UINT, std::vec
 		for (int y = 0; y < adjacentIndicies.size(); y++)
 		{
 			graphData[adjacencyData.first].index[y] = adjacentIndicies[y];
+		}
+	}
+}
+
+void Mesh::GetGraphData(const std::vector<Vertex>& vertices, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<VertexNeighbours>& graphData, const int references = 8)
+{
+	for (int x = 0; x < vertices.size(); x++)
+	{
+		VertexNeighbours neighbours;
+		for (int y = 0; y < references; y++)
+		{
+			neighbours.index[y] = x;
+			neighbours.length[y] = 0.0;
+		}
+
+		graphData.push_back(neighbours);
+	}
+
+	for (const auto& adjacencyData : inputGraph)
+	{
+		std::vector<UINT> adjacentIndicies = adjacencyData.second;
+		if (adjacentIndicies.size() < references)
+		{
+			int remainder = references - adjacentIndicies.size();
+			for (int z = 0; z < remainder; z++)
+			{
+				adjacentIndicies.push_back(adjacencyData.first);
+			}
+		}
+
+		for (int y = 0; y < adjacentIndicies.size(); y++)
+		{
+			graphData[adjacencyData.first].index[y] = adjacentIndicies[y];
+			graphData[adjacencyData.first].length[y] = Math::Length(vertices[adjacencyData.first].Pos, vertices[adjacentIndicies[y]].Pos);
 		}
 	}
 }
@@ -647,17 +730,17 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		std::vector<UINT> simMeshIndices;
 		std::vector<std::vector<UINT>> simMeshSegmentedIndices;
 		std::vector<std::vector<Vertex>> simMeshSegmentedVertices;
-		std::vector<Neighbours> simMeshVertexNeighbours;
+		std::vector<VertexNeighbours> simMeshVertexNeighbours;
 
 		ReadVertices(simScene->mNumMeshes, simScene->mMeshes, simMeshVertices, simMeshSegmentedVertices);
 		ReadTriangles(simScene->mNumMeshes, simScene->mMeshes, simMeshIndices, simMeshSegmentedIndices);
 		ReadSubsetTable(scene, simScene, subsets, filename);
-		GetSegmentedConstraints(simScene->mNumMeshes, simScene->mMeshes, simMeshSegmentedIndices, simMeshVertexNeighbours);
+		GetSegmentedConstraints(simScene->mNumMeshes, simMeshSegmentedVertices, simMeshSegmentedIndices, simMeshVertexNeighbours);
 
 		GetMeshTransferMap(segmentedVertices, simMeshSegmentedVertices, meshTransferIndices);
 		GetMeshTransferMap(simMeshSegmentedVertices, segmentedVertices, simMeshTransferIndices);
 
-		const UINT smabByteSize = (UINT)simMeshVertexNeighbours.size() * sizeof(Neighbours);
+		const UINT smabByteSize = (UINT)simMeshVertexNeighbours.size() * sizeof(VertexNeighbours);
 		const UINT smsbByteSize = (UINT)simMeshVertices.size() * sizeof(Spring);
 		const UINT smvbByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
 		const UINT smtbByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);

@@ -119,15 +119,14 @@ void EngineApp::ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::sha
 
 void EngineApp::ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
-    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
-    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshSkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
-    cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SimMeshVertexAdjacencyBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Neighbours));
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshSkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshVertexAdjacencyBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(VertexNeighbours));
 
     CD3DX12_RESOURCE_BARRIER skinnedBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshTransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
     cmdList->ResourceBarrier(1, &skinnedBufferBarrier);
 
-    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SimMeshTransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
-    cmdList->SetComputeRootUnorderedAccessView(4, ri->Geo->SimMeshSpringTransformBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Spring));
+    cmdList->SetComputeRootUnorderedAccessView(2, ri->Geo->SimMeshTransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SimMeshSpringTransformBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Spring));
 
     const UINT threadGroupSizeX = 64;
     const UINT threadGroupSizeY = 1;

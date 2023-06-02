@@ -21,6 +21,17 @@
 
 extern const int gNumFrameResources;
 
+struct VertexNeighbours
+{
+    UINT index[8];
+    float length[8];
+};
+
+struct TriangleNeighbours
+{
+    UINT index[8];
+};
+
 struct Neighbours
 {
     UINT index[8];

@@ -6,11 +6,6 @@ struct Vertex
     float4 tangent;
 };
 
-struct Neighbours
-{
-    uint index[8];
-};
-
 struct TangentNormals
 {
     float3 normal;

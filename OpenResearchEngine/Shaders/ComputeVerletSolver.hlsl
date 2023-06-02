@@ -6,9 +6,10 @@ struct Vertex
     float4 tangent;
 };
 
-struct Neighbours
+struct VertexNeighbours
 {
     uint index[8];
+    float length[8];
 };
 
 struct Spring
@@ -16,9 +17,8 @@ struct Spring
     float3 transform;
 };
 
-StructuredBuffer<Vertex> inputVertexBuffer : register(t0);
-StructuredBuffer<Vertex> skinnedVertexBuffer : register(t1);
-StructuredBuffer<Neighbours> vertexAdjacencyBuffer : register(t2);
+StructuredBuffer<Vertex> skinnedVertexBuffer : register(t0);
+StructuredBuffer<VertexNeighbours> vertexAdjacencyBuffer : register(t1);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 RWStructuredBuffer<Spring> springTransformBuffer : register(u1);
 
@@ -32,7 +32,6 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     uint vertexID = dispatchThreadID.x;
    
     // Retrieve the input and skinned vertex positions
-    float3 inputVertexPosition = inputVertexBuffer[vertexID].position;
     float3 skinnedVertexPosition = skinnedVertexBuffer[vertexID].position;
     
     // add the previous frames solve to the new skinned position to initialize the current frames solve
@@ -56,27 +55,18 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         for (int ni = 0; ni < neighbourCount; ++ni)
         {
             uint neighbour = vertexAdjacencyBuffer[vertexID].index[ni];
+            float neighbourLength = vertexAdjacencyBuffer[vertexID].length[ni];
         
             if (neighbour != vertexID)
             {
-                // Calculate displacement and lengths for constraints
-                float3 constraintDisplacement = inputVertexBuffer[vertexID].position - inputVertexBuffer[neighbour].position;
-                float3 constraintSkinnedDisplacement = outputVertexBuffer[vertexID].position - outputVertexBuffer[neighbour].position;
-            
-                float constraintLength = length(constraintDisplacement);
-                float constraintSkinnedLength = length(constraintSkinnedDisplacement);
+                float3 neighbourSkinnedDisplacement = outputVertexBuffer[vertexID].position - outputVertexBuffer[neighbour].position;
+                float neighbourSkinnedLength = length(neighbourSkinnedDisplacement);
                 
                 // Calculate scale and correction vector
-                float scale = constraintLength / constraintSkinnedLength;
-                float3 correctionVector = (constraintSkinnedDisplacement * (1.0 - scale)) * 0.5;
-            
-                // Apply the correction vectors if scale is greater than epsilon
-                if (scale > 1e-6)
-                {
-                    // Apply the correction vectors to the positions of the vertices
-                    outputVertexBuffer[vertexID].position += -correctionVector;
-                    outputVertexBuffer[neighbour].position += correctionVector;
-                }
+                float3 correctionVector = (neighbourSkinnedDisplacement * (1.0 - neighbourLength / neighbourSkinnedLength)) * 0.5;
+                
+                outputVertexBuffer[vertexID].position += -correctionVector;
+                outputVertexBuffer[neighbour].position += correctionVector;
             }
         }
     }
