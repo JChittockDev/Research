@@ -35,6 +35,24 @@ void EngineApp::SetPipelineStates()
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&vertexNormalComputePSO, IID_PPV_ARGS(&mPSOs["vertexNormal"])));
 
     //
+    // PSO for Compute Shader Verlet Intergration
+    //
+    D3D12_COMPUTE_PIPELINE_STATE_DESC meshTransferComputePSO = {};
+    meshTransferComputePSO.pRootSignature = mMeshTransferRootSignature.Get();
+    meshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["meshTransferCS"]->GetBufferPointer()), mShaders["meshTransferCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&meshTransferComputePSO, IID_PPV_ARGS(&mPSOs["meshTransfer"])));
+
+    //
+    // PSO for Compute Shader Verlet Intergration
+    //
+    D3D12_COMPUTE_PIPELINE_STATE_DESC simMeshTransferComputePSO = {};
+    simMeshTransferComputePSO.pRootSignature = mSimMeshTransferRootSignature.Get();
+    simMeshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["simMeshTransferCS"]->GetBufferPointer()), mShaders["simMeshTransferCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&simMeshTransferComputePSO, IID_PPV_ARGS(&mPSOs["simMeshTransfer"])));
+
+
+
+    //
     // PSO for opaque objects.
     //
     D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;

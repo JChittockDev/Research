@@ -24,6 +24,12 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
 		ritem->StartVertexLocation = ritem->Geo->DrawArgs[submeshName].StartVertexLocation;
 		ritem->StartTriangleLocation = ritem->Geo->DrawArgs[submeshName].StartTriangleLocation;
+		ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[submeshName].SimMeshVertexCount;
+		ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[submeshName].SimMeshIndexCount;
+		ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[submeshName].SimMeshTriangleCount;
+		ritem->SimMeshStartIndexLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartIndexLocation;
+		ritem->SimMeshStartVertexLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartVertexLocation;
+		ritem->SimMeshStartTriangleLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartTriangleLocation;
 		renderLayers.push_back(ritem);
 		
 		if (uniqueID.empty())
@@ -74,6 +80,12 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 		ritem->StartIndexLocation = ritem->Geo->DrawArgs[submeshName].StartIndexLocation;
 		ritem->StartVertexLocation = ritem->Geo->DrawArgs[submeshName].StartVertexLocation;
 		ritem->StartTriangleLocation = ritem->Geo->DrawArgs[submeshName].StartTriangleLocation;
+		ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[submeshName].SimMeshVertexCount;
+		ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[submeshName].SimMeshIndexCount;
+		ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[submeshName].SimMeshTriangleCount;
+		ritem->SimMeshStartIndexLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartIndexLocation;
+		ritem->SimMeshStartVertexLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartVertexLocation;
+		ritem->SimMeshStartTriangleLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartTriangleLocation;
 		ritem->SkinnedCBIndex = SkinnedCBIndex;
 		ritem->AnimationInstance = mAnimationController;
 		renderLayers.push_back(ritem);
@@ -111,6 +123,12 @@ void RenderItem::BuildRenderItem(const std::string& meshName, const std::string&
 	ritem->StartIndexLocation = ritem->Geo->DrawArgs[subMeshName].StartIndexLocation;
 	ritem->StartVertexLocation = ritem->Geo->DrawArgs[subMeshName].StartVertexLocation;
 	ritem->StartTriangleLocation = ritem->Geo->DrawArgs[subMeshName].StartTriangleLocation;
+	ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[subMeshName].SimMeshVertexCount;
+	ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[subMeshName].SimMeshIndexCount;
+	ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[subMeshName].SimMeshTriangleCount;
+	ritem->SimMeshStartIndexLocation = ritem->Geo->DrawArgs[subMeshName].SimMeshStartIndexLocation;
+	ritem->SimMeshStartVertexLocation = ritem->Geo->DrawArgs[subMeshName].SimMeshStartVertexLocation;
+	ritem->SimMeshStartTriangleLocation = ritem->Geo->DrawArgs[subMeshName].SimMeshStartTriangleLocation;
 	renderLayers.push_back(ritem);
 
 	if (uniqueID.empty())

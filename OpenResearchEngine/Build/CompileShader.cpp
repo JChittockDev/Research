@@ -61,6 +61,9 @@ void EngineApp::CompileShaders ()
     mShaders["triangleNormalCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeTriangleNormals.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["vertexNormalCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeVertexNormals.hlsl", nullptr, "CS", "cs_5_1");
 
+    mShaders["meshTransferCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["simMeshTransferCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeSimMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
+
     mInputLayout = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
