@@ -21,20 +21,14 @@
 
 extern const int gNumFrameResources;
 
-struct VertexNeighbours
-{
-    UINT index[8];
-    float length[8];
-};
-
-struct TriangleNeighbours
-{
-    UINT index[8];
-};
-
 struct Neighbours
 {
     UINT index[8];
+};
+
+struct RestConstraint
+{
+    float length[8];
 };
 
 struct TangentNormals
@@ -284,7 +278,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferUploader = nullptr;
 
     // Simulation Buffers
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestConstraintBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexAdjacencyBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransformedVertexBufferCPU = nullptr;
@@ -292,7 +286,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestConstraintBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferGPU = nullptr;
@@ -300,7 +294,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestConstraintBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferUploader = nullptr;
@@ -395,7 +389,7 @@ struct MeshGeometry
         SkinningBufferUploader = nullptr;
         SkinnedVertexBufferUploader = nullptr;
 
-        SimMeshVertexBufferUploader = nullptr;
+        SimMeshRestConstraintBufferUploader = nullptr;
         SimMeshSkinnedVertexBufferUploader = nullptr;
         SimMeshVertexAdjacencyBufferUploader = nullptr;
         SimMeshTransformedVertexBufferUploader = nullptr;

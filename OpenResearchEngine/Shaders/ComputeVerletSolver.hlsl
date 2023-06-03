@@ -6,9 +6,13 @@ struct Vertex
     float4 tangent;
 };
 
-struct VertexNeighbours
+struct Neighbours
 {
     uint index[8];
+};
+
+struct RestConstraint
+{
     float length[8];
 };
 
@@ -17,8 +21,9 @@ struct Spring
     float3 transform;
 };
 
-StructuredBuffer<Vertex> skinnedVertexBuffer : register(t0);
-StructuredBuffer<VertexNeighbours> vertexAdjacencyBuffer : register(t1);
+StructuredBuffer<RestConstraint> restConstraintBuffer : register(t0);
+StructuredBuffer<Vertex> skinnedVertexBuffer : register(t1);
+StructuredBuffer<Neighbours> vertexAdjacencyBuffer : register(t2);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 RWStructuredBuffer<Spring> springTransformBuffer : register(u1);
 
@@ -55,7 +60,7 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         for (int ni = 0; ni < neighbourCount; ++ni)
         {
             uint neighbour = vertexAdjacencyBuffer[vertexID].index[ni];
-            float neighbourLength = vertexAdjacencyBuffer[vertexID].length[ni];
+            float neighbourLength = restConstraintBuffer[vertexID].length[ni];
         
             if (neighbour != vertexID)
             {
@@ -71,6 +76,8 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         }
     }
     
+    
+    springTransformBuffer[vertexID].transform = outputVertexBuffer[vertexID].position - skinnedVertexPosition;
     // Pass the relative solver data to the spring transform buffer so it can initialize the solve during the next frame
     for (int ni = 0; ni < neighbourCount; ++ni)
     {
@@ -82,7 +89,6 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
             float3 constraintSkinnedVertexPosition = skinnedVertexBuffer[neighbour].position;
             
             // Update the spring transform buffer with the relative transformations
-            springTransformBuffer[vertexID].transform = outputVertexBuffer[vertexID].position - skinnedVertexPosition;
             springTransformBuffer[neighbour].transform = outputVertexBuffer[neighbour].position - constraintSkinnedVertexPosition;
         }
     }
