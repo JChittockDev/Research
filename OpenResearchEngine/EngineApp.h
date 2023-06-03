@@ -71,6 +71,10 @@ private:
     void ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
 
+    void ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+
+
 
     void SetSkinnedRootSignature();
     void SetVerletSolverRootSignature();
@@ -78,6 +82,8 @@ private:
     void SetVertexNormalRootSignature();
     void SetSimMeshTransferRootSignature();
     void SetMeshTransferRootSignature();
+    void SetPreSolveRootSignature();
+    void SetPostSolveRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -106,6 +112,10 @@ private:
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSkinnedRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mVerletSolverRootSignature = nullptr;
+
+    ComPtr<ID3D12RootSignature> mPreSolveRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mPostSolveRootSignature = nullptr;
+
     ComPtr<ID3D12RootSignature> mTriangleNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mVertexNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mMeshTransferRootSignature = nullptr;
