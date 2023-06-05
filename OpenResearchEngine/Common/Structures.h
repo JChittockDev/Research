@@ -26,10 +26,38 @@ struct Neighbours
     UINT index[8];
 };
 
+struct RestConstraint
+{
+    float length[8];
+};
+
 struct TangentNormals
 {
     DirectX::XMFLOAT3 normal = { 0.0f, 0.0f, 0.0f };
     DirectX::XMFLOAT3 tangent = { 0.0f, 0.0f, 0.0f };
+};
+
+struct Vector3
+{
+    float x = 0.0;
+    float y = 0.0;
+    float z = 0.0;
+
+    Vector3() {};
+
+    Vector3(float inX, float inY, float inZ)
+    {
+        x = inX;
+        y = inY;
+        z = inZ;
+    }
+};
+
+struct InterlockedVector
+{
+    int x = 0;
+    int y = 0;
+    int z = 0;
 };
 
 struct Spring
@@ -179,6 +207,14 @@ struct Subset
     UINT IndexCount = 0;
     UINT TriangleStart = 0;
     UINT TriangleCount = 0;
+
+    UINT SimMeshVertexStart = 0;
+    UINT SimMeshVertexCount = 0;
+    UINT SimMeshIndexStart = 0;
+    UINT SimMeshIndexCount = 0;
+    UINT SimMeshTriangleStart = 0;
+    UINT SimMeshTriangleCount = 0;
+
     UINT MaterialIndex = 0;
     std::string MeshName;
 };
@@ -215,6 +251,14 @@ struct SubmeshGeometry
     UINT StartIndexLocation = 0;
     UINT StartVertexLocation = 0;
     UINT StartTriangleLocation = 0;
+
+    UINT SimMeshVertexCount = 0;
+    UINT SimMeshIndexCount = 0;
+    UINT SimMeshTriangleCount = 0;
+    UINT SimMeshStartIndexLocation = 0;
+    UINT SimMeshStartVertexLocation = 0;
+    UINT SimMeshStartTriangleLocation = 0;
+
     UINT MaterialIndex = 0;
     DirectX::BoundingBox Bounds;
 };
@@ -224,40 +268,65 @@ struct MeshGeometry
     // Give it a name so we can look it up by name.
     std::string Name;
 
-    // System memory copies.  Use Blobs because the vertex/index format can be generic.
-    // It is up to the client to cast appropriately.  
+    // Default Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> VertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> IndexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SkinningBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SkinnedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> VertexAdjacencyBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> TransformedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> TriangleNormalBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> VertexNormalBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> TriangleAdjacencyBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SpringTransformBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> VertexAdjacencyBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> TransformedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> TriangleNormalBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> VertexNormalBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> TriangleAdjacencyBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SpringTransformBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> VertexAdjacencyBufferUploader = nullptr;
+
+    // Simulation Buffers
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestConstraintBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexAdjacencyBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransformedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshPostSolveVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSpringTransformBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestConstraintBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPostSolveVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSpringTransformBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestConstraintBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPostSolveVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSpringTransformBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferUploader = nullptr;
+    
+    // Normal & Tangent Calculation Buffers
+    Microsoft::WRL::ComPtr<ID3DBlob> TransformedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> TriangleNormalBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> VertexNormalBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> TriangleAdjacencyBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> TransformedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> TriangleNormalBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> VertexNormalBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> TriangleAdjacencyBufferGPU = nullptr;
+
     Microsoft::WRL::ComPtr<ID3D12Resource> TransformedVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> TriangleNormalBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexNormalBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> TriangleAdjacencyBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SpringTransformBufferUploader = nullptr;
 
     // Data about the buffers.
     UINT VertexByteStride = 0;
@@ -329,7 +398,16 @@ struct MeshGeometry
         IndexBufferUploader = nullptr;
         SkinningBufferUploader = nullptr;
         SkinnedVertexBufferUploader = nullptr;
-        VertexAdjacencyBufferUploader = nullptr;
+
+        SimMeshRestConstraintBufferUploader = nullptr;
+        SimMeshSkinnedVertexBufferUploader = nullptr;
+        SimMeshVertexAdjacencyBufferUploader = nullptr;
+        SimMeshTransformedVertexBufferUploader = nullptr;
+        SimMeshPostSolveVertexBufferUploader = nullptr;
+        SimMeshSpringTransformBufferUploader = nullptr;
+        SimMeshTransferBufferUploader = nullptr;
+        MeshTransferBufferUploader = nullptr;
+
         TransformedVertexBufferUploader = nullptr;
         TriangleNormalBufferUploader = nullptr;
         VertexNormalBufferUploader = nullptr;

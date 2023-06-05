@@ -6,7 +6,7 @@ struct Vertex
     float4 tangent;
 };
 
-struct Neighbours
+struct TriangleNeighbours
 {
     uint index[8];
 };
@@ -18,7 +18,7 @@ struct TangentNormals
 };
 
 StructuredBuffer<Vertex> inputVertexBuffer : register(t0);
-StructuredBuffer<Neighbours> triangleAdjacencyBuffer : register(t1);
+StructuredBuffer<TriangleNeighbours> triangleAdjacencyBuffer : register(t1);
 StructuredBuffer<TangentNormals> transformedNormalBuffer : register(t2);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 

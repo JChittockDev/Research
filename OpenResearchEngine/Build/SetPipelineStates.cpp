@@ -2,37 +2,46 @@
 
 void EngineApp::SetPipelineStates()
 {
-    //
-    // PSO for Compute Shader Skinning
-    //
     D3D12_COMPUTE_PIPELINE_STATE_DESC skinnedComputePSO = {};
     skinnedComputePSO.pRootSignature = mSkinnedRootSignature.Get();
     skinnedComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["skinnedCS"]->GetBufferPointer()), mShaders["skinnedCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&skinnedComputePSO, IID_PPV_ARGS(&mPSOs["skinned"])));
 
-    //
-    // PSO for Compute Shader Verlet Intergration
-    //
     D3D12_COMPUTE_PIPELINE_STATE_DESC verletSolverComputePSO = {};
     verletSolverComputePSO.pRootSignature = mVerletSolverRootSignature.Get();
     verletSolverComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["verletSolverCS"]->GetBufferPointer()), mShaders["verletSolverCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&verletSolverComputePSO, IID_PPV_ARGS(&mPSOs["verletSolver"])));
 
-    //
-    // PSO for Compute Shader Verlet Intergration
-    //
     D3D12_COMPUTE_PIPELINE_STATE_DESC triangleNormalComputePSO = {};
     triangleNormalComputePSO.pRootSignature = mTriangleNormalRootSignature.Get();
     triangleNormalComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["triangleNormalCS"]->GetBufferPointer()), mShaders["triangleNormalCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&triangleNormalComputePSO, IID_PPV_ARGS(&mPSOs["triangleNormal"])));
 
-    //
-    // PSO for Compute Shader Verlet Intergration
-    //
     D3D12_COMPUTE_PIPELINE_STATE_DESC vertexNormalComputePSO = {};
     vertexNormalComputePSO.pRootSignature = mVertexNormalRootSignature.Get();
     vertexNormalComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["vertexNormalCS"]->GetBufferPointer()), mShaders["vertexNormalCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&vertexNormalComputePSO, IID_PPV_ARGS(&mPSOs["vertexNormal"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC meshTransferComputePSO = {};
+    meshTransferComputePSO.pRootSignature = mMeshTransferRootSignature.Get();
+    meshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["meshTransferCS"]->GetBufferPointer()), mShaders["meshTransferCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&meshTransferComputePSO, IID_PPV_ARGS(&mPSOs["meshTransfer"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC simMeshTransferComputePSO = {};
+    simMeshTransferComputePSO.pRootSignature = mSimMeshTransferRootSignature.Get();
+    simMeshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["simMeshTransferCS"]->GetBufferPointer()), mShaders["simMeshTransferCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&simMeshTransferComputePSO, IID_PPV_ARGS(&mPSOs["simMeshTransfer"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC preSolveComputePSO = {};
+    preSolveComputePSO.pRootSignature = mPreSolveRootSignature.Get();
+    preSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["preSolveCS"]->GetBufferPointer()), mShaders["preSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&preSolveComputePSO, IID_PPV_ARGS(&mPSOs["preSolve"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC postSolveComputePSO = {};
+    postSolveComputePSO.pRootSignature = mPostSolveRootSignature.Get();
+    postSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["postSolveCS"]->GetBufferPointer()), mShaders["postSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&postSolveComputePSO, IID_PPV_ARGS(&mPSOs["postSolve"])));
+
 
     //
     // PSO for opaque objects.

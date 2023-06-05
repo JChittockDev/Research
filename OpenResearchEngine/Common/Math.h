@@ -108,5 +108,16 @@ public:
 		DirectX::XMStoreFloat4x4(&matrix, transformMatrix);
 		return matrix;
 	}
+
+	static float Length(const DirectX::XMFLOAT3& point1, const DirectX::XMFLOAT3& point2)
+	{
+		DirectX::XMVECTOR vec1 = DirectX::XMLoadFloat3(&point1);
+		DirectX::XMVECTOR vec2 = DirectX::XMLoadFloat3(&point2);
+
+		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(vec2, vec1);
+		float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
+
+		return length;
+	}
 };
 
