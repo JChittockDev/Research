@@ -53,6 +53,13 @@ struct Vector3
     }
 };
 
+struct InterlockedVector
+{
+    int x = 0;
+    int y = 0;
+    int z = 0;
+};
+
 struct Spring
 {
     DirectX::XMFLOAT3 transform = { 0.0f, 0.0f, 0.0f };
@@ -282,6 +289,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexAdjacencyBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransformedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshPostSolveVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSpringTransformBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
@@ -290,6 +298,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPostSolveVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSpringTransformBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
@@ -298,6 +307,7 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPostSolveVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSpringTransformBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferUploader = nullptr;
@@ -393,6 +403,7 @@ struct MeshGeometry
         SimMeshSkinnedVertexBufferUploader = nullptr;
         SimMeshVertexAdjacencyBufferUploader = nullptr;
         SimMeshTransformedVertexBufferUploader = nullptr;
+        SimMeshPostSolveVertexBufferUploader = nullptr;
         SimMeshSpringTransformBufferUploader = nullptr;
         SimMeshTransferBufferUploader = nullptr;
         MeshTransferBufferUploader = nullptr;

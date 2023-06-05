@@ -16,17 +16,34 @@ struct RestConstraint
     float length[8];
 };
 
+struct InterlockedVector
+{
+    int x;
+    int y;
+    int z;
+};
+
 StructuredBuffer<RestConstraint> restConstraintBuffer : register(t0);
 StructuredBuffer<Neighbours> simMeshVertexAdjacencyBuffer : register(t1);
-RWStructuredBuffer<Vertex> simMeshTransformedVertexBuffer : register(u0);
+RWStructuredBuffer<InterlockedVector> simMeshTransformedVertexBuffer : register(u0);
+
+float3 UnQuantize(InterlockedVector input, float factor)
+{
+    float vertexPositionX = ((float) input.x) / factor;
+    float vertexPositionY = ((float) input.y) / factor;
+    float vertexPositionZ = ((float) input.z) / factor;
+    return float3(vertexPositionX, vertexPositionY, vertexPositionZ);
+}
 
 // Define the compute shader entry point
-[numthreads(64, 1, 1)]
+[numthreads(1, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
-    int springIterations = 1;
-    int neighbourCount = 4;
+    int springIterations = 4;
+    int neighbourCount = 8;
     uint vertexID = dispatchThreadID.x;
+    
+    float factor = 32768.0;
     
     // Solve for the current frame
     for (int iter = 0; iter < springIterations; ++iter)
@@ -35,17 +52,34 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         {
             uint neighbour = simMeshVertexAdjacencyBuffer[vertexID].index[ni];
             float neighbourLength = restConstraintBuffer[vertexID].length[ni];
+            
+            float3 vertexPosition = UnQuantize(simMeshTransformedVertexBuffer[vertexID], factor);
         
             if (neighbour != vertexID)
             {
-                float3 neighbourSkinnedDisplacement = simMeshTransformedVertexBuffer[vertexID].position - simMeshTransformedVertexBuffer[neighbour].position;
+                float3 neighbourVertexPosition = UnQuantize(simMeshTransformedVertexBuffer[neighbour], factor);
+
+                float3 neighbourSkinnedDisplacement = vertexPosition - neighbourVertexPosition;
                 float neighbourSkinnedLength = length(neighbourSkinnedDisplacement);
                 
                 // Calculate scale and correction vector
-                float3 correctionVector = (neighbourSkinnedDisplacement * (1.0 - neighbourLength / neighbourSkinnedLength)) * 2.0;
+                float3 correctionVector = (neighbourSkinnedDisplacement * (1.0 - neighbourLength / neighbourSkinnedLength)) * 0.5;
                 
-                simMeshTransformedVertexBuffer[vertexID].position += -correctionVector;
-                //simMeshTransformedVertexBuffer[neighbour].position += correctionVector;
+                int quantizedX = (int) (correctionVector.x * factor);
+                int quantizedY = (int) (correctionVector.y * factor);
+                int quantizedZ = (int) (correctionVector.z * factor);
+                int invQuantizedX = (int) (-correctionVector.x * factor);
+                int invQuantizedY = (int) (-correctionVector.y * factor);
+                int invQuantizedZ = (int) (-correctionVector.z * factor);
+ 
+                InterlockedAdd(simMeshTransformedVertexBuffer[vertexID].x, invQuantizedX);
+                InterlockedAdd(simMeshTransformedVertexBuffer[vertexID].y, invQuantizedY);
+                InterlockedAdd(simMeshTransformedVertexBuffer[vertexID].z, invQuantizedZ);
+                
+                InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].x, quantizedX);
+                InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].y, quantizedY);
+                InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].z, quantizedZ);
+
             }
         }
     }
