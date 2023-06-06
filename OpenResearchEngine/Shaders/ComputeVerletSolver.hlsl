@@ -1,11 +1,3 @@
-struct Vertex
-{
-    float3 position;
-    float3 normal;
-    float2 texCoord;
-    float4 tangent;
-};
-
 struct Neighbours
 {
     uint index[8];
@@ -75,7 +67,6 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
                 InterlockedAdd(simMeshTransformedVertexBuffer[vertexID].x, invQuantizedX);
                 InterlockedAdd(simMeshTransformedVertexBuffer[vertexID].y, invQuantizedY);
                 InterlockedAdd(simMeshTransformedVertexBuffer[vertexID].z, invQuantizedZ);
-                
                 InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].x, quantizedX);
                 InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].y, quantizedY);
                 InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].z, quantizedZ);

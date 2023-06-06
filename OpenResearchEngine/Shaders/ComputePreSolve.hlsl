@@ -6,11 +6,6 @@ struct Vertex
     float4 tangent;
 };
 
-struct Spring
-{
-    float3 transform;
-};
-
 struct InterlockedVector
 {
     int x;
@@ -19,8 +14,8 @@ struct InterlockedVector
 };
 
 StructuredBuffer<Vertex> simMeshSkinnedVertexBuffer : register(t0);
-StructuredBuffer<InterlockedVector> simMeshSpringTransformBuffer : register(t1);
-RWStructuredBuffer<InterlockedVector> simMeshTransformedVertexBuffer : register(u0);
+RWStructuredBuffer<Vertex> simMeshPreviousSkinnedVertexBuffer : register(u0);
+RWStructuredBuffer<InterlockedVector> simMeshTransformedVertexBuffer : register(u1);
 
 float3 UnQuantize(InterlockedVector input, float factor)
 {
@@ -35,17 +30,15 @@ float3 UnQuantize(InterlockedVector input, float factor)
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     uint simMeshVertexID = dispatchThreadID.x;
-    
-    float factor = 32768.0;
-    float3 simMeshPreSolveVertexPosition = simMeshSkinnedVertexBuffer[simMeshVertexID].position + UnQuantize(simMeshSpringTransformBuffer[simMeshVertexID], factor);
+    float3 simSkinForce = simMeshSkinnedVertexBuffer[simMeshVertexID].position - simMeshPreviousSkinnedVertexBuffer[simMeshVertexID].position;
 
-    int quantizedX = (int) (simMeshPreSolveVertexPosition.x * factor);
-    int quantizedY = (int) (simMeshPreSolveVertexPosition.y * factor);
-    int quantizedZ = (int) (simMeshPreSolveVertexPosition.z * factor);
-    int ignore;
+    float factor = 32768.0;
+    int quantizedX = (int) (simSkinForce.x * factor);
+    int quantizedY = (int) (simSkinForce.y * factor);
+    int quantizedZ = (int) (simSkinForce.z * factor);
  
-    InterlockedExchange(simMeshTransformedVertexBuffer[simMeshVertexID].x, quantizedX, ignore);
-    InterlockedExchange(simMeshTransformedVertexBuffer[simMeshVertexID].y, quantizedY, ignore);
-    InterlockedExchange(simMeshTransformedVertexBuffer[simMeshVertexID].z, quantizedZ, ignore);
-    
+    InterlockedAdd(simMeshTransformedVertexBuffer[simMeshVertexID].x, quantizedX);
+    InterlockedAdd(simMeshTransformedVertexBuffer[simMeshVertexID].y, quantizedY);
+    InterlockedAdd(simMeshTransformedVertexBuffer[simMeshVertexID].z, quantizedZ);
+    simMeshPreviousSkinnedVertexBuffer[simMeshVertexID] = simMeshSkinnedVertexBuffer[simMeshVertexID];
 }
