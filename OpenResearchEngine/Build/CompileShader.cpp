@@ -26,6 +26,11 @@ void EngineApp::CompileShaders ()
     alphaMacro.Name = "ALPHA_TEST";
     alphaMacro.Definition = "1";
 
+    std::string factor = std::to_string(32768.0);
+    D3D_SHADER_MACRO quantizeMacro;
+    quantizeMacro.Name = "QUANTIZE";
+    quantizeMacro.Definition = factor.c_str();
+
     D3D_SHADER_MACRO null;
     null.Name = NULL;
     null.Definition = NULL;
@@ -33,6 +38,7 @@ void EngineApp::CompileShaders ()
     const D3D_SHADER_MACRO opaqueDefines[4] = {directionalLightMacro, pointLightMacro, spotLightMacro, null};
     const D3D_SHADER_MACRO alphaTestDefines[2] = {alphaMacro, null};
     const D3D_SHADER_MACRO skinnedDefines[2] = {skinningMacro, null};
+    const D3D_SHADER_MACRO clothDefines[2] = { quantizeMacro, null };
 
     mShaders["standardVS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["opaquePS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", opaqueDefines, "PS", "ps_5_1");
@@ -57,15 +63,15 @@ void EngineApp::CompileShaders ()
     mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
 
     mShaders["skinnedCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeSkinning.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["verletSolverCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeVerletSolver.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["verletSolverCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeVerletSolver.hlsl", clothDefines, "CS", "cs_5_1");
     mShaders["triangleNormalCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeTriangleNormals.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["vertexNormalCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeVertexNormals.hlsl", nullptr, "CS", "cs_5_1");
 
     mShaders["meshTransferCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["simMeshTransferCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeSimMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
 
-    mShaders["preSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePreSolve.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["postSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePostSolve.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["preSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePreSolve.hlsl", clothDefines, "CS", "cs_5_1");
+    mShaders["postSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePostSolve.hlsl", clothDefines, "CS", "cs_5_1");
 
     mInputLayout = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },

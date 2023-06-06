@@ -32,10 +32,9 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     uint simMeshVertexID = dispatchThreadID.x;
     float3 simSkinForce = simMeshSkinnedVertexBuffer[simMeshVertexID].position - simMeshPreviousSkinnedVertexBuffer[simMeshVertexID].position;
 
-    float factor = 32768.0;
-    int quantizedX = (int) (simSkinForce.x * factor);
-    int quantizedY = (int) (simSkinForce.y * factor);
-    int quantizedZ = (int) (simSkinForce.z * factor);
+    int quantizedX = (int) (simSkinForce.x * QUANTIZE);
+    int quantizedY = (int) (simSkinForce.y * QUANTIZE);
+    int quantizedZ = (int) (simSkinForce.z * QUANTIZE);
  
     InterlockedAdd(simMeshTransformedVertexBuffer[simMeshVertexID].x, quantizedX);
     InterlockedAdd(simMeshTransformedVertexBuffer[simMeshVertexID].y, quantizedY);

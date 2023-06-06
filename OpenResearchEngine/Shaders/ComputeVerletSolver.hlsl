@@ -35,8 +35,6 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     int neighbourCount = 8;
     uint vertexID = dispatchThreadID.x;
     
-    float factor = 32768.0;
-    
     // Solve for the current frame
     for (int iter = 0; iter < springIterations; ++iter)
     {
@@ -45,11 +43,11 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
             uint neighbour = simMeshVertexAdjacencyBuffer[vertexID].index[ni];
             float neighbourLength = restConstraintBuffer[vertexID].length[ni];
             
-            float3 vertexPosition = UnQuantize(simMeshTransformedVertexBuffer[vertexID], factor);
+            float3 vertexPosition = UnQuantize(simMeshTransformedVertexBuffer[vertexID], QUANTIZE);
         
             if (neighbour != vertexID)
             {
-                float3 neighbourVertexPosition = UnQuantize(simMeshTransformedVertexBuffer[neighbour], factor);
+                float3 neighbourVertexPosition = UnQuantize(simMeshTransformedVertexBuffer[neighbour], QUANTIZE);
 
                 float3 neighbourSkinnedDisplacement = vertexPosition - neighbourVertexPosition;
                 float neighbourSkinnedLength = length(neighbourSkinnedDisplacement);
@@ -57,12 +55,12 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
                 // Calculate scale and correction vector
                 float3 correctionVector = (neighbourSkinnedDisplacement * (1.0 - neighbourLength / neighbourSkinnedLength)) * 0.5;
                 
-                int quantizedX = (int) (correctionVector.x * factor);
-                int quantizedY = (int) (correctionVector.y * factor);
-                int quantizedZ = (int) (correctionVector.z * factor);
-                int invQuantizedX = (int) (-correctionVector.x * factor);
-                int invQuantizedY = (int) (-correctionVector.y * factor);
-                int invQuantizedZ = (int) (-correctionVector.z * factor);
+                int quantizedX = (int) (correctionVector.x * QUANTIZE);
+                int quantizedY = (int) (correctionVector.y * QUANTIZE);
+                int quantizedZ = (int) (correctionVector.z * QUANTIZE);
+                int invQuantizedX = (int) (-correctionVector.x * QUANTIZE);
+                int invQuantizedY = (int) (-correctionVector.y * QUANTIZE);
+                int invQuantizedZ = (int) (-correctionVector.z * QUANTIZE);
  
                 InterlockedAdd(simMeshTransformedVertexBuffer[vertexID].x, invQuantizedX);
                 InterlockedAdd(simMeshTransformedVertexBuffer[vertexID].y, invQuantizedY);
@@ -70,7 +68,6 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
                 InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].x, quantizedX);
                 InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].y, quantizedY);
                 InterlockedAdd(simMeshTransformedVertexBuffer[neighbour].z, quantizedZ);
-
             }
         }
     }

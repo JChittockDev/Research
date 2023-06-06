@@ -30,8 +30,6 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     uint simMeshVertexID = dispatchThreadID.x;
     
-    float factor = 32768.0;
-    float3 vertexPosition = UnQuantize(simMeshTransformedVertexBuffer[simMeshVertexID], factor);
-
+    float3 vertexPosition = UnQuantize(simMeshTransformedVertexBuffer[simMeshVertexID], QUANTIZE);
     simMeshPostSolveVertexBuffer[simMeshVertexID].position = vertexPosition;
 }
