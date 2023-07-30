@@ -39,14 +39,5 @@ private:
     void ReadMaterials(const aiScene* scene, std::vector<std::shared_ptr<ModelMaterial>>& mats);
     void ReadSkeleton(const aiScene* scene, std::shared_ptr<Skeleton>& mSkeleton);
     void ReadAnimations(const aiScene* scene, std::unordered_map<std::string, std::shared_ptr<Animation>>& animations);
-    void GetSolverConstraints(std::unordered_map<UINT, std::vector<UINT>>& solverConstraints, const std::vector<UINT>& triangles);
-    void AddKey(std::unordered_map<UINT, std::vector<UINT>>& map, const UINT& keyA, const UINT& keyB, bool allowPalindromes);
-
-    void GetGraphData(const int count, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& graphData, const int references);
-    void GetGraphData(const std::vector<Vertex>& vertices, const std::unordered_map<UINT, std::vector<UINT>>& inputGraph, std::vector<Neighbours>& neighbourData, std::vector<RestConstraint>& restConstraintData, const int references);
-
-    void GetSegmentedConstraints(unsigned int numMesh, const std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<Neighbours>& outputNeighbours, std::vector<RestConstraint>& outputRestConstraint);
-    void GetVertexTriangleMap(std::unordered_map<UINT, std::vector<UINT>>& vertexTriangleMap, const std::vector<UINT>& triangles);
-    void GetSegmentedTriangleMap(unsigned int numMesh, aiMesh** meshList, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<Neighbours>& output);
     void GetMeshTransferMap(const std::vector<std::vector<Vertex>>& baseVertices, const std::vector<std::vector<Vertex>>& targetVertices, std::vector<UINT>& map);
 };

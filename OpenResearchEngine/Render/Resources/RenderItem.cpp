@@ -26,9 +26,11 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 		ritem->StartTriangleLocation = ritem->Geo->DrawArgs[submeshName].StartTriangleLocation;
 		ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[submeshName].SimMeshVertexCount;
 		ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[submeshName].SimMeshIndexCount;
+		ritem->SimMeshEdgeCount = ritem->Geo->DrawArgs[submeshName].SimMeshEdgeCount;
 		ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[submeshName].SimMeshTriangleCount;
 		ritem->SimMeshStartIndexLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartIndexLocation;
 		ritem->SimMeshStartVertexLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartVertexLocation;
+		ritem->SimMeshStartEdgeLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartEdgeLocation;
 		ritem->SimMeshStartTriangleLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartTriangleLocation;
 		renderLayers.push_back(ritem);
 		
@@ -82,9 +84,11 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 		ritem->StartTriangleLocation = ritem->Geo->DrawArgs[submeshName].StartTriangleLocation;
 		ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[submeshName].SimMeshVertexCount;
 		ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[submeshName].SimMeshIndexCount;
+		ritem->SimMeshEdgeCount = ritem->Geo->DrawArgs[submeshName].SimMeshEdgeCount;
 		ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[submeshName].SimMeshTriangleCount;
 		ritem->SimMeshStartIndexLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartIndexLocation;
 		ritem->SimMeshStartVertexLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartVertexLocation;
+		ritem->SimMeshStartEdgeLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartEdgeLocation;
 		ritem->SimMeshStartTriangleLocation = ritem->Geo->DrawArgs[submeshName].SimMeshStartTriangleLocation;
 		ritem->SkinnedCBIndex = SkinnedCBIndex;
 		ritem->AnimationInstance = mAnimationController;
@@ -125,9 +129,11 @@ void RenderItem::BuildRenderItem(const std::string& meshName, const std::string&
 	ritem->StartTriangleLocation = ritem->Geo->DrawArgs[subMeshName].StartTriangleLocation;
 	ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[subMeshName].SimMeshVertexCount;
 	ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[subMeshName].SimMeshIndexCount;
+	ritem->SimMeshEdgeCount = ritem->Geo->DrawArgs[subMeshName].SimMeshEdgeCount;
 	ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[subMeshName].SimMeshTriangleCount;
 	ritem->SimMeshStartIndexLocation = ritem->Geo->DrawArgs[subMeshName].SimMeshStartIndexLocation;
 	ritem->SimMeshStartVertexLocation = ritem->Geo->DrawArgs[subMeshName].SimMeshStartVertexLocation;
+	ritem->SimMeshStartEdgeLocation = ritem->Geo->DrawArgs[subMeshName].SimMeshStartEdgeLocation;
 	ritem->SimMeshStartTriangleLocation = ritem->Geo->DrawArgs[subMeshName].SimMeshStartTriangleLocation;
 	renderLayers.push_back(ritem);
 

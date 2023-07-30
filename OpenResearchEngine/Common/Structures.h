@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <set>
+#include <utility>
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -20,6 +22,38 @@
 #define MaxLights 16
 
 extern const int gNumFrameResources;
+
+struct Edge
+{
+    UINT vertexA;
+    UINT vertexB;
+
+    Edge(){}
+
+    Edge(UINT vertexA, UINT vertexB)
+    {
+        this->vertexA = vertexA;
+        this->vertexB = vertexB;
+    }
+
+    bool operator==(Edge edge) const
+    {
+        return (vertexA == edge.vertexA && vertexB == edge.vertexB) || (vertexA == edge.vertexB && vertexB == edge.vertexA);
+    }
+
+    bool operator<(const Edge& edge) const
+    {
+        return (vertexA < edge.vertexA) || (vertexA == edge.vertexA && vertexB < edge.vertexB);
+    }
+};
+
+struct EdgeHash
+{
+    std::size_t operator()(const Edge& edge) const
+    {
+        return std::hash<UINT>()(edge.vertexA) ^ std::hash<UINT>()(edge.vertexB);
+    }
+};
 
 struct Neighbours
 {
@@ -205,6 +239,10 @@ struct Subset
     UINT SimMeshVertexCount = 0;
     UINT SimMeshIndexStart = 0;
     UINT SimMeshIndexCount = 0;
+
+    UINT SimMeshEdgeStart = 0;
+    UINT SimMeshEdgeCount = 0;
+
     UINT SimMeshTriangleStart = 0;
     UINT SimMeshTriangleCount = 0;
 
@@ -247,9 +285,11 @@ struct SubmeshGeometry
 
     UINT SimMeshVertexCount = 0;
     UINT SimMeshIndexCount = 0;
+    UINT SimMeshEdgeCount = 0;
     UINT SimMeshTriangleCount = 0;
     UINT SimMeshStartIndexLocation = 0;
     UINT SimMeshStartVertexLocation = 0;
+    UINT SimMeshStartEdgeLocation = 0;
     UINT SimMeshStartTriangleLocation = 0;
 
     UINT MaterialIndex = 0;
@@ -278,27 +318,33 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferUploader = nullptr;
 
     // Simulation Buffers
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestConstraintBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexAdjacencyBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransformedVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSpringTransformBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshEdgeBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestLengthBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshNeighborTriangleBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestAngleBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestConstraintBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSpringTransformBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshEdgeBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestLengthBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNeighborTriangleBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestAngleBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestConstraintBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSpringTransformBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshEdgeBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestLengthBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNeighborTriangleBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestAngleBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferUploader = nullptr;
     
@@ -389,11 +435,15 @@ struct MeshGeometry
         SkinningBufferUploader = nullptr;
         SkinnedVertexBufferUploader = nullptr;
 
-        SimMeshRestConstraintBufferUploader = nullptr;
         SimMeshSkinnedVertexBufferUploader = nullptr;
-        SimMeshVertexAdjacencyBufferUploader = nullptr;
         SimMeshTransformedVertexBufferUploader = nullptr;
         SimMeshSpringTransformBufferUploader = nullptr;
+
+        SimMeshEdgeBufferUploader = nullptr;
+        SimMeshRestLengthBufferUploader = nullptr;
+        SimMeshRestAngleBufferUploader = nullptr;
+        SimMeshNeighborTriangleBufferUploader = nullptr;
+
         SimMeshTransferBufferUploader = nullptr;
         MeshTransferBufferUploader = nullptr;
 

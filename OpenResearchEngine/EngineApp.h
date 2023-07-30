@@ -74,8 +74,6 @@ private:
     void ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
 
-
-
     void SetSkinnedRootSignature();
     void SetVerletSolverRootSignature();
     void SetTriangleNormalRootSignature();

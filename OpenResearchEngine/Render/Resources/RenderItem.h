@@ -26,9 +26,11 @@ public:
 
 	UINT SimMeshVertexCount = 0;
 	UINT SimMeshIndexCount = 0;
+	UINT SimMeshEdgeCount = 0;
 	UINT SimMeshTriangleCount = 0;
 	UINT SimMeshStartIndexLocation = 0;
 	UINT SimMeshStartVertexLocation = 0;
+	UINT SimMeshStartEdgeLocation = 0;
 	UINT SimMeshStartTriangleLocation = 0;
 
 	UINT ObjCBIndex = -1;
