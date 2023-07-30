@@ -6,13 +6,8 @@ struct Vertex
     float4 tangent;
 };
 
-struct Spring
-{
-    float3 transform;
-};
-
 StructuredBuffer<Vertex> simMeshSkinnedVertexBuffer : register(t0);
-StructuredBuffer<Spring> simMeshSpringTransformBuffer : register(t1);
+StructuredBuffer<uint3> simMeshSpringTransformBuffer : register(t1);
 RWStructuredBuffer<Vertex> simMeshTransformedVertexBuffer : register(u0);
 
 // Define the compute shader entry point

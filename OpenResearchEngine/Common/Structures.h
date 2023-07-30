@@ -55,20 +55,31 @@ struct EdgeHash
     }
 };
 
+struct TangentNormals
+{
+    DirectX::XMFLOAT3 normal = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT3 tangent = { 0.0f, 0.0f, 0.0f };
+};
+
 struct Neighbours
 {
     UINT index[8];
 };
 
-struct RestConstraint
+struct UINT3
 {
-    float length[8];
-};
+    UINT x = 0;
+    UINT y = 0;
+    UINT z = 0;
 
-struct TangentNormals
-{
-    DirectX::XMFLOAT3 normal = { 0.0f, 0.0f, 0.0f };
-    DirectX::XMFLOAT3 tangent = { 0.0f, 0.0f, 0.0f };
+    UINT3() {};
+
+    UINT3(UINT inX, UINT inY, UINT inZ)
+    {
+        x = inX;
+        y = inY;
+        z = inZ;
+    }
 };
 
 struct Vector3
@@ -85,11 +96,6 @@ struct Vector3
         y = inY;
         z = inZ;
     }
-};
-
-struct Spring
-{
-    DirectX::XMFLOAT3 transform = { 0.0f, 0.0f, 0.0f };
 };
 
 struct ObjectConstants
