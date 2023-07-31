@@ -27,5 +27,5 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     uint simMeshVertexID = dispatchThreadID.x;
     float3 simMeshSkinnedVertexPosition = simMeshSkinnedVertexBuffer[simMeshVertexID].position;
     float3 simMeshPreviousSolverTransform = UnQuantize(simMeshPreviousSolverTransformBuffer[simMeshVertexID], QUANTIZE);
-    simMeshTransformedVertexBuffer[simMeshVertexID].position = simMeshSkinnedVertexPosition + simMeshPreviousSolverTransform;
+    simMeshTransformedVertexBuffer[simMeshVertexID].position = simMeshSkinnedVertexPosition+simMeshPreviousSolverTransform;
 }

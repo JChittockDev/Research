@@ -7,7 +7,7 @@ struct Vertex
 };
 
 StructuredBuffer<Vertex> simMeshSkinnedVertexBuffer : register(t0);
-RWStructuredBuffer<Vertex> simMeshTransformedVertexBuffer : register(u0);
+RWStructuredBuffer<Vertex> simMeshOutputVertexBuffer : register(u0);
 RWStructuredBuffer<uint3> simMeshPreviousSolverTransformBuffer : register(u1);
 RWStructuredBuffer<uint3> simMeshSolverTransformBuffer : register(u2);
 RWStructuredBuffer<uint> simMeshSolverCountBuffer : register(u3);
@@ -31,11 +31,14 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     
     if (solverCount > 0)
     {
+        float3 simMeshSkinnedTransform = simMeshSkinnedVertexBuffer[simMeshVertexID].position;
         float3 simMeshSolverTransform = UnQuantize(simMeshSolverTransformBuffer[simMeshVertexID], QUANTIZE) / (float) solverCount;
-        simMeshTransformedVertexBuffer[simMeshVertexID].position += simMeshSolverTransform;
+        float3 simMeshPreviousSolverTransform = UnQuantize(simMeshPreviousSolverTransformBuffer[simMeshVertexID], QUANTIZE);
+        float3 simMeshOutputTransform = simMeshSkinnedTransform + simMeshPreviousSolverTransform + simMeshSolverTransform;
         
-        float3 reconstructionTransform = simMeshTransformedVertexBuffer[simMeshVertexID].position - simMeshSkinnedVertexBuffer[simMeshVertexID].position;
+        simMeshOutputVertexBuffer[simMeshVertexID].position = simMeshOutputTransform;
         
+        float3 reconstructionTransform = simMeshOutputTransform - simMeshSkinnedTransform;
         uint quantizedX = (uint) (reconstructionTransform.x * QUANTIZE);
         uint quantizedY = (uint) (reconstructionTransform.y * QUANTIZE);
         uint quantizedZ = (uint) (reconstructionTransform.z * QUANTIZE);
