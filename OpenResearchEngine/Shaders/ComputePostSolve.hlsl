@@ -6,6 +6,7 @@ struct Vertex
     float4 tangent;
 };
 
+StructuredBuffer<Vertex> simMeshSkinnedVertexBuffer : register(t0);
 RWStructuredBuffer<Vertex> simMeshTransformedVertexBuffer : register(u0);
 RWStructuredBuffer<uint3> simMeshPreviousSolverTransformBuffer : register(u1);
 RWStructuredBuffer<uint3> simMeshSolverTransformBuffer : register(u2);
@@ -33,9 +34,11 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         float3 simMeshSolverTransform = UnQuantize(simMeshSolverTransformBuffer[simMeshVertexID], QUANTIZE) / (float) solverCount;
         simMeshTransformedVertexBuffer[simMeshVertexID].position += simMeshSolverTransform;
         
-        uint quantizedX = (uint) (simMeshSolverTransform.x * QUANTIZE);
-        uint quantizedY = (uint) (simMeshSolverTransform.y * QUANTIZE);
-        uint quantizedZ = (uint) (simMeshSolverTransform.z * QUANTIZE);
+        float3 reconstructionTransform = simMeshTransformedVertexBuffer[simMeshVertexID].position - simMeshSkinnedVertexBuffer[simMeshVertexID].position;
+        
+        uint quantizedX = (uint) (reconstructionTransform.x * QUANTIZE);
+        uint quantizedY = (uint) (reconstructionTransform.y * QUANTIZE);
+        uint quantizedZ = (uint) (reconstructionTransform.z * QUANTIZE);
         
         //uint3 value = simMeshPreviousSolverTransformBuffer[simMeshVertexID];
         //InterlockedExchange(simMeshPreviousSolverTransformBuffer[simMeshVertexID].x, quantizedX, value.x);
