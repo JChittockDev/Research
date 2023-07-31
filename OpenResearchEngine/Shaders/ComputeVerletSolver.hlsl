@@ -32,7 +32,7 @@ void DistanceConstraint(float3 point1, float3 point2, float restLength, out floa
 #define QUANTIZE 32768.0
 
 // Define the compute shader entry point
-[numthreads(64, 1, 1)]
+[numthreads(1, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     int springIterations = 1;
