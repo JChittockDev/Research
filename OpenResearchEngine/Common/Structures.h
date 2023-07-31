@@ -326,7 +326,9 @@ struct MeshGeometry
     // Simulation Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransformedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSpringTransformBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSolverTransformBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSolverCountBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshPreviousSolverTransformBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshEdgeBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestLengthBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshNeighborTriangleBufferCPU = nullptr;
@@ -336,7 +338,9 @@ struct MeshGeometry
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSpringTransformBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverTransformBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverCountBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPreviousSolverTransformBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshEdgeBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestLengthBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNeighborTriangleBufferGPU = nullptr;
@@ -346,7 +350,9 @@ struct MeshGeometry
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSpringTransformBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverTransformBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverCountBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPreviousSolverTransformBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshEdgeBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestLengthBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNeighborTriangleBufferUploader = nullptr;
@@ -443,7 +449,8 @@ struct MeshGeometry
 
         SimMeshSkinnedVertexBufferUploader = nullptr;
         SimMeshTransformedVertexBufferUploader = nullptr;
-        SimMeshSpringTransformBufferUploader = nullptr;
+        SimMeshSolverTransformBufferUploader = nullptr;
+        SimMeshPreviousSolverTransformBufferUploader = nullptr;
 
         SimMeshEdgeBufferUploader = nullptr;
         SimMeshRestLengthBufferUploader = nullptr;

@@ -698,6 +698,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		const UINT smsbByteSize = (UINT)simMeshVertices.size() * sizeof(UINT3);
 		const UINT smvbByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
 		const UINT smtbByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
+		const UINT smscbByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
 
 		const UINT smebByteSize = (UINT)simMeshEdges.size() * sizeof(Edge);
 		const UINT smrlbByteSize = (UINT)simMeshEdges.size() * sizeof(float);
@@ -707,8 +708,11 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		const UINT mtbByteSize = (UINT)vertices.size() * sizeof(UINT);
 
-		std::vector<UINT3> simMeshSpringTransforms;
-		simMeshSpringTransforms.resize(simMeshVertices.size());
+		std::vector<UINT3> simMeshSolverTransforms;
+		simMeshSolverTransforms.resize(simMeshVertices.size());
+
+		std::vector<UINT> simMeshSolverCount;
+		simMeshSolverCount.resize(simMeshVertices.size(), 0);
 
 		ThrowIfFailed(D3DCreateBlob(smvbByteSize, &geo->SimMeshSkinnedVertexBufferCPU));
 		CopyMemory(geo->SimMeshSkinnedVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), smvbByteSize);
@@ -716,8 +720,14 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		ThrowIfFailed(D3DCreateBlob(smvbByteSize, &geo->SimMeshTransformedVertexBufferCPU));
 		CopyMemory(geo->SimMeshTransformedVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), smvbByteSize);
 
-		ThrowIfFailed(D3DCreateBlob(smsbByteSize, &geo->SimMeshSpringTransformBufferCPU));
-		CopyMemory(geo->SimMeshSpringTransformBufferCPU->GetBufferPointer(), simMeshSpringTransforms.data(), smsbByteSize);
+		ThrowIfFailed(D3DCreateBlob(smsbByteSize, &geo->SimMeshSolverTransformBufferCPU));
+		CopyMemory(geo->SimMeshSolverTransformBufferCPU->GetBufferPointer(), simMeshSolverTransforms.data(), smsbByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(smsbByteSize, &geo->SimMeshPreviousSolverTransformBufferCPU));
+		CopyMemory(geo->SimMeshPreviousSolverTransformBufferCPU->GetBufferPointer(), simMeshSolverTransforms.data(), smsbByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(smscbByteSize, &geo->SimMeshSolverCountBufferCPU));
+		CopyMemory(geo->SimMeshSolverCountBufferCPU->GetBufferPointer(), simMeshSolverCount.data(), smscbByteSize);
 
 		ThrowIfFailed(D3DCreateBlob(smebByteSize, &geo->SimMeshEdgeBufferCPU));
 		CopyMemory(geo->SimMeshEdgeBufferCPU->GetBufferPointer(), simMeshEdges.data(), smebByteSize);
@@ -739,8 +749,11 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		geo->SimMeshSkinnedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), smvbByteSize, geo->SimMeshSkinnedVertexBufferUploader);
 		geo->SimMeshTransformedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), smvbByteSize, geo->SimMeshTransformedVertexBufferUploader);
-		geo->SimMeshSpringTransformBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSpringTransforms.data(), smsbByteSize, geo->SimMeshSpringTransformBufferUploader);
+		geo->SimMeshSolverTransformBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverTransforms.data(), smsbByteSize, geo->SimMeshSolverTransformBufferUploader);
+		geo->SimMeshPreviousSolverTransformBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverTransforms.data(), smsbByteSize, geo->SimMeshPreviousSolverTransformBufferUploader);
 		
+		geo->SimMeshSolverCountBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverCount.data(), smscbByteSize, geo->SimMeshSolverCountBufferUploader);
+
 		geo->SimMeshEdgeBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshEdges.data(), smebByteSize, geo->SimMeshEdgeBufferUploader);
 		geo->SimMeshRestLengthBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshRestLengths.data(), smrlbByteSize, geo->SimMeshRestLengthBufferUploader);
 		geo->SimMeshNeighborTriangleBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshNeighborTriangles.data(), smntbByteSize, geo->SimMeshNeighborTriangleBufferUploader);
@@ -767,8 +780,14 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		CD3DX12_RESOURCE_BARRIER SimMeshRestAngleBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshRestAngleBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshRestAngleBufferBarrier);
 
-		CD3DX12_RESOURCE_BARRIER SimMeshSpringTranformBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshSpringTransformBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-		mCommandList->ResourceBarrier(1, &SimMeshSpringTranformBufferBarrier);
+		CD3DX12_RESOURCE_BARRIER SimMeshSolverTransformBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshSolverTransformBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshSolverTransformBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshPreviousSolverTransformBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshPreviousSolverTransformBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshPreviousSolverTransformBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshSolverCountBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshSolverCountBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshSolverCountBufferBarrier);
 
 		CD3DX12_RESOURCE_BARRIER SimMeshTransferBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshTransferBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshTransferBufferBarrier);

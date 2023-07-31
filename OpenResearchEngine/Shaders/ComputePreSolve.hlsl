@@ -7,7 +7,7 @@ struct Vertex
 };
 
 StructuredBuffer<Vertex> simMeshSkinnedVertexBuffer : register(t0);
-StructuredBuffer<uint3> simMeshSpringTransformBuffer : register(t1);
+StructuredBuffer<uint3> simMeshPreviousSolverTransformBuffer : register(t1);
 RWStructuredBuffer<Vertex> simMeshTransformedVertexBuffer : register(u0);
 
 float3 UnQuantize(uint3 input, float factor)
@@ -18,12 +18,14 @@ float3 UnQuantize(uint3 input, float factor)
     return float3(vertexPositionX, vertexPositionY, vertexPositionZ);
 }
 
+#define QUANTIZE 32768.0
+
 // Define the compute shader entry point
 [numthreads(64, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     uint simMeshVertexID = dispatchThreadID.x;
     float3 simMeshSkinnedVertexPosition = simMeshSkinnedVertexBuffer[simMeshVertexID].position;
-    float3 simMeshSpringTransform = UnQuantize(simMeshSpringTransformBuffer[simMeshVertexID], QUANTIZE);
-    simMeshTransformedVertexBuffer[simMeshVertexID].position = simMeshSkinnedVertexPosition + simMeshSpringTransform;
+    float3 simMeshPreviousSolverTransform = UnQuantize(simMeshPreviousSolverTransformBuffer[simMeshVertexID], QUANTIZE);
+    simMeshTransformedVertexBuffer[simMeshVertexID].position = simMeshSkinnedVertexPosition + simMeshPreviousSolverTransform;
 }
