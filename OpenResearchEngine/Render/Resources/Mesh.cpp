@@ -397,159 +397,6 @@ void GetVertexTriangleNeighbours(unsigned int numMesh, std::vector<std::vector<U
 	}
 }
 
-
-void GetEdges(unsigned int numMesh, std::vector<std::shared_ptr<Subset>>& subsets, std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>>& segmentedEdgeTriangles, std::vector<Edge>& edges, std::vector<float>& restLength)
-{
-	// Step 1: Create a mapping of each edge to the triangles that share it.
-
-	std::vector<std::set<Edge>> segmentedEdges;
-	segmentedEdges.resize(numMesh);
-	segmentedEdgeTriangles.resize(numMesh);
-
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		for (size_t i = 0; i < segmentedIndices[x].size(); i += 3)
-		{
-			UINT triangleID = i / 3;
-
-			UINT v0 = segmentedIndices[x][i];
-			UINT v1 = segmentedIndices[x][i + 1];
-			UINT v2 = segmentedIndices[x][i + 2];
-
-			// Sort vertices to form unique edge key (v0, v1)
-			Edge edgeKey1(Math::Min(v0, v1), Math::Max(v0, v1));
-			segmentedEdges[x].insert(edgeKey1);
-			segmentedEdgeTriangles[x][edgeKey1].insert(triangleID);
-
-			Edge edgeKey2(Math::Min(v1, v2), Math::Max(v1, v2));
-			segmentedEdges[x].insert(edgeKey2);
-			segmentedEdgeTriangles[x][edgeKey2].insert(triangleID);
-
-			Edge edgeKey3(Math::Min(v2, v0), Math::Max(v2, v0));
-			segmentedEdges[x].insert(edgeKey3);
-			segmentedEdgeTriangles[x][edgeKey3].insert(triangleID);
-		}
-	}
-
-	int edgeCounter = 0;
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		subsets[x]->SimMeshEdgeCount = segmentedEdges[x].size();
-		subsets[x]->SimMeshEdgeStart = edgeCounter;
-
-		for (const Edge& edge : segmentedEdges[x])
-		{
-			Vertex& vertex1 = segmentedVertices[x][edge.vertexA];
-			Vertex& vertex2 = segmentedVertices[x][edge.vertexB];
-			float length = Math::Length(vertex1.Pos, vertex2.Pos);
-
-			restLength.push_back(length);
-			edges.push_back(edge);
-		}
-
-		edgeCounter += segmentedEdges[x].size();
-	}
-}
-
-float ComputeRestAngle(const DirectX::XMFLOAT3& v0, const DirectX::XMFLOAT3& v1, const DirectX::XMFLOAT3& v2)
-{
-	DirectX::XMVECTOR edge0 = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&v1), DirectX::XMLoadFloat3(&v0));
-	DirectX::XMVECTOR edge1 = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&v2), DirectX::XMLoadFloat3(&v1));
-	float dotProduct = DirectX::XMVectorGetX(DirectX::XMVector3Dot(edge0, edge1));
-	float edge0Length = DirectX::XMVectorGetX(DirectX::XMVector3Length(edge0));
-	float edge1Length = DirectX::XMVectorGetX(DirectX::XMVector3Length(edge1));
-	float cosineRestAngle = dotProduct / (edge0Length * edge1Length);
-	float restAngle = std::acos(cosineRestAngle);
-
-	return DirectX::XMConvertToDegrees(restAngle);
-}
-
-void GetRestAngles(std::vector<UINT>& indices, std::vector<Vertex>& vertices, std::vector<UINT>& neighborTriangles, std::vector<float>& restAngles)
-{
-	for (size_t i = 0; i < neighborTriangles.size(); ++i)
-	{
-		UINT triangleID = neighborTriangles[i];
-
-		UINT v0 = indices[triangleID];
-		UINT v1 = indices[triangleID + 1];
-		UINT v2 = indices[triangleID + 2];
-
-		Vertex& vertex1 = vertices[v0];
-		Vertex& vertex2 = vertices[v1];
-		Vertex& vertex3 = vertices[v2];
-
-		float restAngle = ComputeRestAngle(vertex1.Pos, vertex2.Pos, vertex3.Pos);
-
-		restAngles.push_back(restAngle);
-	}
-}
-
-void GetNeighbourTriangles(unsigned int numMesh, std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>>& segmentedEdgeTriangles, std::vector<UINT>& neighborTriangles, std::vector<float>& neighborRestAngles)
-{
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		std::vector<UINT> subMeshNeighborTriangles;
-
-		UINT edgeCounter = 0;
-		for (size_t i = 0; i < segmentedIndices[x].size(); i += 3)
-		{
-			UINT v0 = segmentedIndices[x][i];
-			UINT v1 = segmentedIndices[x][i + 1];
-			UINT v2 = segmentedIndices[x][i + 2];
-
-			// Check neighboring triangles for edge (v0, v1)
-			Edge edgeKey1;
-			edgeKey1.vertexA = Math::Min(v0, v1);
-			edgeKey1.vertexB = Math::Max(v0, v1);
-
-			std::set<UINT> triangles1 = segmentedEdgeTriangles[x][edgeKey1];
-
-			for (UINT triangle : triangles1)
-			{
-				if (triangle != i / 3)
-				{
-					neighborTriangles.push_back(triangle);
-					subMeshNeighborTriangles.push_back(triangle);
-				}
-			}
-
-			// Check neighboring triangles for edge (v1, v2)
-			Edge edgeKey2;
-			edgeKey2.vertexA = Math::Min(v1, v2);
-			edgeKey2.vertexB = Math::Max(v1, v2);
-
-			std::set<UINT> triangles2 = segmentedEdgeTriangles[x][edgeKey2];
-
-			for (UINT triangle : triangles2)
-			{
-				if (triangle != i / 3)
-				{
-					neighborTriangles.push_back(triangle);
-					subMeshNeighborTriangles.push_back(triangle);
-				}
-			}
-
-			// Check neighboring triangles for edge (v2, v0)
-			Edge edgeKey3;
-			edgeKey3.vertexA = Math::Min(v2, v0);
-			edgeKey3.vertexB = Math::Max(v2, v0);
-
-			std::set<UINT> triangles3 = segmentedEdgeTriangles[x][edgeKey3];
-
-			for (UINT triangle : triangles3)
-			{
-				if (triangle != i / 3)
-				{
-					neighborTriangles.push_back(triangle);
-					subMeshNeighborTriangles.push_back(triangle);
-				}
-			}
-		}
-
-		GetRestAngles(segmentedIndices[x], segmentedVertices[x], subMeshNeighborTriangles, neighborRestAngles);
-	}
-}
-
 Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
 	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
@@ -678,19 +525,10 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		std::vector<UINT> simMeshIndices;
 		std::vector<std::vector<UINT>> simMeshSegmentedIndices;
 		std::vector<std::vector<Vertex>> simMeshSegmentedVertices;
-		std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>> simMeshSegmentedEdgeTriangles;
-
-		std::vector<Edge> simMeshEdges;
-		std::vector<float> simMeshRestLengths;
-		std::vector<float> simMeshRestAngles;
-		std::vector<UINT> simMeshNeighborTriangles;
 
 		ReadVertices(simScene->mNumMeshes, simScene->mMeshes, simMeshVertices, simMeshSegmentedVertices);
 		ReadTriangles(simScene->mNumMeshes, simScene->mMeshes, simMeshIndices, simMeshSegmentedIndices);
 		ReadSubsetTable(scene, simScene, subsets, filename);
-
-		GetEdges(simScene->mNumMeshes, subsets[filename], simMeshSegmentedVertices, simMeshSegmentedIndices, simMeshSegmentedEdgeTriangles, simMeshEdges, simMeshRestLengths);
-		GetNeighbourTriangles(simScene->mNumMeshes, simMeshSegmentedVertices, simMeshSegmentedIndices, simMeshSegmentedEdgeTriangles, simMeshNeighborTriangles, simMeshRestAngles);
 
 		GetMeshTransferMap(segmentedVertices, simMeshSegmentedVertices, meshTransferIndices);
 		GetMeshTransferMap(simMeshSegmentedVertices, segmentedVertices, simMeshTransferIndices);
@@ -700,49 +538,12 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		const UINT smtbByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
 		const UINT smscbByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
 
-		const UINT smebByteSize = (UINT)simMeshEdges.size() * sizeof(Edge);
-		const UINT smrlbByteSize = (UINT)simMeshEdges.size() * sizeof(float);
-
-		const UINT smntbByteSize = (UINT)simMeshNeighborTriangles.size() * sizeof(UINT);
-		const UINT smrabByteSize = (UINT)simMeshRestAngles.size() * sizeof(float);
-
 		const UINT mtbByteSize = (UINT)vertices.size() * sizeof(UINT);
 
-		std::vector<UINT3> simMeshSolverTransforms;
-		simMeshSolverTransforms.resize(simMeshVertices.size());
-
-		std::vector<UINT> simMeshSolverCount;
-		simMeshSolverCount.resize(simMeshVertices.size(), 0);
 
 		ThrowIfFailed(D3DCreateBlob(smvbByteSize, &geo->SimMeshSkinnedVertexBufferCPU));
 		CopyMemory(geo->SimMeshSkinnedVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), smvbByteSize);
 
-		ThrowIfFailed(D3DCreateBlob(smvbByteSize, &geo->SimMeshTransformedVertexBufferCPU));
-		CopyMemory(geo->SimMeshTransformedVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), smvbByteSize);
-
-		ThrowIfFailed(D3DCreateBlob(smvbByteSize, &geo->SimMeshOutputVertexBufferCPU));
-		CopyMemory(geo->SimMeshOutputVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), smvbByteSize);
-
-		ThrowIfFailed(D3DCreateBlob(smsbByteSize, &geo->SimMeshSolverTransformBufferCPU));
-		CopyMemory(geo->SimMeshSolverTransformBufferCPU->GetBufferPointer(), simMeshSolverTransforms.data(), smsbByteSize);
-
-		ThrowIfFailed(D3DCreateBlob(smsbByteSize, &geo->SimMeshPreviousSolverTransformBufferCPU));
-		CopyMemory(geo->SimMeshPreviousSolverTransformBufferCPU->GetBufferPointer(), simMeshSolverTransforms.data(), smsbByteSize);
-
-		ThrowIfFailed(D3DCreateBlob(smscbByteSize, &geo->SimMeshSolverCountBufferCPU));
-		CopyMemory(geo->SimMeshSolverCountBufferCPU->GetBufferPointer(), simMeshSolverCount.data(), smscbByteSize);
-
-		ThrowIfFailed(D3DCreateBlob(smebByteSize, &geo->SimMeshEdgeBufferCPU));
-		CopyMemory(geo->SimMeshEdgeBufferCPU->GetBufferPointer(), simMeshEdges.data(), smebByteSize);
-
-		ThrowIfFailed(D3DCreateBlob(smrlbByteSize, &geo->SimMeshRestLengthBufferCPU));
-		CopyMemory(geo->SimMeshRestLengthBufferCPU->GetBufferPointer(), simMeshRestLengths.data(), smrlbByteSize);
-
-		ThrowIfFailed(D3DCreateBlob(smntbByteSize, &geo->SimMeshNeighborTriangleBufferCPU));
-		CopyMemory(geo->SimMeshNeighborTriangleBufferCPU->GetBufferPointer(), simMeshNeighborTriangles.data(), smntbByteSize);
-
-		ThrowIfFailed(D3DCreateBlob(smrabByteSize, &geo->SimMeshRestAngleBufferCPU));
-		CopyMemory(geo->SimMeshRestAngleBufferCPU->GetBufferPointer(), simMeshRestAngles.data(), smrabByteSize);
 
 		ThrowIfFailed(D3DCreateBlob(smtbByteSize, &geo->SimMeshTransferBufferCPU));
 		CopyMemory(geo->SimMeshTransferBufferCPU->GetBufferPointer(), simMeshTransferIndices.data(), smtbByteSize);
@@ -751,52 +552,11 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		CopyMemory(geo->MeshTransferBufferCPU->GetBufferPointer(), meshTransferIndices.data(), mtbByteSize);
 
 		geo->SimMeshSkinnedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), smvbByteSize, geo->SimMeshSkinnedVertexBufferUploader);
-		geo->SimMeshTransformedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), smvbByteSize, geo->SimMeshTransformedVertexBufferUploader);
-
-		geo->SimMeshOutputVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), smvbByteSize, geo->SimMeshOutputVertexBufferUploader);
-
-		geo->SimMeshSolverTransformBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverTransforms.data(), smsbByteSize, geo->SimMeshSolverTransformBufferUploader);
-		geo->SimMeshPreviousSolverTransformBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverTransforms.data(), smsbByteSize, geo->SimMeshPreviousSolverTransformBufferUploader);
-		
-		geo->SimMeshSolverCountBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverCount.data(), smscbByteSize, geo->SimMeshSolverCountBufferUploader);
-
-		geo->SimMeshEdgeBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshEdges.data(), smebByteSize, geo->SimMeshEdgeBufferUploader);
-		geo->SimMeshRestLengthBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshRestLengths.data(), smrlbByteSize, geo->SimMeshRestLengthBufferUploader);
-		geo->SimMeshNeighborTriangleBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshNeighborTriangles.data(), smntbByteSize, geo->SimMeshNeighborTriangleBufferUploader);
-		geo->SimMeshRestAngleBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshRestAngles.data(), smrabByteSize, geo->SimMeshRestAngleBufferUploader);
-		
 		geo->SimMeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshTransferIndices.data(), smtbByteSize, geo->SimMeshTransferBufferUploader);
 		geo->MeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), meshTransferIndices.data(), mtbByteSize, geo->MeshTransferBufferUploader);
 
 		CD3DX12_RESOURCE_BARRIER SimMeshSkinnedVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshSkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshSkinnedVertexBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshTransformedVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshTransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshTransformedVertexBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshOutputVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshOutputVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshOutputVertexBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshEdgeBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshEdgeBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshEdgeBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshRestLengthBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshRestLengthBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshRestLengthBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshNeighborTriangleBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshNeighborTriangleBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshNeighborTriangleBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshRestAngleBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshRestAngleBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshRestAngleBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshSolverTransformBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshSolverTransformBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshSolverTransformBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshPreviousSolverTransformBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshPreviousSolverTransformBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshPreviousSolverTransformBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshSolverCountBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshSolverCountBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshSolverCountBufferBarrier);
 
 		CD3DX12_RESOURCE_BARRIER SimMeshTransferBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshTransferBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshTransferBufferBarrier);

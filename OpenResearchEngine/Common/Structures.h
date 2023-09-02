@@ -325,41 +325,14 @@ struct MeshGeometry
 
     // Simulation Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransformedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSolverTransformBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSolverCountBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshPreviousSolverTransformBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshEdgeBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestLengthBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshNeighborTriangleBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestAngleBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverTransformBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverCountBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPreviousSolverTransformBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshEdgeBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestLengthBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNeighborTriangleBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestAngleBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverTransformBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverCountBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPreviousSolverTransformBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshEdgeBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestLengthBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNeighborTriangleBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestAngleBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferUploader = nullptr;
     
@@ -421,17 +394,6 @@ struct MeshGeometry
 
         return svbv;
     }
-
-    D3D12_VERTEX_BUFFER_VIEW TransformedVertexBufferView()const
-    {
-        D3D12_VERTEX_BUFFER_VIEW svbv;
-        svbv.BufferLocation = TransformedVertexBufferGPU->GetGPUVirtualAddress();
-        svbv.StrideInBytes = VertexByteStride;
-        svbv.SizeInBytes = VertexBufferByteSize;
-
-        return svbv;
-    }
-
     D3D12_VERTEX_BUFFER_VIEW VertexNormalBufferView()const
     {
         D3D12_VERTEX_BUFFER_VIEW svbv;
@@ -451,15 +413,6 @@ struct MeshGeometry
         SkinnedVertexBufferUploader = nullptr;
 
         SimMeshSkinnedVertexBufferUploader = nullptr;
-        SimMeshTransformedVertexBufferUploader = nullptr;
-        SimMeshSolverTransformBufferUploader = nullptr;
-        SimMeshPreviousSolverTransformBufferUploader = nullptr;
-
-        SimMeshEdgeBufferUploader = nullptr;
-        SimMeshRestLengthBufferUploader = nullptr;
-        SimMeshRestAngleBufferUploader = nullptr;
-        SimMeshNeighborTriangleBufferUploader = nullptr;
-
         SimMeshTransferBufferUploader = nullptr;
         MeshTransferBufferUploader = nullptr;
 

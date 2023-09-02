@@ -7,11 +7,6 @@ void EngineApp::SetPipelineStates()
     skinnedComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["skinnedCS"]->GetBufferPointer()), mShaders["skinnedCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&skinnedComputePSO, IID_PPV_ARGS(&mPSOs["skinned"])));
 
-    D3D12_COMPUTE_PIPELINE_STATE_DESC verletSolverComputePSO = {};
-    verletSolverComputePSO.pRootSignature = mVerletSolverRootSignature.Get();
-    verletSolverComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["verletSolverCS"]->GetBufferPointer()), mShaders["verletSolverCS"]->GetBufferSize() };
-    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&verletSolverComputePSO, IID_PPV_ARGS(&mPSOs["verletSolver"])));
-
     D3D12_COMPUTE_PIPELINE_STATE_DESC triangleNormalComputePSO = {};
     triangleNormalComputePSO.pRootSignature = mTriangleNormalRootSignature.Get();
     triangleNormalComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["triangleNormalCS"]->GetBufferPointer()), mShaders["triangleNormalCS"]->GetBufferSize() };
@@ -32,15 +27,6 @@ void EngineApp::SetPipelineStates()
     simMeshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["simMeshTransferCS"]->GetBufferPointer()), mShaders["simMeshTransferCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&simMeshTransferComputePSO, IID_PPV_ARGS(&mPSOs["simMeshTransfer"])));
 
-    D3D12_COMPUTE_PIPELINE_STATE_DESC preSolveComputePSO = {};
-    preSolveComputePSO.pRootSignature = mPreSolveRootSignature.Get();
-    preSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["preSolveCS"]->GetBufferPointer()), mShaders["preSolveCS"]->GetBufferSize() };
-    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&preSolveComputePSO, IID_PPV_ARGS(&mPSOs["preSolve"])));
-
-    D3D12_COMPUTE_PIPELINE_STATE_DESC postSolveComputePSO = {};
-    postSolveComputePSO.pRootSignature = mPostSolveRootSignature.Get();
-    postSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["postSolveCS"]->GetBufferPointer()), mShaders["postSolveCS"]->GetBufferSize() };
-    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&postSolveComputePSO, IID_PPV_ARGS(&mPSOs["postSolve"])));
 
 
     //
