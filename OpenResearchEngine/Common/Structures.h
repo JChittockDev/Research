@@ -25,33 +25,17 @@ extern const int gNumFrameResources;
 
 struct Edge
 {
-    UINT vertexA;
-    UINT vertexB;
+    UINT id0 = 0;
+    UINT id1 = 0;
+    UINT edgeNr = 0;
 
-    Edge(){}
+    Edge() {};
 
-    Edge(UINT vertexA, UINT vertexB)
+    Edge(UINT inEdge1, UINT inEdge2, UINT inEdgeID)
     {
-        this->vertexA = vertexA;
-        this->vertexB = vertexB;
-    }
-
-    bool operator==(Edge edge) const
-    {
-        return (vertexA == edge.vertexA && vertexB == edge.vertexB) || (vertexA == edge.vertexB && vertexB == edge.vertexA);
-    }
-
-    bool operator<(const Edge& edge) const
-    {
-        return (vertexA < edge.vertexA) || (vertexA == edge.vertexA && vertexB < edge.vertexB);
-    }
-};
-
-struct EdgeHash
-{
-    std::size_t operator()(const Edge& edge) const
-    {
-        return std::hash<UINT>()(edge.vertexA) ^ std::hash<UINT>()(edge.vertexB);
+        id0 = inEdge1;
+        id1 = inEdge2;
+        edgeNr = inEdgeID;
     }
 };
 

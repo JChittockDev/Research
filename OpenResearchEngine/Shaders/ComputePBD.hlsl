@@ -12,7 +12,7 @@ RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 RWStructuredBuffer<float3> outputVelocityBuffer : register(u1);
 
 // Define the compute shader entry point
-[numthreads(64, 1, 1)]
+[numthreads(1, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     float3 gravity = float3(0.0, -10.0, 0.0);

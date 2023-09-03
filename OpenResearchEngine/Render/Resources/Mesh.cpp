@@ -345,6 +345,92 @@ void Mesh::GetMeshTransferMap(const std::vector<std::vector<Vertex>>& baseVertic
 	}
 }
 
+void GetConstraintIDs(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::vector<float>>& segmentedTriangleNeighbours, std::vector<float>& triangleNeighbours)
+{
+	GetTriangleNeighbors(numMesh, segmentedIndices, segmentedTriangleNeighbours, triangleNeighbours);
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		int numTris = segmentedIndices[x].size() / 3;
+		std::vector<int> edgeIds;
+		std::vector<int> triPairIds;
+
+		for (int i = 0; i < numTris; i++) {
+			for (int j = 0; j < 3; j++) {
+				int id0 = segmentedIndices[x][3 * i + j];
+				int id1 = segmentedIndices[x][3 * i + (j + 1) % 3];
+
+				// each edge only once
+				int n = segmentedTriangleNeighbours[x][3 * i + j];
+				if (n < 0 || id0 < id1) {
+					edgeIds.push_back(id0);
+					edgeIds.push_back(id1);
+				}
+
+				// tri pair
+				if (n >= 0) {
+					// opposite ids
+					int ni = n / 3;
+					int nj = n % 3;
+					int id2 = segmentedIndices[x][3 * i + (j + 2) % 3];
+					int id3 = segmentedIndices[x][3 * ni + (nj + 2) % 3];
+					triPairIds.push_back(id0);
+					triPairIds.push_back(id1);
+					triPairIds.push_back(id2);
+					triPairIds.push_back(id3);
+				}
+			}
+		}
+	}
+}
+
+void GetTriangleNeighbors(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::vector<float>>& segmentedTriangleNeighbours, std::vector<float>& triangleNeighbours)
+{
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::vector<Edge> edges;
+		UINT numTris = segmentedIndices[x].size() / 3;
+
+		for (UINT i = 0; i < numTris; i++) {
+			for (UINT j = 0; j < 3; j++) {
+				UINT id0 = segmentedIndices[x][3 * i + j];
+				UINT id1 = segmentedIndices[x][3 * i + (j + 1) % 3];
+				Edge edge(Math::Min(id0, id1), Math::Max(id0, id1), 3 * i + j);
+			}
+		}
+
+		std::sort(edges.begin(), edges.end(), [](const Edge& a, const Edge& b) {
+			if (a.id0 < b.id0)
+				return true;
+			if (a.id0 == b.id0 && a.id1 < b.id1)
+				return true;
+			return false;
+			});
+
+		std::vector<float> neighbors(3 * numTris, -1.0f);
+
+		int nr = 0;
+		while (nr < edges.size()) {
+			Edge e0 = edges[nr];
+			nr++;
+			if (nr < edges.size()) {
+				Edge e1 = edges[nr];
+				if (e0.id0 == e1.id0 && e0.id1 == e1.id1) {
+					neighbors[e0.edgeNr] = static_cast<float>(e1.edgeNr);
+					neighbors[e1.edgeNr] = static_cast<float>(e0.edgeNr);
+				}
+				nr++;
+			}
+		}
+
+		segmentedTriangleNeighbours.push_back(neighbors);
+		for (UINT i = 0; i < neighbors.size(); i++)
+		{
+			triangleNeighbours.push_back(neighbors[i]);
+		}
+	}
+}
+
 void GetVertexTriangleNeighbours(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<Neighbours>& vertexNeighbourTriangles, const int references = 8)
 {
 	std::vector<std::unordered_map<UINT, std::set<UINT>>> segmentedVertexNeighbourTriangles;
