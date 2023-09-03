@@ -325,14 +325,26 @@ struct MeshGeometry
 
     // Simulation Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInputSolverVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputSolverVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInputSolverVelocityBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputSolverVelocityBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputSolverVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputSolverVelocityBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverVelocityBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputSolverVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputSolverVelocityBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverVelocityBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferUploader = nullptr;
     
@@ -413,6 +425,10 @@ struct MeshGeometry
         SkinnedVertexBufferUploader = nullptr;
 
         SimMeshSkinnedVertexBufferUploader = nullptr;
+        SimMeshInputSolverVertexBufferUploader = nullptr;
+        SimMeshOutputSolverVertexBufferUploader = nullptr;
+        SimMeshInputSolverVelocityBufferUploader = nullptr;
+        SimMeshOutputSolverVelocityBufferUploader = nullptr;
         SimMeshTransferBufferUploader = nullptr;
         MeshTransferBufferUploader = nullptr;
 

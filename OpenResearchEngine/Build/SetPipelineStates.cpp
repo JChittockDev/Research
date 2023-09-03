@@ -28,6 +28,12 @@ void EngineApp::SetPipelineStates()
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&simMeshTransferComputePSO, IID_PPV_ARGS(&mPSOs["simMeshTransfer"])));
 
 
+    D3D12_COMPUTE_PIPELINE_STATE_DESC PBDComputePSO = {};
+    PBDComputePSO.pRootSignature = mPBDRootSignature.Get();
+    PBDComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["PBDCS"]->GetBufferPointer()), mShaders["PBDCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&PBDComputePSO, IID_PPV_ARGS(&mPSOs["PBD"])));
+
+
 
     //
     // PSO for opaque objects.
