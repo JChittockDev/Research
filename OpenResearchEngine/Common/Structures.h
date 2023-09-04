@@ -309,7 +309,6 @@ struct MeshGeometry
 
     // Simulation Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInvMassBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintsBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintIDsBufferCPU = nullptr;
@@ -330,7 +329,6 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInvMassBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferGPU = nullptr;
@@ -351,7 +349,6 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
    
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInvMassBufferUploader = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferUploader = nullptr;
@@ -448,7 +445,6 @@ struct MeshGeometry
         SkinnedVertexBufferUploader = nullptr;
 
         SimMeshSkinnedVertexBufferUploader = nullptr;
-        SimMeshInvMassBufferUploader = nullptr;
 
         SimMeshBendingConstraintsBufferUploader = nullptr;
         SimMeshBendingConstraintIDsBufferUploader = nullptr;

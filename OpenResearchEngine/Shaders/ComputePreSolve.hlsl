@@ -8,7 +8,6 @@ struct Vertex
 
 StructuredBuffer<Vertex> inputVertexBuffer : register(t0);
 StructuredBuffer<float3> inputVelocityBuffer : register(t1);
-StructuredBuffer<float> invMassBuffer : register(t2);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 RWStructuredBuffer<float3> outputVelocityBuffer : register(u1);
 
@@ -17,13 +16,15 @@ RWStructuredBuffer<float3> outputVelocityBuffer : register(u1);
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     float3 gravity = float3(0.0, -10.0, 0.0);
-    float deltaT = 0.01;
+    float deltaT = 0.00001;
     
     int vertexID = dispatchThreadID.x;
     
     float3 position = inputVertexBuffer[vertexID].position;
     float3 velocity = inputVelocityBuffer[vertexID];
     
-    outputVertexBuffer[vertexID].position = position + gravity * deltaT;
-    outputVelocityBuffer[vertexID] = velocity + gravity * deltaT;
+    if (vertexID < 110)
+    {
+        outputVertexBuffer[vertexID].position = position + gravity * deltaT;
+    }
 }

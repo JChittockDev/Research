@@ -801,9 +801,6 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshOutputBendingConstraintsVertexBufferCPU));
 		CopyMemory(geo->SimMeshOutputBendingConstraintsVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
-		
-		ThrowIfFailed(D3DCreateBlob(simMeshInvMassBufferByteSize, &geo->SimMeshInvMassBufferCPU));
-		CopyMemory(geo->SimMeshInvMassBufferCPU->GetBufferPointer(), simMeshInvMass.data(), simMeshInvMassBufferByteSize);
 
 		ThrowIfFailed(D3DCreateBlob(simMeshStretchConstraintBufferByteSize, &geo->SimMeshStretchConstraintsBufferCPU));
 		CopyMemory(geo->SimMeshStretchConstraintsBufferCPU->GetBufferPointer(), simMeshStretchConstraints.data(), simMeshStretchConstraintBufferByteSize);
@@ -836,7 +833,6 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		geo->SimMeshInputBendingConstraintsVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshInputBendingConstraintsVertexBufferUploader);
 		geo->SimMeshOutputBendingConstraintsVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshOutputBendingConstraintsVertexBufferUploader);
 		
-		geo->SimMeshInvMassBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshInvMass.data(), simMeshInvMassBufferByteSize, geo->SimMeshInvMassBufferUploader);
 		geo->SimMeshStretchConstraintsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshStretchConstraints.data(), simMeshStretchConstraintBufferByteSize, geo->SimMeshStretchConstraintsBufferUploader);
 		geo->SimMeshBendingConstraintsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshBendingConstraints.data(), simMeshBendingConstraintBufferByteSize, geo->SimMeshBendingConstraintsBufferUploader);
 		geo->SimMeshStretchConstraintIDsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshStretchConstraintIDs.data(), simMeshStretchConstraintIDsBufferByteSize, geo->SimMeshStretchConstraintIDsBufferUploader);
@@ -871,9 +867,6 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		CD3DX12_RESOURCE_BARRIER SimMeshOutputBendingVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshOutputBendingConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshOutputBendingVertexBufferBarrier);
-
-		CD3DX12_RESOURCE_BARRIER SimMeshInvMassBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshInvMassBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-		mCommandList->ResourceBarrier(1, &SimMeshInvMassBufferBarrier);
 
 		CD3DX12_RESOURCE_BARRIER SimMeshStretchConstraintsBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshStretchConstraintsBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshStretchConstraintsBufferBarrier);
