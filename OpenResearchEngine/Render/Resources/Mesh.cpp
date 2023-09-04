@@ -433,7 +433,8 @@ void GetConstraintIDs(unsigned int numMesh, std::vector<std::vector<UINT>>& segm
 	}
 }
 
-void GetInvMassAndLengths(unsigned int numMesh, 
+void GetInvMassAndLengths(unsigned int numMesh,
+	std::vector<std::shared_ptr<Subset>>& subsets,
 	std::vector<std::vector<UINT>>& segmentedEdgeIds, 
 	std::vector<std::vector<UINT>>& segmentedTriPairIds,
 	std::vector<std::vector<UINT>>& segmentedIndices, 
@@ -451,12 +452,16 @@ void GetInvMassAndLengths(unsigned int numMesh,
 	segmentedStretchConstraints.resize(numMesh);
 	segmentedBendingConstraints.resize(numMesh);
 
-
+	int edgeCounter = 0;
 	for (UINT x = 0; x < numMesh; ++x)
 	{
 		segmentedInvMass[x].resize(segmentedVertices[x].size(), 0.0);
 		segmentedStretchConstraints[x].resize(segmentedEdgeIds[x].size(), 0);
 		segmentedBendingConstraints[x].resize(segmentedTriPairIds[x].size(), 0);
+
+		subsets[x]->SimMeshEdgeCount = segmentedEdgeIds[x].size();
+		subsets[x]->SimMeshEdgeStart = edgeCounter;
+		edgeCounter += segmentedEdgeIds[x].size();
 	}
 
 	for (UINT x = 0; x < numMesh; ++x)
@@ -731,7 +736,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		GetConstraintIDs(simScene->mNumMeshes, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices);
 
-		GetInvMassAndLengths(simScene->mNumMeshes, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices, simMeshSegmentedVertices,
+		GetInvMassAndLengths(simScene->mNumMeshes, subsets, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices, simMeshSegmentedVertices,
 			simMeshSegmentedInvMass, simMeshSegmentedStretchConstraints, simMeshSegmentedBendingConstraints, simMeshInvMass, simMeshStretchConstraints, simMeshBendingConstraints, simMeshStretchConstraintIDs, simMeshBendingConstraintIDs);
 
 		const UINT simMeshVertexBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
