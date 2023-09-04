@@ -33,12 +33,10 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     
     if (magnitude != 0.0)
     {
-        displacement *= 1.0 / magnitude;
         float restLength = inputEdgeConstraintBuffer[constraintID];
-        float lengthDiff = magnitude - restLength;
-        //float scale = -lengthDiff / (w + alpha);
-            
-        outputVertexBuffer[id0].position = position0 + (displacement * 0.5);
-        outputVertexBuffer[id1].position = position1 + (-displacement * 0.5);
+        float3 solve = displacement * (1.0 - restLength / magnitude);
+
+        outputVertexBuffer[id0].position = position0 + (-solve * 0.5);
+        outputVertexBuffer[id1].position = position1 + (solve * 0.5);
     }
 }
