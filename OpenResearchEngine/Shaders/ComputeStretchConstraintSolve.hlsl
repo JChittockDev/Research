@@ -38,9 +38,7 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         float lengthDiff = magnitude - restLength;
         //float scale = -lengthDiff / (w + alpha);
             
-        outputVertexBuffer[id0].position = position0;
-        //+displacement * 0.5;
-        outputVertexBuffer[id1].position = position1;
-        //-displacement * 0.5;
+        outputVertexBuffer[id0].position = position0 + displacement * 0.5;
+        outputVertexBuffer[id1].position = position1 - displacement * 0.5;
     }
 }

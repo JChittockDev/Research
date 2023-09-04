@@ -452,23 +452,35 @@ void GetInvMassAndLengths(unsigned int numMesh,
 	segmentedStretchConstraints.resize(numMesh);
 	segmentedBendingConstraints.resize(numMesh);
 
-	int edgeCounter = 0;
+	UINT edgeCounter = 0;
 	for (UINT x = 0; x < numMesh; ++x)
 	{
-		segmentedInvMass[x].resize(segmentedVertices[x].size(), 0.0);
-		segmentedStretchConstraints[x].resize(segmentedEdgeIds[x].size(), 0);
-		segmentedBendingConstraints[x].resize(segmentedTriPairIds[x].size(), 0);
+		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
+		UINT numStretchConstraints = numStretchConstraintIDs / 2;
 
-		subsets[x]->SimMeshEdgeCount = segmentedEdgeIds[x].size();
+		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
+		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
+
+		segmentedInvMass[x].resize(segmentedVertices[x].size(), 0.0);
+		segmentedStretchConstraints[x].resize(numStretchConstraints, 0);
+		segmentedBendingConstraints[x].resize(numBendingConstraints, 0);
+
+		subsets[x]->SimMeshEdgeCount = numStretchConstraints;
 		subsets[x]->SimMeshEdgeStart = edgeCounter;
-		edgeCounter += segmentedEdgeIds[x].size();
+		edgeCounter += numStretchConstraints;
 	}
 
 	for (UINT x = 0; x < numMesh; ++x)
 	{
 		UINT numTris = segmentedIndices.size() / 3;
 
-		for (int i = 0; i < numTris; i++) {
+		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
+		UINT numStretchConstraints = numStretchConstraintIDs / 2;
+
+		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
+		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
+
+		for (UINT i = 0; i < numTris; i++) {
 			UINT id0 = segmentedIndices[x][3 * i];
 			UINT id1 = segmentedIndices[x][3 * i + 1];
 			UINT id2 = segmentedIndices[x][3 * i + 2];
@@ -486,15 +498,15 @@ void GetInvMassAndLengths(unsigned int numMesh,
 			segmentedInvMass[x][id2] += pInvMass;
 		}
 
-		for (UINT i = 0; i < segmentedStretchConstraints[x].size() / 2; i++) {
-			UINT id0 = segmentedEdgeIds[x][i];
-			UINT id1 = segmentedEdgeIds[x][i + 1];
+		for (UINT i = 0; i < numStretchConstraints; i++) {
+			UINT id0 = segmentedEdgeIds[x][2 * i];
+			UINT id1 = segmentedEdgeIds[x][2 * i + 1];
 			segmentedStretchConstraints[x][i] = Math::Length(segmentedVertices[x][id0].Pos, segmentedVertices[x][id1].Pos);
 		}
 
-		for (int i = 0; i < segmentedBendingConstraints[x].size() / 4; i++) {
-			int id0 = segmentedTriPairIds[x][4 * i + 2];
-			int id1 = segmentedTriPairIds[x][4 * i + 3];
+		for (UINT i = 0; i < numBendingConstraints; i++) {
+			UINT id0 = segmentedTriPairIds[x][4 * i + 2];
+			UINT id1 = segmentedTriPairIds[x][4 * i + 3];
 			segmentedBendingConstraints[x][i] = Math::Length(segmentedVertices[x][id0].Pos, segmentedVertices[x][id1].Pos);
 		}
 	}
@@ -502,6 +514,12 @@ void GetInvMassAndLengths(unsigned int numMesh,
 	for (UINT x = 0; x < numMesh; ++x)
 	{
 		UINT numTris = segmentedIndices.size() / 3;
+
+		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
+		UINT numStretchConstraints = numStretchConstraintIDs / 2;
+
+		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
+		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
 
 		for (int i = 0; i < numTris; i++) {
 			UINT id0 = segmentedIndices[x][3 * i];
@@ -513,21 +531,22 @@ void GetInvMassAndLengths(unsigned int numMesh,
 			invMass.push_back(segmentedInvMass[x][id2]);
 		}
 
-		for (int i = 0; i < segmentedStretchConstraints[x].size(); i++) {
+		for (UINT i = 0; i < numStretchConstraints; i++) {
 			stretchConstraints.push_back(segmentedStretchConstraints[x][i]);
 		}
 
-		for (int i = 0; i < segmentedBendingConstraints[x].size(); i++) {
+		for (UINT i = 0; i < numBendingConstraints; i++) {
 			bendingConstraints.push_back(segmentedBendingConstraints[x][i]);
 		}
 
-		for (int i = 0; i < segmentedEdgeIds[x].size(); i++) {
+		for (UINT i = 0; i < numStretchConstraintIDs; i++) {
 			stretchConstraintIDs.push_back(segmentedEdgeIds[x][i]);
 		}
 
-		for (int i = 0; i < segmentedTriPairIds[x].size(); i++) {
+		for (UINT i = 0; i < numBendingConstraintIDs; i++) {
 			bendingConstraintIDs.push_back(segmentedTriPairIds[x][i]);
 		}
+
 	}
 }
 
@@ -736,7 +755,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		GetConstraintIDs(simScene->mNumMeshes, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices);
 
-		GetInvMassAndLengths(simScene->mNumMeshes, subsets, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices, simMeshSegmentedVertices,
+		GetInvMassAndLengths(simScene->mNumMeshes, subsets[filename], simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices, simMeshSegmentedVertices,
 			simMeshSegmentedInvMass, simMeshSegmentedStretchConstraints, simMeshSegmentedBendingConstraints, simMeshInvMass, simMeshStretchConstraints, simMeshBendingConstraints, simMeshStretchConstraintIDs, simMeshBendingConstraintIDs);
 
 		const UINT simMeshVertexBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
