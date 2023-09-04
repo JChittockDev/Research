@@ -69,13 +69,15 @@ private:
     void ComputeVertexNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeStretchConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
 
     void SetSkinnedRootSignature();
     void SetTriangleNormalRootSignature();
     void SetVertexNormalRootSignature();
     void SetSimMeshTransferRootSignature();
-    void SetPBDRootSignature();
+    void SetPreSolveRootSignature();
+    void SetStretchConstraintSolveRootSignature();
     void SetMeshTransferRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
@@ -104,7 +106,8 @@ private:
     DirectX::BoundingSphere mSceneBounds;
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSkinnedRootSignature = nullptr;
-    ComPtr<ID3D12RootSignature> mPBDRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mPreSolveRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mStretchConstraintSolveRootSignature = nullptr;
 
     ComPtr<ID3D12RootSignature> mTriangleNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mVertexNormalRootSignature = nullptr;

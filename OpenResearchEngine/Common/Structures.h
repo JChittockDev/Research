@@ -309,26 +309,65 @@ struct MeshGeometry
 
     // Simulation Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInputSolverVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputSolverVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInputSolverVelocityBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputSolverVelocityBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInvMassBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintIDsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInputBendingConstraintsVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputBendingConstraintsVertexBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshStretchConstraintsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshStretchConstraintIDsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInputStretchConstraintsVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputStretchConstraintsVertexBufferCPU = nullptr;
+    
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInputPreSolverVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputPreSolverVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshInputPreSolverVelocityBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshOutputPreSolverVelocityBufferCPU = nullptr;
+
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputSolverVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputSolverVelocityBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverVelocityBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInvMassBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputBendingConstraintsVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputBendingConstraintsVertexBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintIDsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputStretchConstraintsVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputStretchConstraintsVertexBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputPreSolverVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputPreSolverVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputPreSolverVelocityBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputPreSolverVelocityBufferGPU = nullptr;
+
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
-
+   
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputSolverVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputSolverVelocityBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverVelocityBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInvMassBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputBendingConstraintsVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputBendingConstraintsVertexBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintIDsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputStretchConstraintsVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputStretchConstraintsVertexBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputPreSolverVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputPreSolverVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshInputPreSolverVelocityBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputPreSolverVelocityBufferUploader = nullptr;
+
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferUploader = nullptr;
     
@@ -409,10 +448,23 @@ struct MeshGeometry
         SkinnedVertexBufferUploader = nullptr;
 
         SimMeshSkinnedVertexBufferUploader = nullptr;
-        SimMeshInputSolverVertexBufferUploader = nullptr;
-        SimMeshOutputSolverVertexBufferUploader = nullptr;
-        SimMeshInputSolverVelocityBufferUploader = nullptr;
-        SimMeshOutputSolverVelocityBufferUploader = nullptr;
+        SimMeshInvMassBufferUploader = nullptr;
+
+        SimMeshBendingConstraintsBufferUploader = nullptr;
+        SimMeshBendingConstraintIDsBufferUploader = nullptr;
+        SimMeshInputBendingConstraintsVertexBufferUploader = nullptr;
+        SimMeshOutputBendingConstraintsVertexBufferUploader = nullptr;
+
+        SimMeshStretchConstraintsBufferUploader = nullptr;
+        SimMeshStretchConstraintIDsBufferUploader = nullptr;
+        SimMeshInputStretchConstraintsVertexBufferUploader = nullptr;
+        SimMeshOutputStretchConstraintsVertexBufferUploader = nullptr;
+
+        SimMeshInputPreSolverVertexBufferUploader = nullptr;
+        SimMeshOutputPreSolverVertexBufferUploader = nullptr;
+        SimMeshInputPreSolverVelocityBufferUploader = nullptr;
+        SimMeshOutputPreSolverVelocityBufferUploader = nullptr;
+
         SimMeshTransferBufferUploader = nullptr;
         MeshTransferBufferUploader = nullptr;
 

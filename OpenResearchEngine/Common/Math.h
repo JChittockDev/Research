@@ -109,12 +109,20 @@ public:
 		return matrix;
 	}
 
+	static DirectX::XMVECTOR Difference(const DirectX::XMFLOAT3& point1, const DirectX::XMFLOAT3& point2)
+	{
+		DirectX::XMVECTOR vec1 = DirectX::XMLoadFloat3(&point1);
+		DirectX::XMVECTOR vec2 = DirectX::XMLoadFloat3(&point2);
+		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(vec2, vec1);
+
+		return diffVec;
+	}
+
 	static float Length(const DirectX::XMFLOAT3& point1, const DirectX::XMFLOAT3& point2)
 	{
 		DirectX::XMVECTOR vec1 = DirectX::XMLoadFloat3(&point1);
 		DirectX::XMVECTOR vec2 = DirectX::XMLoadFloat3(&point2);
-
-		DirectX::XMVECTOR diffVec = DirectX::XMVectorSubtract(vec2, vec1);
+		DirectX::XMVECTOR diffVec = Difference(point1, point2);
 		float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(diffVec));
 
 		return length;

@@ -345,46 +345,7 @@ void Mesh::GetMeshTransferMap(const std::vector<std::vector<Vertex>>& baseVertic
 	}
 }
 
-void GetConstraintIDs(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::vector<float>>& segmentedTriangleNeighbours, std::vector<float>& triangleNeighbours)
-{
-	GetTriangleNeighbors(numMesh, segmentedIndices, segmentedTriangleNeighbours, triangleNeighbours);
-
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		int numTris = segmentedIndices[x].size() / 3;
-		std::vector<int> edgeIds;
-		std::vector<int> triPairIds;
-
-		for (int i = 0; i < numTris; i++) {
-			for (int j = 0; j < 3; j++) {
-				int id0 = segmentedIndices[x][3 * i + j];
-				int id1 = segmentedIndices[x][3 * i + (j + 1) % 3];
-
-				// each edge only once
-				int n = segmentedTriangleNeighbours[x][3 * i + j];
-				if (n < 0 || id0 < id1) {
-					edgeIds.push_back(id0);
-					edgeIds.push_back(id1);
-				}
-
-				// tri pair
-				if (n >= 0) {
-					// opposite ids
-					int ni = n / 3;
-					int nj = n % 3;
-					int id2 = segmentedIndices[x][3 * i + (j + 2) % 3];
-					int id3 = segmentedIndices[x][3 * ni + (nj + 2) % 3];
-					triPairIds.push_back(id0);
-					triPairIds.push_back(id1);
-					triPairIds.push_back(id2);
-					triPairIds.push_back(id3);
-				}
-			}
-		}
-	}
-}
-
-void GetTriangleNeighbors(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::vector<float>>& segmentedTriangleNeighbours, std::vector<float>& triangleNeighbours)
+void GetTriangleNeighbors(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::vector<UINT>>& segmentedTriangleNeighbours)
 {
 	for (UINT x = 0; x < numMesh; ++x)
 	{
@@ -407,7 +368,7 @@ void GetTriangleNeighbors(unsigned int numMesh, std::vector<std::vector<UINT>>& 
 			return false;
 			});
 
-		std::vector<float> neighbors(3 * numTris, -1.0f);
+		std::vector<UINT> neighbors(3 * numTris, -1.0f);
 
 		int nr = 0;
 		while (nr < edges.size()) {
@@ -416,17 +377,151 @@ void GetTriangleNeighbors(unsigned int numMesh, std::vector<std::vector<UINT>>& 
 			if (nr < edges.size()) {
 				Edge e1 = edges[nr];
 				if (e0.id0 == e1.id0 && e0.id1 == e1.id1) {
-					neighbors[e0.edgeNr] = static_cast<float>(e1.edgeNr);
-					neighbors[e1.edgeNr] = static_cast<float>(e0.edgeNr);
+					neighbors[e0.edgeNr] = e1.edgeNr;
+					neighbors[e1.edgeNr] = e0.edgeNr;
 				}
 				nr++;
 			}
 		}
 
 		segmentedTriangleNeighbours.push_back(neighbors);
-		for (UINT i = 0; i < neighbors.size(); i++)
-		{
-			triangleNeighbours.push_back(neighbors[i]);
+	}
+}
+
+void GetConstraintIDs(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedEdgeIds, std::vector<std::vector<UINT>>& segmentedTriPairIds, 
+					std::vector<std::vector<UINT>>& segmentedIndices)
+{
+	std::vector<std::vector<UINT>> segmentedTriangleNeighbours;
+
+	GetTriangleNeighbors(numMesh, segmentedIndices, segmentedTriangleNeighbours);
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		UINT numTris = segmentedIndices[x].size() / 3;
+		std::vector<UINT> edgeIds;
+		std::vector<UINT> triPairIds;
+
+		for (UINT i = 0; i < numTris; i++) {
+			for (UINT j = 0; j < 3; j++) {
+				UINT id0 = segmentedIndices[x][3 * i + j];
+				UINT id1 = segmentedIndices[x][3 * i + (j + 1) % 3];
+
+				// each edge only once
+				UINT n = segmentedTriangleNeighbours[x][3 * i + j];
+				if (n < 0 || id0 < id1) {
+					edgeIds.push_back(id0);
+					edgeIds.push_back(id1);
+				}
+
+				// tri pair
+				if (n >= 0) {
+					// opposite ids
+					UINT ni = n / 3;
+					UINT nj = n % 3;
+					UINT id2 = segmentedIndices[x][3 * i + (j + 2) % 3];
+					UINT id3 = segmentedIndices[x][3 * ni + (nj + 2) % 3];
+					triPairIds.push_back(id0);
+					triPairIds.push_back(id1);
+					triPairIds.push_back(id2);
+					triPairIds.push_back(id3);
+				}
+			}
+		}
+
+		segmentedEdgeIds.push_back(edgeIds);
+		segmentedTriPairIds.push_back(triPairIds);
+	}
+}
+
+void GetInvMassAndLengths(unsigned int numMesh, 
+	std::vector<std::vector<UINT>>& segmentedEdgeIds, 
+	std::vector<std::vector<UINT>>& segmentedTriPairIds,
+	std::vector<std::vector<UINT>>& segmentedIndices, 
+	std::vector<std::vector<Vertex>>& segmentedVertices, 
+	std::vector<std::vector<float>>& segmentedInvMass, 
+	std::vector<std::vector<float>>& segmentedStretchConstraints, 
+	std::vector<std::vector<float>>& segmentedBendingConstraints,
+	std::vector<float>& invMass,
+	std::vector<float>& stretchConstraints,
+	std::vector<float>& bendingConstraints,
+	std::vector<UINT>& stretchConstraintIDs,
+	std::vector<UINT>& bendingConstraintIDs)
+{
+	segmentedInvMass.resize(numMesh);
+	segmentedStretchConstraints.resize(numMesh);
+	segmentedBendingConstraints.resize(numMesh);
+
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		segmentedInvMass[x].resize(segmentedVertices[x].size(), 0.0);
+		segmentedStretchConstraints[x].resize(segmentedEdgeIds[x].size(), 0);
+		segmentedBendingConstraints[x].resize(segmentedTriPairIds[x].size(), 0);
+	}
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		UINT numTris = segmentedIndices.size() / 3;
+
+		for (int i = 0; i < numTris; i++) {
+			UINT id0 = segmentedIndices[x][3 * i];
+			UINT id1 = segmentedIndices[x][3 * i + 1];
+			UINT id2 = segmentedIndices[x][3 * i + 2];
+
+			DirectX::XMVECTOR edgeVector1 = Math::Difference(segmentedVertices[x][id0].Pos, segmentedVertices[x][id1].Pos);
+			DirectX::XMVECTOR edgeVector2 = Math::Difference(segmentedVertices[x][id0].Pos, segmentedVertices[x][id2].Pos);
+			DirectX::XMVECTOR orthogonalVector = DirectX::XMVector3Cross(edgeVector1, edgeVector2);
+			float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(orthogonalVector));
+
+			float halfLength = 0.5 * length;
+			float pInvMass = (halfLength > 0.0) ? (1.0 / halfLength / 3.0) : 0.0;
+
+			segmentedInvMass[x][id0] += pInvMass;
+			segmentedInvMass[x][id1] += pInvMass;
+			segmentedInvMass[x][id2] += pInvMass;
+		}
+
+		for (UINT i = 0; i < segmentedStretchConstraints[x].size() / 2; i++) {
+			UINT id0 = segmentedEdgeIds[x][i];
+			UINT id1 = segmentedEdgeIds[x][i + 1];
+			segmentedStretchConstraints[x][i] = Math::Length(segmentedVertices[x][id0].Pos, segmentedVertices[x][id1].Pos);
+		}
+
+		for (int i = 0; i < segmentedBendingConstraints[x].size() / 4; i++) {
+			int id0 = segmentedTriPairIds[x][4 * i + 2];
+			int id1 = segmentedTriPairIds[x][4 * i + 3];
+			segmentedBendingConstraints[x][i] = Math::Length(segmentedVertices[x][id0].Pos, segmentedVertices[x][id1].Pos);
+		}
+	}
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		UINT numTris = segmentedIndices.size() / 3;
+
+		for (int i = 0; i < numTris; i++) {
+			UINT id0 = segmentedIndices[x][3 * i];
+			UINT id1 = segmentedIndices[x][3 * i + 1];
+			UINT id2 = segmentedIndices[x][3 * i + 2];
+
+			invMass.push_back(segmentedInvMass[x][id0]);
+			invMass.push_back(segmentedInvMass[x][id1]);
+			invMass.push_back(segmentedInvMass[x][id2]);
+		}
+
+		for (int i = 0; i < segmentedStretchConstraints[x].size(); i++) {
+			stretchConstraints.push_back(segmentedStretchConstraints[x][i]);
+		}
+
+		for (int i = 0; i < segmentedBendingConstraints[x].size(); i++) {
+			bendingConstraints.push_back(segmentedBendingConstraints[x][i]);
+		}
+
+		for (int i = 0; i < segmentedEdgeIds[x].size(); i++) {
+			stretchConstraintIDs.push_back(segmentedEdgeIds[x][i]);
+		}
+
+		for (int i = 0; i < segmentedTriPairIds[x].size(); i++) {
+			bendingConstraintIDs.push_back(segmentedTriPairIds[x][i]);
 		}
 	}
 }
@@ -607,10 +702,22 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		const int triangleCount = indices.size() / 3;
 
 		std::vector<Vertex> simMeshVertices;
-		std::vector<std::vector<Vertex>> simMeshSegmentedVertices;
-
 		std::vector<UINT> simMeshIndices;
+
+		std::vector<std::vector<Vertex>> simMeshSegmentedVertices;
 		std::vector<std::vector<UINT>> simMeshSegmentedIndices;
+		std::vector<std::vector<UINT>> simMeshSegmentedEdgeIds;
+		std::vector<std::vector<UINT>> simMeshSegmentedTriPairIds;
+
+		std::vector<std::vector<float>> simMeshSegmentedInvMass;
+		std::vector<std::vector<float>> simMeshSegmentedStretchConstraints;
+		std::vector<std::vector<float>> simMeshSegmentedBendingConstraints;
+
+		std::vector<float> simMeshInvMass;
+		std::vector<float> simMeshStretchConstraints;
+		std::vector<float> simMeshBendingConstraints;
+		std::vector<UINT> simMeshStretchConstraintIDs;
+		std::vector<UINT> simMeshBendingConstraintIDs;
 
 		std::vector<UINT> meshTransferIndices;
 		std::vector<UINT> simMeshTransferIndices;
@@ -622,9 +729,22 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		GetMeshTransferMap(segmentedVertices, simMeshSegmentedVertices, meshTransferIndices);
 		GetMeshTransferMap(simMeshSegmentedVertices, segmentedVertices, simMeshTransferIndices);
 
+		GetConstraintIDs(simScene->mNumMeshes, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices);
+
+		GetInvMassAndLengths(simScene->mNumMeshes, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices, simMeshSegmentedVertices,
+			simMeshSegmentedInvMass, simMeshSegmentedStretchConstraints, simMeshSegmentedBendingConstraints, simMeshInvMass, simMeshStretchConstraints, simMeshBendingConstraints, simMeshStretchConstraintIDs, simMeshBendingConstraintIDs);
+
 		const UINT simMeshVertexBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
 		const UINT simMeshVelocityBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vector3);
 		const UINT simMeshTransferBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
+
+		const UINT simMeshInvMassBufferByteSize = (UINT)simMeshInvMass.size() * sizeof(float);
+		const UINT simMeshStretchConstraintBufferByteSize = (UINT)simMeshStretchConstraints.size() * sizeof(float);
+		const UINT simMeshBendingConstraintBufferByteSize = (UINT)simMeshBendingConstraints.size() * sizeof(float);
+
+		const UINT simMeshStretchConstraintIDsBufferByteSize = (UINT)simMeshStretchConstraintIDs.size() * sizeof(UINT);
+		const UINT simMeshBendingConstraintIDsBufferByteSize = (UINT)simMeshBendingConstraintIDs.size() * sizeof(UINT);
+
 		const UINT meshTransferBufferByteSize = (UINT)vertices.size() * sizeof(UINT);
 
 		std::vector<Vector3> simMeshSolverVelocity(simMeshVertices.size());
@@ -632,17 +752,48 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshSkinnedVertexBufferCPU));
 		CopyMemory(geo->SimMeshSkinnedVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
 
-		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshInputSolverVertexBufferCPU));
-		CopyMemory(geo->SimMeshInputSolverVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
+		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshInputPreSolverVertexBufferCPU));
+		CopyMemory(geo->SimMeshInputPreSolverVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
 
-		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshOutputSolverVertexBufferCPU));
-		CopyMemory(geo->SimMeshOutputSolverVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
+		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshOutputPreSolverVertexBufferCPU));
+		CopyMemory(geo->SimMeshOutputPreSolverVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
 
-		ThrowIfFailed(D3DCreateBlob(simMeshVelocityBufferByteSize, &geo->SimMeshInputSolverVelocityBufferCPU));
-		CopyMemory(geo->SimMeshInputSolverVelocityBufferCPU->GetBufferPointer(), simMeshSolverVelocity.data(), simMeshVelocityBufferByteSize);
+		ThrowIfFailed(D3DCreateBlob(simMeshVelocityBufferByteSize, &geo->SimMeshInputPreSolverVelocityBufferCPU));
+		CopyMemory(geo->SimMeshInputPreSolverVelocityBufferCPU->GetBufferPointer(), simMeshSolverVelocity.data(), simMeshVelocityBufferByteSize);
 
-		ThrowIfFailed(D3DCreateBlob(simMeshVelocityBufferByteSize, &geo->SimMeshOutputSolverVelocityBufferCPU));
-		CopyMemory(geo->SimMeshOutputSolverVelocityBufferCPU->GetBufferPointer(), simMeshSolverVelocity.data(), simMeshVelocityBufferByteSize);
+		ThrowIfFailed(D3DCreateBlob(simMeshVelocityBufferByteSize, &geo->SimMeshOutputPreSolverVelocityBufferCPU));
+		CopyMemory(geo->SimMeshOutputPreSolverVelocityBufferCPU->GetBufferPointer(), simMeshSolverVelocity.data(), simMeshVelocityBufferByteSize);
+
+		///
+
+		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshInputStretchConstraintsVertexBufferCPU));
+		CopyMemory(geo->SimMeshInputStretchConstraintsVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshOutputBendingConstraintsVertexBufferCPU));
+		CopyMemory(geo->SimMeshOutputBendingConstraintsVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
+		
+		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshInputBendingConstraintsVertexBufferCPU));
+		CopyMemory(geo->SimMeshInputBendingConstraintsVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshOutputBendingConstraintsVertexBufferCPU));
+		CopyMemory(geo->SimMeshOutputBendingConstraintsVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
+		
+		ThrowIfFailed(D3DCreateBlob(simMeshInvMassBufferByteSize, &geo->SimMeshInvMassBufferCPU));
+		CopyMemory(geo->SimMeshInvMassBufferCPU->GetBufferPointer(), simMeshInvMass.data(), simMeshInvMassBufferByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(simMeshStretchConstraintBufferByteSize, &geo->SimMeshStretchConstraintsBufferCPU));
+		CopyMemory(geo->SimMeshStretchConstraintsBufferCPU->GetBufferPointer(), simMeshStretchConstraints.data(), simMeshStretchConstraintBufferByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(simMeshBendingConstraintBufferByteSize, &geo->SimMeshBendingConstraintsBufferCPU));
+		CopyMemory(geo->SimMeshBendingConstraintsBufferCPU->GetBufferPointer(), simMeshBendingConstraints.data(), simMeshBendingConstraintBufferByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(simMeshStretchConstraintIDsBufferByteSize, &geo->SimMeshStretchConstraintIDsBufferCPU));
+		CopyMemory(geo->SimMeshStretchConstraintIDsBufferCPU->GetBufferPointer(), simMeshStretchConstraintIDs.data(), simMeshStretchConstraintIDsBufferByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(simMeshBendingConstraintIDsBufferByteSize, &geo->SimMeshBendingConstraintIDsBufferCPU));
+		CopyMemory(geo->SimMeshBendingConstraintIDsBufferCPU->GetBufferPointer(), simMeshBendingConstraintIDs.data(), simMeshBendingConstraintIDsBufferByteSize);
+
+		/////
 
 		ThrowIfFailed(D3DCreateBlob(simMeshTransferBufferByteSize, &geo->SimMeshTransferBufferCPU));
 		CopyMemory(geo->SimMeshTransferBufferCPU->GetBufferPointer(), simMeshTransferIndices.data(), simMeshTransferBufferByteSize);
@@ -651,27 +802,66 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		CopyMemory(geo->MeshTransferBufferCPU->GetBufferPointer(), meshTransferIndices.data(), meshTransferBufferByteSize);
 
 		geo->SimMeshSkinnedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshSkinnedVertexBufferUploader);
-		geo->SimMeshInputSolverVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshInputSolverVertexBufferUploader);
-		geo->SimMeshOutputSolverVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshOutputSolverVertexBufferUploader);
-		geo->SimMeshInputSolverVelocityBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverVelocity.data(), simMeshVelocityBufferByteSize, geo->SimMeshInputSolverVelocityBufferUploader);
-		geo->SimMeshOutputSolverVelocityBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverVelocity.data(), simMeshVelocityBufferByteSize, geo->SimMeshOutputSolverVelocityBufferUploader);
+		geo->SimMeshInputPreSolverVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshInputPreSolverVertexBufferUploader);
+		geo->SimMeshOutputPreSolverVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshOutputPreSolverVertexBufferUploader);
+		geo->SimMeshInputPreSolverVelocityBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverVelocity.data(), simMeshVelocityBufferByteSize, geo->SimMeshInputPreSolverVelocityBufferUploader);
+		geo->SimMeshOutputPreSolverVelocityBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverVelocity.data(), simMeshVelocityBufferByteSize, geo->SimMeshOutputPreSolverVelocityBufferUploader);
+
+		geo->SimMeshInputStretchConstraintsVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshInputStretchConstraintsVertexBufferUploader);
+		geo->SimMeshOutputStretchConstraintsVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshOutputStretchConstraintsVertexBufferUploader);
+		geo->SimMeshInputBendingConstraintsVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshInputBendingConstraintsVertexBufferUploader);
+		geo->SimMeshOutputBendingConstraintsVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshOutputBendingConstraintsVertexBufferUploader);
+		
+		geo->SimMeshInvMassBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshInvMass.data(), simMeshInvMassBufferByteSize, geo->SimMeshInvMassBufferUploader);
+		geo->SimMeshStretchConstraintsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshStretchConstraints.data(), simMeshStretchConstraintBufferByteSize, geo->SimMeshStretchConstraintsBufferUploader);
+		geo->SimMeshBendingConstraintsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshBendingConstraints.data(), simMeshBendingConstraintBufferByteSize, geo->SimMeshBendingConstraintsBufferUploader);
+		geo->SimMeshStretchConstraintIDsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshStretchConstraintIDs.data(), simMeshStretchConstraintIDsBufferByteSize, geo->SimMeshStretchConstraintIDsBufferUploader);
+		geo->SimMeshBendingConstraintIDsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshBendingConstraintIDs.data(), simMeshBendingConstraintIDsBufferByteSize, geo->SimMeshBendingConstraintIDsBufferUploader);
+		
 		geo->SimMeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshTransferIndices.data(), simMeshTransferBufferByteSize, geo->SimMeshTransferBufferUploader);
 		geo->MeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), meshTransferIndices.data(), meshTransferBufferByteSize, geo->MeshTransferBufferUploader);
 
 		CD3DX12_RESOURCE_BARRIER SimMeshSkinnedVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshSkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshSkinnedVertexBufferBarrier);
 
-		CD3DX12_RESOURCE_BARRIER SimMeshInputSolverVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshInputSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		CD3DX12_RESOURCE_BARRIER SimMeshInputSolverVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshInputPreSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshInputSolverVertexBufferBarrier);
 
-		CD3DX12_RESOURCE_BARRIER SimMeshOutputSolverVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshOutputSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		CD3DX12_RESOURCE_BARRIER SimMeshOutputSolverVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshOutputPreSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshOutputSolverVertexBufferBarrier);
 
-		CD3DX12_RESOURCE_BARRIER SimMeshInputSolverVelocityBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshInputSolverVelocityBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		CD3DX12_RESOURCE_BARRIER SimMeshInputSolverVelocityBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshInputPreSolverVelocityBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshInputSolverVelocityBufferBarrier);
 
-		CD3DX12_RESOURCE_BARRIER SimMeshOutputSolverVelocityBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshOutputSolverVelocityBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		CD3DX12_RESOURCE_BARRIER SimMeshOutputSolverVelocityBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshOutputPreSolverVelocityBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshOutputSolverVelocityBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshInputStretchConstraintsVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshInputStretchConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshInputStretchConstraintsVertexBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshOutputStretchVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshOutputStretchConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshOutputStretchVertexBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshInputBendingConstraintsVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshInputBendingConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshInputBendingConstraintsVertexBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshOutputBendingVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshOutputBendingConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshOutputBendingVertexBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshInvMassBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshInvMassBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshInvMassBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshStretchConstraintsBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshStretchConstraintsBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshStretchConstraintsBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshBendingConstraintsBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshBendingConstraintsBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshBendingConstraintsBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshStretchConstraintIDsBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshStretchConstraintIDsBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshStretchConstraintIDsBufferBarrier);
+
+		CD3DX12_RESOURCE_BARRIER SimMeshBendingConstraintIDsBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshBendingConstraintIDsBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+		mCommandList->ResourceBarrier(1, &SimMeshBendingConstraintIDsBufferBarrier);
 
 		CD3DX12_RESOURCE_BARRIER SimMeshTransferBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshTransferBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 		mCommandList->ResourceBarrier(1, &SimMeshTransferBufferBarrier);

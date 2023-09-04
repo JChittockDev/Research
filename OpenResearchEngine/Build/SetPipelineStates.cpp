@@ -27,12 +27,15 @@ void EngineApp::SetPipelineStates()
     simMeshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["simMeshTransferCS"]->GetBufferPointer()), mShaders["simMeshTransferCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&simMeshTransferComputePSO, IID_PPV_ARGS(&mPSOs["simMeshTransfer"])));
 
+    D3D12_COMPUTE_PIPELINE_STATE_DESC preSolveComputePSO = {};
+    preSolveComputePSO.pRootSignature = mPreSolveRootSignature.Get();
+    preSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["preSolveCS"]->GetBufferPointer()), mShaders["preSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&preSolveComputePSO, IID_PPV_ARGS(&mPSOs["preSolve"])));
 
-    D3D12_COMPUTE_PIPELINE_STATE_DESC PBDComputePSO = {};
-    PBDComputePSO.pRootSignature = mPBDRootSignature.Get();
-    PBDComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["PBDCS"]->GetBufferPointer()), mShaders["PBDCS"]->GetBufferSize() };
-    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&PBDComputePSO, IID_PPV_ARGS(&mPSOs["PBD"])));
-
+    D3D12_COMPUTE_PIPELINE_STATE_DESC stretchConstraintSolveComputePSO = {};
+    stretchConstraintSolveComputePSO.pRootSignature = mStretchConstraintSolveRootSignature.Get();
+    stretchConstraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["stretchConstraintSolveCS"]->GetBufferPointer()), mShaders["stretchConstraintSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&stretchConstraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["stretchConstraintSolve"])));
 
 
     //
