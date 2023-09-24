@@ -27,6 +27,11 @@ void EngineApp::SetPipelineStates()
     simMeshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["simMeshTransferCS"]->GetBufferPointer()), mShaders["simMeshTransferCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&simMeshTransferComputePSO, IID_PPV_ARGS(&mPSOs["simMeshTransfer"])));
 
+    D3D12_COMPUTE_PIPELINE_STATE_DESC forceComputePSO = {};
+    forceComputePSO.pRootSignature = mForceRootSignature.Get();
+    forceComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["forceCS"]->GetBufferPointer()), mShaders["forceCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&forceComputePSO, IID_PPV_ARGS(&mPSOs["force"])));
+
     D3D12_COMPUTE_PIPELINE_STATE_DESC preSolveComputePSO = {};
     preSolveComputePSO.pRootSignature = mPreSolveRootSignature.Get();
     preSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["preSolveCS"]->GetBufferPointer()), mShaders["preSolveCS"]->GetBufferSize() };

@@ -116,33 +116,51 @@ void EngineApp::ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::sha
 
 void EngineApp::ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
+    mCommandList->SetComputeRootSignature(mForceRootSignature.Get());
+    mCommandList->SetPipelineState(mPSOs.at("force").Get());
+    ComputeForce(mCommandList.Get(), ri, currentFrameResource);
+    
+    mCommandList->SetComputeRootSignature(mPreSolveRootSignature.Get());
+    mCommandList->SetPipelineState(mPSOs.at("preSolve").Get());
+    ComputePreSolve(mCommandList.Get(), ri, currentFrameResource);
+
     UINT substeps = 1;
     for (UINT x = 0; x < substeps; ++x)
     {
-        mCommandList->SetComputeRootSignature(mPreSolveRootSignature.Get());
-        mCommandList->SetPipelineState(mPSOs.at("preSolve").Get());
-        ComputePreSolve(mCommandList.Get(), ri, currentFrameResource);
-
         mCommandList->SetComputeRootSignature(mStretchConstraintSolveRootSignature.Get());
         mCommandList->SetPipelineState(mPSOs.at("stretchConstraintSolve").Get());
         ComputeStretchConstraintSolve(mCommandList.Get(), ri, currentFrameResource);
     }
 }
 
+void EngineApp::ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+{
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshSkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
+
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshPreviousSkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
+    cmdList->SetComputeRootUnorderedAccessView(1, ri->Geo->SimMeshPreviousSkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
+
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshOutputForceBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
+    cmdList->SetComputeRootUnorderedAccessView(2, ri->Geo->SimMeshOutputForceBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vector3));
+
+    const UINT threadGroupSizeX = 1;
+    const UINT threadGroupSizeY = 1;
+    const UINT threadGroupSizeZ = 1;
+    cmdList->Dispatch((ri->SimMeshVertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
+
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshPreviousSkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshOutputForceBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+}
+
 void EngineApp::ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
-    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshInputPreSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
-    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshInputPreSolverVelocityBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vector3));
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshOutputForceBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vector3));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshInputPreSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
 
     CD3DX12_RESOURCE_BARRIER simMeshOutputSolverVertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshOutputPreSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
     cmdList->ResourceBarrier(1, &simMeshOutputSolverVertexBufferBarrier);
 
     cmdList->SetComputeRootUnorderedAccessView(2, ri->Geo->SimMeshOutputPreSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
-
-    CD3DX12_RESOURCE_BARRIER simMeshOutputSolverVelocityBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshOutputPreSolverVelocityBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-    cmdList->ResourceBarrier(1, &simMeshOutputSolverVelocityBufferBarrier);
-
-    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SimMeshOutputPreSolverVelocityBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vector3));
 
     const UINT threadGroupSizeX = 1;
     const UINT threadGroupSizeY = 1;

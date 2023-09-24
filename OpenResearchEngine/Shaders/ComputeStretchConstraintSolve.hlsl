@@ -29,13 +29,6 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     float restLength = inputEdgeConstraintBuffer[constraintID];
     float3 solve = displacement * (1.0 - restLength / magnitude);
 
-    
-    if (id0 < 110)
-    {
-        outputVertexBuffer[id0].position = position0 + (-solve * 0.5);
-    }
-    if (id1 < 110)
-    {
-        outputVertexBuffer[id1].position = position1 + (solve * 0.5);
-    }
+    outputVertexBuffer[id0].position = position0 + (-solve * 0.5);
+    outputVertexBuffer[id1].position = position1 + (solve * 0.5);
 }

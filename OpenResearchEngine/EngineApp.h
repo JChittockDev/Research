@@ -72,6 +72,7 @@ private:
     void ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeStretchConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
 
     void SetSkinnedRootSignature();
     void SetTriangleNormalRootSignature();
@@ -80,6 +81,7 @@ private:
     void SetPreSolveRootSignature();
     void SetStretchConstraintSolveRootSignature();
     void SetMeshTransferRootSignature();
+    void SetForceRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -107,6 +109,7 @@ private:
     DirectX::BoundingSphere mSceneBounds;
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSkinnedRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mForceRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPreSolveRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mStretchConstraintSolveRootSignature = nullptr;
 
