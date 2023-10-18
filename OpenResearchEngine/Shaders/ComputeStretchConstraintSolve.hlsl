@@ -9,10 +9,11 @@ struct Vertex
 StructuredBuffer<uint> inputEdgeIDBuffer : register(t0);
 StructuredBuffer<float> inputEdgeConstraintBuffer : register(t1);
 StructuredBuffer<Vertex> inputVertexBuffer : register(t2);
-RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
+RWStructuredBuffer<float3> outputSolverAccumulationBuffer : register(u0);
+RWStructuredBuffer<uint> outputSolverCountBuffer : register(u1);
 
 // Define the compute shader entry point
-[numthreads(1, 1, 1)]
+[numthreads(64, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     uint constraintID = dispatchThreadID.x;
@@ -29,6 +30,8 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     float restLength = inputEdgeConstraintBuffer[constraintID];
     float3 solve = displacement * (1.0 - restLength / magnitude);
 
-    outputVertexBuffer[id0].position = position0 + (-solve * 0.5);
-    outputVertexBuffer[id1].position = position1 + (solve * 0.5);
+    outputSolverAccumulationBuffer[id0] += -solve * 0.5;
+    outputSolverAccumulationBuffer[id1] += solve * 0.5;
+    outputSolverCountBuffer[id0] += 1;
+    outputSolverCountBuffer[id1] += 1;
 }

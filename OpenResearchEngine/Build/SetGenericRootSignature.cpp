@@ -245,6 +245,37 @@ void EngineApp::SetPreSolveRootSignature()
 void EngineApp::SetStretchConstraintSolveRootSignature()
 {
     // Define root signature parameters
+    CD3DX12_ROOT_PARAMETER rootParameters[5];
+
+    // Setup root parameters
+    rootParameters[0].InitAsShaderResourceView(0);
+    rootParameters[1].InitAsShaderResourceView(1);
+    rootParameters[2].InitAsShaderResourceView(2);
+    rootParameters[3].InitAsUnorderedAccessView(0);
+    rootParameters[4].InitAsUnorderedAccessView(1);
+
+    auto staticSamplers = GetStaticSamplers();
+
+    // Create the root signature description
+    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(5, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+
+    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+    ComPtr<ID3DBlob> serializedRootSig = nullptr;
+    ComPtr<ID3DBlob> errorBlob = nullptr;
+    HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+
+    if (errorBlob != nullptr)
+    {
+        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    }
+
+    ThrowIfFailed(hr);
+    ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(mStretchConstraintSolveRootSignature.GetAddressOf())));
+}
+
+void EngineApp::SetPostSolveRootSignature()
+{
+    // Define root signature parameters
     CD3DX12_ROOT_PARAMETER rootParameters[4];
 
     // Setup root parameters
@@ -269,5 +300,5 @@ void EngineApp::SetStretchConstraintSolveRootSignature()
     }
 
     ThrowIfFailed(hr);
-    ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(mStretchConstraintSolveRootSignature.GetAddressOf())));
+    ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(mPostSolveRootSignature.GetAddressOf())));
 }
