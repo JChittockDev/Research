@@ -12,7 +12,7 @@ StructuredBuffer<Vertex> inputVertexBuffer : register(t2);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 
 // Define the compute shader entry point
-[numthreads(64, 1, 1)]
+[numthreads(1, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     uint vertexID = dispatchThreadID.x;

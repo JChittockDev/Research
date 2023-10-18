@@ -13,7 +13,7 @@ RWStructuredBuffer<float3> outputSolverAccumulationBuffer : register(u0);
 RWStructuredBuffer<uint> outputSolverCountBuffer : register(u1);
 
 // Define the compute shader entry point
-[numthreads(64, 1, 1)]
+[numthreads(1, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     uint constraintID = dispatchThreadID.x;
