@@ -149,7 +149,7 @@ void EngineApp::ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr
 void EngineApp::ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshForceBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vector3));
-    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshPreSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
 
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshStretchConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
     cmdList->SetComputeRootUnorderedAccessView(2, ri->Geo->SimMeshStretchConstraintsVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
@@ -189,13 +189,15 @@ void EngineApp::ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshSolverCountBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(UINT));
     cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SimMeshStretchConstraintsVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
 
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshPreSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
-    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SimMeshPreSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
+    cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->SimMeshSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
 
     const UINT threadGroupSizeX = 1;
     const UINT threadGroupSizeY = 1;
     const UINT threadGroupSizeZ = 1;
     cmdList->Dispatch((ri->SimMeshVertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
+
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshNullSolverAccumulationBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_SOURCE));
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->SimMeshSolverAccumulationBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST));
@@ -216,7 +218,7 @@ void EngineApp::ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared
 
 void EngineApp::ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
-    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshPreSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStartVertexLocation * sizeof(Vertex));
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->MeshTransferBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(UINT));
 
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
