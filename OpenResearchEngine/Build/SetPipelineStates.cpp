@@ -2,6 +2,11 @@
 
 void EngineApp::SetPipelineStates()
 {
+    D3D12_COMPUTE_PIPELINE_STATE_DESC blendComputePSO = {};
+    blendComputePSO.pRootSignature = mBlendRootSignature.Get();
+    blendComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["blendCS"]->GetBufferPointer()), mShaders["blendCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&blendComputePSO, IID_PPV_ARGS(&mPSOs["blend"])));
+
     D3D12_COMPUTE_PIPELINE_STATE_DESC skinnedComputePSO = {};
     skinnedComputePSO.pRootSignature = mSkinnedRootSignature.Get();
     skinnedComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["skinnedCS"]->GetBufferPointer()), mShaders["skinnedCS"]->GetBufferSize() };

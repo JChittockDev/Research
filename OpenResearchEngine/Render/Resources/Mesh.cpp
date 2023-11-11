@@ -105,11 +105,44 @@ void Mesh::ReadSkinningData(unsigned int numMesh, aiMesh** meshList, std::shared
 	skinning = skinningWeights;
 }
 
+void Mesh::ReadBlendshapeData(unsigned int numMesh, aiMesh** meshList, std::vector<BlendshapeVertex>& blendshapes)
+{
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		for (UINT y = 0; y < meshList[x]->mNumAnimMeshes; ++y)
+		{
+			for (UINT z = 0; z < meshList[x]->mAnimMeshes[y]->mNumVertices; ++z)
+			{
+				BlendshapeVertex blendVertex;
+				blendVertex.index = z;
+				if (meshList[x]->mAnimMeshes[y]->mVertices != NULL)
+				{
+					aiVector3D deltaPosition = meshList[x]->mAnimMeshes[y]->mVertices[z] - meshList[x]->mVertices[z];
+					blendVertex.position = { deltaPosition.x, deltaPosition.y, deltaPosition.z };
+				}
+				if (meshList[x]->mAnimMeshes[y]->mNormals != NULL)
+				{
+					aiVector3D deltaNormal = meshList[x]->mAnimMeshes[y]->mNormals[z] - meshList[x]->mNormals[z];
+					blendVertex.normal = { deltaNormal.x, deltaNormal.y, deltaNormal.z };
+				}
+				if (meshList[x]->mAnimMeshes[y]->mTangents != NULL)
+				{
+					aiVector3D deltaTangent = meshList[x]->mAnimMeshes[y]->mTangents[z] - meshList[x]->mTangents[z];
+					blendVertex.tangent = { deltaTangent.x, deltaTangent.y, deltaTangent.z };
+				}
+				blendshapes.push_back(blendVertex);
+			}
+		}
+	}
+}
+
 void Mesh::ReadSubsetTable(const aiScene* scene, const aiScene* simScene, std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, const std::string& mesh)
 {
 	int vertexCounter = 0;
 	int indexCounter = 0;
 	int triangleCounter = 0;
+	int blendshapeCounter = 0;
+	int blendshapeVertexCounter = 0;
 	int simMeshVertexCounter = 0;
 	int simMeshIndexCounter = 0;
 	int simMeshTriangleCounter = 0;
@@ -123,11 +156,26 @@ void Mesh::ReadSubsetTable(const aiScene* scene, const aiScene* simScene, std::u
 		int simMeshNumTriangles = simScene->mMeshes[i]->mNumFaces;
 		int simMeshNumIndicies = simMeshNumTriangles * 3;
 
+		int blendshapeSubsetVertexCounter = 0;
+		for (UINT y = 0; y < scene->mMeshes[i]->mNumAnimMeshes; ++y)
+		{
+			BlendshapeSubset blendSubset;
+			int numBlendshapeVertices = scene->mMeshes[i]->mAnimMeshes[y]->mNumVertices;
+			blendSubset.VertexCount = numBlendshapeVertices;
+			blendSubset.VertexStart = blendshapeSubsetVertexCounter;
+			blendshapeSubsetVertexCounter += numBlendshapeVertices;
+			sb->BlendshapeSubsets.push_back(blendSubset);
+		}
+
 		sb->Id = i;
 		sb->VertexStart = vertexCounter;
 		sb->VertexCount = numVertices;
 		sb->IndexStart = indexCounter;
 		sb->IndexCount = numIndicies;
+		sb->BlendshapeCount = scene->mMeshes[i]->mNumAnimMeshes;
+		sb->BlendshapeStart = blendshapeCounter;
+		sb->BlendshapeVertexCount = blendshapeSubsetVertexCounter;
+		sb->BlendshapeVertexStart = blendshapeVertexCounter;
 		sb->TriangleStart = triangleCounter;
 		sb->TriangleCount = numTriangles;
 		sb->SimMeshVertexStart = simMeshVertexCounter;
@@ -138,9 +186,11 @@ void Mesh::ReadSubsetTable(const aiScene* scene, const aiScene* simScene, std::u
 		sb->SimMeshTriangleCount = simMeshNumTriangles;
 		sb->MaterialIndex = scene->mMeshes[i]->mMaterialIndex;
 		sb->MeshName = mesh;
+		sb->alias = scene->mMeshes[i]->mName.C_Str();
 
 		vertexCounter += numVertices;
 		indexCounter += numIndicies;
+		blendshapeVertexCounter += blendshapeSubsetVertexCounter;
 		triangleCounter += numTriangles;
 		simMeshVertexCounter += simMeshNumVertices;
 		simMeshIndexCounter += simMeshNumIndicies;
@@ -254,6 +304,21 @@ void Mesh::ReadSkeleton(const aiScene* scene, std::shared_ptr<Skeleton>& mSkelet
 	}
 }
 
+std::string AutoMatchAnimMesh(std::string& key, unsigned int numMesh, aiMesh** meshList)
+{
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::string mesh_name = meshList[x]->mName.C_Str();
+
+		if (key.find(mesh_name) != std::string::npos)
+		{
+			return mesh_name;
+		}
+	}
+	return key;
+}
+
+
 void Mesh::ReadAnimations(const aiScene* scene, std::unordered_map<std::string, std::shared_ptr<Animation>>& animations)
 {
 	unsigned int numAnim = scene->mNumAnimations;
@@ -266,28 +331,45 @@ void Mesh::ReadAnimations(const aiScene* scene, std::unordered_map<std::string, 
 
 		for (UINT y = 0; y < scene->mAnimations[x]->mNumChannels; ++y)
 		{
-			std::unique_ptr<AnimationNode> animationNode = std::make_unique<AnimationNode>();
-			animationNode->name = scene->mAnimations[x]->mChannels[y]->mNodeName.data;
+			std::unique_ptr<TransformAnimNode> transformAnimNode = std::make_unique<TransformAnimNode>();
+			transformAnimNode->name = scene->mAnimations[x]->mChannels[y]->mNodeName.data;
 
 			for (UINT z = 0; z < scene->mAnimations[x]->mChannels[y]->mNumPositionKeys; ++z)
 			{
 				std::unique_ptr<aiVectorKey> positionKey = std::make_unique<aiVectorKey>(scene->mAnimations[x]->mChannels[y]->mPositionKeys[z]);
-				animationNode->positionKeys.push_back(std::move(positionKey));
+				transformAnimNode->positionKeys.push_back(std::move(positionKey));
 			}
 
 			for (UINT z = 0; z < scene->mAnimations[x]->mChannels[y]->mNumRotationKeys; ++z)
 			{
 				std::unique_ptr<aiQuatKey> rotationKey = std::make_unique<aiQuatKey>(scene->mAnimations[x]->mChannels[y]->mRotationKeys[z]);
-				animationNode->rotationKeys.push_back(std::move(rotationKey));
+				transformAnimNode->rotationKeys.push_back(std::move(rotationKey));
 			}
 
 			for (UINT z = 0; z < scene->mAnimations[x]->mChannels[y]->mNumScalingKeys; ++z)
 			{
 				std::unique_ptr<aiVectorKey> scaleKey = std::make_unique<aiVectorKey>(scene->mAnimations[x]->mChannels[y]->mScalingKeys[z]);
-				animationNode->scalingKeys.push_back(std::move(scaleKey));
+				transformAnimNode->scalingKeys.push_back(std::move(scaleKey));
 			}
 		
-			animation->animationNodes[animationNode->name] = (std::move(animationNode));
+			animation->TransformAnimNodes[transformAnimNode->name] = std::move(transformAnimNode);
+		}
+
+		UINT counter = 0;
+		for (UINT y = 0; y < scene->mAnimations[x]->mNumMorphMeshChannels; ++y)
+		{
+			std::unique_ptr<BlendAnimNode> blendAnimNode = std::make_unique<BlendAnimNode>();
+			blendAnimNode->name = scene->mAnimations[x]->mMorphMeshChannels[y]->mName.data;
+			blendAnimNode->blendsStart = counter;
+
+			for (UINT z = 0; z < scene->mAnimations[x]->mMorphMeshChannels[y]->mNumKeys; ++z)
+			{
+				counter += scene->mAnimations[x]->mMorphMeshChannels[y]->mKeys[z].mNumValuesAndWeights;
+				MorphKey weightKey(scene->mAnimations[x]->mMorphMeshChannels[y]->mKeys[z]);
+				blendAnimNode->weightKeys.push_back(weightKey);
+			}
+
+			animation->BlendAnimNodes[AutoMatchAnimMesh(blendAnimNode->name, scene->mNumMeshes, scene->mMeshes)] = std::move(blendAnimNode);
 		}
 
 		animations[scene->mAnimations[x]->mName.data] = std::move(animation);
@@ -667,6 +749,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::vector<Vertex> vertices;
 	std::vector<SkinningInfo> skinning;
 	std::vector<UINT> indices;
+	std::vector<BlendshapeVertex> blendshapes;
+
 	std::vector<std::vector<UINT>> segmentedIndices;
 	std::vector<std::vector<Vertex>> segmentedVertices;
 
@@ -678,6 +762,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	ReadSkeleton(scene, mSkeleton);
 	ReadMaterials(scene, mats);
 	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices, segmentedVertices);
+	ReadBlendshapeData(scene->mNumMeshes, scene->mMeshes, blendshapes);
 	ReadSkinningData(scene->mNumMeshes, scene->mMeshes, mSkeleton, vertices, skinning);
 	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices, segmentedIndices);
 	ReadAnimations(scene, animations);
@@ -691,6 +776,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 	auto geo = std::make_unique<MeshGeometry>();
 	geo->Name = filename;
+	geo->Simulation = true;
 
 	ThrowIfFailed(D3DCreateBlob(vertexBufferByteSize, &geo->VertexBufferCPU));
 	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vertexBufferByteSize);
@@ -709,11 +795,25 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	geo->SkinnedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vertexBufferByteSize, geo->SkinnedVertexBufferUploader);
 	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), indices.data(), indexBufferByteSize, geo->IndexBufferUploader);
 
-	CD3DX12_RESOURCE_BARRIER vertexBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-	mCommandList->ResourceBarrier(1, &vertexBufferBarrier);
+	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->VertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinningBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 
-	CD3DX12_RESOURCE_BARRIER skinningBufferBarrier = CD3DX12_RESOURCE_BARRIER::Transition(geo->SkinningBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-	mCommandList->ResourceBarrier(1, &skinningBufferBarrier);
+	if (blendshapes.size() > 0)
+	{
+		const UINT blendshapeBufferByteSize = (UINT)blendshapes.size() * sizeof(BlendshapeVertex);
+
+		ThrowIfFailed(D3DCreateBlob(blendshapeBufferByteSize, &geo->BlendshapeBufferCPU));
+		CopyMemory(geo->BlendshapeBufferCPU->GetBufferPointer(), blendshapes.data(), blendshapeBufferByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(vertexBufferByteSize, &geo->BlendedVertexBufferCPU));
+		CopyMemory(geo->BlendedVertexBufferCPU->GetBufferPointer(), vertices.data(), vertexBufferByteSize);
+
+		geo->BlendshapeBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), blendshapes.data(), blendshapeBufferByteSize, geo->BlendshapeBufferUploader);
+		geo->BlendedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertices.data(), vertexBufferByteSize, geo->BlendedVertexBufferUploader);
+		
+		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->BlendshapeBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->BlendedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+	}
 
 	if (geo->Simulation)
 	{
@@ -909,6 +1009,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		SubmeshGeometry submesh;
 		std::string name = "sm_" + std::to_string(i);
 		
+		submesh.alias = subsets[filename][i]->alias;
 		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
 		submesh.TriangleCount = (UINT)subsets[filename][i]->TriangleCount;
@@ -916,6 +1017,11 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		submesh.StartVertexLocation = subsets[filename][i]->VertexStart;
 		submesh.StartTriangleLocation = subsets[filename][i]->TriangleStart;
 		submesh.MaterialIndex = subsets[filename][i]->MaterialIndex;
+		submesh.BlendshapeVertexCount = subsets[filename][i]->BlendshapeVertexCount;
+		submesh.BlendshapeVertexStart = subsets[filename][i]->BlendshapeVertexStart;
+		submesh.BlendshapeSubsets = subsets[filename][i]->BlendshapeSubsets;
+		submesh.BlendshapeCount = subsets[filename][i]->BlendshapeCount;
+		submesh.BlendshapeStart = subsets[filename][i]->BlendshapeStart;
 		
 		if (geo->Simulation)
 		{

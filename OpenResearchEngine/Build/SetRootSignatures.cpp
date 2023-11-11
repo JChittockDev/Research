@@ -3,6 +3,7 @@
 void EngineApp::SetRootSignatures()
 {
 	SetGenericRootSignature();
+	SetBlendRootSignature();
 	SetSkinnedRootSignature();
 	SetMeshTransferRootSignature();
 	SetForceRootSignature();

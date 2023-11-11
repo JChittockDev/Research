@@ -23,6 +23,22 @@
 
 extern const int gNumFrameResources;
 
+struct BlendshapeVertex
+{
+    UINT index = 0;
+    DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT3 normal = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT3 tangent = { 0.0f, 0.0f, 0.0f };
+    float padding1 = 0.0;
+    float padding2 = 0.0;
+};
+
+struct Blendshape
+{
+    UINT index = 0;
+    std::vector<BlendshapeVertex> vertexData;
+};
+
 struct Edge
 {
     UINT id0 = 0;
@@ -82,6 +98,24 @@ struct Vector3
     }
 };
 
+struct Vector4
+{
+    float x = 0.0;
+    float y = 0.0;
+    float z = 0.0;
+    float w = 0.0;
+
+    Vector4() {};
+
+    Vector4(float inX, float inY, float inZ, float inW)
+    {
+        x = inX;
+        y = inY;
+        z = inZ;
+        w = inW;
+    }
+};
+
 struct ObjectConstants
 {
     DirectX::XMFLOAT4X4 World = Math::Identity4x4();
@@ -95,6 +129,11 @@ struct ObjectConstants
 struct SkinnedConstants
 {
     DirectX::XMFLOAT4X4 BoneTransforms[55];
+};
+
+struct BlendConstants
+{
+    Vector4 Weights[64];
 };
 
 struct Light
@@ -215,6 +254,13 @@ struct SkinningInfo
     DirectX::XMFLOAT4 BoneIndices;
 };
 
+struct BlendshapeSubset
+{
+    UINT VertexStart = 0;
+    UINT VertexCount = 0;
+};
+
+
 struct Subset
 {
     UINT Id = -1;
@@ -238,6 +284,13 @@ struct Subset
 
     UINT MaterialIndex = 0;
     std::string MeshName;
+    std::string alias;
+
+    UINT BlendshapeVertexStart = 0;
+    UINT BlendshapeVertexCount = 0;
+    UINT BlendshapeCount = 0;
+    UINT BlendshapeStart = 0;
+    std::vector<BlendshapeSubset> BlendshapeSubsets;
 };
 
 struct ModelMaterial
@@ -266,12 +319,19 @@ struct SkinWeight
 // buffers so that we can implement the technique described by Figure 6.3.
 struct SubmeshGeometry
 {
+    std::string alias;
+
     UINT VertexCount = 0;
     UINT IndexCount = 0;
     UINT TriangleCount = 0;
     UINT StartIndexLocation = 0;
     UINT StartVertexLocation = 0;
     UINT StartTriangleLocation = 0;
+    UINT BlendshapeVertexStart = 0;
+    UINT BlendshapeVertexCount = 0;
+    UINT BlendshapeCount = 0;
+    UINT BlendshapeStart = 0;
+    std::vector<BlendshapeSubset> BlendshapeSubsets;
 
     UINT SimMeshVertexCount = 0;
     UINT SimMeshIndexCount = 0;
@@ -296,16 +356,22 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> IndexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SkinningBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SkinnedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> BlendshapeBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> BlendedVertexBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BlendshapeBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BlendedVertexBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BlendshapeBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BlendedVertexBufferUploader = nullptr;
 
     // Simulation Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
@@ -456,6 +522,8 @@ struct MeshGeometry
         IndexBufferUploader = nullptr;
         SkinningBufferUploader = nullptr;
         SkinnedVertexBufferUploader = nullptr;
+        BlendshapeBufferUploader = nullptr;
+        BlendedVertexBufferUploader = nullptr;
         SimMeshSkinnedVertexBufferUploader = nullptr;
         SimMeshPreviousSkinnedVertexBufferUploader = nullptr;
         SimMeshForceBufferUploader = nullptr;
@@ -529,7 +597,7 @@ struct Texture
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadHeap = nullptr;
 };
 
-struct AnimationNode
+struct TransformAnimNode
 {
     std::string name;
     std::vector<std::unique_ptr<aiVectorKey>> positionKeys;
@@ -537,10 +605,41 @@ struct AnimationNode
     std::vector<std::unique_ptr<aiVectorKey>> scalingKeys;
 };
 
+
+struct MorphKey
+{
+    double mTime;
+    std::vector<UINT> mValues;
+    std::vector<double> mWeights;
+    UINT mNumValuesAndWeights;
+
+    MorphKey(const aiMeshMorphKey& input)
+    {
+        mTime = input.mTime;
+
+        for (UINT z = 0; z < input.mNumValuesAndWeights; ++z)
+        {
+            mValues.push_back(input.mValues[z]);
+            mWeights.push_back(input.mWeights[z]);
+        }
+
+        mNumValuesAndWeights = input.mNumValuesAndWeights;
+
+    }
+};
+
+struct BlendAnimNode
+{
+    std::string name;
+    UINT blendsStart;
+    std::vector<MorphKey> weightKeys;
+};
+
 struct Animation
 {
     std::string name;
-    std::unordered_map<std::string, std::unique_ptr<AnimationNode>> animationNodes;
+    std::map<std::string, std::unique_ptr<TransformAnimNode>> TransformAnimNodes;
+    std::map<std::string, std::unique_ptr<BlendAnimNode>> BlendAnimNodes;
     float duration;
 };
 

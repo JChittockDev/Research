@@ -62,6 +62,7 @@ void EngineApp::CompileShaders ()
     mShaders["skyVS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
 
+    mShaders["blendCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeBlendshapes.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["skinnedCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeSkinning.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["triangleNormalCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeTriangleNormals.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["vertexNormalCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeVertexNormals.hlsl", nullptr, "CS", "cs_5_1");

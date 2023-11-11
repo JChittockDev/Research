@@ -45,8 +45,8 @@ void EngineApp::PushRenderItems()
 				DirectX::XMFLOAT3(renderItemData.position[0], renderItemData.position[1], renderItemData.position[2]),
 				DirectX::XMFLOAT4(renderItemData.rotation[0], renderItemData.rotation[1], renderItemData.rotation[2], renderItemData.rotation[3]),
 				DirectX::XMFLOAT3(renderItemData.scale[0], renderItemData.scale[1], renderItemData.scale[2]),
-				ObjectCBIndex, SkinnedCBIndex, mSubsets, mGeometries, mMaterials, mMats, mMesh, mSkeletons, mAnimations,
-				mTransforms, mAnimationControllers, mRenderItemLayers[renderItemData.render_layer], mRenderItems, mMeshRenderItemMap);
+				ObjectCBIndex, SkinnedCBIndex, BlendCBIndex, mSubsets, mGeometries, mMaterials, mMats, mMesh, mSkeletons, mAnimations,
+				mTransforms, mSkinningControllers, mBlendshapeControllers, mRenderItemLayers[renderItemData.render_layer], mRenderItems, mMeshRenderItemMap);
 		}
 	}
 }
