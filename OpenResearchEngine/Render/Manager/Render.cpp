@@ -73,7 +73,7 @@ void EngineApp::ComputeBlendshapes(ID3D12GraphicsCommandList* cmdList, std::shar
         cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->Geo->BlendedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
         cmdList->SetComputeRootUnorderedAccessView(3, ri->Geo->BlendedVertexBufferGPU->GetGPUVirtualAddress() + ri->StartVertexLocation * sizeof(Vertex));
 
-        const UINT threadGroupSizeX = 1;
+        const UINT threadGroupSizeX = 64;
         const UINT threadGroupSizeY = 1;
         const UINT threadGroupSizeZ = 1;
         cmdList->Dispatch((ri->BlendshapeSubsets[i].VertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
