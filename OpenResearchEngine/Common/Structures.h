@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <set>
+#include <utility>
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -21,20 +23,63 @@
 
 extern const int gNumFrameResources;
 
-struct Neighbours
+struct BlendshapeVertex
 {
-    UINT index[8];
+    UINT index = 0;
+    DirectX::XMFLOAT3 position = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT3 normal = { 0.0f, 0.0f, 0.0f };
+    DirectX::XMFLOAT3 tangent = { 0.0f, 0.0f, 0.0f };
+    float padding1 = 0.0;
+    float padding2 = 0.0;
 };
 
-struct RestConstraint
+struct Blendshape
 {
-    float length[8];
+    UINT index = 0;
+    std::vector<BlendshapeVertex> vertexData;
+};
+
+struct Edge
+{
+    UINT id0 = 0;
+    UINT id1 = 0;
+    UINT edgeNr = 0;
+
+    Edge() {};
+
+    Edge(UINT inEdge1, UINT inEdge2, UINT inEdgeID)
+    {
+        id0 = inEdge1;
+        id1 = inEdge2;
+        edgeNr = inEdgeID;
+    }
 };
 
 struct TangentNormals
 {
     DirectX::XMFLOAT3 normal = { 0.0f, 0.0f, 0.0f };
     DirectX::XMFLOAT3 tangent = { 0.0f, 0.0f, 0.0f };
+};
+
+struct Neighbours
+{
+    UINT index[8];
+};
+
+struct UINT3
+{
+    UINT x = 0;
+    UINT y = 0;
+    UINT z = 0;
+
+    UINT3() {};
+
+    UINT3(UINT inX, UINT inY, UINT inZ)
+    {
+        x = inX;
+        y = inY;
+        z = inZ;
+    }
 };
 
 struct Vector3
@@ -53,16 +98,22 @@ struct Vector3
     }
 };
 
-struct InterlockedVector
+struct Vector4
 {
-    int x = 0;
-    int y = 0;
-    int z = 0;
-};
+    float x = 0.0;
+    float y = 0.0;
+    float z = 0.0;
+    float w = 0.0;
 
-struct Spring
-{
-    DirectX::XMFLOAT3 transform = { 0.0f, 0.0f, 0.0f };
+    Vector4() {};
+
+    Vector4(float inX, float inY, float inZ, float inW)
+    {
+        x = inX;
+        y = inY;
+        z = inZ;
+        w = inW;
+    }
 };
 
 struct ObjectConstants
@@ -78,6 +129,11 @@ struct ObjectConstants
 struct SkinnedConstants
 {
     DirectX::XMFLOAT4X4 BoneTransforms[55];
+};
+
+struct BlendConstants
+{
+    Vector4 Weights[64];
 };
 
 struct Light
@@ -198,6 +254,13 @@ struct SkinningInfo
     DirectX::XMFLOAT4 BoneIndices;
 };
 
+struct BlendshapeSubset
+{
+    UINT VertexStart = 0;
+    UINT VertexCount = 0;
+};
+
+
 struct Subset
 {
     UINT Id = -1;
@@ -212,11 +275,22 @@ struct Subset
     UINT SimMeshVertexCount = 0;
     UINT SimMeshIndexStart = 0;
     UINT SimMeshIndexCount = 0;
+
+    UINT SimMeshEdgeStart = 0;
+    UINT SimMeshEdgeCount = 0;
+
     UINT SimMeshTriangleStart = 0;
     UINT SimMeshTriangleCount = 0;
 
     UINT MaterialIndex = 0;
     std::string MeshName;
+    std::string alias;
+
+    UINT BlendshapeVertexStart = 0;
+    UINT BlendshapeVertexCount = 0;
+    UINT BlendshapeCount = 0;
+    UINT BlendshapeStart = 0;
+    std::vector<BlendshapeSubset> BlendshapeSubsets;
 };
 
 struct ModelMaterial
@@ -245,18 +319,27 @@ struct SkinWeight
 // buffers so that we can implement the technique described by Figure 6.3.
 struct SubmeshGeometry
 {
+    std::string alias;
+
     UINT VertexCount = 0;
     UINT IndexCount = 0;
     UINT TriangleCount = 0;
     UINT StartIndexLocation = 0;
     UINT StartVertexLocation = 0;
     UINT StartTriangleLocation = 0;
+    UINT BlendshapeVertexStart = 0;
+    UINT BlendshapeVertexCount = 0;
+    UINT BlendshapeCount = 0;
+    UINT BlendshapeStart = 0;
+    std::vector<BlendshapeSubset> BlendshapeSubsets;
 
     UINT SimMeshVertexCount = 0;
     UINT SimMeshIndexCount = 0;
+    UINT SimMeshEdgeCount = 0;
     UINT SimMeshTriangleCount = 0;
     UINT SimMeshStartIndexLocation = 0;
     UINT SimMeshStartVertexLocation = 0;
+    UINT SimMeshStartEdgeLocation = 0;
     UINT SimMeshStartTriangleLocation = 0;
 
     UINT MaterialIndex = 0;
@@ -273,48 +356,94 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> IndexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SkinningBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SkinnedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> BlendshapeBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> BlendedVertexBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BlendshapeBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BlendedVertexBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> VertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> IndexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinningBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SkinnedVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BlendshapeBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BlendedVertexBufferUploader = nullptr;
 
     // Simulation Buffers
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshRestConstraintBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSkinnedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexAdjacencyBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintIDsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintsVertexBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshStretchConstraintsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshStretchConstraintIDsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshStretchConstraintsVertexBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSolverAccumulationBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSolverCountBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshNullSolverAccumulationBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshNullSolverCountBufferCPU = nullptr;
+    
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSolverVertexBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshPreviousSkinnedVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshForceBufferCPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransformedVertexBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshPostSolveVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestConstraintBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsVertexBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintIDsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintsVertexBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverAccumulationBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverCountBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshOutputSolverCountBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNullSolverAccumulationBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNullSolverCountBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverVertexBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPreviousSkinnedVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshForceBufferGPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPostSolveVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
-
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshRestConstraintBufferUploader = nullptr;
+   
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexAdjacencyBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsVertexBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintIDsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintsVertexBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverAccumulationBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverCountBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNullSolverAccumulationBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNullSolverCountBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverVertexBufferUploader = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPreviousSkinnedVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshForceBufferUploader = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransformedVertexBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPostSolveVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferUploader = nullptr;
     
@@ -376,17 +505,6 @@ struct MeshGeometry
 
         return svbv;
     }
-
-    D3D12_VERTEX_BUFFER_VIEW TransformedVertexBufferView()const
-    {
-        D3D12_VERTEX_BUFFER_VIEW svbv;
-        svbv.BufferLocation = TransformedVertexBufferGPU->GetGPUVirtualAddress();
-        svbv.StrideInBytes = VertexByteStride;
-        svbv.SizeInBytes = VertexBufferByteSize;
-
-        return svbv;
-    }
-
     D3D12_VERTEX_BUFFER_VIEW VertexNormalBufferView()const
     {
         D3D12_VERTEX_BUFFER_VIEW svbv;
@@ -404,20 +522,24 @@ struct MeshGeometry
         IndexBufferUploader = nullptr;
         SkinningBufferUploader = nullptr;
         SkinnedVertexBufferUploader = nullptr;
-
-        SimMeshRestConstraintBufferUploader = nullptr;
+        BlendshapeBufferUploader = nullptr;
+        BlendedVertexBufferUploader = nullptr;
         SimMeshSkinnedVertexBufferUploader = nullptr;
-        SimMeshVertexAdjacencyBufferUploader = nullptr;
-
         SimMeshPreviousSkinnedVertexBufferUploader = nullptr;
-
-        SimMeshTransformedVertexBufferUploader = nullptr;
-        
-        SimMeshPostSolveVertexBufferUploader = nullptr;
-        
+        SimMeshForceBufferUploader = nullptr;
+        SimMeshSolverVertexBufferUploader = nullptr;
+        SimMeshBendingConstraintsBufferUploader = nullptr;
+        SimMeshBendingConstraintIDsBufferUploader = nullptr;
+        SimMeshBendingConstraintsVertexBufferUploader = nullptr;
+        SimMeshStretchConstraintsBufferUploader = nullptr;
+        SimMeshStretchConstraintIDsBufferUploader = nullptr;
+        SimMeshStretchConstraintsVertexBufferUploader = nullptr;
+        SimMeshSolverAccumulationBufferUploader = nullptr;
+        SimMeshSolverCountBufferUploader = nullptr;
+        SimMeshNullSolverAccumulationBufferUploader = nullptr;
+        SimMeshNullSolverCountBufferUploader = nullptr;
         SimMeshTransferBufferUploader = nullptr;
         MeshTransferBufferUploader = nullptr;
-
         TransformedVertexBufferUploader = nullptr;
         TriangleNormalBufferUploader = nullptr;
         VertexNormalBufferUploader = nullptr;
@@ -475,7 +597,7 @@ struct Texture
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadHeap = nullptr;
 };
 
-struct AnimationNode
+struct TransformAnimNode
 {
     std::string name;
     std::vector<std::unique_ptr<aiVectorKey>> positionKeys;
@@ -483,10 +605,41 @@ struct AnimationNode
     std::vector<std::unique_ptr<aiVectorKey>> scalingKeys;
 };
 
+
+struct MorphKey
+{
+    double mTime;
+    std::vector<UINT> mValues;
+    std::vector<double> mWeights;
+    UINT mNumValuesAndWeights;
+
+    MorphKey(const aiMeshMorphKey& input)
+    {
+        mTime = input.mTime;
+
+        for (UINT z = 0; z < input.mNumValuesAndWeights; ++z)
+        {
+            mValues.push_back(input.mValues[z]);
+            mWeights.push_back(input.mWeights[z]);
+        }
+
+        mNumValuesAndWeights = input.mNumValuesAndWeights;
+
+    }
+};
+
+struct BlendAnimNode
+{
+    std::string name;
+    UINT blendsStart;
+    std::vector<MorphKey> weightKeys;
+};
+
 struct Animation
 {
     std::string name;
-    std::unordered_map<std::string, std::unique_ptr<AnimationNode>> animationNodes;
+    std::map<std::string, std::unique_ptr<TransformAnimNode>> TransformAnimNodes;
+    std::map<std::string, std::unique_ptr<BlendAnimNode>> BlendAnimNodes;
     float duration;
 };
 

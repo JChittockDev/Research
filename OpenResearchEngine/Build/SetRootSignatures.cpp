@@ -3,10 +3,12 @@
 void EngineApp::SetRootSignatures()
 {
 	SetGenericRootSignature();
+	SetBlendRootSignature();
 	SetSkinnedRootSignature();
 	SetMeshTransferRootSignature();
+	SetForceRootSignature();
 	SetPreSolveRootSignature();
-	SetVerletSolverRootSignature();
+	SetStretchConstraintSolveRootSignature();
 	SetPostSolveRootSignature();
 	SetSimMeshTransferRootSignature();
 	SetTriangleNormalRootSignature();

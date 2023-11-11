@@ -2,19 +2,19 @@
 
 #include "Skeleton.h"
 
-class AnimationController
+class SkinningController
 {
 public:
+    std::shared_ptr<TransformNode> rootNode = nullptr;
     std::shared_ptr<Skeleton> skeleton = nullptr;
     std::shared_ptr<Animation> animation = nullptr;
-    std::shared_ptr<TransformNode> rooNode = nullptr;
     std::vector<DirectX::XMFLOAT4X4> transforms;
     
     float TimePos = 0.0f;
     bool Loop = true;
     float Speed = 1.0f;
 
-    void UpdateSkinnedAnimation(float dt)
+    void UpdateSkinning(float dt)
     {
         dt *= Speed;
         TimePos += dt;
@@ -28,7 +28,6 @@ public:
             }
         }
         
-        skeleton->GetTransforms(TimePos, rooNode, animation, DirectX::XMMatrixIdentity(), DirectX::XMMatrixInverse(nullptr, rooNode->transform), transforms);
-
+        skeleton->GetTransforms(TimePos, rootNode, animation, DirectX::XMMatrixIdentity(), DirectX::XMMatrixInverse(nullptr, rootNode->transform), transforms);
     }
 };

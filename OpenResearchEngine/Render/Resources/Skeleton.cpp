@@ -1,6 +1,6 @@
 #include "Skeleton.h"
 
-int Skeleton::FindPositionKey(float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim)
+int Skeleton::FindPositionKey(float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim)
 {
     for (int i = 0; i < pNodeAnim->positionKeys.size() - 1; i++) {
         if (AnimationTime < (float)pNodeAnim->positionKeys[i + 1]->mTime) {
@@ -11,7 +11,7 @@ int Skeleton::FindPositionKey(float AnimationTime, std::unique_ptr<AnimationNode
 }
 
 
-int Skeleton::FindRotationKey(float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim)
+int Skeleton::FindRotationKey(float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim)
 {
     for (int i = 0; i < pNodeAnim->rotationKeys.size() - 1; i++) {
         if (AnimationTime < (float)pNodeAnim->rotationKeys[i + 1]->mTime) {
@@ -21,7 +21,7 @@ int Skeleton::FindRotationKey(float AnimationTime, std::unique_ptr<AnimationNode
     return 0;
 }
 
-int Skeleton::FindScalingKey(float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim)
+int Skeleton::FindScalingKey(float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim)
 {
     for (int i = 0; i < pNodeAnim->scalingKeys.size() - 1; i++) {
         if (AnimationTime < (float)pNodeAnim->scalingKeys[i + 1]->mTime) {
@@ -31,7 +31,7 @@ int Skeleton::FindScalingKey(float AnimationTime, std::unique_ptr<AnimationNode>
     return 0;
 }
 
-void Skeleton::CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim)
+void Skeleton::CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim)
 {
     if (pNodeAnim->positionKeys.size() == 1) {
         Out = pNodeAnim->positionKeys[0]->mValue;
@@ -51,7 +51,7 @@ void Skeleton::CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, st
     Out = Start + Factor * Delta;
 }
 
-void Skeleton::CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim)
+void Skeleton::CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim)
 {
     if (pNodeAnim->rotationKeys.size() == 1) {
         Out = pNodeAnim->rotationKeys[0]->mValue;
@@ -71,7 +71,7 @@ void Skeleton::CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, 
     Out = Out.Normalize();
 }
 
-void Skeleton::CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim)
+void Skeleton::CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim)
 {
     if (pNodeAnim->scalingKeys.size() == 1) {
         Out = pNodeAnim->scalingKeys[0]->mValue;
@@ -104,14 +104,14 @@ void Skeleton::GetTransforms(float timePos, std::shared_ptr<TransformNode>& node
 {
     DirectX::XMMATRIX nodeTransform = node->transform;
 
-    if (animation->animationNodes.find(node->name) != animation->animationNodes.end())
+    if (animation->TransformAnimNodes.find(node->name) != animation->TransformAnimNodes.end())
     {
         aiVector3D scaling;
         aiQuaternion rotation;
         aiVector3D translate;
-        CalcInterpolatedScaling(scaling, timePos, animation->animationNodes[node->name]);
-        CalcInterpolatedRotation(rotation, timePos, animation->animationNodes[node->name]);
-        CalcInterpolatedPosition(translate, timePos, animation->animationNodes[node->name]);
+        CalcInterpolatedScaling(scaling, timePos, animation->TransformAnimNodes[node->name]);
+        CalcInterpolatedRotation(rotation, timePos, animation->TransformAnimNodes[node->name]);
+        CalcInterpolatedPosition(translate, timePos, animation->TransformAnimNodes[node->name]);
         nodeTransform = DirectX::XMMatrixTranspose(CreateAffineMatrix(scaling, rotation, translate));
     }
 

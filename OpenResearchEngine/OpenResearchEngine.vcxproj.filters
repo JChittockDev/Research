@@ -108,7 +108,7 @@
     <ClCompile Include="Build\PushMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Update\UpdateSkinnedMesh.cpp">
+    <ClCompile Include="Update\UpdateAnimConstants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Resources\RenderItem.cpp">
@@ -200,7 +200,7 @@
     <ClInclude Include="Render\Resources\RenderItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Animation.h">
+    <ClInclude Include="Render\Resources\Skinning.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Structures.h">
@@ -222,6 +222,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\ViewFrustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Resources\Blendshapes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,30 +6,20 @@ struct Vertex
     float4 tangent;
 };
 
-struct InterlockedVector
-{
-    int x;
-    int y;
-    int z;
-};
-
-StructuredBuffer<InterlockedVector> simMeshTransformedVertexBuffer : register(t0);
-RWStructuredBuffer<Vertex> simMeshPostSolveVertexBuffer : register(u0);
-
-float3 UnQuantize(InterlockedVector input, float factor)
-{
-    float vertexPositionX = ((float) input.x) / factor;
-    float vertexPositionY = ((float) input.y) / factor;
-    float vertexPositionZ = ((float) input.z) / factor;
-    return float3(vertexPositionX, vertexPositionY, vertexPositionZ);
-}
+StructuredBuffer<float3> inputSolverAccumulationBuffer : register(t0);
+StructuredBuffer<uint> inputSolverCountBuffer : register(t1);
+StructuredBuffer<Vertex> inputVertexBuffer : register(t2);
+RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 
 // Define the compute shader entry point
-[numthreads(64, 1, 1)]
+[numthreads(1, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
-    uint simMeshVertexID = dispatchThreadID.x;
+    uint vertexID = dispatchThreadID.x;
     
-    float3 vertexPosition = UnQuantize(simMeshTransformedVertexBuffer[simMeshVertexID], QUANTIZE);
-    simMeshPostSolveVertexBuffer[simMeshVertexID].position = vertexPosition;
+    float3 solverAccumulation = inputSolverAccumulationBuffer[vertexID];
+    uint solverCount = inputSolverCountBuffer[vertexID];
+    float3 position = inputVertexBuffer[vertexID].position;
+    
+    outputVertexBuffer[vertexID].position = position + solverAccumulation / (float) solverCount;
 }

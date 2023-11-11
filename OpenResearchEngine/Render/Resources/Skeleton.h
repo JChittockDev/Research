@@ -12,10 +12,10 @@ public:
 	void GetTransforms(float timePos, std::shared_ptr<TransformNode>& node, std::shared_ptr<Animation>& animation, DirectX::XMMATRIX& parentTransform, const DirectX::XMMATRIX& globalInverseTransform, std::vector<DirectX::XMFLOAT4X4>& transforms);
 
 private:
-	void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim);
-	void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim);
-	void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim);
-	int FindPositionKey(float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim);
-	int FindRotationKey(float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim);
-	int FindScalingKey(float AnimationTime, std::unique_ptr<AnimationNode>& pNodeAnim);
+	void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim);
+	void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim);
+	void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim);
+	int FindPositionKey(float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim);
+	int FindRotationKey(float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim);
+	int FindScalingKey(float AnimationTime, std::unique_ptr<TransformAnimNode>& pNodeAnim);
 };

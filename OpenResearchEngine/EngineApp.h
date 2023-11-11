@@ -10,7 +10,7 @@
 #include "Render/Resources/ShadowMap.h"
 #include "Render/Resources/SsaoMap.h"
 #include "Render/Resources/RenderItem.h"
-#include "Render/Resources/Animation.h"
+#include "Render/Resources/Skinning.h"
 #include "Serialize/LevelReader.h"
 
 using Microsoft::WRL::ComPtr;
@@ -37,7 +37,7 @@ private:
     
     void UpdateRenderAssets(const GameTimer& gt);
     void UpdateObjectCBs(const GameTimer& gt);
-    void UpdateSkinnedCBs(const GameTimer& gt);
+    void UpdateAnimCBs(const GameTimer& gt);
     void UpdateMaterialBuffer(const GameTimer& gt);
     void UpdateShadowTransform(const GameTimer& gt);
     void UpdateMainPassCB(const GameTimer& gt);
@@ -65,25 +65,27 @@ private:
 
     void Render(FrameResource* currentFrameResource);
     void ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeVertletSolver(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeBlendshapes(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeTriangleNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeVertexNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-
     void ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeStretchConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
 
-
-
+    void SetBlendRootSignature();
     void SetSkinnedRootSignature();
-    void SetVerletSolverRootSignature();
     void SetTriangleNormalRootSignature();
     void SetVertexNormalRootSignature();
     void SetSimMeshTransferRootSignature();
-    void SetMeshTransferRootSignature();
     void SetPreSolveRootSignature();
     void SetPostSolveRootSignature();
+    void SetStretchConstraintSolveRootSignature();
+    void SetMeshTransferRootSignature();
+    void SetForceRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -110,11 +112,12 @@ private:
 
     DirectX::BoundingSphere mSceneBounds;
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mBlendRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSkinnedRootSignature = nullptr;
-    ComPtr<ID3D12RootSignature> mVerletSolverRootSignature = nullptr;
-
+    ComPtr<ID3D12RootSignature> mForceRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPreSolveRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPostSolveRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mStretchConstraintSolveRootSignature = nullptr;
 
     ComPtr<ID3D12RootSignature> mTriangleNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mVertexNormalRootSignature = nullptr;
@@ -130,7 +133,8 @@ private:
     std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
     std::unordered_map<std::string, std::shared_ptr<Skeleton>> mSkeletons;
     std::unordered_map<std::string, std::shared_ptr<Animation>> mAnimations;
-    std::unordered_map<std::string, std::shared_ptr<AnimationController>> mAnimationControllers;
+    std::unordered_map<std::string, std::shared_ptr<SkinningController>> mSkinningControllers;
+    std::unordered_map<std::string, std::shared_ptr<BlendshapeController>> mBlendshapeControllers;
     std::unordered_map<std::string, std::shared_ptr<Mesh>> mMesh;
     std::unordered_map<std::string, std::shared_ptr<TransformNode>> mTransforms;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSubsets;
@@ -153,6 +157,7 @@ private:
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;
     std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndicies;
 
+    UINT BlendCBIndex = 0;
     UINT SkinnedCBIndex = 0;
     UINT ObjectCBIndex = 0;
 

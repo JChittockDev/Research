@@ -73,15 +73,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Programming\Library\nlohmann\include;D:\Programming\Library\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Programming\Library\nlohmann\include;D:\Programming\Library\assimp-debug\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\Programming\Library\assimp\library\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Programming\Library\assimp-debug\library\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -115,7 +115,7 @@
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
-    <ClCompile Include="Update\UpdateSkinnedMesh.cpp" />
+    <ClCompile Include="Update\UpdateAnimConstants.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
     <ClCompile Include="Common\Math.cpp" />
@@ -140,6 +140,7 @@
     <ClInclude Include="D3D12\D3Dx12.h" />
     <ClInclude Include="Models\External\DDSTextureLoader.h" />
     <ClInclude Include="Objects\ViewFrustum.h" />
+    <ClInclude Include="Render\Resources\Blendshapes.h" />
     <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
@@ -153,7 +154,7 @@
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="Render\Resources\FrameResource.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
-    <ClInclude Include="Render\Resources\Animation.h" />
+    <ClInclude Include="Render\Resources\Skinning.h" />
     <ClInclude Include="Render\Resources\ShadowMap.h" />
     <ClInclude Include="Render\Resources\SsaoMap.h" />
   </ItemGroup>
