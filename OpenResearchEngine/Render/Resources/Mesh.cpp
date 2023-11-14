@@ -515,70 +515,48 @@ void GetConstraintIDs(unsigned int numMesh, std::vector<std::vector<UINT>>& segm
 	}
 }
 
-void GetInvMassAndLengths(unsigned int numMesh,
+void GetSimulationLengths(unsigned int numMesh,
 	std::vector<std::shared_ptr<Subset>>& subsets,
 	std::vector<std::vector<UINT>>& segmentedEdgeIds, 
 	std::vector<std::vector<UINT>>& segmentedTriPairIds,
 	std::vector<std::vector<UINT>>& segmentedIndices, 
 	std::vector<std::vector<Vertex>>& segmentedVertices, 
-	std::vector<std::vector<float>>& segmentedInvMass, 
 	std::vector<std::vector<float>>& segmentedStretchConstraints, 
 	std::vector<std::vector<float>>& segmentedBendingConstraints,
-	std::vector<float>& invMass,
 	std::vector<float>& stretchConstraints,
 	std::vector<float>& bendingConstraints,
 	std::vector<UINT>& stretchConstraintIDs,
 	std::vector<UINT>& bendingConstraintIDs)
 {
-	segmentedInvMass.resize(numMesh);
 	segmentedStretchConstraints.resize(numMesh);
 	segmentedBendingConstraints.resize(numMesh);
 
-	UINT edgeCounter = 0;
+	UINT stretchConstraintCounter = 0;
+	UINT bendingConstraintCounter = 0;
 	for (UINT x = 0; x < numMesh; ++x)
 	{
 		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
 		UINT numStretchConstraints = numStretchConstraintIDs / 2;
-
 		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
 		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
 
-		segmentedInvMass[x].resize(segmentedVertices[x].size(), 0.0);
 		segmentedStretchConstraints[x].resize(numStretchConstraints, 0);
 		segmentedBendingConstraints[x].resize(numBendingConstraints, 0);
 
-		subsets[x]->SimMeshEdgeCount = numStretchConstraints;
-		subsets[x]->SimMeshEdgeStart = edgeCounter;
-		edgeCounter += numStretchConstraints;
+		subsets[x]->SimMeshStretchConstraintCount = numStretchConstraints;
+		subsets[x]->SimMeshStretchConstraintStart = stretchConstraintCounter;
+		subsets[x]->SimMeshBendingConstraintCount = numBendingConstraints;
+		subsets[x]->SimMeshBendingConstraintStart = bendingConstraintCounter;
+		stretchConstraintCounter += numStretchConstraints;
+		bendingConstraintCounter += numBendingConstraints;
 	}
 
 	for (UINT x = 0; x < numMesh; ++x)
 	{
-		UINT numTris = segmentedIndices.size() / 3;
-
 		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
 		UINT numStretchConstraints = numStretchConstraintIDs / 2;
-
 		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
 		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
-
-		for (UINT i = 0; i < numTris; i++) {
-			UINT id0 = segmentedIndices[x][3 * i];
-			UINT id1 = segmentedIndices[x][3 * i + 1];
-			UINT id2 = segmentedIndices[x][3 * i + 2];
-
-			DirectX::XMVECTOR edgeVector1 = Math::Difference(segmentedVertices[x][id0].Pos, segmentedVertices[x][id1].Pos);
-			DirectX::XMVECTOR edgeVector2 = Math::Difference(segmentedVertices[x][id0].Pos, segmentedVertices[x][id2].Pos);
-			DirectX::XMVECTOR orthogonalVector = DirectX::XMVector3Cross(edgeVector1, edgeVector2);
-			float length = DirectX::XMVectorGetX(DirectX::XMVector3Length(orthogonalVector));
-
-			float halfLength = 0.5 * length;
-			float pInvMass = (halfLength > 0.0) ? (1.0 / halfLength / 3.0) : 0.0;
-
-			segmentedInvMass[x][id0] += pInvMass;
-			segmentedInvMass[x][id1] += pInvMass;
-			segmentedInvMass[x][id2] += pInvMass;
-		}
 
 		for (UINT i = 0; i < numStretchConstraints; i++) {
 			UINT id0 = segmentedEdgeIds[x][2 * i];
@@ -595,23 +573,10 @@ void GetInvMassAndLengths(unsigned int numMesh,
 
 	for (UINT x = 0; x < numMesh; ++x)
 	{
-		UINT numTris = segmentedIndices.size() / 3;
-
 		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
 		UINT numStretchConstraints = numStretchConstraintIDs / 2;
-
 		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
 		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
-
-		for (int i = 0; i < numTris; i++) {
-			UINT id0 = segmentedIndices[x][3 * i];
-			UINT id1 = segmentedIndices[x][3 * i + 1];
-			UINT id2 = segmentedIndices[x][3 * i + 2];
-
-			invMass.push_back(segmentedInvMass[x][id0]);
-			invMass.push_back(segmentedInvMass[x][id1]);
-			invMass.push_back(segmentedInvMass[x][id2]);
-		}
 
 		for (UINT i = 0; i < numStretchConstraints; i++) {
 			stretchConstraints.push_back(segmentedStretchConstraints[x][i]);
@@ -823,26 +788,18 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		// Simulation Resources
 
-		const int triangleCount = indices.size() / 3;
-
 		std::vector<Vertex> simMeshVertices;
 		std::vector<UINT> simMeshIndices;
-
 		std::vector<std::vector<Vertex>> simMeshSegmentedVertices;
 		std::vector<std::vector<UINT>> simMeshSegmentedIndices;
 		std::vector<std::vector<UINT>> simMeshSegmentedEdgeIds;
 		std::vector<std::vector<UINT>> simMeshSegmentedTriPairIds;
-
-		std::vector<std::vector<float>> simMeshSegmentedInvMass;
 		std::vector<std::vector<float>> simMeshSegmentedStretchConstraints;
 		std::vector<std::vector<float>> simMeshSegmentedBendingConstraints;
-
-		std::vector<float> simMeshInvMass;
 		std::vector<float> simMeshStretchConstraints;
 		std::vector<float> simMeshBendingConstraints;
 		std::vector<UINT> simMeshStretchConstraintIDs;
 		std::vector<UINT> simMeshBendingConstraintIDs;
-
 		std::vector<UINT> meshTransferIndices;
 		std::vector<UINT> simMeshTransferIndices;
 
@@ -852,23 +809,17 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		GetMeshTransferMap(segmentedVertices, simMeshSegmentedVertices, meshTransferIndices);
 		GetMeshTransferMap(simMeshSegmentedVertices, segmentedVertices, simMeshTransferIndices);
-
 		GetConstraintIDs(simScene->mNumMeshes, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices);
-
-		GetInvMassAndLengths(simScene->mNumMeshes, subsets[filename], simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices, simMeshSegmentedVertices,
-			simMeshSegmentedInvMass, simMeshSegmentedStretchConstraints, simMeshSegmentedBendingConstraints, simMeshInvMass, simMeshStretchConstraints, simMeshBendingConstraints, simMeshStretchConstraintIDs, simMeshBendingConstraintIDs);
+		GetSimulationLengths(simScene->mNumMeshes, subsets[filename], simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices, simMeshSegmentedVertices,
+		simMeshSegmentedStretchConstraints, simMeshSegmentedBendingConstraints, simMeshStretchConstraints, simMeshBendingConstraints, simMeshStretchConstraintIDs, simMeshBendingConstraintIDs);
 
 		const UINT simMeshVertexBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
 		const UINT simMeshForceBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vector3);
 		const UINT simMeshTransferBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
-
-		const UINT simMeshInvMassBufferByteSize = (UINT)simMeshInvMass.size() * sizeof(float);
 		const UINT simMeshStretchConstraintBufferByteSize = (UINT)simMeshStretchConstraints.size() * sizeof(float);
 		const UINT simMeshBendingConstraintBufferByteSize = (UINT)simMeshBendingConstraints.size() * sizeof(float);
-
 		const UINT simMeshStretchConstraintIDsBufferByteSize = (UINT)simMeshStretchConstraintIDs.size() * sizeof(UINT);
 		const UINT simMeshBendingConstraintIDsBufferByteSize = (UINT)simMeshBendingConstraintIDs.size() * sizeof(UINT);
-
 		const UINT meshTransferBufferByteSize = (UINT)vertices.size() * sizeof(UINT);
 
 		std::vector<Vector3> simMeshForce(simMeshVertices.size());
@@ -962,6 +913,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		std::vector<Neighbours> triangleNeighbours;
 		GetVertexTriangleNeighbours(simScene->mNumMeshes, segmentedIndices, triangleNeighbours);
 
+
+		const int triangleCount = indices.size() / 3;
 		const UINT nbByteSize = (UINT)(triangleCount) * sizeof(TangentNormals);
 		const UINT abByteSize = (UINT)triangleNeighbours.size() * sizeof(Neighbours);
 
@@ -1013,26 +966,28 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
 		submesh.TriangleCount = (UINT)subsets[filename][i]->TriangleCount;
-		submesh.StartIndexLocation = subsets[filename][i]->IndexStart;
-		submesh.StartVertexLocation = subsets[filename][i]->VertexStart;
-		submesh.StartTriangleLocation = subsets[filename][i]->TriangleStart;
-		submesh.MaterialIndex = subsets[filename][i]->MaterialIndex;
-		submesh.BlendshapeVertexCount = subsets[filename][i]->BlendshapeVertexCount;
-		submesh.BlendshapeVertexStart = subsets[filename][i]->BlendshapeVertexStart;
+		submesh.StartIndexLocation = (UINT)subsets[filename][i]->IndexStart;
+		submesh.StartVertexLocation = (UINT)subsets[filename][i]->VertexStart;
+		submesh.StartTriangleLocation = (UINT)subsets[filename][i]->TriangleStart;
+		submesh.MaterialIndex = (UINT)subsets[filename][i]->MaterialIndex;
+		submesh.BlendshapeVertexCount = (UINT)subsets[filename][i]->BlendshapeVertexCount;
+		submesh.BlendshapeVertexStart = (UINT)subsets[filename][i]->BlendshapeVertexStart;
 		submesh.BlendshapeSubsets = subsets[filename][i]->BlendshapeSubsets;
-		submesh.BlendshapeCount = subsets[filename][i]->BlendshapeCount;
-		submesh.BlendshapeStart = subsets[filename][i]->BlendshapeStart;
+		submesh.BlendshapeCount = (UINT)subsets[filename][i]->BlendshapeCount;
+		submesh.BlendshapeStart = (UINT)subsets[filename][i]->BlendshapeStart;
 		
 		if (geo->Simulation)
 		{
 			submesh.SimMeshVertexCount = (UINT)subsets[filename][i]->SimMeshVertexCount;
 			submesh.SimMeshIndexCount = (UINT)subsets[filename][i]->SimMeshIndexCount;
-			submesh.SimMeshEdgeCount = (UINT)subsets[filename][i]->SimMeshEdgeCount;
+			submesh.SimMeshStretchConstraintCount = (UINT)subsets[filename][i]->SimMeshStretchConstraintCount;
+			submesh.SimMeshStretchConstraintStart = (UINT)subsets[filename][i]->SimMeshStretchConstraintStart;
+			submesh.SimMeshBendingConstraintCount = (UINT)subsets[filename][i]->SimMeshBendingConstraintCount;
+			submesh.SimMeshBendingConstraintStart = (UINT)subsets[filename][i]->SimMeshBendingConstraintStart;
 			submesh.SimMeshTriangleCount = (UINT)subsets[filename][i]->SimMeshTriangleCount;
-			submesh.SimMeshStartIndexLocation = subsets[filename][i]->SimMeshIndexStart;
-			submesh.SimMeshStartVertexLocation = subsets[filename][i]->SimMeshVertexStart;
-			submesh.SimMeshStartEdgeLocation = subsets[filename][i]->SimMeshEdgeStart;
-			submesh.SimMeshStartTriangleLocation = subsets[filename][i]->SimMeshTriangleStart;
+			submesh.SimMeshStartIndexLocation = (UINT)subsets[filename][i]->SimMeshIndexStart;
+			submesh.SimMeshStartVertexLocation = (UINT)subsets[filename][i]->SimMeshVertexStart;
+			submesh.SimMeshStartTriangleLocation = (UINT)subsets[filename][i]->SimMeshTriangleStart;
 		}
 
 		geo->DrawArgs[name] = submesh;

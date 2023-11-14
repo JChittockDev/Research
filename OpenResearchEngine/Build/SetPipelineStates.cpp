@@ -52,6 +52,11 @@ void EngineApp::SetPipelineStates()
     stretchConstraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["stretchConstraintSolveCS"]->GetBufferPointer()), mShaders["stretchConstraintSolveCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&stretchConstraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["stretchConstraintSolve"])));
 
+    D3D12_COMPUTE_PIPELINE_STATE_DESC bendingConstraintSolveComputePSO = {};
+    bendingConstraintSolveComputePSO.pRootSignature = mBendingConstraintSolveRootSignature.Get();
+    bendingConstraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["bendingConstraintSolveCS"]->GetBufferPointer()), mShaders["bendingConstraintSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&bendingConstraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["bendingConstraintSolve"])));
+
 
     //
     // PSO for opaque objects.

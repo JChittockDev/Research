@@ -47,13 +47,14 @@ struct Edge
 
     Edge() {};
 
-    Edge(UINT inEdge1, UINT inEdge2, UINT inEdgeID)
+    Edge(UINT inEdge1, UINT inEdge2, UINT inEdgeNr)
     {
         id0 = inEdge1;
         id1 = inEdge2;
-        edgeNr = inEdgeID;
+        edgeNr = inEdgeNr;
     }
 };
+
 
 struct TangentNormals
 {
@@ -276,8 +277,10 @@ struct Subset
     UINT SimMeshIndexStart = 0;
     UINT SimMeshIndexCount = 0;
 
-    UINT SimMeshEdgeStart = 0;
-    UINT SimMeshEdgeCount = 0;
+    UINT SimMeshStretchConstraintStart = 0;
+    UINT SimMeshStretchConstraintCount = 0;
+    UINT SimMeshBendingConstraintStart = 0;
+    UINT SimMeshBendingConstraintCount = 0;
 
     UINT SimMeshTriangleStart = 0;
     UINT SimMeshTriangleCount = 0;
@@ -335,11 +338,17 @@ struct SubmeshGeometry
 
     UINT SimMeshVertexCount = 0;
     UINT SimMeshIndexCount = 0;
-    UINT SimMeshEdgeCount = 0;
+
+    UINT SimMeshStretchConstraintStart = 0;
+    UINT SimMeshStretchConstraintCount = 0;
+    UINT SimMeshBendingConstraintStart = 0;
+    UINT SimMeshBendingConstraintCount = 0;
+
+
+
     UINT SimMeshTriangleCount = 0;
     UINT SimMeshStartIndexLocation = 0;
     UINT SimMeshStartVertexLocation = 0;
-    UINT SimMeshStartEdgeLocation = 0;
     UINT SimMeshStartTriangleLocation = 0;
 
     UINT MaterialIndex = 0;

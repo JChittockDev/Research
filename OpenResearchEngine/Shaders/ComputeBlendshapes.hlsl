@@ -29,7 +29,7 @@ StructuredBuffer<BlendshapeVertex> blendshapeVertexBuffer : register(t0);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 
 // Define the compute shader entry point
-[numthreads(64, 1, 1)]
+[numthreads(32, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     float blendWeight = bWeight[weightIndex].x;

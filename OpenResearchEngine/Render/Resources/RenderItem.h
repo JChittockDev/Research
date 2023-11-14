@@ -21,23 +21,27 @@ public:
 	UINT VertexCount = 0;
 	UINT IndexCount = 0;
 	UINT TriangleCount = 0;
+	UINT SimMeshVertexCount = 0;
+	UINT SimMeshIndexCount = 0;
+	UINT SimMeshTriangleCount = 0;
+	UINT BlendshapeCount = 0;
+	UINT BlendshapeVertexCount = 0;
+	UINT SimMeshStretchConstraintCount = 0;
+	UINT SimMeshBendingConstraintCount = 0;
+
+	UINT BlendshapeStart = 0;
+	UINT BlendshapeVertexStart = 0;
+	UINT SimMeshStretchConstraintStart = 0;
+	UINT SimMeshBendingConstraintStart = 0;
+
 	UINT StartIndexLocation = 0;
 	UINT StartVertexLocation = 0;
 	UINT StartTriangleLocation = 0;
-	UINT BlendshapeCount = 0;
-	UINT BlendshapeStart = 0;
-	UINT BlendshapeVertexStart = 0;
-	UINT BlendshapeVertexCount = 0;
-	std::vector<BlendshapeSubset> BlendshapeSubsets;
-
-	UINT SimMeshVertexCount = 0;
-	UINT SimMeshIndexCount = 0;
-	UINT SimMeshEdgeCount = 0;
-	UINT SimMeshTriangleCount = 0;
 	UINT SimMeshStartIndexLocation = 0;
 	UINT SimMeshStartVertexLocation = 0;
-	UINT SimMeshStartEdgeLocation = 0;
 	UINT SimMeshStartTriangleLocation = 0;
+
+	std::vector<BlendshapeSubset> BlendshapeSubsets;
 
 	UINT ObjCBIndex = -1;
 	UINT SkinnedCBIndex = -1;
