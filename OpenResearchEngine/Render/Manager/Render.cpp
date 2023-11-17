@@ -152,17 +152,20 @@ void EngineApp::ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<R
     mCommandList->SetPipelineState(mPSOs.at("preSolve").Get());
     ComputePreSolve(mCommandList.Get(), ri, currentFrameResource);
 
-    mCommandList->SetComputeRootSignature(mStretchConstraintSolveRootSignature.Get());
-    mCommandList->SetPipelineState(mPSOs.at("stretchConstraintSolve").Get());
-    ComputeStretchConstraintSolve(mCommandList.Get(), ri, currentFrameResource);
+    for (UINT i = 0; i < 1; ++i)
+    {
+        mCommandList->SetComputeRootSignature(mStretchConstraintSolveRootSignature.Get());
+        mCommandList->SetPipelineState(mPSOs.at("stretchConstraintSolve").Get());
+        ComputeStretchConstraintSolve(mCommandList.Get(), ri, currentFrameResource);
 
-    mCommandList->SetComputeRootSignature(mBendingConstraintSolveRootSignature.Get());
-    mCommandList->SetPipelineState(mPSOs.at("bendingConstraintSolve").Get());
-    ComputeBendingConstraintSolve(mCommandList.Get(), ri, currentFrameResource);
+        mCommandList->SetComputeRootSignature(mBendingConstraintSolveRootSignature.Get());
+        mCommandList->SetPipelineState(mPSOs.at("bendingConstraintSolve").Get());
+        ComputeBendingConstraintSolve(mCommandList.Get(), ri, currentFrameResource);
 
-    mCommandList->SetComputeRootSignature(mPostSolveRootSignature.Get());
-    mCommandList->SetPipelineState(mPSOs.at("postSolve").Get());
-    ComputePostSolve(mCommandList.Get(), ri, currentFrameResource);
+        mCommandList->SetComputeRootSignature(mPostSolveRootSignature.Get());
+        mCommandList->SetPipelineState(mPSOs.at("postSolve").Get());
+        ComputePostSolve(mCommandList.Get(), ri, currentFrameResource);
+    }
 }
 
 void EngineApp::ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
