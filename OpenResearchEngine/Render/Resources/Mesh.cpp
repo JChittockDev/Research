@@ -427,176 +427,6 @@ void Mesh::GetMeshTransferMap(const std::vector<std::vector<Vertex>>& baseVertic
 	}
 }
 
-void GetTriangleNeighbors(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::vector<UINT>>& segmentedTriangleNeighbours)
-{
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		std::vector<Edge> edges;
-		UINT numTris = segmentedIndices[x].size() / 3;
-
-		for (UINT i = 0; i < numTris; i++) {
-			for (UINT j = 0; j < 3; j++) {
-				UINT id0 = segmentedIndices[x][3 * i + j];
-				UINT id1 = segmentedIndices[x][3 * i + (j + 1) % 3];
-				Edge edge(Math::Min(id0, id1), Math::Max(id0, id1), 3 * i + j);
-			}
-		}
-
-		std::sort(edges.begin(), edges.end(), [](const Edge& a, const Edge& b) {
-			if (a.id0 < b.id0)
-				return true;
-			if (a.id0 == b.id0 && a.id1 < b.id1)
-				return true;
-			return false;
-			});
-
-		std::vector<UINT> neighbors(3 * numTris, -1.0f);
-
-		int nr = 0;
-		while (nr < edges.size()) {
-			Edge e0 = edges[nr];
-			nr++;
-			if (nr < edges.size()) {
-				Edge e1 = edges[nr];
-				if (e0.id0 == e1.id0 && e0.id1 == e1.id1) {
-					neighbors[e0.edgeNr] = e1.edgeNr;
-					neighbors[e1.edgeNr] = e0.edgeNr;
-				}
-				nr++;
-			}
-		}
-
-		segmentedTriangleNeighbours.push_back(neighbors);
-	}
-}
-
-void GetConstraintIDs(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedEdgeIds, std::vector<std::vector<UINT>>& segmentedTriPairIds, 
-					std::vector<std::vector<UINT>>& segmentedIndices)
-{
-	std::vector<std::vector<UINT>> segmentedTriangleNeighbours;
-
-	GetTriangleNeighbors(numMesh, segmentedIndices, segmentedTriangleNeighbours);
-
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		UINT numTris = segmentedIndices[x].size() / 3;
-		std::vector<UINT> edgeIds;
-		std::vector<UINT> triPairIds;
-
-		for (UINT i = 0; i < numTris; i++) {
-			for (UINT j = 0; j < 3; j++) {
-				UINT id0 = segmentedIndices[x][3 * i + j];
-				UINT id1 = segmentedIndices[x][3 * i + (j + 1) % 3];
-
-				// each edge only once
-				UINT n = segmentedTriangleNeighbours[x][3 * i + j];
-				if (n < 0 || id0 < id1) {
-					edgeIds.push_back(id0);
-					edgeIds.push_back(id1);
-				}
-
-				// tri pair
-				if (n >= 0) {
-					// opposite ids
-					UINT ni = n / 3;
-					UINT nj = n % 3;
-					UINT id2 = segmentedIndices[x][3 * i + (j + 2) % 3];
-					UINT id3 = segmentedIndices[x][3 * ni + (nj + 2) % 3];
-					triPairIds.push_back(id0);
-					triPairIds.push_back(id1);
-					triPairIds.push_back(id2);
-					triPairIds.push_back(id3);
-				}
-			}
-		}
-
-		segmentedEdgeIds.push_back(edgeIds);
-		segmentedTriPairIds.push_back(triPairIds);
-	}
-}
-
-void GetSimulationLengths(unsigned int numMesh,
-	std::vector<std::shared_ptr<Subset>>& subsets,
-	std::vector<std::vector<UINT>>& segmentedEdgeIds, 
-	std::vector<std::vector<UINT>>& segmentedTriPairIds,
-	std::vector<std::vector<UINT>>& segmentedIndices, 
-	std::vector<std::vector<Vertex>>& segmentedVertices, 
-	std::vector<std::vector<float>>& segmentedStretchConstraints, 
-	std::vector<std::vector<float>>& segmentedBendingConstraints,
-	std::vector<float>& stretchConstraints,
-	std::vector<float>& bendingConstraints,
-	std::vector<UINT>& stretchConstraintIDs,
-	std::vector<UINT>& bendingConstraintIDs)
-{
-	segmentedStretchConstraints.resize(numMesh);
-	segmentedBendingConstraints.resize(numMesh);
-
-	UINT stretchConstraintCounter = 0;
-	UINT bendingConstraintCounter = 0;
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
-		UINT numStretchConstraints = numStretchConstraintIDs / 2;
-		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
-		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
-
-		segmentedStretchConstraints[x].resize(numStretchConstraints, 0);
-		segmentedBendingConstraints[x].resize(numBendingConstraints, 0);
-
-		subsets[x]->SimMeshStretchConstraintCount = numStretchConstraints;
-		subsets[x]->SimMeshStretchConstraintStart = stretchConstraintCounter;
-		subsets[x]->SimMeshBendingConstraintCount = numBendingConstraints;
-		subsets[x]->SimMeshBendingConstraintStart = bendingConstraintCounter;
-		stretchConstraintCounter += numStretchConstraints;
-		bendingConstraintCounter += numBendingConstraints;
-	}
-
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
-		UINT numStretchConstraints = numStretchConstraintIDs / 2;
-		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
-		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
-
-		for (UINT i = 0; i < numStretchConstraints; i++) {
-			UINT id0 = segmentedEdgeIds[x][2 * i];
-			UINT id1 = segmentedEdgeIds[x][2 * i + 1];
-			segmentedStretchConstraints[x][i] = Math::Length(segmentedVertices[x][id0].Pos, segmentedVertices[x][id1].Pos);
-		}
-
-		for (UINT i = 0; i < numBendingConstraints; i++) {
-			UINT id0 = segmentedTriPairIds[x][4 * i + 2];
-			UINT id1 = segmentedTriPairIds[x][4 * i + 3];
-			segmentedBendingConstraints[x][i] = Math::Length(segmentedVertices[x][id0].Pos, segmentedVertices[x][id1].Pos);
-		}
-	}
-
-	for (UINT x = 0; x < numMesh; ++x)
-	{
-		UINT numStretchConstraintIDs = segmentedEdgeIds[x].size();
-		UINT numStretchConstraints = numStretchConstraintIDs / 2;
-		UINT numBendingConstraintIDs = segmentedTriPairIds[x].size();
-		UINT numBendingConstraints = segmentedTriPairIds[x].size() / 4;
-
-		for (UINT i = 0; i < numStretchConstraints; i++) {
-			stretchConstraints.push_back(segmentedStretchConstraints[x][i]);
-		}
-
-		for (UINT i = 0; i < numBendingConstraints; i++) {
-			bendingConstraints.push_back(segmentedBendingConstraints[x][i]);
-		}
-
-		for (UINT i = 0; i < numStretchConstraintIDs; i++) {
-			stretchConstraintIDs.push_back(segmentedEdgeIds[x][i]);
-		}
-
-		for (UINT i = 0; i < numBendingConstraintIDs; i++) {
-			bendingConstraintIDs.push_back(segmentedTriPairIds[x][i]);
-		}
-
-	}
-}
-
 void GetVertexTriangleNeighbours(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<Neighbours>& vertexNeighbourTriangles, const int references = 8)
 {
 	std::vector<std::unordered_map<UINT, std::set<UINT>>> segmentedVertexNeighbourTriangles;
@@ -646,6 +476,180 @@ void GetVertexTriangleNeighbours(unsigned int numMesh, std::vector<std::vector<U
 			}
 			vertexNeighbourTriangles.push_back(neighbourIDs);
 		}
+	}
+}
+
+void GetEdges(unsigned int numMesh, std::vector<std::shared_ptr<Subset>>& subsets, std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>>& segmentedEdgeTriangles, std::vector<Edge>& edges, std::vector<float>& restLength)
+{
+	// Step 1: Create a mapping of each edge to the triangles that share it.
+
+	std::vector<std::set<Edge>> segmentedEdges;
+	segmentedEdges.resize(numMesh);
+	segmentedEdgeTriangles.resize(numMesh);
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		for (size_t i = 0; i < segmentedIndices[x].size(); i += 3)
+		{
+			UINT triangleID = i / 3;
+
+			UINT v0 = segmentedIndices[x][i];
+			UINT v1 = segmentedIndices[x][i + 1];
+			UINT v2 = segmentedIndices[x][i + 2];
+
+			// Sort vertices to form unique edge key (v0, v1)
+			Edge edgeKey1(Math::Min(v0, v1), Math::Max(v0, v1));
+			segmentedEdges[x].insert(edgeKey1);
+			segmentedEdgeTriangles[x][edgeKey1].insert(triangleID);
+
+			Edge edgeKey2(Math::Min(v1, v2), Math::Max(v1, v2));
+			segmentedEdges[x].insert(edgeKey2);
+			segmentedEdgeTriangles[x][edgeKey2].insert(triangleID);
+
+			Edge edgeKey3(Math::Min(v2, v0), Math::Max(v2, v0));
+			segmentedEdges[x].insert(edgeKey3);
+			segmentedEdgeTriangles[x][edgeKey3].insert(triangleID);
+		}
+	}
+
+	int edgeCounter = 0;
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		subsets[x]->SimMeshStretchConstraintCount = segmentedEdges[x].size();
+		subsets[x]->SimMeshStretchConstraintStart = edgeCounter;
+
+		for (const Edge& edge : segmentedEdges[x])
+		{
+			Vertex& vertex1 = segmentedVertices[x][edge.vertexA];
+			Vertex& vertex2 = segmentedVertices[x][edge.vertexB];
+			float length = Math::Length(vertex1.Pos, vertex2.Pos);
+
+			restLength.push_back(length);
+			edges.push_back(edge);
+		}
+
+		edgeCounter += segmentedEdges[x].size();
+	}
+}
+
+void GetBendingEdges(unsigned int numMesh, std::vector<std::shared_ptr<Subset>>& subsets, std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<std::vector<UINT>>& segmentedIndices, 
+								std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>>& segmentedEdgeTriangles, std::vector<Edge>& edges, std::vector<float>& restLength)
+{
+	std::vector<std::set<Edge>> segmentedWingEdges;
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::set<Edge> wingEdges;
+
+		for (size_t i = 0; i < segmentedIndices[x].size(); i += 3)
+		{
+			UINT v0 = segmentedIndices[x][i];
+			UINT v1 = segmentedIndices[x][i + 1];
+			UINT v2 = segmentedIndices[x][i + 2];
+
+			UINT triangleIndex = i / 3;
+			std::vector<UINT> neighbours;
+
+			// Check neighboring triangles for edge (v0, v1)
+			Edge edgeKey1;
+			edgeKey1.vertexA = Math::Min(v0, v1);
+			edgeKey1.vertexB = Math::Max(v0, v1);
+
+			std::set<UINT> triangles1 = segmentedEdgeTriangles[x][edgeKey1];
+
+			for (UINT triangle : triangles1)
+			{
+				if (triangle != triangleIndex)
+				{
+					neighbours.push_back(triangle);
+				}
+			}
+
+			// Check neighboring triangles for edge (v1, v2)
+			Edge edgeKey2;
+			edgeKey2.vertexA = Math::Min(v1, v2);
+			edgeKey2.vertexB = Math::Max(v1, v2);
+
+			std::set<UINT> triangles2 = segmentedEdgeTriangles[x][edgeKey2];
+
+			for (UINT triangle : triangles2)
+			{
+				if (triangle != triangleIndex)
+				{
+					neighbours.push_back(triangle);
+				}
+			}
+
+			// Check neighboring triangles for edge (v2, v0)
+			Edge edgeKey3;
+			edgeKey3.vertexA = Math::Min(v2, v0);
+			edgeKey3.vertexB = Math::Max(v2, v0);
+
+			std::set<UINT> triangles3 = segmentedEdgeTriangles[x][edgeKey3];
+
+			for (UINT triangle : triangles3)
+			{
+				if (triangle != triangleIndex)
+				{
+					neighbours.push_back(triangle);
+				}
+			}
+
+			std::vector<UINT> source_vertices = { v0, v1, v2 };
+
+			for (UINT y = 0; y < (UINT)neighbours.size(); ++y)
+			{
+				UINT nv0 = segmentedIndices[x][neighbours[y] * 3];
+				UINT nv1 = segmentedIndices[x][neighbours[y] * 3 + 1];
+				UINT nv2 = segmentedIndices[x][neighbours[y] * 3 + 2];
+
+				std::vector<UINT> target_vertices = { nv0, nv1, nv2 };
+
+				UINT p1 = nv0;
+				UINT p2 = nv1;
+
+				for (UINT z = 0; z < (UINT)target_vertices.size(); ++z)
+				{
+
+					if (std::find(source_vertices.begin(), source_vertices.end(), target_vertices[z]) == source_vertices.end())
+					{
+						p1 = target_vertices[z];
+					}
+				}
+
+				for (UINT z = 0; z < (UINT)source_vertices.size(); ++z)
+				{
+
+					if (std::find(target_vertices.begin(), target_vertices.end(), source_vertices[z]) == target_vertices.end())
+					{
+						p2 = source_vertices[z];
+					}
+				}
+
+				Edge edgeKey(Math::Min(p1, p2), Math::Max(p1, p2));
+				wingEdges.insert(edgeKey);
+			}
+		}
+		segmentedWingEdges.push_back(wingEdges);
+	}
+
+	int edgeCounter = 0;
+	for (UINT x = 0; x < segmentedWingEdges.size(); ++x)
+	{
+		subsets[x]->SimMeshBendingConstraintCount = segmentedWingEdges[x].size();
+		subsets[x]->SimMeshBendingConstraintStart = edgeCounter;
+
+		for (const Edge& edge : segmentedWingEdges[x])
+		{
+			Vertex& vertex1 = segmentedVertices[x][edge.vertexA];
+			Vertex& vertex2 = segmentedVertices[x][edge.vertexB];
+			float length = Math::Length(vertex1.Pos, vertex2.Pos);
+
+			restLength.push_back(length);
+			edges.push_back(edge);
+		}
+
+		edgeCounter += segmentedWingEdges[x].size();
 	}
 }
 
@@ -792,16 +796,15 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		std::vector<UINT> simMeshIndices;
 		std::vector<std::vector<Vertex>> simMeshSegmentedVertices;
 		std::vector<std::vector<UINT>> simMeshSegmentedIndices;
-		std::vector<std::vector<UINT>> simMeshSegmentedEdgeIds;
-		std::vector<std::vector<UINT>> simMeshSegmentedTriPairIds;
-		std::vector<std::vector<float>> simMeshSegmentedStretchConstraints;
-		std::vector<std::vector<float>> simMeshSegmentedBendingConstraints;
-		std::vector<float> simMeshStretchConstraints;
-		std::vector<float> simMeshBendingConstraints;
-		std::vector<UINT> simMeshStretchConstraintIDs;
-		std::vector<UINT> simMeshBendingConstraintIDs;
+
 		std::vector<UINT> meshTransferIndices;
 		std::vector<UINT> simMeshTransferIndices;
+
+		std::vector<float> simMeshStretchConstraints;
+		std::vector<Edge> simMeshStretchConstraintIDs;
+		std::vector<float> simMeshBendingConstraints;
+		std::vector<Edge> simMeshBendingConstraintIDs;
+		std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>> simMeshSegmentedEdgeTriangles;
 
 		ReadVertices(simScene->mNumMeshes, simScene->mMeshes, simMeshVertices, simMeshSegmentedVertices);
 		ReadTriangles(simScene->mNumMeshes, simScene->mMeshes, simMeshIndices, simMeshSegmentedIndices);
@@ -809,17 +812,17 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 		GetMeshTransferMap(segmentedVertices, simMeshSegmentedVertices, meshTransferIndices);
 		GetMeshTransferMap(simMeshSegmentedVertices, segmentedVertices, simMeshTransferIndices);
-		GetConstraintIDs(simScene->mNumMeshes, simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices);
-		GetSimulationLengths(simScene->mNumMeshes, subsets[filename], simMeshSegmentedEdgeIds, simMeshSegmentedTriPairIds, simMeshSegmentedIndices, simMeshSegmentedVertices,
-		simMeshSegmentedStretchConstraints, simMeshSegmentedBendingConstraints, simMeshStretchConstraints, simMeshBendingConstraints, simMeshStretchConstraintIDs, simMeshBendingConstraintIDs);
+
+		GetEdges(simScene->mNumMeshes, subsets[filename], simMeshSegmentedVertices, simMeshSegmentedIndices, simMeshSegmentedEdgeTriangles, simMeshStretchConstraintIDs, simMeshStretchConstraints);
+		GetBendingEdges(simScene->mNumMeshes, subsets[filename], simMeshSegmentedVertices, simMeshSegmentedIndices, simMeshSegmentedEdgeTriangles, simMeshBendingConstraintIDs, simMeshBendingConstraints);
 
 		const UINT simMeshVertexBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
 		const UINT simMeshForceBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vector3);
 		const UINT simMeshTransferBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
 		const UINT simMeshStretchConstraintBufferByteSize = (UINT)simMeshStretchConstraints.size() * sizeof(float);
 		const UINT simMeshBendingConstraintBufferByteSize = (UINT)simMeshBendingConstraints.size() * sizeof(float);
-		const UINT simMeshStretchConstraintIDsBufferByteSize = (UINT)simMeshStretchConstraintIDs.size() * sizeof(UINT);
-		const UINT simMeshBendingConstraintIDsBufferByteSize = (UINT)simMeshBendingConstraintIDs.size() * sizeof(UINT);
+		const UINT simMeshStretchConstraintIDsBufferByteSize = (UINT)simMeshStretchConstraintIDs.size() * sizeof(Edge);
+		const UINT simMeshBendingConstraintIDsBufferByteSize = (UINT)simMeshBendingConstraintIDs.size() * sizeof(Edge);
 		const UINT meshTransferBufferByteSize = (UINT)vertices.size() * sizeof(UINT);
 
 		std::vector<Vector3> simMeshForce(simMeshVertices.size());

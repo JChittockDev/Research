@@ -6,7 +6,13 @@ struct Vertex
     float4 tangent;
 };
 
-StructuredBuffer<uint> inputEdgeIDBuffer : register(t0);
+struct Edge
+{
+    uint vertexA;
+    uint vertexB;
+};
+
+StructuredBuffer<Edge> inputEdgeBuffer : register(t0);
 StructuredBuffer<float> inputEdgeConstraintBuffer : register(t1);
 StructuredBuffer<Vertex> inputVertexBuffer : register(t2);
 RWStructuredBuffer<float3> outputSolverAccumulationBuffer : register(u0);
@@ -18,8 +24,8 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     uint constraintID = dispatchThreadID.x;
     
-    uint id0 = inputEdgeIDBuffer[2 * constraintID];
-    uint id1 = inputEdgeIDBuffer[2 * constraintID + 1];
+    uint id0 = inputEdgeBuffer[constraintID].vertexA;
+    uint id1 = inputEdgeBuffer[constraintID].vertexB;
     
     float3 position0 = inputVertexBuffer[id0].position;
     float3 position1 = inputVertexBuffer[id1].position;
