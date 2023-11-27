@@ -697,9 +697,9 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		std::string name = "sm_" + std::to_string(i);
 		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
-		submesh.StartIndexLocation = subsets[filename][i]->IndexStart;
-		submesh.StartVertexLocation = subsets[filename][i]->VertexStart;
-		submesh.StartTriangleLocation = subsets[filename][i]->TriangleStart;
+		submesh.IndexStart = subsets[filename][i]->IndexStart;
+		submesh.VertexStart = subsets[filename][i]->VertexStart;
+		submesh.TriangleStart = subsets[filename][i]->TriangleStart;
 		submesh.MaterialIndex = subsets[filename][i]->MaterialIndex;
 		geo->DrawArgs[name] = submesh;
 	}
@@ -810,7 +810,6 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		const UINT simMeshBendingConstraintIDsBufferByteSize = (UINT)simMeshBendingConstraintIDs.size() * sizeof(Edge);
 		const UINT meshTransferBufferByteSize = (UINT)vertices.size() * sizeof(UINT);
 
-		std::vector<Vector3> simMeshForce(simMeshVertices.size());
 		std::vector<Vector3> simMeshSolverAccumulation(simMeshVertices.size());
 		std::vector<UINT> simMeshSolverCount(simMeshVertices.size());
 
@@ -898,9 +897,9 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
 		submesh.TriangleCount = (UINT)subsets[filename][i]->TriangleCount;
-		submesh.StartIndexLocation = (UINT)subsets[filename][i]->IndexStart;
-		submesh.StartVertexLocation = (UINT)subsets[filename][i]->VertexStart;
-		submesh.StartTriangleLocation = (UINT)subsets[filename][i]->TriangleStart;
+		submesh.IndexStart = (UINT)subsets[filename][i]->IndexStart;
+		submesh.VertexStart = (UINT)subsets[filename][i]->VertexStart;
+		submesh.TriangleStart = (UINT)subsets[filename][i]->TriangleStart;
 		submesh.MaterialIndex = (UINT)subsets[filename][i]->MaterialIndex;
 		submesh.BlendshapeVertexCount = (UINT)subsets[filename][i]->BlendshapeVertexCount;
 		submesh.BlendshapeVertexStart = (UINT)subsets[filename][i]->BlendshapeVertexStart;
@@ -917,9 +916,9 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 			submesh.SimMeshBendingConstraintCount = (UINT)subsets[filename][i]->SimMeshBendingConstraintCount;
 			submesh.SimMeshBendingConstraintStart = (UINT)subsets[filename][i]->SimMeshBendingConstraintStart;
 			submesh.SimMeshTriangleCount = (UINT)subsets[filename][i]->SimMeshTriangleCount;
-			submesh.SimMeshStartIndexLocation = (UINT)subsets[filename][i]->SimMeshIndexStart;
-			submesh.SimMeshStartVertexLocation = (UINT)subsets[filename][i]->SimMeshVertexStart;
-			submesh.SimMeshStartTriangleLocation = (UINT)subsets[filename][i]->SimMeshTriangleStart;
+			submesh.SimMeshIndexStart = (UINT)subsets[filename][i]->SimMeshIndexStart;
+			submesh.SimMeshVertexStart = (UINT)subsets[filename][i]->SimMeshVertexStart;
+			submesh.SimMeshTriangleStart = (UINT)subsets[filename][i]->SimMeshTriangleStart;
 		}
 
 		geo->DrawArgs[name] = submesh;

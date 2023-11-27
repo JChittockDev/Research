@@ -343,9 +343,9 @@ struct SubmeshGeometry
     UINT VertexCount = 0;
     UINT IndexCount = 0;
     UINT TriangleCount = 0;
-    UINT StartIndexLocation = 0;
-    UINT StartVertexLocation = 0;
-    UINT StartTriangleLocation = 0;
+    UINT IndexStart = 0;
+    UINT VertexStart = 0;
+    UINT TriangleStart = 0;
     UINT BlendshapeVertexStart = 0;
     UINT BlendshapeVertexCount = 0;
     UINT BlendshapeCount = 0;
@@ -363,9 +363,9 @@ struct SubmeshGeometry
 
 
     UINT SimMeshTriangleCount = 0;
-    UINT SimMeshStartIndexLocation = 0;
-    UINT SimMeshStartVertexLocation = 0;
-    UINT SimMeshStartTriangleLocation = 0;
+    UINT SimMeshIndexStart = 0;
+    UINT SimMeshVertexStart = 0;
+    UINT SimMeshTriangleStart = 0;
 
     UINT MaterialIndex = 0;
     DirectX::BoundingBox Bounds;

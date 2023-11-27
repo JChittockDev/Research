@@ -35,12 +35,12 @@ public:
 	UINT SimMeshStretchConstraintStart = 0;
 	UINT SimMeshBendingConstraintStart = 0;
 
-	UINT StartIndexLocation = 0;
-	UINT StartVertexLocation = 0;
-	UINT StartTriangleLocation = 0;
-	UINT SimMeshStartIndexLocation = 0;
-	UINT SimMeshStartVertexLocation = 0;
-	UINT SimMeshStartTriangleLocation = 0;
+	UINT IndexStart = 0;
+	UINT VertexStart = 0;
+	UINT TriangleStart = 0;
+	UINT SimMeshIndexStart = 0;
+	UINT SimMeshVertexStart = 0;
+	UINT SimMeshTriangleStart = 0;
 
 	std::vector<BlendshapeSubset> BlendshapeSubsets;
 

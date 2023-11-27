@@ -30,28 +30,28 @@ void EngineApp::PushGenericMesh()
 
 	SubmeshGeometry boxSubmesh;
 	boxSubmesh.IndexCount = (UINT)box.Indices32.size();
-	boxSubmesh.StartIndexLocation = boxIndexOffset;
-	boxSubmesh.StartVertexLocation = boxVertexOffset;
+	boxSubmesh.IndexStart = boxIndexOffset;
+	boxSubmesh.VertexStart = boxVertexOffset;
 
 	SubmeshGeometry gridSubmesh;
 	gridSubmesh.IndexCount = (UINT)grid.Indices32.size();
-	gridSubmesh.StartIndexLocation = gridIndexOffset;
-	gridSubmesh.StartVertexLocation = gridVertexOffset;
+	gridSubmesh.IndexStart = gridIndexOffset;
+	gridSubmesh.VertexStart = gridVertexOffset;
 
 	SubmeshGeometry sphereSubmesh;
 	sphereSubmesh.IndexCount = (UINT)sphere.Indices32.size();
-	sphereSubmesh.StartIndexLocation = sphereIndexOffset;
-	sphereSubmesh.StartVertexLocation = sphereVertexOffset;
+	sphereSubmesh.IndexStart = sphereIndexOffset;
+	sphereSubmesh.VertexStart = sphereVertexOffset;
 
 	SubmeshGeometry cylinderSubmesh;
 	cylinderSubmesh.IndexCount = (UINT)cylinder.Indices32.size();
-	cylinderSubmesh.StartIndexLocation = cylinderIndexOffset;
-	cylinderSubmesh.StartVertexLocation = cylinderVertexOffset;
+	cylinderSubmesh.IndexStart = cylinderIndexOffset;
+	cylinderSubmesh.VertexStart = cylinderVertexOffset;
 
 	SubmeshGeometry quadSubmesh;
 	quadSubmesh.IndexCount = (UINT)quad.Indices32.size();
-	quadSubmesh.StartIndexLocation = quadIndexOffset;
-	quadSubmesh.StartVertexLocation = quadVertexOffset;
+	quadSubmesh.IndexStart = quadIndexOffset;
+	quadSubmesh.VertexStart = quadVertexOffset;
 
 	//
 	// Extract the vertex elements we are interested in and pack the
