@@ -70,7 +70,6 @@ public:
         svbv.BufferLocation = SkinnedVertexBufferGPU->GetGPUVirtualAddress();
         svbv.StrideInBytes = VertexByteStride;
         svbv.SizeInBytes = VertexBufferByteSize;
-
         return svbv;
     }
 
@@ -80,7 +79,6 @@ public:
         svbv.BufferLocation = VertexNormalBufferGPU->GetGPUVirtualAddress();
         svbv.StrideInBytes = VertexByteStride;
         svbv.SizeInBytes = VertexBufferByteSize;
-
         return svbv;
     }
 

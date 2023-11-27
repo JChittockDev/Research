@@ -479,7 +479,8 @@ void GetVertexTriangleNeighbours(unsigned int numMesh, std::vector<std::vector<U
 	}
 }
 
-void GetEdges(unsigned int numMesh, std::vector<std::shared_ptr<Subset>>& subsets, std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>>& segmentedEdgeTriangles, std::vector<Edge>& edges, std::vector<float>& restLength)
+void GetEdges(unsigned int numMesh, std::vector<std::shared_ptr<Subset>>& subsets, std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<std::vector<UINT>>& segmentedIndices, 
+				std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>>& segmentedEdgeTriangles, std::vector<Edge>& edges, std::vector<float>& restLength)
 {
 	// Step 1: Create a mapping of each edge to the triangles that share it.
 
@@ -719,7 +720,6 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::vector<SkinningInfo> skinning;
 	std::vector<UINT> indices;
 	std::vector<BlendshapeVertex> blendshapes;
-
 	std::vector<std::vector<UINT>> segmentedIndices;
 	std::vector<std::vector<Vertex>> segmentedVertices;
 
@@ -826,11 +826,6 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		geo->DeformationData.simMeshForce.resize(simMeshVertices.size());
 		geo->DeformationData.simMeshSolverAccumulation.resize(simMeshVertices.size());
 		geo->DeformationData.simMeshSolverCount.resize(simMeshVertices.size());
-		geo->DeformationData.normals.resize(indices.size() / 3);
-		geo->VertexByteStride = sizeof(Vertex);
-		geo->VertexBufferByteSize = vertexBufferByteSize;
-		geo->IndexFormat = DXGI_FORMAT_R32_UINT;
-		geo->IndexBufferByteSize = indexBufferByteSize;
 
 		ThrowIfFailed(D3DCreateBlob(simMeshStretchConstraintBufferByteSize, &geo->SimMeshStretchConstraintsBufferCPU));
 		CopyMemory(geo->SimMeshStretchConstraintsBufferCPU->GetBufferPointer(), simMeshStretchConstraints.data(), simMeshStretchConstraintBufferByteSize);
@@ -880,17 +875,13 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		GetVertexTriangleNeighbours(simScene->mNumMeshes, segmentedIndices, triangleNeighbours);
 
 		const int triangleCount = indices.size() / 3;
+		std::vector<TangentNormals> normals(triangleCount);
 		const UINT nbByteSize = (UINT)(triangleCount) * sizeof(TangentNormals);
-		const UINT abByteSize = (UINT)triangleNeighbours.size() * sizeof(Neighbours);
-
-		std::vector<TangentNormals> normals;
-		normals.resize(triangleCount);
+		const UINT adjacencyBufferByteSize = (UINT)triangleNeighbours.size() * sizeof(Neighbours);
 		
-		ThrowIfFailed(D3DCreateBlob(abByteSize, &geo->TriangleAdjacencyBufferCPU));
-		CopyMemory(geo->TriangleAdjacencyBufferCPU->GetBufferPointer(), triangleNeighbours.data(), abByteSize);
-
-		geo->TriangleAdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), triangleNeighbours.data(), abByteSize, geo->TriangleAdjacencyBufferUploader);
-		
+		ThrowIfFailed(D3DCreateBlob(adjacencyBufferByteSize, &geo->TriangleAdjacencyBufferCPU));
+		CopyMemory(geo->TriangleAdjacencyBufferCPU->GetBufferPointer(), triangleNeighbours.data(), adjacencyBufferByteSize);
+		geo->TriangleAdjacencyBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), triangleNeighbours.data(), adjacencyBufferByteSize, geo->TriangleAdjacencyBufferUploader);
 		mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->TriangleAdjacencyBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 
 	}
