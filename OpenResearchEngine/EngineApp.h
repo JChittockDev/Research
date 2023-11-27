@@ -138,6 +138,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Animation>> mAnimations;
     std::unordered_map<std::string, std::shared_ptr<SkinningController>> mSkinningControllers;
     std::unordered_map<std::string, std::shared_ptr<BlendshapeController>> mBlendshapeControllers;
+    std::unordered_map<std::string, std::shared_ptr<MeshAnimationResource>> mMeshAnimationResources;
     std::unordered_map<std::string, std::shared_ptr<Mesh>> mMesh;
     std::unordered_map<std::string, std::shared_ptr<TransformNode>> mTransforms;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSubsets;
