@@ -38,12 +38,6 @@ MeshAnimationResource::MeshAnimationResource(Microsoft::WRL::ComPtr<ID3D12Device
 	SimMeshForceBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), deformationData.simMeshForce.data(), simMeshForceBufferByteSize, SimMeshForceBufferUploader);
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(SimMeshForceBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 
-	const UINT simMeshStretchConstraintsVertexBufferByteSize = (UINT)deformationData.simMeshVertices.size() * sizeof(Vertex);
-	ThrowIfFailed(D3DCreateBlob(simMeshStretchConstraintsVertexBufferByteSize, &SimMeshStretchConstraintsVertexBufferCPU));
-	CopyMemory(SimMeshStretchConstraintsVertexBufferCPU->GetBufferPointer(), deformationData.simMeshVertices.data(), simMeshStretchConstraintsVertexBufferByteSize);
-	SimMeshStretchConstraintsVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), deformationData.simMeshVertices.data(), simMeshStretchConstraintsVertexBufferByteSize, SimMeshStretchConstraintsVertexBufferUploader);
-	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(SimMeshStretchConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
-
 	const UINT simMeshConstraintsVertexBufferByteSize = (UINT)deformationData.simMeshVertices.size() * sizeof(Vertex);
 	ThrowIfFailed(D3DCreateBlob(simMeshConstraintsVertexBufferByteSize, &SimMeshConstraintsVertexBufferCPU));
 	CopyMemory(SimMeshConstraintsVertexBufferCPU->GetBufferPointer(), deformationData.simMeshVertices.data(), simMeshConstraintsVertexBufferByteSize);

@@ -418,7 +418,6 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
-
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferGPU = nullptr;
 
@@ -445,9 +444,7 @@ struct MeshGeometry
     
     // Normal & Tangent Calculation Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> TriangleAdjacencyBufferCPU = nullptr;
-
     Microsoft::WRL::ComPtr<ID3D12Resource> TriangleAdjacencyBufferGPU = nullptr;
-
     Microsoft::WRL::ComPtr<ID3D12Resource> TriangleAdjacencyBufferUploader = nullptr;
 
     // Data about the buffers.
