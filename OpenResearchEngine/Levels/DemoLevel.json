@@ -2,289 +2,369 @@
   "Level" : "DemoLevel",
   "Assets":
   {
+    "Materials": {
+      "FaceMaterial": {
+        "Diffuse": "Textures/default_diffuse.dds",
+        "Normal": "Textures/default_nmap.dds",
+        "Roughness": "Textures/default_diffuse.dds",
+        "Metalness": "Textures/default_diffuse.dds",
+        "Specular": "Textures/default_diffuse.dds",
+        "Height": "Textures/default_diffuse.dds",
+        "Opacity": "Textures/default_diffuse.dds",
+        "Occlusion": "Textures/default_diffuse.dds",
+        "Refraction": "Textures/default_diffuse.dds",
+        "Emissive": "Textures/default_diffuse.dds",
+        "Subsurface": "Textures/default_diffuse.dds"
+      }
+    },
     "RenderItems" :
     {
-      "StaticRenderItems" : 
-      {
-        "skyDome" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "sky",
-          "Position" : [0.0, 0.0, 0.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [5000.0, 5000.0, 5000.0],
-          "RenderLayer" : "Sky" },
-        
-        "floor" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "grid",
-          "Material" : "tile0",
-          "Position" : [0.0, 0.0, 0.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar1" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [-5.0, 1.5, -15.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar2" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [5.0, 1.5, -15.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar3" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [-5.0, 1.5, -10.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar4" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [5.0, 1.5, -10.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar5" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [-5.0, 1.5, -5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar6" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [5.0, 1.5, -5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar7" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [-5.0, 1.5, 0.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar8" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [5.0, 1.5, 0.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar9" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [-5.0, 1.5, 5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar10" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [5.0, 1.5, 5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar11" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [-5.0, 1.5, 10.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "Pillar12" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [5.0, 1.5, 10.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-		  
-		"Pillar13" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [-5.0, 1.5, 15.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-		  
-		"Pillar14" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "cylinder",
-          "Material" : "bricks0",
-          "Position" : [5.0, 1.5, 15.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome1" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [-5.0, 3.5, -15.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome2" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [5.0, 3.5, -15.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome3" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [-5.0, 3.5, -10.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome4" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [5.0, 3.5, -10.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome5" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [-5.0, 3.5, -5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome6" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [5.0, 3.5, -5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome7" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [-5.0, 3.5, 0.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome8" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [5.0, 3.5, 0.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome9" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [-5.0, 3.5, 5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome10" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [5.0, 3.5, 5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome11" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [-5.0, 3.5, 10.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-      
-        "mirrorDome12" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [5.0, 3.5, 10.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-		  
-		"mirrorDome13" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [-5.0, 3.5, 15.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" },
-		  
-		"mirrorDome14" : {
-          "Geometry" : "shapeGeo",
-          "Mesh" : "sphere",
-          "Material" : "mirror0",
-          "Position" : [5.0, 3.5, 15.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [1.0, 1.0, 1.0],
-          "RenderLayer" : "Opaque" }
+      "skyDome": {
+        "Geometry": "shapeGeo",
+        "Position": [ 0.0, 0.0, 0.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 5000.0, 5000.0, 5000.0 ],
+        "RenderLayer": "Sky",
+        "Settings": {
+          "sphere": { "Material": "sky" }
+        }
       },
-      "SkinnedRenderItems" : 
-      {
-        "WalkingMan" : {
-          "Geometry" : "Models\\test.fbx",
-          "Animation" : "Take 001",
-          "Position" : [0.0, 0.0, -5.0],
-          "Rotation" : [0.0, 0.0, 0.0, 1.0],
-          "Scale" : [0.05, 0.05, -0.05],
-          "RenderLayer" : "Opaque" }
+
+      "floor": {
+        "Geometry": "shapeGeo",
+        "Position": [ 0.0, 0.0, 0.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "grid": { "Material": "tile0" }
+        }
+      },
+
+      "Pillar1": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 1.5, -15.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar2": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 1.5, -15.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar3": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 1.5, -10.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar4": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 1.5, -10.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar5": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 1.5, -5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar6": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 1.5, -5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar7": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 1.5, 0.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar8": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 1.5, 0.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar9": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 1.5, 5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar10": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 1.5, 5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar11": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 1.5, 10.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar12": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 1.5, 10.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar13": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 1.5, 15.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "Pillar14": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 1.5, 15.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "cylinder": { "Material": "bricks0" }
+        }
+      },
+
+      "mirrorDome1": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 3.5, -15.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome2": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 3.5, -15.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome3": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 3.5, -10.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome4": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 3.5, -10.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome5": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 3.5, -5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome6": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 3.5, -5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome7": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 3.5, 0.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome8": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 3.5, 0.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome9": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 3.5, 5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome10": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 3.5, 5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome11": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 3.5, 10.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome12": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 3.5, 10.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome13": {
+        "Geometry": "shapeGeo",
+        "Position": [ -5.0, 3.5, 15.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "mirrorDome14": {
+        "Geometry": "shapeGeo",
+        "Position": [ 5.0, 3.5, 15.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "mirror0" }
+        }
+      },
+
+      "WalkingMan" : {
+        "Geometry" : "Models\\test.fbx",
+        "Animation" : "Take 001",
+        "Position" : [0.0, 0.0, -5.0],
+        "Rotation" : [0.0, 0.0, 0.0, 1.0],
+        "Scale": [ 0.05, 0.05, -0.05 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "Ch31_Body": {"Simulate": true, "Material": "FaceMaterial"},
+          "Ch31_Pants": {},
+          "Ch31_Sweater": {},
+          "Ch31_Collar": {},
+          "Ch31_Eyelashes": {},
+          "Ch31_Shoes": {},
+          "Ch31_Hair": {}
+        }
       }
     }
   }

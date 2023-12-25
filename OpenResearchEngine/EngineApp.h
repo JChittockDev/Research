@@ -101,6 +101,8 @@ private:
     void DrawSceneToShadowMap();
     void DrawNormalsAndDepth();
 
+    std::string extractFileName(const std::string& filePath);
+
     CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuSrv(int index)const;
     CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuSrv(int index)const;
     CD3DX12_CPU_DESCRIPTOR_HANDLE GetDsv(int index)const;
@@ -132,7 +134,8 @@ private:
 
     DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
-    std::unordered_map<std::string, std::shared_ptr<Texture>> mTextures;
+    std::unordered_map<std::string, std::shared_ptr<std::pair<Texture, UINT>>> mTextures;
+    std::unordered_map<std::string, std::shared_ptr<std::pair<Texture, UINT>>> mTextureCubes;
     std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
     std::unordered_map<std::string, std::shared_ptr<Skeleton>> mSkeletons;
     std::unordered_map<std::string, std::shared_ptr<Animation>> mAnimations;
@@ -144,8 +147,8 @@ private:
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSubsets;
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
-    std::vector<std::shared_ptr<ModelMaterial>> mMats;
     std::vector<std::string> mTextureNames;
+    std::vector<std::string> mTextureCubeNames;
 
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
@@ -159,6 +162,7 @@ private:
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mLightRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mRenderItemLayers;
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;
+    std::unordered_map<std::string, std::unordered_map<std::string, PBRMaterialData>> mLevelMaterials;
     std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndicies;
 
     UINT BlendCBIndex = 0;

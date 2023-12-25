@@ -17,5 +17,5 @@ void EngineApp::SetRenderPassResources()
         mShadowMaps[i]->BuildDescriptors(GetCpuSrv(mLayoutIndicies["mShadowMapHeapIndex"].first + i), GetGpuSrv(mLayoutIndicies["mShadowMapHeapIndex"].first + i), GetDsv(i + 1));
     }
 
-    mSsaoMap->BuildDescriptors(mDepthStencilBuffer.Get(), GetCpuSrv(mLayoutIndicies["mSsaoHeapIndexStart"].first), GetGpuSrv(mLayoutIndicies["mSsaoHeapIndexStart"].first), GetRtv(SwapChainBufferCount), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
+    mSsaoMap->BuildDescriptors(mDepthStencilBuffer.Get(), GetCpuSrv(mLayoutIndicies["mSsaoHeapIndex"].first), GetGpuSrv(mLayoutIndicies["mSsaoHeapIndex"].first), GetRtv(SwapChainBufferCount), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
 }

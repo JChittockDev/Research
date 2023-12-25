@@ -19,6 +19,15 @@ void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 			XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
 			matData.DiffuseMapIndex = mat->DiffuseSrvHeapIndex;
 			matData.NormalMapIndex = mat->NormalSrvHeapIndex;
+			matData.RoughnessMapIndex = mat->DiffuseSrvHeapIndex;
+			matData.MetalnesssMapIndex = mat->MetalnessSrvHeapIndex;
+			matData.SpecularsMapIndex = mat->SpecularSrvHeapIndex;
+			matData.HeightsMapIndex = mat->HeightSrvHeapIndex;
+			matData.OpacitysMapIndex = mat->OpacitySrvHeapIndex;
+			matData.OcclusionsMapIndex = mat->OcclusionSrvHeapIndex;
+			matData.RefractionsMapIndex = mat->RefractionSrvHeapIndex;
+			matData.EmissivesMapIndex = mat->EmissiveSrvHeapIndex;
+			matData.SubsurfacesMapIndex = mat->SubsurfaceSrvHeapIndex;
 
 			currMaterialBuffer->CopyData(mat->MatCBIndex, matData);
 

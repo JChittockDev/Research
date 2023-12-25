@@ -11,12 +11,11 @@ void EngineApp::DiffusePass(const std::unordered_map<std::string, std::pair<INT,
     mCommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightSteelBlue, 0, nullptr);
     mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
     mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
-    mCommandList->SetGraphicsRootDescriptorTable(4, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-    auto passCB = currentFrameResource->PassCB->Resource();
-    mCommandList->SetGraphicsRootConstantBufferView(1, passCB->GetGPUVirtualAddress());
-    CD3DX12_GPU_DESCRIPTOR_HANDLE skyTexDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-    skyTexDescriptor.Offset(layoutIndexMap.at("mSkyTexHeapIndex").first, layoutIndexMap.at("mSkyTexHeapIndex").second);
-    mCommandList->SetGraphicsRootDescriptorTable(3, skyTexDescriptor);
+    CD3DX12_GPU_DESCRIPTOR_HANDLE textureDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+    mCommandList->SetGraphicsRootDescriptorTable(4, textureDescriptor);
+    mCommandList->SetGraphicsRootConstantBufferView(1, currentFrameResource->PassCB->Resource()->GetGPUVirtualAddress());
+    textureDescriptor.Offset(layoutIndexMap.at("mSkyTexHeapIndex").first, layoutIndexMap.at("mSkyTexHeapIndex").second);
+    mCommandList->SetGraphicsRootDescriptorTable(3, textureDescriptor);
     mCommandList->SetPipelineState(mPSOs.at("opaque").Get());
     SetRenderItems(mCommandList.Get(), mRenderItemLayers.at("Opaque"), currentFrameResource);
     mCommandList->SetPipelineState(mPSOs.at("sky").Get());

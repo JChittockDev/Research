@@ -33,7 +33,7 @@ void EngineApp::DeformationPass(FrameResource* currentFrameResource)
             mCommandList->SetPipelineState(mPSOs.at("skinned").Get());
             ComputeSkinning(mCommandList.Get(), renderItems[i], currentFrameResource);
             
-            if (renderItems[i]->Geo->Simulation)
+            if (renderItems[i]->Simulation)
             {
                 mCommandList->SetComputeRootSignature(mMeshTransferRootSignature.Get());
                 mCommandList->SetPipelineState(mPSOs.at("meshTransfer").Get());
@@ -89,7 +89,7 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_
     cmdList->SetComputeRootShaderResourceView(1, ri->MeshAnimationResourceInstance->BlendedVertexBufferGPU->GetGPUVirtualAddress() + ri->VertexStart * sizeof(Vertex));
     cmdList->SetComputeRootShaderResourceView(2, ri->Geo->SkinningBufferGPU->GetGPUVirtualAddress() + ri->VertexStart * sizeof(SkinningInfo));
     
-    if (!ri->Geo->Simulation)
+    if (!ri->Simulation)
     {
         cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
     }
@@ -115,7 +115,7 @@ void EngineApp::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->BlendedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 
 
-    if (!ri->Geo->Simulation)
+    if (!ri->Simulation)
     {
         cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
     }
@@ -338,7 +338,7 @@ void EngineApp::SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::ve
 
         if (ri->AnimationInstance != nullptr)
         {
-            if (!ri->Geo->Simulation)
+            if (!ri->Simulation)
             {
                 cmdList->IASetVertexBuffers(0, 1, &ri->MeshAnimationResourceInstance->SkinnedVertexBufferView());
             }

@@ -245,8 +245,16 @@ struct MaterialData
 
     UINT DiffuseMapIndex = 0;
     UINT NormalMapIndex = 0;
+    UINT RoughnessMapIndex = 0;
+    UINT MetalnesssMapIndex = 0;
+    UINT SpecularsMapIndex = 0;
+    UINT HeightsMapIndex = 0;
+    UINT OpacitysMapIndex = 0;
+    UINT OcclusionsMapIndex = 0;
+    UINT RefractionsMapIndex = 0;
+    UINT EmissivesMapIndex = 0;
+    UINT SubsurfacesMapIndex = 0;
     UINT MaterialPad1;
-    UINT MaterialPad2;
 };
 
 struct Vertex
@@ -280,7 +288,6 @@ struct BlendshapeSubset
 
 struct Subset
 {
-    UINT Id = -1;
     UINT VertexStart = 0;
     UINT VertexCount = 0;
     UINT IndexStart = 0;
@@ -310,20 +317,6 @@ struct Subset
     UINT BlendshapeCount = 0;
     UINT BlendshapeStart = 0;
     std::vector<BlendshapeSubset> BlendshapeSubsets;
-};
-
-struct ModelMaterial
-{
-    std::string Name;
-
-    DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
-    DirectX::XMFLOAT3 FresnelR0 = { 0.01f, 0.01f, 0.01f };
-    float Roughness = 0.8f;
-    bool AlphaClip = false;
-
-    std::string MaterialTypeName;
-    std::string DiffuseMapName;
-    std::string NormalMapName;
 };
 
 struct SkinWeight
@@ -359,8 +352,6 @@ struct SubmeshGeometry
     UINT SimMeshStretchConstraintCount = 0;
     UINT SimMeshBendingConstraintStart = 0;
     UINT SimMeshBendingConstraintCount = 0;
-
-
 
     UINT SimMeshTriangleCount = 0;
     UINT SimMeshIndexStart = 0;
@@ -453,8 +444,6 @@ struct MeshGeometry
     DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
     UINT IndexBufferByteSize = 0;
 
-    bool Simulation = true;
-
     // A MeshGeometry may store multiple geometries in one vertex/index buffer.
     // Use this container to define the Submesh geometries so we can draw
     // the Submeshes individually.
@@ -519,9 +508,16 @@ struct Material
 
     // Index into SRV heap for diffuse texture.
     int DiffuseSrvHeapIndex = -1;
-
-    // Index into SRV heap for normal texture.
     int NormalSrvHeapIndex = -1;
+    int RoughnessSrvHeapIndex = -1;
+    int MetalnessSrvHeapIndex = -1;
+    int SpecularSrvHeapIndex = -1;
+    int HeightSrvHeapIndex = -1;
+    int OpacitySrvHeapIndex = -1;
+    int OcclusionSrvHeapIndex = -1;
+    int RefractionSrvHeapIndex = -1;
+    int EmissiveSrvHeapIndex = -1;
+    int SubsurfaceSrvHeapIndex = -1;
 
     // Dirty flag indicating the material has changed and we need to update the constant buffer.
     // Because we have a material constant buffer for each FrameResource, we have to apply the
@@ -545,6 +541,8 @@ struct Texture
 
     Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadHeap = nullptr;
+
+    std::string Type;
 };
 
 struct TransformAnimNode
@@ -593,22 +591,48 @@ struct Animation
     float duration;
 };
 
+struct RenderItemSettings
+{
+    bool Simulation = false;
+    std::string Material = "default";
+};
+
 struct ItemData
 {
     std::string item_name;
     std::string geometry;
-    std::string mesh;
     std::string animation;
-    std::string material;
     std::vector<double> position;
     std::vector<double> rotation;
     std::vector<double> scale;
     std::string render_layer;
+    std::unordered_map<std::string, RenderItemSettings> settings;
 };
 
 struct LevelItemData
 {
     std::unique_ptr<std::unordered_map<std::string, ItemData>> renderItemDataDict;
+};
+
+struct PBRMaterialData
+{
+    std::string name;
+    std::string diffuse_tex_path;
+    std::string normal_tex_path;
+    std::string roughness_tex_path;
+    std::string metalness_tex_path;
+    std::string specular_tex_path;
+    std::string height_tex_path;
+    std::string opacity_tex_path;
+    std::string occlusion_tex_path;
+    std::string refraction_tex_path;
+    std::string emissive_tex_path;
+    std::string subsurface_tex_path;
+};
+
+struct LevelMaterialData
+{
+    std::unique_ptr<std::unordered_map<std::string, PBRMaterialData>> pbrMaterialDataDict;
 };
 
 struct LevelAssetData
@@ -620,4 +644,5 @@ struct LevelData
 {
     std::string name;
     std::unique_ptr<LevelAssetData> data;
+    std::unique_ptr<LevelMaterialData> materialData;
 };

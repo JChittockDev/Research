@@ -20,14 +20,22 @@
 
 struct MaterialData
 {
-	float4   DiffuseAlbedo;
-	float3   FresnelR0;
-	float    Roughness;
+	float4 DiffuseAlbedo;
+	float3 FresnelR0;
+	float Roughness;
 	float4x4 MatTransform;
-	uint     DiffuseMapIndex;
-	uint     NormalMapIndex;
-	uint     MatPad1;
-	uint     MatPad2;
+    uint DiffuseMapIndex;
+	uint NormalMapIndex;
+    uint RoughnessMapIndex;
+    uint MetalnesssMapIndex;
+    uint SpecularsMapIndex;
+    uint HeightsMapIndex;
+    uint OpacitysMapIndex;
+    uint OcclusionsMapIndex;
+    uint RefractionsMapIndex;
+    uint EmissivesMapIndex;
+    uint SubsurfacesMapIndex;
+	uint MatPad1;
 };
 
 TextureCube gCubeMap : register(t0);

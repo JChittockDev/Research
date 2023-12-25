@@ -132,3 +132,11 @@ CD3DX12_CPU_DESCRIPTOR_HANDLE EngineApp::GetRtv(int index)const
     rtv.Offset(index, mRtvDescriptorSize);
     return rtv;
 }
+
+std::string EngineApp::extractFileName(const std::string& filePath) {
+    size_t found = filePath.find_last_of("/\\");
+    if (found != std::string::npos) {
+        return filePath.substr(found + 1);
+    }
+    return filePath; // If no path separator is found, return the whole path as filename
+}

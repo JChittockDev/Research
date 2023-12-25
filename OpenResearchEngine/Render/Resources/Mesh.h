@@ -15,7 +15,6 @@ public:
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
         std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
         std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets,
-        std::vector<std::shared_ptr<ModelMaterial>>& mats,
         std::unordered_map<std::string, std::shared_ptr<Skeleton>>& skeletons,
         std::unordered_map<std::string, std::shared_ptr<Animation>>& animations,
         std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms);
@@ -23,8 +22,7 @@ public:
     Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
         std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
-        std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets,
-        std::vector<std::shared_ptr<ModelMaterial>>& mats);
+        std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets);
 
 private:
     void ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms);
@@ -37,7 +35,6 @@ private:
     void ReadSubsetTable(const aiScene* scene, const aiScene* simScene, std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, const std::string& mesh);
     void ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<UINT>& indices, std::vector<std::vector<UINT>>& segmentedIndices);
     void ReadTriangles(unsigned int numMesh, aiMesh** meshList, std::vector<UINT>& indices);
-    void ReadMaterials(const aiScene* scene, std::vector<std::shared_ptr<ModelMaterial>>& mats);
     void ReadSkeleton(const aiScene* scene, std::shared_ptr<Skeleton>& mSkeleton);
     void ReadAnimations(const aiScene* scene, std::unordered_map<std::string, std::shared_ptr<Animation>>& animations);
     void GetMeshTransferMap(const std::vector<std::vector<Vertex>>& baseVertices, const std::vector<std::vector<Vertex>>& targetVertices, std::vector<UINT>& map);
