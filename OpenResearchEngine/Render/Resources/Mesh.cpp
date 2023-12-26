@@ -183,9 +183,7 @@ void Mesh::ReadSubsetTable(const aiScene* scene, const aiScene* simScene, std::u
 		sb->SimMeshIndexCount = simMeshNumIndicies;
 		sb->SimMeshTriangleStart = simMeshTriangleCounter;
 		sb->SimMeshTriangleCount = simMeshNumTriangles;
-		sb->MaterialIndex = scene->mMeshes[i]->mMaterialIndex;
-		sb->MeshName = mesh;
-		sb->alias = scene->mMeshes[i]->mName.C_Str();
+		sb->Name = scene->mMeshes[i]->mName.C_Str();
 
 		vertexCounter += numVertices;
 		indexCounter += numIndicies;
@@ -218,8 +216,7 @@ void Mesh::ReadSubsetTable(const aiScene* scene, std::unordered_map<std::string,
 		sb->IndexCount = numIndicies;
 		sb->TriangleStart = triangleCounter;
 		sb->TriangleCount = numTriangles;
-		sb->MaterialIndex = scene->mMeshes[i]->mMaterialIndex;
-		sb->MeshName = mesh;
+		sb->Name = scene->mMeshes[i]->mName.C_Str();
 		
 		vertexCounter += numVertices;
 		indexCounter += numIndicies;
@@ -675,14 +672,13 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	for (UINT i = 0; i < (UINT)subsets[filename].size(); ++i)
 	{
 		SubmeshGeometry submesh;
-		std::string name = "sm_" + std::to_string(i);
+		submesh.Name = subsets[filename][i]->Name;
 		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
 		submesh.IndexStart = subsets[filename][i]->IndexStart;
 		submesh.VertexStart = subsets[filename][i]->VertexStart;
 		submesh.TriangleStart = subsets[filename][i]->TriangleStart;
-		submesh.MaterialIndex = subsets[filename][i]->MaterialIndex;
-		geo->DrawArgs[name] = submesh;
+		geo->DrawArgs[submesh.Name] = submesh;
 	}
 
 	geometries[geo->Name] = std::move(geo);
@@ -861,15 +857,13 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	for (UINT i = 0; i < (UINT)subsets[filename].size(); ++i)
 	{
 		SubmeshGeometry submesh;
-		std::string name = "sm_" + std::to_string(i);
-		submesh.alias = subsets[filename][i]->alias;
+		submesh.Name = subsets[filename][i]->Name;
 		submesh.VertexCount = (UINT)subsets[filename][i]->VertexCount;
 		submesh.IndexCount = (UINT)subsets[filename][i]->IndexCount;
 		submesh.TriangleCount = (UINT)subsets[filename][i]->TriangleCount;
 		submesh.IndexStart = (UINT)subsets[filename][i]->IndexStart;
 		submesh.VertexStart = (UINT)subsets[filename][i]->VertexStart;
 		submesh.TriangleStart = (UINT)subsets[filename][i]->TriangleStart;
-		submesh.MaterialIndex = (UINT)subsets[filename][i]->MaterialIndex;
 		submesh.BlendshapeVertexCount = (UINT)subsets[filename][i]->BlendshapeVertexCount;
 		submesh.BlendshapeVertexStart = (UINT)subsets[filename][i]->BlendshapeVertexStart;
 		submesh.BlendshapeSubsets = subsets[filename][i]->BlendshapeSubsets;
@@ -885,7 +879,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 		submesh.SimMeshIndexStart = (UINT)subsets[filename][i]->SimMeshIndexStart;
 		submesh.SimMeshVertexStart = (UINT)subsets[filename][i]->SimMeshVertexStart;
 		submesh.SimMeshTriangleStart = (UINT)subsets[filename][i]->SimMeshTriangleStart;
-		geo->DrawArgs[name] = submesh;
+		geo->DrawArgs[submesh.Name] = submesh;
 	}
 
 	geometries[geo->Name] = std::move(geo);

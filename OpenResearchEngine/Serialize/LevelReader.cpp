@@ -40,9 +40,17 @@ void LevelReader::SetRenderItemData(const json& item_data, ItemData& renderItemS
             {
                 renderItemStruct.settings[riSettings.key()].Material = riSettings.value()["Material"];
             }
+            else
+            {
+                renderItemStruct.settings[riSettings.key()].Material = "default";
+            }
             if (riSettings.value().contains("Simulation"))
             {
                 renderItemStruct.settings[riSettings.key()].Simulation = riSettings.value()["Simulation"];
+            }
+            else
+            {
+                renderItemStruct.settings[riSettings.key()].Simulation = false;
             }
         }
     }

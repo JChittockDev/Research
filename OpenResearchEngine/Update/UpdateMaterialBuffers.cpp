@@ -29,7 +29,7 @@ void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 			matData.EmissivesMapIndex = mat->EmissiveSrvHeapIndex;
 			matData.SubsurfacesMapIndex = mat->SubsurfaceSrvHeapIndex;
 
-			currMaterialBuffer->CopyData(mat->MatCBIndex, matData);
+			currMaterialBuffer->CopyData(mat->MaterialIndex, matData);
 
 			// Next FrameResource need to be updated too.
 			mat->NumFramesDirty--;

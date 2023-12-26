@@ -10,7 +10,6 @@ void EngineApp::ImportTextures()
         "bricksNormalMap",
         "tileDiffuseMap",
         "tileNormalMap",
-        "white1x1Map",
         "defaultDiffuseMap",
         "defaultNormalMap"
     };
@@ -21,7 +20,6 @@ void EngineApp::ImportTextures()
         L"Textures/bricks2_nmap.dds",
         L"Textures/tile.dds",
         L"Textures/tile_nmap.dds",
-        L"Textures/white1x1.dds",
         L"Textures/default_diffuse.dds",
         L"Textures/default_nmap.dds"
     };
@@ -33,7 +31,7 @@ void EngineApp::ImportTextures()
 
     std::vector<std::wstring> texCubeFilenames =
     {
-        L"Textures/sunsetcube1024.dds"
+        L"Textures/desertcube1024.dds"
     };
 
     for (const auto& item : mLevelMaterials.at("DemoLevel"))

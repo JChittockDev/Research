@@ -254,7 +254,7 @@ struct MaterialData
     UINT RefractionsMapIndex = 0;
     UINT EmissivesMapIndex = 0;
     UINT SubsurfacesMapIndex = 0;
-    UINT MaterialPad1;
+    UINT MaterialPad1 = 0;
 };
 
 struct Vertex
@@ -308,9 +308,7 @@ struct Subset
     UINT SimMeshTriangleStart = 0;
     UINT SimMeshTriangleCount = 0;
 
-    UINT MaterialIndex = 0;
-    std::string MeshName;
-    std::string alias;
+    std::string Name;
 
     UINT BlendshapeVertexStart = 0;
     UINT BlendshapeVertexCount = 0;
@@ -331,7 +329,7 @@ struct SkinWeight
 // buffers so that we can implement the technique described by Figure 6.3.
 struct SubmeshGeometry
 {
-    std::string alias;
+    std::string Name;
 
     UINT VertexCount = 0;
     UINT IndexCount = 0;
@@ -358,7 +356,6 @@ struct SubmeshGeometry
     UINT SimMeshVertexStart = 0;
     UINT SimMeshTriangleStart = 0;
 
-    UINT MaterialIndex = 0;
     DirectX::BoundingBox Bounds;
 };
 
@@ -486,16 +483,6 @@ struct MeshGeometry
     }
 };
 
-struct MaterialConstants
-{
-    DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
-    DirectX::XMFLOAT3 FresnelR0 = { 0.01f, 0.01f, 0.01f };
-    float Roughness = 0.25f;
-
-    // Used in texture mapping.
-    DirectX::XMFLOAT4X4 MatTransform = Math::Identity4x4();
-};
-
 // Simple struct to represent a material for our demos.  A production 3D engine
 // would likely create a class hierarchy of Materials.
 struct Material
@@ -504,7 +491,7 @@ struct Material
     std::string Name;
 
     // Index into constant buffer corresponding to this material.
-    int MatCBIndex = -1;
+    int MaterialIndex = -1;
 
     // Index into SRV heap for diffuse texture.
     int DiffuseSrvHeapIndex = -1;

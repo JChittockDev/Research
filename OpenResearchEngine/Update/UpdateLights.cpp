@@ -29,21 +29,21 @@ void EngineApp::UpdateLights(const GameTimer& gt)
         DirectX::XMStoreFloat4(&rotation, DirectX::XMQuaternionRotationMatrix(lightView));
         DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
         DirectX::XMFLOAT4X4 transformMatrix = Math::CreateTransformMatrix(dynamicLights.LightTransforms[i].ReferencePosition, rotation, scale);
-        std::string renderItemPath = "Models\\directionallight.obj_" + std::to_string(i);
+        std::string renderItemPath = "defaultobject_" + std::to_string(i);
 
-        for (int b = 0; b < mLightRenderItemMap.at(renderItemPath).size(); b++)
+        for (int b = 0; b < mDirectionalLightRenderItemMap.at(renderItemPath).size(); b++)
         {
-            if (mLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty > 0)
+            if (mDirectionalLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty > 0)
             {
                 DirectX::XMMATRIX transform = DirectX::XMLoadFloat4x4(&transformMatrix);
                 ObjectConstants objConstants;
                 XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(transform));
-                XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(DirectX::XMLoadFloat4x4(&mLightRenderItemMap.at(renderItemPath)[b]->TexTransform)));
-                objConstants.MaterialIndex = mLightRenderItemMap.at(renderItemPath)[b]->Mat->MatCBIndex;
-                currObjectCB->CopyData(mLightRenderItemMap.at(renderItemPath)[b]->ObjCBIndex, objConstants);
+                XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(DirectX::XMLoadFloat4x4(&mDirectionalLightRenderItemMap.at(renderItemPath)[b]->TexTransform)));
+                objConstants.MaterialIndex = mDirectionalLightRenderItemMap.at(renderItemPath)[b]->Mat->MaterialIndex;
+                currObjectCB->CopyData(mDirectionalLightRenderItemMap.at(renderItemPath)[b]->ObjCBIndex, objConstants);
 
                 // Next FrameResource need to be updated too.
-                mLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty--;
+                mDirectionalLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty--;
             }
         }
     }
@@ -59,21 +59,21 @@ void EngineApp::UpdateLights(const GameTimer& gt)
         DirectX::XMStoreFloat4(&rotation, DirectX::XMQuaternionRotationMatrix(lightView));
         DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
         DirectX::XMFLOAT4X4 transformMatrix = Math::CreateTransformMatrix(dynamicLights.SpotLights[i].Position, rotation, scale);
-        std::string renderItemPath = "Models\\spotlight.obj_" + std::to_string(i);
+        std::string renderItemPath = "defaultobject_" + std::to_string(i);
 
-        for (int b = 0; b < mLightRenderItemMap.at(renderItemPath).size(); b++)
+        for (int b = 0; b < mSpotLightRenderItemMap.at(renderItemPath).size(); b++)
         {
-            if (mLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty > 0)
+            if (mSpotLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty > 0)
             {
                 DirectX::XMMATRIX transform = DirectX::XMLoadFloat4x4(&transformMatrix);
                 ObjectConstants objConstants;
                 XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(transform));
-                XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(DirectX::XMLoadFloat4x4(&mLightRenderItemMap.at(renderItemPath)[b]->TexTransform)));
-                objConstants.MaterialIndex = mLightRenderItemMap.at(renderItemPath)[b]->Mat->MatCBIndex;
-                currObjectCB->CopyData(mLightRenderItemMap.at(renderItemPath)[b]->ObjCBIndex, objConstants);
+                XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(DirectX::XMLoadFloat4x4(&mSpotLightRenderItemMap.at(renderItemPath)[b]->TexTransform)));
+                objConstants.MaterialIndex = mSpotLightRenderItemMap.at(renderItemPath)[b]->Mat->MaterialIndex;
+                currObjectCB->CopyData(mSpotLightRenderItemMap.at(renderItemPath)[b]->ObjCBIndex, objConstants);
 
                 // Next FrameResource need to be updated too.
-                mLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty--;
+                mSpotLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty--;
             }
         }
     }

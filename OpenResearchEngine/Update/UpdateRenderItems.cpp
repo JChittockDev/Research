@@ -18,7 +18,7 @@ void EngineApp::UpdateObjectCBs(const GameTimer& gt)
 				ObjectConstants objConstants;
 				XMStoreFloat4x4(&objConstants.World, XMMatrixTranspose(world));
 				XMStoreFloat4x4(&objConstants.TexTransform, XMMatrixTranspose(texTransform));
-				objConstants.MaterialIndex = renderItems[i]->Mat->MatCBIndex;
+				objConstants.MaterialIndex = renderItems[i]->Mat->MaterialIndex;
 
 				currObjectCB->CopyData(renderItems[i]->ObjCBIndex, objConstants);
 

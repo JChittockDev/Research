@@ -36,8 +36,7 @@ void EngineApp::PushGenericMesh()
 	boxSubset->IndexCount = (UINT)box.Indices32.size();
 	boxSubset->TriangleStart = boxIndexOffset / 3;
 	boxSubset->TriangleCount = (UINT)box.Indices32.size() / 3;
-	boxSubset->MaterialIndex = matIndex++;
-	boxSubset->MeshName = "box";
+	boxSubset->Name = "box";
 
 	std::shared_ptr<Subset> gridSubset = std::make_shared<Subset>();
 	gridSubset->VertexStart = gridVertexOffset;
@@ -46,8 +45,7 @@ void EngineApp::PushGenericMesh()
 	gridSubset->IndexCount = (UINT)grid.Indices32.size();
 	gridSubset->TriangleStart = gridIndexOffset / 3;
 	gridSubset->TriangleCount = (UINT)grid.Indices32.size() / 3;
-	gridSubset->MaterialIndex = matIndex++;
-	gridSubset->MeshName = "grid";
+	gridSubset->Name = "grid";
 
 	std::shared_ptr<Subset> sphereSubset = std::make_shared<Subset>();
 	sphereSubset->VertexStart = sphereVertexOffset;
@@ -56,8 +54,7 @@ void EngineApp::PushGenericMesh()
 	sphereSubset->IndexCount = (UINT)sphere.Indices32.size();
 	sphereSubset->TriangleStart = sphereIndexOffset / 3;
 	sphereSubset->TriangleCount = (UINT)sphere.Indices32.size() / 3;
-	sphereSubset->MaterialIndex = matIndex++;
-	sphereSubset->MeshName = "sphere";
+	sphereSubset->Name = "sphere";
 
 	std::shared_ptr<Subset> cylinderSubset = std::make_shared<Subset>();
 	cylinderSubset->VertexStart = cylinderVertexOffset;
@@ -66,8 +63,7 @@ void EngineApp::PushGenericMesh()
 	cylinderSubset->IndexCount = (UINT)cylinder.Indices32.size();
 	cylinderSubset->TriangleStart = cylinderIndexOffset / 3;
 	cylinderSubset->TriangleCount = (UINT)cylinder.Indices32.size() / 3;
-	cylinderSubset->MaterialIndex = matIndex++;
-	cylinderSubset->MeshName = "cylinder";
+	cylinderSubset->Name = "cylinder";
 
 	std::shared_ptr<Subset> quadSubset = std::make_shared<Subset>();
 	quadSubset->VertexStart = quadVertexOffset;
@@ -76,8 +72,7 @@ void EngineApp::PushGenericMesh()
 	quadSubset->IndexCount = (UINT)quad.Indices32.size();
 	quadSubset->TriangleStart = quadIndexOffset / 3;
 	quadSubset->TriangleCount = (UINT)quad.Indices32.size() / 3;
-	quadSubset->MaterialIndex = matIndex++;
-	quadSubset->MeshName = "quad";
+	quadSubset->Name = "quad";
 
 	SubmeshGeometry boxSubmesh;
 	boxSubmesh.IndexCount = boxSubset->IndexCount;
@@ -86,7 +81,7 @@ void EngineApp::PushGenericMesh()
 	boxSubmesh.VertexStart = boxSubset->VertexStart;
 	boxSubmesh.TriangleCount = boxSubset->TriangleCount;
 	boxSubmesh.TriangleStart = boxSubset->TriangleStart;
-	boxSubmesh.MaterialIndex = boxSubset->MaterialIndex;
+	boxSubmesh.Name = boxSubset->Name;
 
 	SubmeshGeometry gridSubmesh;
 	gridSubmesh.IndexCount = gridSubset->IndexCount;
@@ -95,7 +90,7 @@ void EngineApp::PushGenericMesh()
 	gridSubmesh.VertexStart = gridSubset->VertexStart;
 	gridSubmesh.TriangleCount = gridSubset->TriangleCount;
 	gridSubmesh.TriangleStart = gridSubset->TriangleStart;
-	gridSubmesh.MaterialIndex = gridSubset->MaterialIndex;
+	gridSubmesh.Name = gridSubset->Name;
 
 	SubmeshGeometry sphereSubmesh;
 	sphereSubmesh.IndexCount = sphereSubset->IndexCount;
@@ -104,7 +99,7 @@ void EngineApp::PushGenericMesh()
 	sphereSubmesh.VertexStart = sphereSubset->VertexStart;
 	sphereSubmesh.TriangleCount = sphereSubset->TriangleCount;
 	sphereSubmesh.TriangleStart = sphereSubset->TriangleStart;
-	sphereSubmesh.MaterialIndex = sphereSubset->MaterialIndex;
+	sphereSubmesh.Name = sphereSubset->Name;
 
 	SubmeshGeometry cylinderSubmesh;
 	cylinderSubmesh.IndexCount = cylinderSubset->IndexCount;
@@ -113,7 +108,7 @@ void EngineApp::PushGenericMesh()
 	cylinderSubmesh.VertexStart = cylinderSubset->VertexStart;
 	cylinderSubmesh.TriangleCount = cylinderSubset->TriangleCount;
 	cylinderSubmesh.TriangleStart = cylinderSubset->TriangleStart;
-	cylinderSubmesh.MaterialIndex = cylinderSubset->MaterialIndex;
+	cylinderSubmesh.Name = cylinderSubset->Name;
 
 	SubmeshGeometry quadSubmesh;
 	quadSubmesh.IndexCount = quadSubset->IndexCount;
@@ -122,7 +117,7 @@ void EngineApp::PushGenericMesh()
 	quadSubmesh.VertexStart = quadSubset->VertexStart;
 	quadSubmesh.TriangleCount = quadSubset->TriangleCount;
 	quadSubmesh.TriangleStart = quadSubset->TriangleStart;
-	quadSubmesh.MaterialIndex = quadSubset->MaterialIndex;
+	quadSubmesh.Name = quadSubset->Name;
 
 	mSubsets["shapeGeo"].push_back(std::move(boxSubset));
 	mSubsets["shapeGeo"].push_back(std::move(gridSubset));
