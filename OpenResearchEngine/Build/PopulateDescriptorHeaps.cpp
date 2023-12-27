@@ -47,19 +47,16 @@ void EngineApp::PopulateDescriptorHeaps()
 		hDescriptor.Offset(1, mCbvSrvUavDescriptorSize);
 	}
 
-	for (UINT i = 0; i < (UINT)mTextureCubeNames.size(); ++i)
-	{
-		auto texResource = mTextureCubes[mTextureCubeNames[i]]->first.Resource;
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
-		srvDesc.TextureCube.MostDetailedMip = 0;
-		srvDesc.TextureCube.MipLevels = texResource->GetDesc().MipLevels;
-		srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
-		srvDesc.Format = texResource->GetDesc().Format;
-		md3dDevice->CreateShaderResourceView(texResource.Get(), &srvDesc, hDescriptor);
-		hDescriptor.Offset(1, mCbvSrvUavDescriptorSize);
-	}
+	auto skyCubeMap = mTextureCubes["skyCubeMap"]->first.Resource;
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvSkyDesc = {};
+	srvSkyDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvSkyDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+	srvSkyDesc.TextureCube.MostDetailedMip = 0;
+	srvSkyDesc.TextureCube.MipLevels = skyCubeMap->GetDesc().MipLevels;
+	srvSkyDesc.TextureCube.ResourceMinLODClamp = 0.0f;
+	srvSkyDesc.Format = skyCubeMap->GetDesc().Format;
+	md3dDevice->CreateShaderResourceView(skyCubeMap.Get(), &srvSkyDesc, hDescriptor);
+	hDescriptor.Offset(1, mCbvSrvUavDescriptorSize);
 
 	mLayoutIndicies["mSkyTexHeapIndex"] = std::make_pair((UINT)mTextures.size(), mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mShadowMapHeapIndex"] = std::make_pair(mLayoutIndicies["mSkyTexHeapIndex"].first + 1, mCbvSrvUavDescriptorSize);
