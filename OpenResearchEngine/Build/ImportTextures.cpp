@@ -11,7 +11,8 @@ void EngineApp::ImportTextures()
         "tileDiffuseMap",
         "tileNormalMap",
         "defaultDiffuseMap",
-        "defaultNormalMap"
+        "defaultNormalMap",
+        "skyCubeMap"
     };
 
     std::vector<std::wstring> texFilenames =
@@ -21,16 +22,7 @@ void EngineApp::ImportTextures()
         L"Textures/tile.dds",
         L"Textures/tile_nmap.dds",
         L"Textures/default_diffuse.dds",
-        L"Textures/default_nmap.dds"
-    };
-
-    mTextureCubeNames =
-    {
-        "skyCubeMap"
-    };
-
-    std::vector<std::wstring> texCubeFilenames =
-    {
+        L"Textures/default_nmap.dds",
         L"Textures/desertcube1024.dds"
     };
 
@@ -114,19 +106,6 @@ void EngineApp::ImportTextures()
             texMap.Filename = texFilenames[i];
             ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(), mCommandList.Get(), texMap.Filename.c_str(), texMap.Resource, texMap.UploadHeap));
             mTextures[texMap.Name] = std::move(std::make_shared<std::pair<Texture, UINT>> (std::make_pair(texMap, textureIndex)));
-        }
-        textureIndex += 1;
-    }
-
-    for (UINT i = 0; i < (UINT)mTextureCubeNames.size(); ++i)
-    {
-        if (mTextureCubes.find(mTextureCubeNames[i]) == mTextureCubes.end())
-        {
-            Texture texCubeMap;
-            texCubeMap.Name = mTextureCubeNames[i];
-            texCubeMap.Filename = texCubeFilenames[i];
-            ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(), mCommandList.Get(), texCubeMap.Filename.c_str(), texCubeMap.Resource, texCubeMap.UploadHeap));
-            mTextureCubes[texCubeMap.Name] = std::move(std::make_shared<std::pair<Texture, UINT>>(std::make_pair(texCubeMap, textureIndex)));
         }
         textureIndex += 1;
     }

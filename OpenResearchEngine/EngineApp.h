@@ -135,7 +135,6 @@ private:
     DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
     std::unordered_map<std::string, std::shared_ptr<std::pair<Texture, UINT>>> mTextures;
-    std::unordered_map<std::string, std::shared_ptr<std::pair<Texture, UINT>>> mTextureCubes;
     std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
     std::unordered_map<std::string, std::shared_ptr<Skeleton>> mSkeletons;
     std::unordered_map<std::string, std::shared_ptr<Animation>> mAnimations;

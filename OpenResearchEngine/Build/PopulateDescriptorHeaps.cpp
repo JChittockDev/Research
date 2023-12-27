@@ -33,21 +33,29 @@ void EngineApp::PopulateDescriptorHeaps()
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap)));
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
+	std::vector<ComPtr<ID3D12Resource>> tex2DList;
+
 	for (UINT i = 0; i < (UINT)mTextureNames.size(); ++i)
 	{
 		auto texResource = mTextures[mTextureNames[i]]->first.Resource;
+		assert(texResource != nullptr);
+		tex2DList.push_back(texResource);
+	}
+
+	for (UINT i = 0; i < (UINT)tex2DList.size(); ++i)
+	{
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-		srvDesc.Format = texResource->GetDesc().Format;
-		srvDesc.Texture2D.MipLevels = texResource->GetDesc().MipLevels;
-		md3dDevice->CreateShaderResourceView(texResource.Get(), &srvDesc, hDescriptor);
+		srvDesc.Format = tex2DList[i]->GetDesc().Format;
+		srvDesc.Texture2D.MipLevels = tex2DList[i]->GetDesc().MipLevels;
+		md3dDevice->CreateShaderResourceView(tex2DList[i].Get(), &srvDesc, hDescriptor);
 		hDescriptor.Offset(1, mCbvSrvUavDescriptorSize);
 	}
 
-	auto skyCubeMap = mTextureCubes["skyCubeMap"]->first.Resource;
+	auto skyCubeMap = mTextures["skyCubeMap"]->first.Resource;
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvSkyDesc = {};
 	srvSkyDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvSkyDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
@@ -58,7 +66,7 @@ void EngineApp::PopulateDescriptorHeaps()
 	md3dDevice->CreateShaderResourceView(skyCubeMap.Get(), &srvSkyDesc, hDescriptor);
 	hDescriptor.Offset(1, mCbvSrvUavDescriptorSize);
 
-	mLayoutIndicies["mSkyTexHeapIndex"] = std::make_pair((UINT)mTextures.size(), mCbvSrvUavDescriptorSize);
+	mLayoutIndicies["mSkyTexHeapIndex"] = std::make_pair((UINT)tex2DList.size(), mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mShadowMapHeapIndex"] = std::make_pair(mLayoutIndicies["mSkyTexHeapIndex"].first + 1, mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mSsaoHeapIndex"] = std::make_pair(mLayoutIndicies["mShadowMapHeapIndex"].first + dynamicLights.GetNumLights(), mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mSsaoAmbientMapHeapIndex"] = std::make_pair(mLayoutIndicies["mSsaoHeapIndex"].first + 3, mCbvSrvUavDescriptorSize);

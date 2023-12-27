@@ -6,7 +6,7 @@ MeshAnimationResource::MeshAnimationResource(Microsoft::WRL::ComPtr<ID3D12Device
 	ThrowIfFailed(D3DCreateBlob(skinningVertexBufferByteSize, &SkinnedVertexBufferCPU));
 	CopyMemory(SkinnedVertexBufferCPU->GetBufferPointer(), deformationData.vertices.data(), skinningVertexBufferByteSize);
 	SkinnedVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), deformationData.vertices.data(), skinningVertexBufferByteSize, SkinnedVertexBufferUploader);
-	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
 
 	const UINT blendshapeVertexBufferByteSize = (UINT)deformationData.vertices.size() * sizeof(Vertex);
 	ThrowIfFailed(D3DCreateBlob(blendshapeVertexBufferByteSize, &BlendedVertexBufferCPU));
