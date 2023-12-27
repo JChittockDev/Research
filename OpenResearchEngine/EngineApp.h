@@ -146,8 +146,7 @@ private:
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSubsets;
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
-    std::vector<std::string> mTextureNames;
-    std::vector<std::string> mTextureCubeNames;
+    std::map<std::string, std::string> mTextureData;
 
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;

@@ -35,9 +35,9 @@ void EngineApp::PopulateDescriptorHeaps()
 
 	std::vector<ComPtr<ID3D12Resource>> tex2DList;
 
-	for (UINT i = 0; i < (UINT)mTextureNames.size(); ++i)
+	for (const auto& texture : mTextureData)
 	{
-		auto texResource = mTextures[mTextureNames[i]]->first.Resource;
+		auto texResource = mTextures[texture.first]->first.Resource;
 		assert(texResource != nullptr);
 		tex2DList.push_back(texResource);
 	}
@@ -55,7 +55,7 @@ void EngineApp::PopulateDescriptorHeaps()
 		hDescriptor.Offset(1, mCbvSrvUavDescriptorSize);
 	}
 
-	auto skyCubeMap = mTextures["skyCubeMap"]->first.Resource;
+	auto skyCubeMap = mTextures["desertcube1024"]->first.Resource;
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvSkyDesc = {};
 	srvSkyDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvSkyDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
