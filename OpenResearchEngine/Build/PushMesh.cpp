@@ -7,10 +7,10 @@ void EngineApp::PushMesh()
     mMesh[filename] = std::move(skinnedMesh);
 
 	filename = "Models\\directionallight.obj";
-	std::shared_ptr<Mesh> directionalLightMesh = std::make_shared<Mesh>(filename, md3dDevice, mCommandList, mGeometries, mSubsets);
+	std::shared_ptr<Mesh> directionalLightMesh = std::make_shared<Mesh>(filename, md3dDevice, mCommandList, mGeometries, mSubsets, true);
 	mMesh[filename] = std::move(directionalLightMesh);
 
 	filename = "Models\\spotlight.obj";
-	std::shared_ptr<Mesh> spotLightMesh = std::make_shared<Mesh>(filename, md3dDevice, mCommandList, mGeometries, mSubsets);
+	std::shared_ptr<Mesh> spotLightMesh = std::make_shared<Mesh>(filename, md3dDevice, mCommandList, mGeometries, mSubsets, true);
 	mMesh[filename] = std::move(spotLightMesh);
 }

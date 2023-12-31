@@ -637,13 +637,24 @@ void GetBendingEdges(unsigned int numMesh, std::vector<std::shared_ptr<Subset>>&
 Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
 	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
-	std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets)
+	std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets,
+	bool flipWO)
 {
 	std::vector<Vertex> vertices;
 	std::vector<UINT> indices;
 
 	Assimp::Importer imp;
-	const aiScene* scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+
+	const aiScene* scene;
+
+	if (flipWO)
+	{
+		scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder);
+	}
+	else
+	{
+		scene = imp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder);
+	}
 	
 	ReadSubsetTable(scene, subsets, filename);
 	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices);

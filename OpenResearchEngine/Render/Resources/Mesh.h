@@ -22,7 +22,7 @@ public:
     Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
         std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
-        std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets);
+        std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, bool flipWO);
 
 private:
     void ReadTransformNodes(aiNode* node, std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms);

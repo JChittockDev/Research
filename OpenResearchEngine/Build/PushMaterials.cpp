@@ -95,9 +95,9 @@ void EngineApp::PushMaterials()
 	def->RefractionSrvHeapIndex = mTextures["default_diffuse"]->second;
 	def->EmissiveSrvHeapIndex = mTextures["default_diffuse"]->second;
 	def->SubsurfaceSrvHeapIndex = mTextures["default_diffuse"]->second;
-	def->DiffuseAlbedo = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	def->FresnelR0 = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
-	def->Roughness = 0.5f;
+	def->DiffuseAlbedo = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	def->FresnelR0 = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
+	def->Roughness = 0.9f;
 	mMaterials["default"] = std::move(def);
 
 	for (const auto& item : mLevelMaterials.at("DemoLevel"))
@@ -151,8 +151,8 @@ void EngineApp::PushMaterials()
 		mat->SubsurfaceSrvHeapIndex = mTextures[subsurfaceName]->second;
 
 		mat->DiffuseAlbedo = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-		mat->FresnelR0 = DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f);
-		mat->Roughness = 0.5f;
+		mat->FresnelR0 = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
+		mat->Roughness = 0.9f;
 		
 		mMaterials[mat->Name] = std::move(mat);
 	}

@@ -10,7 +10,7 @@ void EngineApp::ImportTextures()
     {"tile_nmap", "Textures/tile_nmap.dds"},
     {"default_diffuse", "Textures/default_diffuse.dds"},
     {"default_nmap", "Textures/default_nmap.dds"},
-    {"desertcube1024", "Textures/desertcube1024.dds"}
+    {"desertcube1024", "Textures/skycube.dds"}
     };
 
     for (const auto& item : mLevelMaterials.at("DemoLevel"))

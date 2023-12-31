@@ -18,6 +18,7 @@
 #include "assimp/postprocess.h"
 #include <math.h>
 #include "../Objects/ViewFrustum.h"
+#include "DirectML.h"
 
 #define MaxLights 16
 
