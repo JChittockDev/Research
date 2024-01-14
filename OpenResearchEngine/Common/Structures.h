@@ -18,11 +18,12 @@
 #include "assimp/postprocess.h"
 #include <math.h>
 #include "../Objects/ViewFrustum.h"
-#include "DirectML.h"
+#include <algorithm>
 
 #define MaxLights 16
 
 extern const int gNumFrameResources;
+
 
 struct BlendshapeVertex
 {
@@ -634,3 +635,127 @@ struct LevelData
     std::unique_ptr<LevelAssetData> data;
     std::unique_ptr<LevelMaterialData> materialData;
 };
+
+/*class SearlizedNode
+{
+public:
+    SearlizedNode::SearlizedNode(std::string name, const json& input_dictionary)
+    {
+        for (auto& node : input_dictionary["graph"]["node"])
+        {
+            if (node["input"][0] == name)
+            {
+                name = node["input"][0];
+                output_name = node["output"][0];
+                weight_name = node["input"][1];
+                operation = node["opType"];
+
+                for (auto& initializer : input_dictionary["graph"]["initializer"])
+                {
+                    if (name == initializer["name"])
+                    {
+                        initializer_dims = initializer["name"]["dims"];
+                        weights = initializer["name"]["floatData"];
+                    }
+                }
+            }
+        }
+
+        for (auto& input : input_dictionary["graph"]["input"])
+        {
+            if (input["name"] == name)
+            {
+                input_dims = { input["type"]["tensorType"]["shape"]["dim"][0]["dimValue"], 
+                               input["type"]["tensorType"]["shape"]["dim"][0]["dimValue"] };
+            }
+        }
+
+        for (auto& output : input_dictionary["graph"]["output"])
+        {
+            if (output["name"] == name)
+            {
+                output_dims = { output["type"]["tensorType"]["shape"]["dim"][0]["dimValue"],
+                                output["type"]["tensorType"]["shape"]["dim"][0]["dimValue"] };
+            }
+        }
+
+        output = new SearlizedNode(this, input_dictionary);
+    };
+
+    SearlizedNode::SearlizedNode(SearlizedNode* input_node, const json& input_dictionary)
+    {
+        for (auto& node : input_dictionary["graph"]["node"])
+        {
+            if (node["input"][0] == input_node->output_name)
+            {
+                name = node["input"][0];
+                output_name = node["output"][0];
+                weight_name = node["input"][1];
+                operation = node["opType"];
+
+                for (auto& initializer : input_dictionary["graph"]["initializer"])
+                {
+                    if (name == initializer["name"])
+                    {
+                        initializer_dims = initializer["name"]["dims"];
+                        weights = initializer["name"]["floatData"];
+                    }
+                }
+
+            }
+        }
+
+        input = input_node;
+        output = new SearlizedNode(this, input_dictionary);
+    };
+
+
+public:
+    std::string name;
+    std::string output_name;
+    std::string weight_name;
+    std::string operation;
+
+    std::vector<std::string> input_dims;
+    std::vector<std::string> output_dims;
+
+    std::vector<std::string> initializer_dims;
+    std::vector<std::string> weights;
+
+    SearlizedNode* input = nullptr;
+    SearlizedNode* output = nullptr;
+
+};
+
+class MLKernel
+{
+public:
+    MLKernel::MLKernel(Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, std::vector<float>& kernelWeights)
+    {
+        const UINT kernelBufferByteSize = (UINT)kernelWeights.size() * sizeof(float);
+        ThrowIfFailed(D3DCreateBlob(kernelBufferByteSize, &KernelBufferCPU));
+        CopyMemory(KernelBufferCPU->GetBufferPointer(), kernelWeights.data(), kernelBufferByteSize);
+        KernelBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), kernelWeights.data(), kernelBufferByteSize, KernelBufferUploader);
+        mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(KernelBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+    };
+
+    Microsoft::WRL::ComPtr<ID3DBlob> KernelBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> KernelBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> KernelBufferUploader = nullptr;
+};
+
+class MLBias
+{
+    MLBias::MLBias(Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, std::vector<float>& BiasWeights)
+    {
+        const UINT BiasBufferByteSize = (UINT)BiasWeights.size() * sizeof(float);
+        ThrowIfFailed(D3DCreateBlob(BiasBufferByteSize, &BiasBufferCPU));
+        CopyMemory(BiasBufferCPU->GetBufferPointer(), BiasWeights.data(), BiasBufferByteSize);
+        BiasBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), BiasWeights.data(), BiasBufferByteSize, BiasBufferUploader);
+        mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(BiasBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+    };
+
+    Microsoft::WRL::ComPtr<ID3DBlob> BiasBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BiasBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> BiasBufferUploader = nullptr;
+};*/

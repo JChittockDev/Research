@@ -159,6 +159,9 @@
     <ClCompile Include="Render\Resources\MeshAnimationResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities\MLResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects\Camera.h">
@@ -233,5 +236,12 @@
     <ClInclude Include="Render\Resources\MeshAnimationResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Utilities\MLResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime_providers_shared.dll" />
   </ItemGroup>
 </Project>

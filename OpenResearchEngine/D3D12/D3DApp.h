@@ -10,6 +10,7 @@
 #endif
 
 #include "D3DUtil.h"
+
 #include "../Utilities/GameTimer.h"
 
 // Link necessary d3d12 libraries.
