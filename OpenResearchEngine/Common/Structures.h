@@ -85,6 +85,12 @@ struct Neighbours
     UINT index[8];
 };
 
+struct VertexNeighbours
+{
+    UINT index[8];
+    float length[8];
+};
+
 struct UINT3
 {
     UINT x = 0;
@@ -369,6 +375,7 @@ struct MeshDeformationData
     std::vector<Vector3> simMeshForce;
     std::vector<Vector3> simMeshSolverAccumulation;
     std::vector<UINT> simMeshSolverCount;
+    std::vector<Vector4> simMeshTension;
 };
 
 struct MeshGeometry
@@ -395,6 +402,8 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> BlendshapeBufferUploader = nullptr;
 
     // Simulation Buffers
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexNeighbourBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintsBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintIDsBufferCPU = nullptr;
@@ -408,6 +417,9 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexNeighbourBufferGPU = nullptr;
+
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferGPU = nullptr;
 
@@ -419,6 +431,9 @@ struct MeshGeometry
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexNeighbourBufferUploader = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferUploader = nullptr;
@@ -473,6 +488,8 @@ struct MeshGeometry
     {
         VertexBufferUploader = nullptr;
         IndexBufferUploader = nullptr;
+        SimMeshVertexBufferUploader = nullptr;
+        SimMeshVertexNeighbourBufferUploader = nullptr;
         SimMeshBendingConstraintsBufferUploader = nullptr;
         SimMeshBendingConstraintIDsBufferUploader = nullptr;
         SimMeshStretchConstraintsBufferUploader = nullptr;

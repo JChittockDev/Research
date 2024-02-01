@@ -37,6 +37,11 @@ void EngineApp::SetPipelineStates()
     forceComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["forceCS"]->GetBufferPointer()), mShaders["forceCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&forceComputePSO, IID_PPV_ARGS(&mPSOs["force"])));
 
+    D3D12_COMPUTE_PIPELINE_STATE_DESC tensionComputePSO = {};
+    tensionComputePSO.pRootSignature = mTensionRootSignature.Get();
+    tensionComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["tensionCS"]->GetBufferPointer()), mShaders["tensionCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&tensionComputePSO, IID_PPV_ARGS(&mPSOs["tension"])));
+
     D3D12_COMPUTE_PIPELINE_STATE_DESC preSolveComputePSO = {};
     preSolveComputePSO.pRootSignature = mPreSolveRootSignature.Get();
     preSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["preSolveCS"]->GetBufferPointer()), mShaders["preSolveCS"]->GetBufferSize() };

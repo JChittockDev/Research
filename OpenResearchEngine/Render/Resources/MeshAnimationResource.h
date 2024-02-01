@@ -27,6 +27,7 @@ public:
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshSolverVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshPreviousSkinnedVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshForceBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTensionBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshConstraintsVertexBufferGPU = nullptr;
@@ -35,6 +36,7 @@ public:
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPreviousSkinnedVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshForceBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTensionBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSkinnedVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshConstraintsVertexBufferUploader = nullptr;
@@ -43,6 +45,7 @@ public:
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshSolverVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshPreviousSkinnedVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshForceBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTensionBufferUploader = nullptr;
 
     // Normal & Tangent Calculation Buffers
     Microsoft::WRL::ComPtr<ID3DBlob> TransformedVertexBufferCPU = nullptr;
@@ -87,6 +90,7 @@ public:
         SimMeshSkinnedVertexBufferUploader = nullptr;
         SimMeshPreviousSkinnedVertexBufferUploader = nullptr;
         SimMeshForceBufferUploader = nullptr;
+        SimMeshTensionBufferUploader = nullptr;
         SimMeshSolverVertexBufferUploader = nullptr;
         SimMeshConstraintsVertexBufferUploader = nullptr;
         SimMeshSolverAccumulationBufferUploader = nullptr;

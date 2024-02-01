@@ -407,6 +407,83 @@ void Mesh::GetMeshTransferMap(const std::vector<std::vector<Vertex>>& baseVertic
 	}
 }
 
+void GetVertexNeighbours(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<std::vector<VertexNeighbours>>& segmentedVertexNeighbours, const int references = 8)
+{
+	std::vector<std::unordered_map<UINT, std::set<UINT>>> segmentedVertexNeighbourIDs;
+	segmentedVertexNeighbourIDs.resize(numMesh);
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		for (size_t i = 0; i < segmentedIndices[x].size(); i += 3)
+		{
+			UINT v0 = segmentedIndices[x][i];
+			UINT v1 = segmentedIndices[x][i + 1];
+			UINT v2 = segmentedIndices[x][i + 2];
+
+			segmentedVertexNeighbourIDs[x][v0].insert(v1);
+			segmentedVertexNeighbourIDs[x][v0].insert(v2);
+			segmentedVertexNeighbourIDs[x][v1].insert(v0);
+			segmentedVertexNeighbourIDs[x][v1].insert(v2);
+			segmentedVertexNeighbourIDs[x][v2].insert(v1);
+			segmentedVertexNeighbourIDs[x][v2].insert(v0);
+		}
+	}
+
+	for (UINT x = 0; x < numMesh; ++x)
+	{
+		std::vector<VertexNeighbours> vertexNeighbours;
+
+		// for each vertex
+		for (size_t i = 0; i < segmentedVertexNeighbourIDs[x].size(); ++i)
+		{
+			VertexNeighbours neighbourIDs;
+
+			// add each neighbour triangle to neighbours
+			int counter = 0;
+			for (const UINT& id : segmentedVertexNeighbourIDs[x][i])
+			{
+				if (counter < references)
+				{
+					neighbourIDs.index[counter] = id;
+					counter += 1;
+				}
+			}
+
+			if (counter < references)
+			{
+				int remainder = references - counter;
+
+				for (size_t z = 0; z < remainder; ++z)
+				{
+					// offset by one as to no override the last neighbour
+					neighbourIDs.index[counter + z] = i;
+				}
+			}
+			vertexNeighbours.push_back(neighbourIDs);
+		}
+		segmentedVertexNeighbours.push_back(vertexNeighbours);
+	}
+}
+
+void GetVertexNeighbourLengths(std::vector<std::vector<VertexNeighbours>>& segmentedVertexNeighbours, std::vector<std::vector<Vertex>>& segmentedVertices, std::vector<VertexNeighbours>& vertexNeighbours, const int references = 8)
+{
+	for (UINT x = 0; x < segmentedVertexNeighbours.size(); ++x)
+	{
+		for (UINT y = 0; y < segmentedVertexNeighbours[x].size(); ++y)
+		{
+			VertexNeighbours neighbours = segmentedVertexNeighbours[x][y];
+
+			for (UINT z = 0; z < references; ++z)
+			{
+				UINT secondaryVertexID = neighbours.index[z];
+				neighbours.length[z] = Math::Length(segmentedVertices[x][y].Pos, segmentedVertices[x][secondaryVertexID].Pos);
+			}
+
+			vertexNeighbours.push_back(neighbours);
+		}
+	}
+}
+
 void GetVertexTriangleNeighbours(unsigned int numMesh, std::vector<std::vector<UINT>>& segmentedIndices, std::vector<Neighbours>& vertexNeighbourTriangles, const int references = 8)
 {
 	std::vector<std::unordered_map<UINT, std::set<UINT>>> segmentedVertexNeighbourTriangles;
@@ -774,6 +851,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	std::vector<float> simMeshBendingConstraints;
 	std::vector<Edge> simMeshBendingConstraintIDs;
 	std::vector<std::unordered_map<Edge, std::set<UINT>, EdgeHash>> simMeshSegmentedEdgeTriangles;
+	std::vector<std::vector<VertexNeighbours>> segmentedVertexNeighbours;
+	std::vector<VertexNeighbours> simMeshVertexNeighbours;
 
 	ReadVertices(simScene->mNumMeshes, simScene->mMeshes, simMeshVertices, simMeshSegmentedVertices);
 	ReadTriangles(simScene->mNumMeshes, simScene->mMeshes, simMeshIndices, simMeshSegmentedIndices);
@@ -783,7 +862,11 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	GetEdges(simScene->mNumMeshes, subsets[filename], simMeshSegmentedVertices, simMeshSegmentedIndices, simMeshSegmentedEdgeTriangles, simMeshStretchConstraintIDs, simMeshStretchConstraints);
 	GetBendingEdges(simScene->mNumMeshes, subsets[filename], simMeshSegmentedVertices, simMeshSegmentedIndices, simMeshSegmentedEdgeTriangles, simMeshBendingConstraintIDs, simMeshBendingConstraints);
 
+	GetVertexNeighbours(simScene->mNumMeshes, simMeshSegmentedIndices, segmentedVertexNeighbours);
+	GetVertexNeighbourLengths(segmentedVertexNeighbours, simMeshSegmentedVertices, simMeshVertexNeighbours);
+
 	const UINT simMeshVertexBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
+	const UINT simMeshVertexNeighbourBufferByteSize = (UINT)simMeshVertices.size() * sizeof(VertexNeighbours);
 	const UINT simMeshNullSolverAccumulationBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vector3);
 	const UINT simMeshNullSolverCountBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
 	const UINT simMeshTransferBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
@@ -800,8 +883,15 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	geo->DeformationData.normals.resize(indices.size() / 3);
 	geo->DeformationData.simMeshVertices = simMeshVertices;
 	geo->DeformationData.simMeshForce.resize(simMeshVertices.size());
+	geo->DeformationData.simMeshTension.resize(simMeshVertices.size());
 	geo->DeformationData.simMeshSolverAccumulation.resize(simMeshVertices.size());
 	geo->DeformationData.simMeshSolverCount.resize(simMeshVertices.size());
+
+	ThrowIfFailed(D3DCreateBlob(simMeshVertexBufferByteSize, &geo->SimMeshVertexBufferCPU));
+	CopyMemory(geo->SimMeshVertexBufferCPU->GetBufferPointer(), simMeshVertices.data(), simMeshVertexBufferByteSize);
+
+	ThrowIfFailed(D3DCreateBlob(simMeshVertexNeighbourBufferByteSize, &geo->SimMeshVertexNeighbourBufferCPU));
+	CopyMemory(geo->SimMeshVertexNeighbourBufferCPU->GetBufferPointer(), simMeshVertexNeighbours.data(), simMeshVertexNeighbourBufferByteSize);
 
 	ThrowIfFailed(D3DCreateBlob(simMeshStretchConstraintBufferByteSize, &geo->SimMeshStretchConstraintsBufferCPU));
 	CopyMemory(geo->SimMeshStretchConstraintsBufferCPU->GetBufferPointer(), simMeshStretchConstraints.data(), simMeshStretchConstraintBufferByteSize);
@@ -827,6 +917,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	ThrowIfFailed(D3DCreateBlob(meshTransferBufferByteSize, &geo->MeshTransferBufferCPU));
 	CopyMemory(geo->MeshTransferBufferCPU->GetBufferPointer(), meshTransferIndices.data(), meshTransferBufferByteSize);
 
+	geo->SimMeshVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshVertexBufferUploader);
+	geo->SimMeshVertexNeighbourBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertexNeighbours.data(), simMeshVertexNeighbourBufferByteSize, geo->SimMeshVertexNeighbourBufferUploader);
 	geo->SimMeshStretchConstraintsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshStretchConstraints.data(), simMeshStretchConstraintBufferByteSize, geo->SimMeshStretchConstraintsBufferUploader);
 	geo->SimMeshBendingConstraintsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshBendingConstraints.data(), simMeshBendingConstraintBufferByteSize, geo->SimMeshBendingConstraintsBufferUploader);
 	geo->SimMeshStretchConstraintIDsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshStretchConstraintIDs.data(), simMeshStretchConstraintIDsBufferByteSize, geo->SimMeshStretchConstraintIDsBufferUploader);
@@ -836,6 +928,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	geo->SimMeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshTransferIndices.data(), simMeshTransferBufferByteSize, geo->SimMeshTransferBufferUploader);
 	geo->MeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), meshTransferIndices.data(), meshTransferBufferByteSize, geo->MeshTransferBufferUploader);
 
+	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshVertexNeighbourBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshStretchConstraintsBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshBendingConstraintsBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshStretchConstraintIDsBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));

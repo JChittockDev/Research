@@ -70,6 +70,7 @@ void EngineApp::CompileShaders ()
     mShaders["meshTransferCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["simMeshTransferCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeSimMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
 
+    mShaders["tensionCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeTension.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["forceCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeForce.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["preSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePreSolve.hlsl", nullptr, "CS", "cs_5_1");
 

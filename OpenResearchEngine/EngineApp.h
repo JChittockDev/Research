@@ -76,6 +76,7 @@ private:
     void ComputeBendingConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeTension(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
 
     void SetBlendRootSignature();
     void SetSkinnedRootSignature();
@@ -88,6 +89,7 @@ private:
     void SetBendingConstraintSolveRootSignature();
     void SetMeshTransferRootSignature();
     void SetForceRootSignature();
+    void SetTensionRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -118,6 +120,7 @@ private:
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mBlendRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSkinnedRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mTensionRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mForceRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPreSolveRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPostSolveRootSignature = nullptr;

@@ -6,6 +6,7 @@ void EngineApp::SetRootSignatures()
 	SetBlendRootSignature();
 	SetSkinnedRootSignature();
 	SetMeshTransferRootSignature();
+	SetTensionRootSignature();
 	SetForceRootSignature();
 	SetPreSolveRootSignature();
 	SetStretchConstraintSolveRootSignature();
