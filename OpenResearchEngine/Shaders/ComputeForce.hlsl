@@ -11,7 +11,7 @@ RWStructuredBuffer<Vertex> previousSkinnedVertexBuffer : register(u0);
 RWStructuredBuffer<float3> forceVertexBuffer : register(u1);
 
 // Define the compute shader entry point
-[numthreads(1, 1, 1)]
+[numthreads(64, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     int vertexID = dispatchThreadID.x;
