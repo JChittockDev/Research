@@ -159,15 +159,11 @@ void EngineApp::ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<R
     mCommandList->SetPipelineState(mPSOs.at("preSolve").Get());
     ComputePreSolve(mCommandList.Get(), ri, currentFrameResource);
 
-    for (UINT i = 0; i < 2; ++i)
+    for (UINT i = 0; i < 1; ++i)
     {
-        mCommandList->SetComputeRootSignature(mStretchConstraintSolveRootSignature.Get());
-        mCommandList->SetPipelineState(mPSOs.at("stretchConstraintSolve").Get());
-        ComputeStretchConstraintSolve(mCommandList.Get(), ri, currentFrameResource);
-
-        mCommandList->SetComputeRootSignature(mBendingConstraintSolveRootSignature.Get());
-        mCommandList->SetPipelineState(mPSOs.at("bendingConstraintSolve").Get());
-        ComputeBendingConstraintSolve(mCommandList.Get(), ri, currentFrameResource);
+        mCommandList->SetComputeRootSignature(mConstraintSolveRootSignature.Get());
+        mCommandList->SetPipelineState(mPSOs.at("constraintSolve").Get());
+        ComputeConstraintSolve(mCommandList.Get(), ri, currentFrameResource);
 
         mCommandList->SetComputeRootSignature(mPostSolveRootSignature.Get());
         mCommandList->SetPipelineState(mPSOs.at("postSolve").Get());
@@ -185,7 +181,7 @@ void EngineApp::ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshForceBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
     cmdList->SetComputeRootUnorderedAccessView(2, ri->MeshAnimationResourceInstance->SimMeshForceBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vector3));
 
-    const UINT threadGroupSizeX = 1;
+    const UINT threadGroupSizeX = 64;
     const UINT threadGroupSizeY = 1;
     const UINT threadGroupSizeZ = 1;
     cmdList->Dispatch((ri->SimMeshVertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
@@ -202,7 +198,7 @@ void EngineApp::ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
     cmdList->SetComputeRootUnorderedAccessView(2, ri->MeshAnimationResourceInstance->SimMeshConstraintsVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vertex));
 
-    const UINT threadGroupSizeX = 1;
+    const UINT threadGroupSizeX = 64;
     const UINT threadGroupSizeY = 1;
     const UINT threadGroupSizeZ = 1;
     cmdList->Dispatch((ri->SimMeshVertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
@@ -210,10 +206,10 @@ void EngineApp::ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 
-void EngineApp::ComputeStretchConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void EngineApp::ComputeConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
-    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshStretchConstraintIDsBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStretchConstraintStart * sizeof(Edge));
-    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshStretchConstraintsBufferGPU->GetGPUVirtualAddress() + ri->SimMeshStretchConstraintStart * sizeof(float));
+    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshConstraintIDsBufferGPU->GetGPUVirtualAddress() + ri->SimMeshConstraintStart * sizeof(Edge));
+    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshConstraintsBufferGPU->GetGPUVirtualAddress() + ri->SimMeshConstraintStart * sizeof(float));
     cmdList->SetComputeRootShaderResourceView(2, ri->MeshAnimationResourceInstance->SimMeshConstraintsVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vertex));
 
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverAccumulationBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
@@ -225,28 +221,7 @@ void EngineApp::ComputeStretchConstraintSolve(ID3D12GraphicsCommandList* cmdList
     const UINT threadGroupSizeX = 1;
     const UINT threadGroupSizeY = 1;
     const UINT threadGroupSizeZ = 1;
-    cmdList->Dispatch((ri->SimMeshStretchConstraintCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
-
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverAccumulationBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverCountBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
-}
-
-void EngineApp::ComputeBendingConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
-{
-    cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshBendingConstraintIDsBufferGPU->GetGPUVirtualAddress() + ri->SimMeshBendingConstraintStart * sizeof(Edge));
-    cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshBendingConstraintsBufferGPU->GetGPUVirtualAddress() + ri->SimMeshBendingConstraintStart * sizeof(float));
-    cmdList->SetComputeRootShaderResourceView(2, ri->MeshAnimationResourceInstance->SimMeshConstraintsVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vertex));
-
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverAccumulationBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
-    cmdList->SetComputeRootUnorderedAccessView(3, ri->MeshAnimationResourceInstance->SimMeshSolverAccumulationBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vector3));
-
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverCountBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
-    cmdList->SetComputeRootUnorderedAccessView(4, ri->MeshAnimationResourceInstance->SimMeshSolverCountBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(UINT));
-
-    const UINT threadGroupSizeX = 1;
-    const UINT threadGroupSizeY = 1;
-    const UINT threadGroupSizeZ = 1;
-    cmdList->Dispatch((ri->SimMeshBendingConstraintCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
+    cmdList->Dispatch((ri->SimMeshConstraintCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);
 
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverAccumulationBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverCountBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
@@ -264,7 +239,7 @@ void EngineApp::ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS));
     cmdList->SetComputeRootUnorderedAccessView(6, ri->MeshAnimationResourceInstance->SimMeshSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vertex));
 
-    const UINT threadGroupSizeX = 1;
+    const UINT threadGroupSizeX = 64;
     const UINT threadGroupSizeY = 1;
     const UINT threadGroupSizeZ = 1;
     cmdList->Dispatch((ri->SimMeshVertexCount + threadGroupSizeX - 1) / threadGroupSizeX, threadGroupSizeY, threadGroupSizeZ);

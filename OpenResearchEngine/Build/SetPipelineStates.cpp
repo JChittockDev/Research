@@ -52,15 +52,10 @@ void EngineApp::SetPipelineStates()
     postSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["postSolveCS"]->GetBufferPointer()), mShaders["postSolveCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&postSolveComputePSO, IID_PPV_ARGS(&mPSOs["postSolve"])));
 
-    D3D12_COMPUTE_PIPELINE_STATE_DESC stretchConstraintSolveComputePSO = {};
-    stretchConstraintSolveComputePSO.pRootSignature = mStretchConstraintSolveRootSignature.Get();
-    stretchConstraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["stretchConstraintSolveCS"]->GetBufferPointer()), mShaders["stretchConstraintSolveCS"]->GetBufferSize() };
-    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&stretchConstraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["stretchConstraintSolve"])));
-
-    D3D12_COMPUTE_PIPELINE_STATE_DESC bendingConstraintSolveComputePSO = {};
-    bendingConstraintSolveComputePSO.pRootSignature = mBendingConstraintSolveRootSignature.Get();
-    bendingConstraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["bendingConstraintSolveCS"]->GetBufferPointer()), mShaders["bendingConstraintSolveCS"]->GetBufferSize() };
-    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&bendingConstraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["bendingConstraintSolve"])));
+    D3D12_COMPUTE_PIPELINE_STATE_DESC constraintSolveComputePSO = {};
+    constraintSolveComputePSO.pRootSignature = mConstraintSolveRootSignature.Get();
+    constraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["constraintSolveCS"]->GetBufferPointer()), mShaders["constraintSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&constraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["constraintSolve"])));
 
 
     //

@@ -74,8 +74,7 @@ void EngineApp::CompileShaders ()
     mShaders["forceCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeForce.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["preSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePreSolve.hlsl", nullptr, "CS", "cs_5_1");
 
-    mShaders["stretchConstraintSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeStretchConstraintSolve.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["bendingConstraintSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeBendingConstraintSolve.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["constraintSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeConstraintSolve.hlsl", nullptr, "CS", "cs_5_1");
 
     mShaders["postSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePostSolve.hlsl", nullptr, "CS", "cs_5_1");
 

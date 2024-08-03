@@ -9,8 +9,7 @@ void EngineApp::SetRootSignatures()
 	SetTensionRootSignature();
 	SetForceRootSignature();
 	SetPreSolveRootSignature();
-	SetStretchConstraintSolveRootSignature();
-	SetBendingConstraintSolveRootSignature();
+	SetConstraintSolveRootSignature();
 	SetPostSolveRootSignature();
 	SetSimMeshTransferRootSignature();
 	SetTriangleNormalRootSignature();

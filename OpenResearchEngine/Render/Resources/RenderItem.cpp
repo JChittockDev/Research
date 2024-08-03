@@ -32,10 +32,8 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const DirectX::XM
 			ritem->BlendshapeSubsets = ritem->Geo->DrawArgs[submeshName].BlendshapeSubsets;
 			ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[submeshName].SimMeshVertexCount;
 			ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[submeshName].SimMeshIndexCount;
-			ritem->SimMeshStretchConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshStretchConstraintCount;
-			ritem->SimMeshStretchConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshStretchConstraintStart;
-			ritem->SimMeshBendingConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshBendingConstraintCount;
-			ritem->SimMeshBendingConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshBendingConstraintStart;
+			ritem->SimMeshConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshConstraintCount;
+			ritem->SimMeshConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshConstraintStart;
 			ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[submeshName].SimMeshTriangleCount;
 			ritem->SimMeshIndexStart = ritem->Geo->DrawArgs[submeshName].SimMeshIndexStart;
 			ritem->SimMeshVertexStart = ritem->Geo->DrawArgs[submeshName].SimMeshVertexStart;
@@ -103,10 +101,8 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 			ritem->BlendshapeSubsets = ritem->Geo->DrawArgs[submeshName].BlendshapeSubsets;
 			ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[submeshName].SimMeshVertexCount;
 			ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[submeshName].SimMeshIndexCount;
-			ritem->SimMeshStretchConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshStretchConstraintCount;
-			ritem->SimMeshStretchConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshStretchConstraintStart;
-			ritem->SimMeshBendingConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshBendingConstraintCount;
-			ritem->SimMeshBendingConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshBendingConstraintStart;
+			ritem->SimMeshConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshConstraintCount;
+			ritem->SimMeshConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshConstraintStart;
 			ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[submeshName].SimMeshTriangleCount;
 			ritem->SimMeshIndexStart = ritem->Geo->DrawArgs[submeshName].SimMeshIndexStart;
 			ritem->SimMeshVertexStart = ritem->Geo->DrawArgs[submeshName].SimMeshVertexStart;

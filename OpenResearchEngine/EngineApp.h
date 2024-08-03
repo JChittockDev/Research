@@ -72,8 +72,7 @@ private:
     void ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeStretchConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeBendingConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeTension(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
@@ -85,8 +84,7 @@ private:
     void SetSimMeshTransferRootSignature();
     void SetPreSolveRootSignature();
     void SetPostSolveRootSignature();
-    void SetStretchConstraintSolveRootSignature();
-    void SetBendingConstraintSolveRootSignature();
+    void SetConstraintSolveRootSignature();
     void SetMeshTransferRootSignature();
     void SetForceRootSignature();
     void SetTensionRootSignature();
@@ -124,8 +122,7 @@ private:
     ComPtr<ID3D12RootSignature> mForceRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPreSolveRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPostSolveRootSignature = nullptr;
-    ComPtr<ID3D12RootSignature> mStretchConstraintSolveRootSignature = nullptr;
-    ComPtr<ID3D12RootSignature> mBendingConstraintSolveRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mConstraintSolveRootSignature = nullptr;
 
     ComPtr<ID3D12RootSignature> mTriangleNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mVertexNormalRootSignature = nullptr;
