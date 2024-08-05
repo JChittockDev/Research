@@ -888,14 +888,14 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 
 	const UINT simMeshVertexBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
 	const UINT simMeshVertexNeighbourBufferByteSize = (UINT)simMeshVertices.size() * sizeof(VertexNeighbours);
-	const UINT simMeshNullSolverAccumulationBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vector3);
+	const UINT simMeshNullSolverAccumulationBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT3);
 	const UINT simMeshNullSolverCountBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
 	const UINT simMeshTransferBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT);
 	const UINT simMeshConstraintBufferByteSize = (UINT)simMeshConstraints.size() * sizeof(float);
 	const UINT simMeshConstraintIDsBufferByteSize = (UINT)simMeshConstraintIDs.size() * sizeof(Edge);
 	const UINT meshTransferBufferByteSize = (UINT)vertices.size() * sizeof(UINT);
 
-	std::vector<Vector3> simMeshSolverAccumulation(simMeshVertices.size());
+	std::vector<UINT3> simMeshSolverAccumulation(simMeshVertices.size());
 	std::vector<UINT> simMeshSolverCount(simMeshVertices.size());
 
 	geo->DeformationData.vertices = vertices;

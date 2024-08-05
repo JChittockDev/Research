@@ -15,11 +15,11 @@ struct Edge
 StructuredBuffer<Edge> inputEdgeBuffer : register(t0);
 StructuredBuffer<float> inputEdgeConstraintBuffer : register(t1);
 StructuredBuffer<Vertex> inputVertexBuffer : register(t2);
-RWStructuredBuffer<float3> outputSolverAccumulationBuffer : register(u0);
+RWStructuredBuffer<uint3> outputSolverAccumulationBuffer : register(u0);
 RWStructuredBuffer<uint> outputSolverCountBuffer : register(u1);
 
 // Define the compute shader entry point
-[numthreads(1, 1, 1)]
+[numthreads(64, 1, 1)]
 void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     uint constraintID = dispatchThreadID.x;
@@ -36,8 +36,20 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     float restLength = inputEdgeConstraintBuffer[constraintID];
     float3 solve = displacement * (1.0 - restLength / magnitude);
 
-    outputSolverAccumulationBuffer[id0] += -solve * 0.5;
-    outputSolverAccumulationBuffer[id1] += solve * 0.5;
-    outputSolverCountBuffer[id0] += 1;
-    outputSolverCountBuffer[id1] += 1;
+    uint quantizedX = (uint) (solve.x * QUANTIZE);
+    uint quantizedY = (uint) (solve.y * QUANTIZE);
+    uint quantizedZ = (uint) (solve.z * QUANTIZE);
+    uint invQuantizedX = (uint) (-solve.x * QUANTIZE);
+    uint invQuantizedY = (uint) (-solve.y * QUANTIZE);
+    uint invQuantizedZ = (uint) (-solve.z * QUANTIZE);
+    
+    InterlockedAdd(outputSolverAccumulationBuffer[id0].x, invQuantizedX * 0.5);
+    InterlockedAdd(outputSolverAccumulationBuffer[id0].y, invQuantizedY * 0.5);
+    InterlockedAdd(outputSolverAccumulationBuffer[id0].z, invQuantizedZ * 0.5);
+    InterlockedAdd(outputSolverAccumulationBuffer[id1].x, quantizedX * 0.5);
+    InterlockedAdd(outputSolverAccumulationBuffer[id1].y, quantizedY * 0.5);
+    InterlockedAdd(outputSolverAccumulationBuffer[id1].z, quantizedZ * 0.5);
+
+    InterlockedAdd(outputSolverCountBuffer[id0], 1);
+    InterlockedAdd(outputSolverCountBuffer[id1], 1);
 }

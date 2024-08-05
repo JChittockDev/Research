@@ -7,7 +7,7 @@ struct Vertex
 };
 
 StructuredBuffer<float4> tensionBuffer : register(t0);
-StructuredBuffer<float3> inputSolverAccumulationBuffer : register(t1);
+StructuredBuffer<uint3> inputSolverAccumulationBuffer : register(t1);
 StructuredBuffer<uint> inputSolverCountBuffer : register(t2);
 StructuredBuffer<Vertex> inputVertexBuffer : register(t3);
 StructuredBuffer<Vertex> initVertexBuffer : register(t4);
@@ -34,14 +34,21 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         coeffOffset = 1.0 - coefficient;
     }
     
-    coeffOffset = clamp(coeffOffset * 1.4, 0.0, 1.0) * 0.92;
+    coeffOffset = clamp(coeffOffset * 1.4, 0.0, 1.0) * 0.95;
     
-    float3 solverAccumulation = inputSolverAccumulationBuffer[vertexID];
+    uint3 solverAccumulation = inputSolverAccumulationBuffer[vertexID];
+
+    float vertexPositionX = ((float) solverAccumulation.x) / QUANTIZE;
+    float vertexPositionY = ((float) solverAccumulation.y) / QUANTIZE;
+    float vertexPositionZ = ((float) solverAccumulation.z) / QUANTIZE;
+    float3 floatSolverAccumulation = float3(vertexPositionX, vertexPositionY, vertexPositionZ);
+    
+    
     uint solverCount = inputSolverCountBuffer[vertexID];
     float3 position = inputVertexBuffer[vertexID].position;
     
     float3 initPosition = initVertexBuffer[vertexID].position;
     float3 skinnedPosition = skinnedVertexBuffer[vertexID].position;
         
-    outputVertexBuffer[vertexID].position = skinnedPosition * (1.0 - coeffOffset) + (position + solverAccumulation / (float) solverCount) * (coeffOffset);
+    outputVertexBuffer[vertexID].position = skinnedPosition * (1.0 - coeffOffset) + (position + floatSolverAccumulation / (float) solverCount) * (coeffOffset);
 }

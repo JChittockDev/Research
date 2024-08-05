@@ -74,9 +74,9 @@ void EngineApp::CompileShaders ()
     mShaders["forceCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeForce.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["preSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePreSolve.hlsl", nullptr, "CS", "cs_5_1");
 
-    mShaders["constraintSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeConstraintSolve.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["constraintSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeConstraintSolve.hlsl", clothDefines, "CS", "cs_5_1");
 
-    mShaders["postSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePostSolve.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["postSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePostSolve.hlsl", clothDefines, "CS", "cs_5_1");
 
     mInputLayout = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
