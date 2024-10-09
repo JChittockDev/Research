@@ -306,7 +306,7 @@ void EngineApp::SetConstraintSolveRootSignature()
 void EngineApp::SetPostSolveRootSignature()
 {
     // Define root signature parameters
-    CD3DX12_ROOT_PARAMETER rootParameters[7];
+    CD3DX12_ROOT_PARAMETER rootParameters[8];
 
     // Setup root parameters
     rootParameters[0].InitAsShaderResourceView(0);
@@ -315,12 +315,13 @@ void EngineApp::SetPostSolveRootSignature()
     rootParameters[3].InitAsShaderResourceView(3);
     rootParameters[4].InitAsShaderResourceView(4);
     rootParameters[5].InitAsShaderResourceView(5);
-    rootParameters[6].InitAsUnorderedAccessView(0);
+    rootParameters[6].InitAsShaderResourceView(6);
+    rootParameters[7].InitAsUnorderedAccessView(0);
 
     auto staticSamplers = GetStaticSamplers();
 
     // Create the root signature description
-    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(7, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(8, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
 
     // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
     ComPtr<ID3DBlob> serializedRootSig = nullptr;

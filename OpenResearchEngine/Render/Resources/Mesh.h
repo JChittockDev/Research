@@ -11,7 +11,7 @@ class Mesh
 public:
     Mesh() {};
 
-    Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
+    Mesh(std::string filename, std::string vertexColorFilename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
         std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
         std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets,
@@ -19,7 +19,7 @@ public:
         std::unordered_map<std::string, std::shared_ptr<Animation>>& animations,
         std::unordered_map<std::string, std::shared_ptr<TransformNode>>& transforms);
 
-    Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
+    Mesh(std::string filename, std::string vertexColorFilename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
         Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
         std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
         std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets, bool flipWO);
@@ -38,4 +38,6 @@ private:
     void ReadSkeleton(const aiScene* scene, std::shared_ptr<Skeleton>& mSkeleton);
     void ReadAnimations(const aiScene* scene, std::unordered_map<std::string, std::shared_ptr<Animation>>& animations);
     void GetMeshTransferMap(const std::vector<std::vector<Vertex>>& baseVertices, const std::vector<std::vector<Vertex>>& targetVertices, std::vector<UINT>& map);
+    void ReadVertexColor(const std::vector<unsigned char>& textureData, int texWidth, int texHeight, const std::vector<Vertex>& vertices, std::vector<Vector4>& vertexMasks);
+    void LoadTexture(const char* filepath, int& width, int& height, std::vector<unsigned char>& textureData);
 };

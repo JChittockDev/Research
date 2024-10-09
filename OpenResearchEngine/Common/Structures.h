@@ -398,6 +398,9 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> BlendshapeBufferUploader = nullptr;
 
     // Simulation Buffers
+
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexColorBufferCPU = nullptr;
+
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexNeighbourBufferCPU = nullptr;
 
@@ -410,6 +413,8 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexColorBufferGPU = nullptr;
+
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexNeighbourBufferGPU = nullptr;
 
@@ -421,6 +426,8 @@ struct MeshGeometry
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexColorBufferUploader = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexNeighbourBufferUploader = nullptr;
@@ -475,6 +482,7 @@ struct MeshGeometry
     {
         VertexBufferUploader = nullptr;
         IndexBufferUploader = nullptr;
+        SimMeshVertexColorBufferUploader = nullptr;
         SimMeshVertexBufferUploader = nullptr;
         SimMeshVertexNeighbourBufferUploader = nullptr;
         SimMeshConstraintsBufferUploader = nullptr;
@@ -585,6 +593,7 @@ struct Animation
 struct RenderItemSettings
 {
     bool Simulation = false;
+    std::string SimulationMask = "none";
     std::string Material = "default";
 };
 

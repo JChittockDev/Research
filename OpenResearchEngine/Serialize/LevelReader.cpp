@@ -52,6 +52,14 @@ void LevelReader::SetRenderItemData(const json& item_data, ItemData& renderItemS
             {
                 renderItemStruct.settings[riSettings.key()].Simulation = false;
             }
+            if (riSettings.value().contains("SimulationMask"))
+            {
+                renderItemStruct.settings[riSettings.key()].SimulationMask = riSettings.value()["SimulationMask"];
+            }
+            else
+            {
+                renderItemStruct.settings[riSettings.key()].SimulationMask = "none";
+            }
         }
     }
 }

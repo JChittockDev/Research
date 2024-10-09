@@ -6,12 +6,13 @@ struct Vertex
     float4 tangent;
 };
 
-StructuredBuffer<float4> tensionBuffer : register(t0);
-StructuredBuffer<uint3> inputSolverAccumulationBuffer : register(t1);
-StructuredBuffer<uint> inputSolverCountBuffer : register(t2);
-StructuredBuffer<Vertex> inputVertexBuffer : register(t3);
-StructuredBuffer<Vertex> initVertexBuffer : register(t4);
-StructuredBuffer<Vertex> skinnedVertexBuffer : register(t5);
+StructuredBuffer<float4> vertexColor : register(t0);
+StructuredBuffer<float4> tensionBuffer : register(t1);
+StructuredBuffer<uint3> inputSolverAccumulationBuffer : register(t2);
+StructuredBuffer<uint> inputSolverCountBuffer : register(t3);
+StructuredBuffer<Vertex> inputVertexBuffer : register(t4);
+StructuredBuffer<Vertex> initVertexBuffer : register(t5);
+StructuredBuffer<Vertex> skinnedVertexBuffer : register(t6);
 RWStructuredBuffer<Vertex> outputVertexBuffer : register(u0);
 
 // Define the compute shader entry point
@@ -21,6 +22,8 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
     uint vertexID = dispatchThreadID.x;
    
     float coefficient = abs(tensionBuffer[vertexID].w);
+    
+    float4 vertexColorData = vertexColor[vertexID];
     
     float coeffOffset = 0.0;
     
@@ -34,7 +37,7 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID)
         coeffOffset = 1.0 - coefficient;
     }
     
-    coeffOffset = clamp(coeffOffset * 1.4, 0.0, 1.0) * 0.95;
+    coeffOffset = clamp(coeffOffset * 1.4, 0.0, 1.0) * 0.95 * vertexColorData.x;
     
     uint3 solverAccumulation = inputSolverAccumulationBuffer[vertexID];
 

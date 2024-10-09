@@ -1,5 +1,33 @@
 #include "Mesh.h"
 
+#define STB_IMAGE_IMPLEMENTATION    
+#include "stb_image.h"
+
+void Mesh::LoadTexture(const char* filepath, int& width, int& height, std::vector<unsigned char>& textureData)
+{
+	int nrChannels;
+	unsigned char* data = stbi_load(filepath, &width, &height, &nrChannels, 3);
+	std::vector<unsigned char> txtData(data, data + (width * height * nrChannels));
+	stbi_image_free(data);
+	textureData = txtData;
+}
+
+void Mesh::ReadVertexColor(const std::vector<unsigned char>& textureData, int texWidth, int texHeight, const std::vector<Vertex>& vertices, std::vector<Vector4>& vertexMasks) {
+	
+	for (auto& vertex : vertices) {
+
+		float u = std::clamp(vertex.TexC.x, 0.0f, 1.0f);
+		float v = std::clamp(vertex.TexC.y, 0.0f, 1.0f);
+		int texX = static_cast<int>(u * (texWidth - 1));
+		int texY = static_cast<int>((1.0f - v) * (texHeight - 1));
+		int texIndex = (texY * texWidth + texX) * 3;
+
+		Vector4 vertexMask(textureData[texIndex] * 1.0f / 255.0f, textureData[texIndex + 1] * 1.0f / 255.0f, textureData[texIndex + 2] * 1.0f / 255.0f, 1.0f);
+
+		vertexMasks.push_back(vertexMask);
+	}
+}
+
 void Mesh::ReadVertices(unsigned int numMesh, aiMesh** meshList, std::vector<Vertex>& vertices)
 {
 	for (UINT x = 0; x < numMesh; ++x)
@@ -736,7 +764,8 @@ void GetConstraints(unsigned int numMesh, std::vector<std::shared_ptr<Subset>>& 
 	}
 }
 
-Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
+Mesh::Mesh(std::string filename, std::string vertexColorFilename, 
+	Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
 	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
 	std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets,
@@ -797,7 +826,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	geometries[geo->Name] = std::move(geo);
 }
 
-Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
+Mesh::Mesh(std::string filename, std::string vertexColorFilename, 
+	Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice,
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList,
 	std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>& geometries,
 	std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>& subsets,
@@ -819,6 +849,12 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	mSkeleton->rootNodeName = scene->mRootNode->mName.data;
 	ReadSkeleton(scene, mSkeleton);
 	ReadVertices(scene->mNumMeshes, scene->mMeshes, vertices, segmentedVertices);
+
+	int vertexColorWidth = 0;
+	int vertexColorHeight = 0;
+	std::vector<unsigned char> vertexColor;
+	LoadTexture(vertexColorFilename.c_str(), vertexColorWidth, vertexColorHeight, vertexColor);
+
 	ReadBlendshapeData(scene->mNumMeshes, scene->mMeshes, blendshapes);
 	ReadSkinningData(scene->mNumMeshes, scene->mMeshes, mSkeleton, vertices, skinning);
 	ReadTriangles(scene->mNumMeshes, scene->mMeshes, indices, segmentedIndices);
@@ -860,7 +896,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	}
 
 	Assimp::Importer simImp;
-	simImp.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_NORMALS | aiComponent_TANGENTS_AND_BITANGENTS | aiComponent_COLORS | aiComponent_TEXCOORDS | aiComponent_BONEWEIGHTS | aiComponent_ANIMATIONS | aiComponent_TEXTURES | aiComponent_LIGHTS | aiComponent_CAMERAS | aiComponent_MATERIALS);
+	simImp.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_NORMALS | aiComponent_TANGENTS_AND_BITANGENTS | aiComponent_COLORS | aiComponent_BONEWEIGHTS | aiComponent_ANIMATIONS | aiComponent_TEXTURES | aiComponent_LIGHTS | aiComponent_CAMERAS | aiComponent_MATERIALS);
 	const aiScene* simScene = simImp.ReadFile(filename, aiProcess_Triangulate | aiProcess_LimitBoneWeights | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_RemoveComponent);
 
 	// Simulation Resources
@@ -886,6 +922,9 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	GetVertexNeighbours(simScene->mNumMeshes, simMeshSegmentedIndices, segmentedVertexNeighbours);
 	GetVertexNeighbourLengths(segmentedVertexNeighbours, simMeshSegmentedVertices, simMeshVertexNeighbours);
 
+	std::vector<Vector4> vertexColorData;
+	ReadVertexColor(vertexColor, vertexColorWidth, vertexColorHeight, simMeshVertices, vertexColorData);
+
 	const UINT simMeshVertexBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vertex);
 	const UINT simMeshVertexNeighbourBufferByteSize = (UINT)simMeshVertices.size() * sizeof(VertexNeighbours);
 	const UINT simMeshNullSolverAccumulationBufferByteSize = (UINT)simMeshVertices.size() * sizeof(UINT3);
@@ -894,6 +933,8 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	const UINT simMeshConstraintBufferByteSize = (UINT)simMeshConstraints.size() * sizeof(float);
 	const UINT simMeshConstraintIDsBufferByteSize = (UINT)simMeshConstraintIDs.size() * sizeof(Edge);
 	const UINT meshTransferBufferByteSize = (UINT)vertices.size() * sizeof(UINT);
+
+	const UINT simMeshVertexColorBufferByteSize = (UINT)simMeshVertices.size() * sizeof(Vector4);
 
 	std::vector<UINT3> simMeshSolverAccumulation(simMeshVertices.size());
 	std::vector<UINT> simMeshSolverCount(simMeshVertices.size());
@@ -930,6 +971,9 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	ThrowIfFailed(D3DCreateBlob(meshTransferBufferByteSize, &geo->MeshTransferBufferCPU));
 	CopyMemory(geo->MeshTransferBufferCPU->GetBufferPointer(), meshTransferIndices.data(), meshTransferBufferByteSize);
 
+	ThrowIfFailed(D3DCreateBlob(simMeshVertexColorBufferByteSize, &geo->SimMeshVertexColorBufferCPU));
+	CopyMemory(geo->SimMeshVertexColorBufferCPU->GetBufferPointer(), vertexColorData.data(), simMeshVertexColorBufferByteSize);
+
 	geo->SimMeshVertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertices.data(), simMeshVertexBufferByteSize, geo->SimMeshVertexBufferUploader);
 	geo->SimMeshVertexNeighbourBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshVertexNeighbours.data(), simMeshVertexNeighbourBufferByteSize, geo->SimMeshVertexNeighbourBufferUploader);
 	geo->SimMeshConstraintsBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshConstraints.data(), simMeshConstraintBufferByteSize, geo->SimMeshConstraintsBufferUploader);
@@ -938,6 +982,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	geo->SimMeshNullSolverCountBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshSolverCount.data(), simMeshTransferBufferByteSize, geo->SimMeshNullSolverCountBufferUploader);
 	geo->SimMeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), simMeshTransferIndices.data(), simMeshTransferBufferByteSize, geo->SimMeshTransferBufferUploader);
 	geo->MeshTransferBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), meshTransferIndices.data(), meshTransferBufferByteSize, geo->MeshTransferBufferUploader);
+	geo->SimMeshVertexColorBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), vertexColorData.data(), simMeshVertexColorBufferByteSize, geo->SimMeshVertexColorBufferUploader);
 
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshVertexNeighbourBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
@@ -947,6 +992,7 @@ Mesh::Mesh(std::string filename, Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevic
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshNullSolverCountBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshTransferBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->MeshTransferBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(geo->SimMeshVertexColorBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 
 	// Normal & Tangent Resources
 
