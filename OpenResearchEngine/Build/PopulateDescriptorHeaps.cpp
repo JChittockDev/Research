@@ -23,6 +23,12 @@ void EngineApp::CreateRtvAndDsvDescriptorHeaps()
 
 void EngineApp::PopulateDescriptorHeaps()
 {
+	D3D12_DESCRIPTOR_HEAP_DESC imguiDesc = {};
+	imguiDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	imguiDesc.NumDescriptors = 1;
+	imguiDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&imguiDesc, IID_PPV_ARGS(&imGuiSrvDescriptorHeap)));
+
 	//
 	// Create the SRV heap.
 	//

@@ -9,6 +9,9 @@
 #include <crtdbg.h>
 #endif
 
+#include "../ImGui/imgui_internal.h"
+
+#include "../Gui/GuiManager.h"
 #include "D3DUtil.h"
 
 #include "../Utilities/GameTimer.h"
@@ -84,6 +87,8 @@ protected:
 	bool      mMaximized = false;  // is the application maximized?
 	bool      mResizing = false;   // are the resize bars being dragged?
     bool      mFullscreenState = false;// fullscreen enabled
+
+    GuiManager gui;
 
 	// Set true to use 4X MSAA (§4.1.8).  The default is false.
     bool      m4xMsaaState = false;    // 4X MSAA enabled

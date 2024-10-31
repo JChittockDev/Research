@@ -54,8 +54,8 @@ void EngineApp::PushLights()
     spotlight1.Strength = DirectX::XMFLOAT3(1.65f, 1.65f, 1.65f);
     spotlight1.FalloffStart = 1.0f;
     spotlight1.FalloffEnd = 100.0f;
-    spotlight1.InnerConeAngle = 0.8;
-    spotlight1.OuterConeAngle = 0.9;
+    spotlight1.InnerConeAngle = 0.8f;
+    spotlight1.OuterConeAngle = 0.9f;
     dynamicLights.SpotLights.push_back(spotlight1);
 
     dynamicLights.LightTransforms.resize(dynamicLights.GetNumLights());

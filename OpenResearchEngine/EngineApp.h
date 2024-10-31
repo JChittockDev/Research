@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ImGui/imgui_impl_win32.h"
+#include "ImGui/imgui_impl_dx12.h"
 #include "D3D12/D3DApp.h"
 #include "Common/Math.h"
 #include "Common/UploadBuffer.h"
@@ -173,4 +175,6 @@ private:
     
     std::unique_ptr<SsaoMap> mSsaoMap;
     std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
+
+    ComPtr<ID3D12DescriptorHeap> imGuiSrvDescriptorHeap = nullptr;
 };

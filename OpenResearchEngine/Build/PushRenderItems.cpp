@@ -32,17 +32,17 @@ void EngineApp::PushRenderItems()
 		if (renderItemData.animation.empty())
 		{
 
-			RenderItem::BuildRenderItems(renderItemData.geometry, DirectX::XMFLOAT3(renderItemData.position[0], renderItemData.position[1], renderItemData.position[2]),
-				DirectX::XMFLOAT4(renderItemData.rotation[0], renderItemData.rotation[1], renderItemData.rotation[2], renderItemData.rotation[3]),
-				DirectX::XMFLOAT3(renderItemData.scale[0], renderItemData.scale[1], renderItemData.scale[2]),
+			RenderItem::BuildRenderItems(renderItemData.geometry, DirectX::XMFLOAT3((float)renderItemData.position[0], (float)renderItemData.position[1], (float)renderItemData.position[2]),
+				DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
+				DirectX::XMFLOAT3((float)renderItemData.scale[0], (float)renderItemData.scale[1], (float)renderItemData.scale[2]),
 				ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers[renderItemData.render_layer], mRenderItems, mMeshRenderItemMap, settings, meshOffset);
 		}
 		else
 		{
 			RenderItem::BuildRenderItems(renderItemData.geometry, renderItemData.animation,
-				DirectX::XMFLOAT3(renderItemData.position[0], renderItemData.position[1], renderItemData.position[2]),
-				DirectX::XMFLOAT4(renderItemData.rotation[0], renderItemData.rotation[1], renderItemData.rotation[2], renderItemData.rotation[3]),
-				DirectX::XMFLOAT3(renderItemData.scale[0], renderItemData.scale[1], renderItemData.scale[2]),
+				DirectX::XMFLOAT3((float)renderItemData.position[0], (float)renderItemData.position[1], (float)renderItemData.position[2]),
+				DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
+				DirectX::XMFLOAT3((float)renderItemData.scale[0], (float)renderItemData.scale[1], (float)renderItemData.scale[2]),
 				ObjectCBIndex, SkinnedCBIndex, BlendCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mSkeletons, mAnimations,
 				mTransforms, mSkinningControllers, mBlendshapeControllers, mMeshAnimationResources, mRenderItemLayers[renderItemData.render_layer],
 				mRenderItems, mMeshRenderItemMap, md3dDevice, mCommandList, settings, meshOffset);

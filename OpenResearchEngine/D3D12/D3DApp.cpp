@@ -5,9 +5,14 @@
 #include "D3DApp.h"
 #include <WindowsX.h>
 
+#include "../ImGui/imgui_impl_win32.h"
+#include "../ImGui/imgui_impl_dx12.h"
+
 using Microsoft::WRL::ComPtr;
 using namespace std;
 using namespace DirectX;
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -33,8 +38,12 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 
 D3DApp::~D3DApp()
 {
-	if(md3dDevice != nullptr)
+	if (md3dDevice != nullptr)
+	{
 		FlushCommandQueue();
+	}
+
+	ImGui_ImplWin32_Shutdown();
 }
 
 HINSTANCE D3DApp::AppInst()const
@@ -237,6 +246,11 @@ void D3DApp::OnResize()
  
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+	{
+		return true;
+	}
+
 	switch( msg )
 	{
 	// WM_ACTIVATE is sent when the window is activated or deactivated.  
@@ -407,6 +421,9 @@ bool D3DApp::InitMainWindow()
 	}
 
 	ShowWindow(mhMainWnd, SW_SHOW);
+
+	ImGui_ImplWin32_Init(mhMainWnd);
+
 	UpdateWindow(mhMainWnd);
 
 	return true;

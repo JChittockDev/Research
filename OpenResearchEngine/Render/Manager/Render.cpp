@@ -14,8 +14,6 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     DepthPass(DepthStencilView(), currentFrameResource);
     SsaoPass(2, currentFrameResource);
     DiffusePass(mLayoutIndicies, currentFrameResource);
-
-    ThrowIfFailed(mCommandList->Close());
 }
 
 void EngineApp::DeformationPass(FrameResource* currentFrameResource)

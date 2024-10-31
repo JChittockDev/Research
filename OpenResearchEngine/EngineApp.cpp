@@ -35,8 +35,12 @@ EngineApp::EngineApp(HINSTANCE hInstance) : D3DApp(hInstance)
 
 EngineApp::~EngineApp()
 {
-    if(md3dDevice != nullptr)
+    if (md3dDevice != nullptr)
+    {
         FlushCommandQueue();
+    }
+
+    ImGui_ImplDX12_Shutdown();
 }
 
 bool EngineApp::Initialize()
@@ -54,6 +58,8 @@ bool EngineApp::Initialize()
 
     BuildScene();
     SetRenderPassResources();
+
+    ImGui_ImplDX12_Init(md3dDevice.Get(), 2, DXGI_FORMAT_R8G8B8A8_UNORM, imGuiSrvDescriptorHeap.Get(), imGuiSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), imGuiSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
     
     ThrowIfFailed(mCommandList->Close());
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
@@ -97,11 +103,40 @@ void EngineApp::Draw(const GameTimer& gt)
 {
     Render(mCurrFrameResource);
 
+    ImGui_ImplDX12_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    static bool show = true;
+    ImGui::ShowDemoWindow(&show);
+
+    ImGui::Render();
+    mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    // Render Dear ImGui graphics
+    const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+    //mCommandList->ClearRenderTargetView(CurrentBackBufferView(), clear_color_with_alpha, 0, nullptr);
+    mCommandList->OMSetRenderTargets(1, &(CurrentBackBufferView()), FALSE, nullptr);
+
+    ID3D12DescriptorHeap* descriptorHeaps[] = { imGuiSrvDescriptorHeap.Get() };
+
+    mCommandList->SetDescriptorHeaps(1, descriptorHeaps);
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mCommandList.Get());
+
+    mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+
+    mCommandList->Close();
+
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+    
     mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+    
     ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
     mCurrFrameResource->Fence = ++mCurrentFence;
+   
     mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 }
  
