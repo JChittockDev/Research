@@ -10,6 +10,8 @@
 #endif
 
 #include "../ImGui/imgui_internal.h"
+#include "../ImGui/imgui_impl_win32.h"
+#include "../ImGui/imgui_impl_dx12.h"
 
 #include "../Gui/GuiManager.h"
 #include "D3DUtil.h"

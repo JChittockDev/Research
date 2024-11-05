@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ImGui/imgui_impl_win32.h"
-#include "ImGui/imgui_impl_dx12.h"
 #include "D3D12/D3DApp.h"
 #include "Common/Math.h"
 #include "Common/UploadBuffer.h"

@@ -85,6 +85,10 @@ void EngineApp::Update(const GameTimer& gt)
 {
     OnKeyboardInput(gt);
 
+    ImGui_ImplDX12_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
     mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
     mCurrFrameResource = mFrameResources[mCurrFrameResourceIndex].get();
 
@@ -97,18 +101,17 @@ void EngineApp::Update(const GameTimer& gt)
     }
  
     UpdateRenderAssets(gt);
+
+    static bool show = false;
+    if (show)
+    {
+        ImGui::ShowDemoWindow(&show);
+    }
 }
 
 void EngineApp::Draw(const GameTimer& gt)
 {
     Render(mCurrFrameResource);
-
-    ImGui_ImplDX12_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-
-    static bool show = true;
-    ImGui::ShowDemoWindow(&show);
 
     ImGui::Render();
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
