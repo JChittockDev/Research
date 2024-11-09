@@ -11,6 +11,22 @@ using namespace DirectX;
 const float Math::Infinity = FLT_MAX;
 const float Math::Pi       = 3.1415926535f;
 
+DirectX::XMFLOAT3 Math::QuaternionToEuler(const DirectX::XMFLOAT4& quat)
+{
+	DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&quat);
+	DirectX::XMFLOAT3 euler;
+	euler.x = atan2(2.0f * (quat.w * quat.x + quat.y * quat.z), 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y));
+	euler.y = asin(2.0f * (quat.w * quat.y - quat.z * quat.x));
+	euler.z = atan2(2.0f * (quat.w * quat.z + quat.x * quat.y), 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z));
+	return euler;
+}
+
+DirectX::XMVECTOR Math::EulerToQuaternion(const DirectX::XMFLOAT3& euler)
+{
+	using namespace DirectX;
+	return XMQuaternionRotationRollPitchYaw(euler.x, euler.y, euler.z);
+}
+
 float Math::AngleFromXY(float x, float y)
 {
 	float theta = 0.0f;

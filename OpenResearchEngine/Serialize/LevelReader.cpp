@@ -28,6 +28,14 @@ void LevelReader::SetRenderItemData(const json& item_data, ItemData& renderItemS
     {
         renderItemStruct.animation = item_data["Animation"];
     }
+    if (item_data.contains("Deformable"))
+    {
+        renderItemStruct.deformable = item_data["Deformable"];
+    }
+    else
+    {
+        renderItemStruct.deformable = false;
+    }
     if (item_data.contains("RenderLayer"))
     {
         renderItemStruct.render_layer = item_data["RenderLayer"];

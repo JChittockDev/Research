@@ -1,21 +1,5 @@
 #include "../EngineApp.h"
 
-DirectX::XMFLOAT3 QuaternionToEuler(const DirectX::XMFLOAT4& quat)
-{
-    DirectX::XMVECTOR q = DirectX::XMLoadFloat4(&quat);
-    DirectX::XMFLOAT3 euler;
-    euler.x = atan2(2.0f * (quat.w * quat.x + quat.y * quat.z), 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y));
-    euler.y = asin(2.0f * (quat.w * quat.y - quat.z * quat.x));
-    euler.z = atan2(2.0f * (quat.w * quat.z + quat.x * quat.y), 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z));
-    return euler;
-}
-
-DirectX::XMVECTOR EulerToQuaternion(const DirectX::XMFLOAT3& euler)
-{
-    using namespace DirectX;
-    return XMQuaternionRotationRollPitchYaw(euler.x, euler.y, euler.z);
-}
-
 void EngineApp::UpdateObjectCBs(const GameTimer& gt)
 {
     ImGui::SeparatorText("Objects");
@@ -45,7 +29,7 @@ void EngineApp::UpdateObjectCBs(const GameTimer& gt)
                 // Convert quaternion rotation to Euler angles for display
                 DirectX::XMFLOAT4 rotationQuatValues;
                 DirectX::XMStoreFloat4(&rotationQuatValues, rotationQuat);
-                rotationEuler = QuaternionToEuler(rotationQuatValues);
+                rotationEuler = Math::QuaternionToEuler(rotationQuatValues);
 
                 // Display position, rotation (Euler angles), and scale as read-only text
                 ImGui::InputFloat3("Position", &position.x);
@@ -54,7 +38,7 @@ void EngineApp::UpdateObjectCBs(const GameTimer& gt)
 
                 // If any values have changed, recompose the World matrix
                 DirectX::XMVECTOR newScale = DirectX::XMLoadFloat3(&scaleValues);
-                DirectX::XMVECTOR newRotation = EulerToQuaternion(rotationEuler);
+                DirectX::XMVECTOR newRotation = Math::EulerToQuaternion(rotationEuler);
                 DirectX::XMVECTOR newTranslation = DirectX::XMLoadFloat3(&position);
 
                 // Create a new World matrix from modified position, rotation, and scale

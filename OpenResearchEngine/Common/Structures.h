@@ -606,6 +606,7 @@ struct ItemData
     std::string item_name;
     std::string geometry;
     std::string animation;
+    bool deformable;
     std::vector<double> position;
     std::vector<double> rotation;
     std::vector<double> scale;

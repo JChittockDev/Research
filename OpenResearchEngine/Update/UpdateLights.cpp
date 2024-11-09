@@ -18,6 +18,8 @@ void EngineApp::UpdateLights(const GameTimer& gt)
     auto currObjectCB = mCurrFrameResource->ObjectCB.get();
     UpdateLightTransforms(dynamicLights.LightTransforms, mMainPassCB.LightTransforms);
 
+    int count = 0;
+
     float bounds = -2.0f * mSceneBounds.Radius;
     for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++)
     {
@@ -25,12 +27,16 @@ void EngineApp::UpdateLights(const GameTimer& gt)
         std::string lightLabel = "Directional Light " + std::to_string(i);
         if (ImGui::TreeNode(lightLabel.c_str()))
         {
+            ImGui::InputFloat3("Strength", reinterpret_cast<float*>(&dynamicLights.DirectionalLights[i].Strength));
             ImGui::InputFloat3("Direction", reinterpret_cast<float*>(&dynamicLights.DirectionalLights[i].Direction));
 
             for (int b = 0; b < mDirectionalLightRenderItemMap.at(renderItemPath).size(); b++)
             {
                 mDirectionalLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty = gNumFrameResources;
             }
+
+            mMainPassCB.Lights[count].Strength = dynamicLights.DirectionalLights[i].Strength;
+            mMainPassCB.Lights[count].Direction = dynamicLights.DirectionalLights[i].Direction;
 
             ImGui::TreePop();
         }
@@ -61,6 +67,7 @@ void EngineApp::UpdateLights(const GameTimer& gt)
                 mDirectionalLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty--;
             }
         }
+        count++;
     }
 
     for (int i = 0; i < dynamicLights.SpotLights.size(); i++)
@@ -69,6 +76,7 @@ void EngineApp::UpdateLights(const GameTimer& gt)
         std::string renderItemPath = "defaultobject_" + std::to_string(i);
         if (ImGui::TreeNode(lightLabel.c_str()))
         {
+            ImGui::InputFloat3("Strength", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Strength));
             ImGui::InputFloat3("Direction", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Direction));
             ImGui::InputFloat3("Position", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Position));
 
@@ -76,6 +84,10 @@ void EngineApp::UpdateLights(const GameTimer& gt)
             {
                 mSpotLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty = gNumFrameResources;
             }
+
+            mMainPassCB.Lights[count].Strength = dynamicLights.SpotLights[i].Strength;
+            mMainPassCB.Lights[count].Direction = dynamicLights.SpotLights[i].Direction;
+            mMainPassCB.Lights[count].Position = dynamicLights.SpotLights[i].Position;
 
             ImGui::TreePop();
         }
@@ -106,5 +118,9 @@ void EngineApp::UpdateLights(const GameTimer& gt)
                 mSpotLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty--;
             }
         }
+        count++;
     }
+
+    auto currPassCB = mCurrFrameResource->PassCB.get();
+    currPassCB->CopyData(0, mMainPassCB);
 }

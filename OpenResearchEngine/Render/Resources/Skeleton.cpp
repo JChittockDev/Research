@@ -129,3 +129,21 @@ void Skeleton::GetTransforms(float timePos, std::shared_ptr<TransformNode>& node
         GetTransforms(timePos, node->children[i], animation, globalTransform, globalInverseTransform, transforms);
     }
 }
+
+void Skeleton::InitTransforms(std::shared_ptr<TransformNode>& node, DirectX::XMMATRIX& parentTransform, const DirectX::XMMATRIX& globalInverseTransform, std::vector<DirectX::XMFLOAT4X4>& transforms)
+{
+    DirectX::XMMATRIX nodeTransform = node->transform;
+    DirectX::XMMATRIX globalTransform = parentTransform * nodeTransform;
+
+    if (this->bones.find(node->name) != this->bones.end())
+    {
+        int boneIndex = this->bones[node->name]->index;
+        DirectX::XMMATRIX finalTransform = globalInverseTransform * globalTransform * this->bones[node->name]->inverseBindMatrix;
+        DirectX::XMStoreFloat4x4(&transforms[boneIndex], finalTransform);
+    }
+
+    for (UINT i = 0u; i < node->children.size(); i++)
+    {
+        InitTransforms(node->children[i], globalTransform, globalInverseTransform, transforms);
+    }
+}

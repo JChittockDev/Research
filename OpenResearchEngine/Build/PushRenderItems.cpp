@@ -29,23 +29,22 @@ void EngineApp::PushRenderItems()
 		const ItemData& renderItemData = item.second;
 		std::unordered_map<std::string, RenderItemSettings> settings = renderItemData.settings;
 		UINT meshOffset = 0;
-		if (renderItemData.animation.empty())
+		if (!renderItemData.deformable)
 		{
 
 			RenderItem::BuildRenderItems(renderItemData.geometry, DirectX::XMFLOAT3((float)renderItemData.position[0], (float)renderItemData.position[1], (float)renderItemData.position[2]),
-				DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
-				DirectX::XMFLOAT3((float)renderItemData.scale[0], (float)renderItemData.scale[1], (float)renderItemData.scale[2]),
-				ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers[renderItemData.render_layer], mRenderItems, mMeshRenderItemMap, settings, meshOffset);
+										DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
+										DirectX::XMFLOAT3((float)renderItemData.scale[0], (float)renderItemData.scale[1], (float)renderItemData.scale[2]), ObjectCBIndex, mSubsets, mGeometries, 
+										mMaterials, mMesh, mRenderItemLayers[renderItemData.render_layer], mRenderItems, mMeshRenderItemMap, settings, meshOffset);
 		}
 		else
 		{
 			RenderItem::BuildRenderItems(renderItemData.geometry, renderItemData.animation,
-				DirectX::XMFLOAT3((float)renderItemData.position[0], (float)renderItemData.position[1], (float)renderItemData.position[2]),
-				DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
-				DirectX::XMFLOAT3((float)renderItemData.scale[0], (float)renderItemData.scale[1], (float)renderItemData.scale[2]),
-				ObjectCBIndex, SkinnedCBIndex, BlendCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mSkeletons, mAnimations,
-				mTransforms, mSkinningControllers, mBlendshapeControllers, mMeshAnimationResources, mRenderItemLayers[renderItemData.render_layer],
-				mRenderItems, mMeshRenderItemMap, md3dDevice, mCommandList, settings, meshOffset);
+										DirectX::XMFLOAT3((float)renderItemData.position[0], (float)renderItemData.position[1], (float)renderItemData.position[2]),
+										DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
+										DirectX::XMFLOAT3((float)renderItemData.scale[0], (float)renderItemData.scale[1], (float)renderItemData.scale[2]), ObjectCBIndex, SkinnedCBIndex, BlendCBIndex,
+										mSubsets, mGeometries, mMaterials, mMesh, mSkeletons, mAnimations, mTransforms, mSkinningControllers, mBlendshapeControllers, mMeshAnimationResources, 
+										mRenderItemLayers[renderItemData.render_layer], mRenderItems, mMeshRenderItemMap, md3dDevice, mCommandList, settings, meshOffset);
 		}
 	}
 }

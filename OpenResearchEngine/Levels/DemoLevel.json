@@ -62,11 +62,11 @@
         }
       },
 
-      "WalkingMan" : {
-        "Geometry" : "Models\\test.fbx",
-        "Animation" : "Take 001",
-        "Position" : [0.0, 0.0, -5.0],
-        "Rotation" : [0.0, 0.0, 0.0, 1.0],
+      "WalkingMan": {
+        "Deformable": true,
+        "Geometry": "Models\\test.fbx",
+        "Position": [ 0.0, 0.0, -5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
         "Scale": [ 0.05, 0.05, -0.05 ],
         "RenderLayer": "Opaque",
         "Settings": {
