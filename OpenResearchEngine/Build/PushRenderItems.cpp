@@ -10,17 +10,15 @@ void EngineApp::PushRenderItems()
 	UINT dirLightOffset = 0;
 	for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++)
 	{
-		RenderItem::BuildRenderItems("Models\\directionallight.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-			DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), ObjectCBIndex,
-			mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers["Opaque"], mRenderItems, mDirectionalLightRenderItemMap, lightRenderSettingsDict, dirLightOffset);
+		RenderItem::BuildRenderItems("Models\\directionallight.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), 
+			ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers["Opaque"], mRenderItems, mDirectionalLightRenderItemMap, lightRenderSettingsDict, dirLightOffset);
 	}
 
 	UINT spotLightOffset = 0;
 	for (int i = 0; i < dynamicLights.SpotLights.size(); i++)
 	{
-		RenderItem::BuildRenderItems("Models\\spotlight.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-			DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), ObjectCBIndex,
-			mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers["Opaque"], mRenderItems, mSpotLightRenderItemMap, lightRenderSettingsDict, spotLightOffset);
+		RenderItem::BuildRenderItems("Models\\spotlight.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), 
+			ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers["Opaque"], mRenderItems, mSpotLightRenderItemMap, lightRenderSettingsDict, spotLightOffset);
 	}
 
 	for (const auto& item : mLevelRenderItems.at("DemoLevel"))
@@ -28,6 +26,7 @@ void EngineApp::PushRenderItems()
 		const std::string& itemName = item.first;
 		const ItemData& renderItemData = item.second;
 		std::unordered_map<std::string, RenderItemSettings> settings = renderItemData.settings;
+		
 		UINT meshOffset = 0;
 		if (!renderItemData.deformable)
 		{

@@ -17,8 +17,7 @@
         "Subsurface": "Textures/default_diffuse.dds"
       }
     },
-    "RenderItems" :
-    {
+    "RenderItems": {
       "skyDome": {
         "Geometry": "shapeGeo",
         "Position": [ 0.0, 0.0, 0.0 ],
@@ -42,7 +41,7 @@
       },
       "mirrorDome1": {
         "Geometry": "shapeGeo",
-        "Position": [4.0, 4.0, -5.0 ],
+        "Position": [ 4.0, 4.0, -5.0 ],
         "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
         "Scale": [ 2.0, 2.0, 2.0 ],
         "RenderLayer": "Opaque",
@@ -75,6 +74,38 @@
             "Material": "FaceMaterial"
           }
         }
+      }
+    },
+    "Lights": {
+      "Light1": {
+        "Type": "Directional",
+        "Position": [ 0.0, 20.0, 0.0 ],
+        "Direction": [ 0.57, -0.57, 0.57 ],
+        "Strength": [ 0.9, 0.9, 0.7 ],
+        "FalloffStart": 0.0,
+        "FalloffEnd": 0.0,
+        "InnerConeAngle": 0.0,
+        "OuterConeAngle": 0.0
+      },
+      "Light2": {
+        "Type": "Directional",
+        "Position": [ 5.0, 20.0, 0.0 ],
+        "Direction": [ -0.57, -0.57, 0.57 ],
+        "Strength": [ 0.4, 0.4, 0.4 ],
+        "FalloffStart": 0.0,
+        "FalloffEnd": 0.0,
+        "InnerConeAngle": 0.0,
+        "OuterConeAngle": 0.0
+      },
+      "Light3": {
+        "Type": "Spot",
+        "Position": [ -5.0, 13.0, 5.0 ],
+        "Direction": [ 0.5, -0.5, -0.707 ],
+        "Strength": [ 1.65, 1.65, 1.65 ],
+        "FalloffStart": 1.0,
+        "FalloffEnd": 100.0,
+        "InnerConeAngle": 0.8,
+        "OuterConeAngle": 0.9
       }
     }
   }

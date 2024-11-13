@@ -95,11 +95,7 @@ private:
     void SsaoPass(int blurCount, FrameResource* currentFrameResource);
     void DiffusePass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource);
     void DeformationPass(FrameResource* currentFrameResource);
-    void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
-    
-    void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& ritems);
-    void DrawSceneToShadowMap();
-    void DrawNormalsAndDepth();
+    void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
 
     std::string extractFileName(const std::string& filePath);
 
@@ -162,6 +158,7 @@ private:
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mRenderItemLayers;
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;
     std::unordered_map<std::string, std::unordered_map<std::string, PBRMaterialData>> mLevelMaterials;
+    std::unordered_map<std::string, std::unordered_map<std::string, LightData>> mLevelLights;
     std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndicies;
 
     UINT BlendCBIndex = 0;
