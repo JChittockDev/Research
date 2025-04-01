@@ -87,6 +87,20 @@ Microsoft::WRL::ComPtr<ID3D12Resource> d3dUtil::CreateDefaultBuffer(
     return defaultBuffer;
 }
 
+LPCWSTR ConvertToLPCWSTR(const char* charString) {
+    int length = MultiByteToWideChar(CP_ACP, 0, charString, -1, NULL, 0);
+    if (length == 0) {
+        return NULL; // Conversion failed
+    }
+
+    // Allocate wide character buffer
+    wchar_t* wideString = new wchar_t[length];
+
+    MultiByteToWideChar(CP_ACP, 0, charString, -1, wideString, length);
+
+    return wideString;
+}
+
 ComPtr<ID3DBlob> d3dUtil::CompileShader(
 	const std::wstring& filename,
 	const D3D_SHADER_MACRO* defines,
@@ -105,8 +119,14 @@ ComPtr<ID3DBlob> d3dUtil::CompileShader(
 	hr = D3DCompileFromFile(filename.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		entrypoint.c_str(), target.c_str(), compileFlags, 0, &byteCode, &errors);
 
-	if(errors != nullptr)
-		OutputDebugStringA((char*)errors->GetBufferPointer());
+    if (errors != nullptr)
+    {
+        char* error_string = (char*)errors->GetBufferPointer();
+
+        OutputDebugString(ConvertToLPCWSTR(error_string));
+
+        ThrowIfFailed(hr);
+    }
 
 	ThrowIfFailed(hr);
 

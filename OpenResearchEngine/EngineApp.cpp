@@ -50,7 +50,7 @@ bool EngineApp::Initialize()
         return false; 
     }
 
-    this->mMainWndCaption = L"GRAPE";
+    this->mMainWndCaption = L"OpenResearchEngine";
     ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
 	mCamera.SetPosition(0.0f, 2.0f, 15.0f);
@@ -78,6 +78,11 @@ void EngineApp::OnResize()
     {
         mSsaoMap->OnResize(mClientWidth, mClientHeight);
         mSsaoMap->RebuildDescriptors(mDepthStencilBuffer.Get());
+    }
+    if (mGBuffer != nullptr)
+    {
+        mGBuffer->OnResize(mClientWidth, mClientHeight);
+        mGBuffer->RebuildDescriptors();
     }
 }
 

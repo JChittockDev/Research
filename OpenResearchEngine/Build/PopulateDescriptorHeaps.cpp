@@ -19,6 +19,23 @@ void EngineApp::CreateRtvAndDsvDescriptorHeaps()
 	dsvHeapDesc.NodeMask = 0;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
 		&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
+
+	D3D12_DESCRIPTOR_HEAP_DESC gBufferRtvHeapDesc = {};
+	gBufferRtvHeapDesc.NumDescriptors = 3;  // 3 GBuffer textures: Position, Normal, AlbedoSpec
+	gBufferRtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	gBufferRtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	gBufferRtvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
+		&gBufferRtvHeapDesc, IID_PPV_ARGS(gBufferRtvHeap.GetAddressOf())));
+
+	D3D12_DESCRIPTOR_HEAP_DESC gBufferSrvHeapDesc = {};
+	gBufferSrvHeapDesc.NumDescriptors = 3;  // 3 GBuffer textures: Position, Normal, AlbedoSpec
+	gBufferSrvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	gBufferSrvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	gBufferSrvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
+		&gBufferSrvHeapDesc, IID_PPV_ARGS(gBufferSrvHeap.GetAddressOf())));
+
 }
 
 void EngineApp::PopulateDescriptorHeaps()

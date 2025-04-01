@@ -18,4 +18,9 @@ void EngineApp::SetRenderPassResources()
     }
 
     mSsaoMap->BuildDescriptors(mDepthStencilBuffer.Get(), GetCpuSrv(mLayoutIndicies["mSsaoHeapIndex"].first), GetGpuSrv(mLayoutIndicies["mSsaoHeapIndex"].first), GetRtv(SwapChainBufferCount), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
+
+    mGBuffer = std::make_unique<GBuffer>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+
+    mGBuffer->BuildDescriptors(gBufferRtvHeap.Get(), gBufferSrvHeap.Get(), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
+
 }

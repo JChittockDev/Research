@@ -1,4 +1,4 @@
-#include "../EngineApp.h"
+﻿#include "../EngineApp.h"
 
 void EngineApp::SetPipelineStates()
 {
@@ -150,4 +150,15 @@ void EngineApp::SetPipelineStates()
     skyPsoDesc.VS = {reinterpret_cast<BYTE*>(mShaders["skyVS"]->GetBufferPointer()), mShaders["skyVS"]->GetBufferSize()};
     skyPsoDesc.PS = {reinterpret_cast<BYTE*>(mShaders["skyPS"]->GetBufferPointer()), mShaders["skyPS"]->GetBufferSize()};
     ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&skyPsoDesc, IID_PPV_ARGS(&mPSOs["sky"])));
+
+    // **5️⃣ Configure the Graphics Pipeline State**
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC gBufferPsoDesc = opaquePsoDesc;
+    gBufferPsoDesc.pRootSignature = mGBufferRootSignature.Get();
+    gBufferPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["GBufferVS"]->GetBufferPointer()), mShaders["GBufferVS"]->GetBufferSize() };
+    gBufferPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["GBufferPS"]->GetBufferPointer()), mShaders["GBufferPS"]->GetBufferSize() };
+    gBufferPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gPosition
+    gBufferPsoDesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gNormal
+    gBufferPsoDesc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gAlbedoSpec
+    gBufferPsoDesc.NumRenderTargets = 3;
+    md3dDevice->CreateGraphicsPipelineState(&gBufferPsoDesc, IID_PPV_ARGS(&mPSOs["GBuffer"]));
 }

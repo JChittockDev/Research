@@ -4,20 +4,20 @@ void EngineApp::PushRenderItems()
 {
 	RenderItemSettings lightRenderItems;
 	std::unordered_map<std::string, RenderItemSettings> lightRenderSettingsDict;
-	lightRenderSettingsDict[mSubsets["Models\\directionallight.obj"][0]->Name] = lightRenderItems;
-	lightRenderSettingsDict[mSubsets["Models\\spotlight.obj"][0]->Name] = lightRenderItems;
+	lightRenderSettingsDict[mSubsets["D:/Programming/Research/OpenResearchEngine/Models/directionallight.obj"][0]->Name] = lightRenderItems;
+	lightRenderSettingsDict[mSubsets["D:/Programming/Research/OpenResearchEngine/Models/spotlight.obj"][0]->Name] = lightRenderItems;
 
 	UINT dirLightOffset = 0;
 	for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++)
 	{
-		RenderItem::BuildRenderItems("Models\\directionallight.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), 
+		RenderItem::BuildRenderItems("D:/Programming/Research/OpenResearchEngine/Models/directionallight.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), 
 			ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers["Opaque"], mRenderItems, mDirectionalLightRenderItemMap, lightRenderSettingsDict, dirLightOffset);
 	}
 
 	UINT spotLightOffset = 0;
 	for (int i = 0; i < dynamicLights.SpotLights.size(); i++)
 	{
-		RenderItem::BuildRenderItems("Models\\spotlight.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), 
+		RenderItem::BuildRenderItems("D:/Programming/Research/OpenResearchEngine/Models/spotlight.obj", DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f), 
 			ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers["Opaque"], mRenderItems, mSpotLightRenderItemMap, lightRenderSettingsDict, spotLightOffset);
 	}
 

@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 #define STB_IMAGE_IMPLEMENTATION    
-#include "stb_image.h"
+#include "../../Utilities/stb_image.h"
 
 void Mesh::LoadTexture(const char* filepath, int& width, int& height, std::vector<unsigned char>& textureData)
 {
@@ -16,8 +16,8 @@ void Mesh::ReadVertexColor(const std::vector<unsigned char>& textureData, int te
 	
 	for (auto& vertex : vertices) {
 
-		float u = std::clamp(vertex.TexC.x, 0.0f, 1.0f);
-		float v = std::clamp(vertex.TexC.y, 0.0f, 1.0f);
+		float u = (vertex.TexC.x < 0.0f) ? 0.0f : (vertex.TexC.x > 1.0f) ? 1.0f : vertex.TexC.x;
+		float v = (vertex.TexC.y < 0.0f) ? 0.0f : (vertex.TexC.y > 1.0f) ? 1.0f : vertex.TexC.y;
 		int texX = static_cast<int>(u * (texWidth - 1));
 		int texY = static_cast<int>((1.0f - v) * (texHeight - 1));
 		int texIndex = (texY * texWidth + texX) * 3;

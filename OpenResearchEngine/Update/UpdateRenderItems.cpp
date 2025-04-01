@@ -32,9 +32,9 @@ void EngineApp::UpdateObjectCBs(const GameTimer& gt)
                 rotationEuler = Math::QuaternionToEuler(rotationQuatValues);
 
                 // Display position, rotation (Euler angles), and scale as read-only text
-                ImGui::InputFloat3("Position", &position.x);
-                ImGui::InputFloat3("Rotation (Euler)", &rotationEuler.x);
-                ImGui::InputFloat3("Scale", &scaleValues.x);
+                ImGui::DragFloat3("Position", &position.x);
+                ImGui::DragFloat3("Rotation (Euler)", &rotationEuler.x);
+                ImGui::DragFloat3("Scale", &scaleValues.x);
 
                 // If any values have changed, recompose the World matrix
                 DirectX::XMVECTOR newScale = DirectX::XMLoadFloat3(&scaleValues);

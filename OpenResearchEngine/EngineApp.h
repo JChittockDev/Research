@@ -9,6 +9,7 @@
 #include "Render/Resources/Mesh.h"
 #include "Render/Resources/ShadowMap.h"
 #include "Render/Resources/SsaoMap.h"
+#include "Render/Resources/GBuffer.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Skinning.h"
 #include "Serialize/LevelReader.h"
@@ -88,6 +89,7 @@ private:
     void SetMeshTransferRootSignature();
     void SetForceRootSignature();
     void SetTensionRootSignature();
+    void SetGBufferRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -95,6 +97,9 @@ private:
     void SsaoPass(int blurCount, FrameResource* currentFrameResource);
     void DiffusePass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource);
     void DeformationPass(FrameResource* currentFrameResource);
+
+    void GBufferPass(FrameResource* currentFrameResource);
+
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
 
     std::string extractFileName(const std::string& filePath);
@@ -125,6 +130,7 @@ private:
     ComPtr<ID3D12RootSignature> mMeshTransferRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSimMeshTransferRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mGBufferRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mNullSrv;
 
@@ -170,6 +176,8 @@ private:
     
     std::unique_ptr<SsaoMap> mSsaoMap;
     std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
+
+    std::unique_ptr<GBuffer> mGBuffer;
 
     ComPtr<ID3D12DescriptorHeap> imGuiSrvDescriptorHeap = nullptr;
 };

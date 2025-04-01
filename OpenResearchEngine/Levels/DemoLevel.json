@@ -4,17 +4,17 @@
   {
     "Materials": {
       "FaceMaterial": {
-        "Diffuse": "Textures/default_diffuse.dds",
-        "Normal": "Textures/default_nmap.dds",
-        "Roughness": "Textures/default_diffuse.dds",
-        "Metalness": "Textures/default_diffuse.dds",
-        "Specular": "Textures/default_diffuse.dds",
-        "Height": "Textures/default_diffuse.dds",
-        "Opacity": "Textures/default_diffuse.dds",
-        "Occlusion": "Textures/default_diffuse.dds",
-        "Refraction": "Textures/default_diffuse.dds",
-        "Emissive": "Textures/default_diffuse.dds",
-        "Subsurface": "Textures/default_diffuse.dds"
+        "Diffuse": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Normal": "D:/Programming/Research/OpenResearchEngine/Textures/default_nmap.dds",
+        "Roughness": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Metalness": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Specular": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Height": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Opacity": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Occlusion": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Refraction": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Emissive": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
+        "Subsurface": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds"
       }
     },
     "RenderItems": {
@@ -63,7 +63,7 @@
 
       "WalkingMan": {
         "Deformable": true,
-        "Geometry": "Models\\test.fbx",
+        "Geometry": "D:/Programming/Research/OpenResearchEngine/Models/test.fbx",
         "Position": [ 0.0, 0.0, -5.0 ],
         "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
         "Scale": [ 0.05, 0.05, -0.05 ],

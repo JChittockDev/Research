@@ -27,8 +27,8 @@ void EngineApp::UpdateLights(const GameTimer& gt)
         std::string lightLabel = "Directional Light " + std::to_string(i);
         if (ImGui::TreeNode(lightLabel.c_str()))
         {
-            ImGui::InputFloat3("Strength", reinterpret_cast<float*>(&dynamicLights.DirectionalLights[i].Strength));
-            ImGui::InputFloat3("Direction", reinterpret_cast<float*>(&dynamicLights.DirectionalLights[i].Direction));
+            ImGui::DragFloat3("Strength", reinterpret_cast<float*>(&dynamicLights.DirectionalLights[i].Strength));
+            ImGui::DragFloat3("Direction", reinterpret_cast<float*>(&dynamicLights.DirectionalLights[i].Direction));
 
             for (int b = 0; b < mDirectionalLightRenderItemMap.at(renderItemPath).size(); b++)
             {
@@ -76,9 +76,9 @@ void EngineApp::UpdateLights(const GameTimer& gt)
         std::string renderItemPath = "defaultobject_" + std::to_string(i);
         if (ImGui::TreeNode(lightLabel.c_str()))
         {
-            ImGui::InputFloat3("Strength", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Strength));
-            ImGui::InputFloat3("Direction", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Direction));
-            ImGui::InputFloat3("Position", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Position));
+            ImGui::DragFloat3("Strength", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Strength));
+            ImGui::DragFloat3("Direction", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Direction));
+            ImGui::DragFloat3("Position", reinterpret_cast<float*>(&dynamicLights.SpotLights[i].Position));
 
             for (int b = 0; b < mSpotLightRenderItemMap.at(renderItemPath).size(); b++)
             {

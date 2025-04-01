@@ -40,43 +40,46 @@ void EngineApp::CompileShaders ()
     const D3D_SHADER_MACRO skinnedDefines[2] = {skinningMacro, null};
     const D3D_SHADER_MACRO clothDefines[2] = { quantizeMacro, null };
 
-    mShaders["standardVS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["opaquePS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", opaqueDefines, "PS", "ps_5_1");
+    mShaders["standardVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Default.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["opaquePS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Default.hlsl", opaqueDefines, "PS", "ps_5_1");
 
-    mShaders["shadowVS"] = d3dUtil::CompileShader(L"Shaders\\Shadows.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["shadowOpaquePS"] = d3dUtil::CompileShader(L"Shaders\\Shadows.hlsl", nullptr, "PS", "ps_5_1");
-    mShaders["shadowAlphaTestedPS"] = d3dUtil::CompileShader(L"Shaders\\Shadows.hlsl", alphaTestDefines, "PS", "ps_5_1");
+    mShaders["GBufferVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/GBufferPixel.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["GBufferPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/GBufferPixel.hlsl", opaqueDefines, "PS", "ps_5_1");
 
-    mShaders["debugVS"] = d3dUtil::CompileShader(L"Shaders\\ShadowDebug.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["debugPS"] = d3dUtil::CompileShader(L"Shaders\\ShadowDebug.hlsl", nullptr, "PS", "ps_5_1");
+    mShaders["shadowVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["shadowOpaquePS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", nullptr, "PS", "ps_5_1");
+    mShaders["shadowAlphaTestedPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", alphaTestDefines, "PS", "ps_5_1");
 
-    mShaders["drawNormalsVS"] = d3dUtil::CompileShader(L"Shaders\\DrawNormals.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["drawNormalsPS"] = d3dUtil::CompileShader(L"Shaders\\DrawNormals.hlsl", nullptr, "PS", "ps_5_1");
+    mShaders["debugVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ShadowDebug.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["debugPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ShadowDebug.hlsl", nullptr, "PS", "ps_5_1");
 
-    mShaders["ssaoVS"] = d3dUtil::CompileShader(L"Shaders\\Ssao.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["ssaoPS"] = d3dUtil::CompileShader(L"Shaders\\Ssao.hlsl", nullptr, "PS", "ps_5_1");
+    mShaders["drawNormalsVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/DrawNormals.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["drawNormalsPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/DrawNormals.hlsl", nullptr, "PS", "ps_5_1");
 
-    mShaders["ssaoBlurVS"] = d3dUtil::CompileShader(L"Shaders\\SsaoBlur.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["ssaoBlurPS"] = d3dUtil::CompileShader(L"Shaders\\SsaoBlur.hlsl", nullptr, "PS", "ps_5_1");
+    mShaders["ssaoVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Ssao.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["ssaoPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Ssao.hlsl", nullptr, "PS", "ps_5_1");
 
-    mShaders["skyVS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["skyPS"] = d3dUtil::CompileShader(L"Shaders\\Sky.hlsl", nullptr, "PS", "ps_5_1");
+    mShaders["ssaoBlurVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/SsaoBlur.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["ssaoBlurPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/SsaoBlur.hlsl", nullptr, "PS", "ps_5_1");
 
-    mShaders["blendCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeBlendshapes.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["skinnedCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeSkinning.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["triangleNormalCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeTriangleNormals.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["vertexNormalCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeVertexNormals.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["skyVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Sky.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["skyPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Sky.hlsl", nullptr, "PS", "ps_5_1");
 
-    mShaders["meshTransferCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["simMeshTransferCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeSimMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["blendCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeBlendshapes.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["skinnedCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeSkinning.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["triangleNormalCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeTriangleNormals.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["vertexNormalCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeVertexNormals.hlsl", nullptr, "CS", "cs_5_1");
 
-    mShaders["tensionCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeTension.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["forceCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeForce.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["preSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePreSolve.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["meshTransferCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["simMeshTransferCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeSimMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
 
-    mShaders["constraintSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputeConstraintSolve.hlsl", clothDefines, "CS", "cs_5_1");
+    mShaders["tensionCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeTension.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["forceCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeForce.hlsl", nullptr, "CS", "cs_5_1");
+    mShaders["preSolveCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputePreSolve.hlsl", nullptr, "CS", "cs_5_1");
 
-    mShaders["postSolveCS"] = d3dUtil::CompileShader(L"Shaders\\ComputePostSolve.hlsl", clothDefines, "CS", "cs_5_1");
+    mShaders["constraintSolveCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeConstraintSolve.hlsl", clothDefines, "CS", "cs_5_1");
+
+    mShaders["postSolveCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputePostSolve.hlsl", clothDefines, "CS", "cs_5_1");
 
     mInputLayout = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
