@@ -95,6 +95,7 @@ struct VertexIn
     float3 Position : POSITION;
     float3 Normal : NORMAL;
     float2 TexCoord : TEXCOORD;
+    float4 Tangent : TANGENT;
 };
 
 struct VertexOut
@@ -103,6 +104,7 @@ struct VertexOut
     float3 WorldPosition : WORLD_POSITION;
     float3 Normal : NORMAL;
     float2 TexCoord : TEXCOORD;
+    float3 Tangent : TANGENT;
 };
 
 struct PixelOut
@@ -114,13 +116,28 @@ struct PixelOut
 
 VertexOut VS(VertexIn vin, uint vertexID : SV_VertexID)
 {
-    VertexOut vout;
+    
+    VertexOut vout = (VertexOut) 0.0f;
+   
+	// Fetch the material data.
+	
     MaterialData matData = gMaterialData[gMaterialIndex];
-    vout.Position = mul(float4(vin.Position, 1.0f), gWorld);
-    vout.WorldPosition = mul(vout.Position, gViewProj);
+
+    // Transform to world space.
+    float4 posW = mul(float4(vin.Position, 1.0f), gWorld);
+    vout.WorldPosition = posW.xyz;
+
+    // Assumes nonuniform scaling; otherwise, need to use inverse-transpose of world matrix.
     vout.Normal = mul(vin.Normal, (float3x3) gWorld);
-    float4 TexCoord = mul(float4(vin.TexCoord, 0.0f, 1.0f), gTexTransform);
-    vout.TexCoord = mul(TexCoord, matData.MatTransform).xy;
+	
+    vout.Tangent = mul(vin.Tangent.xyz, (float3x3) gWorld);
+
+    // Transform to homogeneous clip space.
+    vout.Position = mul(posW, gViewProj);
+	
+	// Output vertex attributes for interpolation across triangle.
+    float4 texC = mul(float4(vin.TexCoord, 0.0f, 1.0f), gTexTransform);
+    vout.TexCoord = mul(texC, matData.MatTransform).xy;
     
     return vout;
 }
