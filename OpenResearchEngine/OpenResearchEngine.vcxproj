@@ -118,6 +118,7 @@
     <ClCompile Include="Render\Passes\DiffusePass.cpp" />
     <ClCompile Include="Render\Manager\Render.cpp" />
     <ClCompile Include="Render\Passes\GBufferPass.cpp" />
+    <ClCompile Include="Render\Passes\LightingPass.cpp" />
     <ClCompile Include="Render\Resources\GBuffer.cpp" />
     <ClCompile Include="Render\Resources\MeshAnimationResource.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />

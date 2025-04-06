@@ -5,7 +5,7 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     // Init render command list
     ThrowIfFailed(currentFrameResource->CmdListAlloc->Reset());
     ThrowIfFailed(mCommandList->Reset(currentFrameResource->CmdListAlloc.Get(), mPSOs.at("opaque").Get()));
-    ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
+    ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get(), gBufferSrvHeap.Get()};
     mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     // Add render pass instructions
@@ -16,7 +16,8 @@ void EngineApp::Render(FrameResource* currentFrameResource)
 
 
     SsaoPass(2, currentFrameResource);
-    DiffusePass(mLayoutIndicies, currentFrameResource);
+    //DiffusePass(mLayoutIndicies, currentFrameResource);
+    LightingPass(mLayoutIndicies, currentFrameResource);
 }
 
 void EngineApp::DeformationPass(FrameResource* currentFrameResource)

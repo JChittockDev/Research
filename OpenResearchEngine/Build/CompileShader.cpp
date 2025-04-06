@@ -43,8 +43,11 @@ void EngineApp::CompileShaders ()
     mShaders["standardVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Default.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["opaquePS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Default.hlsl", opaqueDefines, "PS", "ps_5_1");
 
-    mShaders["GBufferVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/GBufferPixel.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["GBufferPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/GBufferPixel.hlsl", opaqueDefines, "PS", "ps_5_1");
+    mShaders["LightingVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Lighting.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["LightingPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Lighting.hlsl", opaqueDefines, "PS", "ps_5_1");
+
+    mShaders["GBufferVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/GBuffer.hlsl", nullptr, "VS", "vs_5_1");
+    mShaders["GBufferPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/GBuffer.hlsl", opaqueDefines, "PS", "ps_5_1");
 
     mShaders["shadowVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["shadowOpaquePS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", nullptr, "PS", "ps_5_1");

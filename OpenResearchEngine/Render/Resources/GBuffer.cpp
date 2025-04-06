@@ -26,16 +26,25 @@ void GBuffer::BuildDescriptors(ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHe
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap->GetCPUDescriptorHandleForHeapStart());
     CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(srvHeap->GetCPUDescriptorHandleForHeapStart());
 
-    mhPositionCpuSrv = srvHandle;
-    mhNormalCpuSrv = srvHandle.Offset(1, srvDescriptorSize);
-    mhAlbedoSpecCpuSrv = srvHandle.Offset(1, srvDescriptorSize);
-
     mhPositionCpuRtv = rtvHandle;
     mhNormalCpuRtv = rtvHandle.Offset(1, rtvDescriptorSize);
     mhAlbedoSpecCpuRtv = rtvHandle.Offset(1, rtvDescriptorSize);
 
-    //  Create the descriptors
+    mhPositionCpuSrv = srvHandle;
+    mhNormalCpuSrv = srvHandle.Offset(1, srvDescriptorSize);
+    mhAlbedoSpecCpuSrv = srvHandle.Offset(1, srvDescriptorSize);
+
     RebuildDescriptors();
+}
+
+void GBuffer::RebuildDescriptors()
+{
+    CreateGBufferRTV(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition, mhPositionCpuRtv);
+    CreateGBufferRTV(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal, mhNormalCpuRtv);
+    CreateGBufferRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec, mhAlbedoSpecCpuRtv);
+    CreateGBufferSRV(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition, mhPositionCpuSrv);
+    CreateGBufferSRV(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal, mhNormalCpuSrv);
+    CreateGBufferSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec, mhAlbedoSpecCpuSrv);
 }
 
 void GBuffer::CreateGBufferRTV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle)
@@ -59,16 +68,6 @@ void GBuffer::CreateGBufferSRV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr
     srvDesc.Texture2D.PlaneSlice = 0;
     srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
     md3dDevice->CreateShaderResourceView(texture.Get(), &srvDesc, srvHandle);
-}
-
-void GBuffer::RebuildDescriptors()
-{
-    CreateGBufferRTV(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition, mhPositionCpuRtv);
-    CreateGBufferRTV(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal, mhNormalCpuRtv);
-    CreateGBufferRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec, mhAlbedoSpecCpuRtv);
-    CreateGBufferSRV(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition, mhPositionCpuSrv);
-    CreateGBufferSRV(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal, mhPositionCpuSrv);
-    CreateGBufferSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec, mhPositionCpuSrv);
 }
 
 void GBuffer::OnResize(UINT newWidth, UINT newHeight)
@@ -107,7 +106,7 @@ void GBuffer::CreateGBufferTexture(const DXGI_FORMAT& format, Microsoft::WRL::Co
     clearValue.Color[0] = 0.0f;
     clearValue.Color[1] = 0.0f;
     clearValue.Color[2] = 0.0f;
-    clearValue.Color[3] = 0.0f;
+    clearValue.Color[3] = 1.0f;
 
     md3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue, IID_PPV_ARGS(&texture));
 }

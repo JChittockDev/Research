@@ -161,4 +161,13 @@ void EngineApp::SetPipelineStates()
     gBufferPsoDesc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gAlbedoSpec
     gBufferPsoDesc.NumRenderTargets = 3;
     md3dDevice->CreateGraphicsPipelineState(&gBufferPsoDesc, IID_PPV_ARGS(&mPSOs["GBuffer"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC lightingPsoDesc = opaquePsoDesc;
+    lightingPsoDesc.InputLayout = { nullptr, 0 };
+    lightingPsoDesc.pRootSignature = mLightingRootSignature.Get();
+    lightingPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["LightingVS"]->GetBufferPointer()), mShaders["LightingVS"]->GetBufferSize() };
+    lightingPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["LightingPS"]->GetBufferPointer()), mShaders["LightingPS"]->GetBufferSize() };
+    lightingPsoDesc.DepthStencilState.DepthEnable = false;
+    lightingPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&lightingPsoDesc, IID_PPV_ARGS(&mPSOs["Lighting"]));
 }

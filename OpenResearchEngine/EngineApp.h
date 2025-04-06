@@ -90,6 +90,7 @@ private:
     void SetForceRootSignature();
     void SetTensionRootSignature();
     void SetGBufferRootSignature();
+    void SetLightingRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -99,6 +100,7 @@ private:
     void DeformationPass(FrameResource* currentFrameResource);
 
     void GBufferPass(FrameResource* currentFrameResource);
+    void LightingPass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource);
 
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
 
@@ -131,6 +133,7 @@ private:
     ComPtr<ID3D12RootSignature> mSimMeshTransferRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mGBufferRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mLightingRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mNullSrv;
 

@@ -9,22 +9,17 @@ void EngineApp::GBufferPass(FrameResource* currentFrameResource)
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
 
-    // Transition G-Buffer textures to RENDER_TARGET state
-    //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetPosition().Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET));
-    //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetNormal().Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET));
-    //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetAlbedoSpec().Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_RENDER_TARGET));
-
     // Clear G-Buffer render targets
-    float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    mCommandList->ClearRenderTargetView(mGBuffer->GetPositionRtv(), clearColor, 0, nullptr);
-    mCommandList->ClearRenderTargetView(mGBuffer->GetNormalRtv(), clearColor, 0, nullptr);
-    mCommandList->ClearRenderTargetView(mGBuffer->GetAlbedoSpecRtv(), clearColor, 0, nullptr);
+    float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    mCommandList->ClearRenderTargetView(mGBuffer->GetPositionCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetNormalCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetAlbedoSpecCpuRtv(), clearColor, 0, nullptr);
 
     // Set render targets for the G-Buffer
     D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
-        mGBuffer->GetPositionRtv(),
-        mGBuffer->GetNormalRtv(),
-        mGBuffer->GetAlbedoSpecRtv()
+        mGBuffer->GetPositionCpuRtv(),
+        mGBuffer->GetNormalCpuRtv(),
+        mGBuffer->GetAlbedoSpecCpuRtv()
     };
 
     mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
@@ -46,12 +41,4 @@ void EngineApp::GBufferPass(FrameResource* currentFrameResource)
 
     // Draw all objects in the scene
     SetRenderItems(mCommandList.Get(), mRenderItemLayers.at("Opaque"), currentFrameResource);
-
-    // Transition G-Buffer textures back to GENERIC_READ for later use
-    //CD3DX12_RESOURCE_BARRIER postBarriers[] = {
-    //    CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetPosition().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ),
-    //    CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetNormal().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ),
-    //    CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetAlbedoSpec().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ)
-    //};
-    //mCommandList->ResourceBarrier(3, postBarriers);
 }

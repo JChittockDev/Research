@@ -116,26 +116,13 @@ struct PixelOut
 
 VertexOut VS(VertexIn vin, uint vertexID : SV_VertexID)
 {
-    
     VertexOut vout = (VertexOut) 0.0f;
-   
-	// Fetch the material data.
-	
     MaterialData matData = gMaterialData[gMaterialIndex];
-
-    // Transform to world space.
     float4 posW = mul(float4(vin.Position, 1.0f), gWorld);
     vout.WorldPosition = posW.xyz;
-
-    // Assumes nonuniform scaling; otherwise, need to use inverse-transpose of world matrix.
     vout.Normal = mul(vin.Normal, (float3x3) gWorld);
-	
     vout.Tangent = mul(vin.Tangent.xyz, (float3x3) gWorld);
-
-    // Transform to homogeneous clip space.
     vout.Position = mul(posW, gViewProj);
-	
-	// Output vertex attributes for interpolation across triangle.
     float4 texC = mul(float4(vin.TexCoord, 0.0f, 1.0f), gTexTransform);
     vout.TexCoord = mul(texC, matData.MatTransform).xy;
     
