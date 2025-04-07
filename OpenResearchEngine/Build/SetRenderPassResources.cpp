@@ -21,6 +21,6 @@ void EngineApp::SetRenderPassResources()
 
     mGBuffer = std::make_unique<GBuffer>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
 
-    mGBuffer->BuildDescriptors(GetRtv(SwapChainBufferCount + 3), gBufferSrvHeap.Get(), mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+    mGBuffer->BuildDescriptors(GetRtv(SwapChainBufferCount + 3), GetCpuSrv(mLayoutIndicies["mGbufferHeapIndex"].first), mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
 }

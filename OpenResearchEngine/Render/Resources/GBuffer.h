@@ -21,7 +21,7 @@ public:
     void CreateGBufferSRV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& srvHandle);
 
     void RebuildDescriptors();
-    void BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle, ID3D12DescriptorHeap* srvHeap, UINT rtvDescriptorSize, UINT srvDescriptorSize);
+    void BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize);
 
 	void OnResize(UINT newWidth, UINT newHeight);
 

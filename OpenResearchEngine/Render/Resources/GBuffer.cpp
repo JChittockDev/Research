@@ -21,10 +21,8 @@ UINT GBuffer::GBufferHeight()const
     return mRenderTargetHeight / 2;
 }
 
-void GBuffer::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle, ID3D12DescriptorHeap* srvHeap, UINT rtvDescriptorSize, UINT srvDescriptorSize)
+void GBuffer::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize)
 {
-    CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(srvHeap->GetCPUDescriptorHandleForHeapStart());
-
     mhPositionCpuRtv = rtvHandle;
     mhNormalCpuRtv = rtvHandle.Offset(1, rtvDescriptorSize);
     mhAlbedoSpecCpuRtv = rtvHandle.Offset(1, rtvDescriptorSize);
