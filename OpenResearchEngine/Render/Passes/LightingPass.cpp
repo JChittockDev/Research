@@ -17,9 +17,6 @@ void EngineApp::LightingPass(const std::unordered_map<std::string, std::pair<INT
     //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetNormal().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
     //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetAlbedoSpec().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 
-    ID3D12DescriptorHeap* descriptorHeaps[] = {gBufferSrvHeap.Get() };
-    mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
     CD3DX12_GPU_DESCRIPTOR_HANDLE textureDescriptor2(gBufferSrvHeap->GetGPUDescriptorHandleForHeapStart());
     mCommandList->SetGraphicsRootDescriptorTable(3, textureDescriptor2);
 
