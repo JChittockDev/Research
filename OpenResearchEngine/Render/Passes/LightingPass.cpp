@@ -18,7 +18,7 @@ void EngineApp::LightingPass(const std::unordered_map<std::string, std::pair<INT
     //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetNormal().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
     //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetAlbedoSpec().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 
-    textureDescriptor.Offset(layoutIndexMap.at("mNullTexSrvIndex2").first, layoutIndexMap.at("mNullTexSrvIndex2").second);
+    textureDescriptor.Offset(layoutIndexMap.at("mSsaoAmbientMapHeapIndex").first, layoutIndexMap.at("mSsaoAmbientMapHeapIndex").second);
     mCommandList->SetGraphicsRootDescriptorTable(3, textureDescriptor);
 
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
