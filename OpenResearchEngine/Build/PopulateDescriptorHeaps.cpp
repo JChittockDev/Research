@@ -21,22 +21,34 @@ void EngineApp::CreateRtvAndDsvDescriptorHeaps()
 		&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
 
 
+	D3D12_DESCRIPTOR_HEAP_DESC gBufferSrvHeapDesc = {};
+	gBufferSrvHeapDesc.NumDescriptors = 3;  // 3 GBuffer textures: Position, Normal, AlbedoSpec
+	gBufferSrvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	gBufferSrvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	gBufferSrvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
+		&gBufferSrvHeapDesc, IID_PPV_ARGS(gBufferSrvHeap.GetAddressOf())));
+
+}
+
+void EngineApp::PopulateDescriptorHeaps()
+{
 	D3D12_DESCRIPTOR_HEAP_DESC imguiDesc = {};
 	imguiDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	imguiDesc.NumDescriptors = 1;
 	imguiDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&imguiDesc, IID_PPV_ARGS(&imGuiSrvDescriptorHeap)));
 
+	//
+	// Create the SRV heap.
+	//
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
 	srvHeapDesc.NumDescriptors = 64;
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap)));
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
-}
-
-void EngineApp::PopulateDescriptorHeaps()
-{
 	std::vector<ComPtr<ID3D12Resource>> tex2DList;
 
 	for (const auto& texture : mTextureData)
@@ -46,7 +58,6 @@ void EngineApp::PopulateDescriptorHeaps()
 		tex2DList.push_back(texResource);
 	}
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 	for (UINT i = 0; i < (UINT)tex2DList.size(); ++i)
 	{
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -72,12 +83,10 @@ void EngineApp::PopulateDescriptorHeaps()
 	hDescriptor.Offset(1, mCbvSrvUavDescriptorSize);
 
 	mLayoutIndicies["mSkyTexHeapIndex"] = std::make_pair((UINT)tex2DList.size(), mCbvSrvUavDescriptorSize);
-	//mLayoutIndicies["mGbufferHeapIndex"] = std::make_pair(mLayoutIndicies["mSkyTexHeapIndex"].first + 1, mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mShadowMapHeapIndex"] = std::make_pair(mLayoutIndicies["mSkyTexHeapIndex"].first + 1, mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mSsaoHeapIndex"] = std::make_pair(mLayoutIndicies["mShadowMapHeapIndex"].first + dynamicLights.GetNumLights(), mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mSsaoAmbientMapHeapIndex"] = std::make_pair(mLayoutIndicies["mSsaoHeapIndex"].first + 3, mCbvSrvUavDescriptorSize);
-	mLayoutIndicies["mGbufferHeapIndex"] = std::make_pair(mLayoutIndicies["mSsaoAmbientMapHeapIndex"].first + 5, mCbvSrvUavDescriptorSize);
-	mLayoutIndicies["mNullCubeSrvIndex"] = std::make_pair(mLayoutIndicies["mGbufferHeapIndex"].first + 3, mCbvSrvUavDescriptorSize);
+	mLayoutIndicies["mNullCubeSrvIndex"] = std::make_pair(mLayoutIndicies["mSsaoAmbientMapHeapIndex"].first + 5, mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mNullTexSrvIndex1"] = std::make_pair(mLayoutIndicies["mNullCubeSrvIndex"].first + 1, mCbvSrvUavDescriptorSize);
 	mLayoutIndicies["mNullTexSrvIndex2"] = std::make_pair(mLayoutIndicies["mNullTexSrvIndex1"].first + 1, mCbvSrvUavDescriptorSize);
 
