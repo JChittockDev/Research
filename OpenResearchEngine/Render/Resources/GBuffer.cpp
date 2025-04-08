@@ -21,8 +21,9 @@ UINT GBuffer::GBufferHeight()const
     return mRenderTargetHeight / 2;
 }
 
-void GBuffer::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle, ID3D12DescriptorHeap* srvHeap, UINT rtvDescriptorSize, UINT srvDescriptorSize)
+void GBuffer::BuildDescriptors(ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* srvHeap, UINT rtvDescriptorSize, UINT srvDescriptorSize)
 {
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap->GetCPUDescriptorHandleForHeapStart());
     CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(srvHeap->GetCPUDescriptorHandleForHeapStart());
 
     mhPositionCpuRtv = rtvHandle;
