@@ -122,6 +122,7 @@
     <ClCompile Include="Render\Resources\GBuffer.cpp" />
     <ClCompile Include="Render\Resources\MeshAnimationResource.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
+    <ClCompile Include="Render\Resources\RenderTextures.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Render\Passes\ShadowPass.cpp" />
     <ClCompile Include="Render\Passes\SsaoPass.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\MeshAnimationResource.h" />
+    <ClInclude Include="Render\Resources\RenderTextures.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Render\Resources\TransformNode.h" />
     <ClInclude Include="Serialize\LevelReader.h" />

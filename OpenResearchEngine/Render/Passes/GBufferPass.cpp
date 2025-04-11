@@ -29,12 +29,11 @@ void EngineApp::GBufferPass(FrameResource* currentFrameResource)
     auto objectCBAddress = currentFrameResource->ObjectCB->Resource()->GetGPUVirtualAddress();
     auto passCBAddress = currentFrameResource->PassCB->Resource()->GetGPUVirtualAddress();
     auto matBAddress = currentFrameResource->MaterialBuffer->Resource()->GetGPUVirtualAddress();
-    CD3DX12_GPU_DESCRIPTOR_HANDLE textureDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
     mCommandList->SetGraphicsRootConstantBufferView(0, objectCBAddress);
     mCommandList->SetGraphicsRootConstantBufferView(1, passCBAddress);
     mCommandList->SetGraphicsRootShaderResourceView(2, matBAddress);
-    mCommandList->SetGraphicsRootDescriptorTable(3, textureDescriptor);
+    mCommandList->SetGraphicsRootDescriptorTable(3, mRenderTextures->GetStartGpuSrv());
 
     // Set Pipeline State for G-Buffer Pass
     mCommandList->SetPipelineState(mPSOs.at("GBuffer").Get());

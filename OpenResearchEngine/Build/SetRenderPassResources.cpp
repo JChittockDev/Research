@@ -19,8 +19,14 @@ void EngineApp::SetRenderPassResources()
 
     mSsaoMap->BuildDescriptors(mDepthStencilBuffer.Get(), GetCpuSrv(mLayoutIndicies["mSsaoHeapIndex"].first), GetGpuSrv(mLayoutIndicies["mSsaoHeapIndex"].first), GetRtv(SwapChainBufferCount), mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
 
-    mGBuffer = std::make_unique<GBuffer>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE cpuRtvHandle(gBufferRtvHeap.Get()->GetCPUDescriptorHandleForHeapStart());
+    CD3DX12_CPU_DESCRIPTOR_HANDLE cpuSrvHandle(gBufferSrvHeap.Get()->GetCPUDescriptorHandleForHeapStart());
+    CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(gBufferSrvHeap.Get()->GetGPUDescriptorHandleForHeapStart());
 
-    mGBuffer->BuildDescriptors(gBufferRtvHeap.Get(), gBufferSrvHeap.Get(), mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+    mGBuffer = std::make_unique<GBuffer>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mGBuffer->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+
+    mRenderTextures = std::make_unique<RenderTextures>(md3dDevice.Get());
+    mRenderTextures->BuildDescriptors(cpuSrvHandle, gpuSrvHandle, mCbvSrvUavDescriptorSize, mTextureData, mTextures);
 
 }

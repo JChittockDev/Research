@@ -12,6 +12,7 @@
 #include "Render/Resources/GBuffer.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Skinning.h"
+#include "Render/Resources/RenderTextures.h"
 #include "Serialize/LevelReader.h"
 
 using Microsoft::WRL::ComPtr;
@@ -170,6 +171,8 @@ private:
     std::unordered_map<std::string, std::unordered_map<std::string, LightData>> mLevelLights;
     std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndicies;
 
+    std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndiciesNew;
+
     UINT BlendCBIndex = 0;
     UINT SkinnedCBIndex = 0;
     UINT ObjectCBIndex = 0;
@@ -181,6 +184,7 @@ private:
     std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
 
     std::unique_ptr<GBuffer> mGBuffer;
+    std::unique_ptr<RenderTextures> mRenderTextures;
 
     ComPtr<ID3D12DescriptorHeap> imGuiSrvDescriptorHeap = nullptr;
 };

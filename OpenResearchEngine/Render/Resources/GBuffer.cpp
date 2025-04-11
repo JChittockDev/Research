@@ -21,18 +21,19 @@ UINT GBuffer::GBufferHeight()const
     return mRenderTargetHeight / 2;
 }
 
-void GBuffer::BuildDescriptors(ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* srvHeap, UINT rtvDescriptorSize, UINT srvDescriptorSize)
+void GBuffer::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize)
 {
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap->GetCPUDescriptorHandleForHeapStart());
-    CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(srvHeap->GetCPUDescriptorHandleForHeapStart());
+    mhPositionCpuRtv = cpuRtvHandle;
+    mhNormalCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
+    mhAlbedoSpecCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
 
-    mhPositionCpuRtv = rtvHandle;
-    mhNormalCpuRtv = rtvHandle.Offset(1, rtvDescriptorSize);
-    mhAlbedoSpecCpuRtv = rtvHandle.Offset(1, rtvDescriptorSize);
+    mhPositionCpuSrv = cpuSrvHandle;
+    mhNormalCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhAlbedoSpecCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
 
-    mhPositionCpuSrv = srvHandle;
-    mhNormalCpuSrv = srvHandle.Offset(1, srvDescriptorSize);
-    mhAlbedoSpecCpuSrv = srvHandle.Offset(1, srvDescriptorSize);
+    mhPositionGpuSrv = gpuSrvHandle;
+    mhNormalGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhAlbedoSpecGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
     RebuildDescriptors();
 }

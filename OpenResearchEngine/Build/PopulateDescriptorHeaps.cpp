@@ -29,7 +29,7 @@ void EngineApp::CreateRtvAndDsvDescriptorHeaps()
 		&gBufferRtvHeapDesc, IID_PPV_ARGS(gBufferRtvHeap.GetAddressOf())));
 
 	D3D12_DESCRIPTOR_HEAP_DESC gBufferSrvHeapDesc = {};
-	gBufferSrvHeapDesc.NumDescriptors = 3;  // 3 GBuffer textures: Position, Normal, AlbedoSpec
+	gBufferSrvHeapDesc.NumDescriptors = 64;  // 3 GBuffer textures: Position, Normal, AlbedoSpec
 	gBufferSrvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	gBufferSrvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	gBufferSrvHeapDesc.NodeMask = 0;
