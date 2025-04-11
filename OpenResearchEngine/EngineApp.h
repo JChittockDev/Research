@@ -8,6 +8,7 @@
 #include "Render/Resources/FrameResource.h"
 #include "Render/Resources/Mesh.h"
 #include "Render/Resources/ShadowMap.h"
+#include "Render/Resources/ShadowResources.h"
 #include "Render/Resources/SsaoMap.h"
 #include "Render/Resources/GBuffer.h"
 #include "Render/Resources/RenderItem.h"
@@ -185,6 +186,7 @@ private:
 
     std::unique_ptr<GBuffer> mGBuffer;
     std::unique_ptr<RenderTextures> mRenderTextures;
+    std::unique_ptr<ShadowResources> mShadowResources;
 
     ComPtr<ID3D12DescriptorHeap> imGuiSrvDescriptorHeap = nullptr;
 };

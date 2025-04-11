@@ -9,16 +9,9 @@ void EngineApp::LightingPass(const std::unordered_map<std::string, std::pair<INT
 
     mCommandList->SetGraphicsRootConstantBufferView(1, currentFrameResource->PassCB->Resource()->GetGPUVirtualAddress());
 
-    CD3DX12_GPU_DESCRIPTOR_HANDLE textureDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-    textureDescriptor.Offset(layoutIndexMap.at("mSkyTexHeapIndex").first, layoutIndexMap.at("mSkyTexHeapIndex").second);
-    mCommandList->SetGraphicsRootDescriptorTable(2, textureDescriptor);
+    mCommandList->SetGraphicsRootDescriptorTable(2, gBufferSrvHeap->GetGPUDescriptorHandleForHeapStart());
 
-    //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetPosition().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
-    //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetNormal().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
-    //mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mGBuffer->GetAlbedoSpec().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
-
-    CD3DX12_GPU_DESCRIPTOR_HANDLE textureDescriptor2(gBufferSrvHeap->GetGPUDescriptorHandleForHeapStart());
-    mCommandList->SetGraphicsRootDescriptorTable(3, textureDescriptor2);
+    mCommandList->SetGraphicsRootDescriptorTable(3, mShadowResources->GetStartGpuSrv());
 
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
     mCommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightSteelBlue, 0, nullptr);

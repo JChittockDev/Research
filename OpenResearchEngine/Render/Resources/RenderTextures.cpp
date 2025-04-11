@@ -35,23 +35,6 @@ void RenderTextures::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& hCpuSrv, CD
         hCpuSrv.Offset(1, cbvSrvUavDescriptorSize);
         hGpuSrv.Offset(1, cbvSrvUavDescriptorSize);
     }
-
-    auto skyCubeMap = textures.at("desertcube1024")->first.Resource;
-    D3D12_SHADER_RESOURCE_VIEW_DESC srvSkyDesc = {};
-    srvSkyDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    srvSkyDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
-    srvSkyDesc.TextureCube.MostDetailedMip = 0;
-    srvSkyDesc.TextureCube.MipLevels = skyCubeMap->GetDesc().MipLevels;
-    srvSkyDesc.TextureCube.ResourceMinLODClamp = 0.0f;
-    srvSkyDesc.Format = skyCubeMap->GetDesc().Format;
-    md3dDevice->CreateShaderResourceView(skyCubeMap.Get(), &srvSkyDesc, hCpuSrv);
-
-    cpuSrvHandles.push_back(hCpuSrv);
-    gpuSrvHandles.push_back(hGpuSrv);
-
-    hCpuSrv.Offset(1, cbvSrvUavDescriptorSize);
-    hGpuSrv.Offset(1, cbvSrvUavDescriptorSize);
-
 }
 
 RenderTextures::RenderTextures(ID3D12Device* device)

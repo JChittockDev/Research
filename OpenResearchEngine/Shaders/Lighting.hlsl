@@ -26,12 +26,10 @@ struct Light
     float Pad3;
 };
 
-TextureCube gCubeMap : register(t0);
-Texture2D gShadowMap[16] : register(t1);
-Texture2D gSsaoMap : register(t17);
-Texture2D gPosition : register(t18);
-Texture2D gNormal : register(t19);
-Texture2D gAlbedoSpec : register(t20);
+Texture2D gPosition : register(t0);
+Texture2D gNormal : register(t1);
+Texture2D gAlbedoSpec : register(t2);
+Texture2D gShadowMap[16] : register(t3);
 
 SamplerState gsamPointWrap : register(s0);
 SamplerState gsamPointClamp : register(s1);
@@ -109,5 +107,5 @@ float4 PS(VertexOut pin) : SV_Target
     float3 Albedo = gAlbedoSpec.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
     float Specular = gAlbedoSpec.Sample(gsamAnisotropicWrap, pin.TexC).a;
     
-    return float4(FragPos.x, FragPos.y, FragPos.z, 1.0);
+    return float4(Albedo.x, Albedo.y, Albedo.z, 1.0);
 }
