@@ -5,7 +5,7 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     // Init render command list
     ThrowIfFailed(currentFrameResource->CmdListAlloc->Reset());
     ThrowIfFailed(mCommandList->Reset(currentFrameResource->CmdListAlloc.Get(), mPSOs.at("opaque").Get()));
-    ID3D12DescriptorHeap* descriptorHeaps[] = { gBufferSrvHeap.Get()};
+    ID3D12DescriptorHeap* descriptorHeaps[] = { renderPassSrvHeap.Get()};
     mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     // Add render pass instructions

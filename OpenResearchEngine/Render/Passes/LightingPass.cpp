@@ -9,7 +9,7 @@ void EngineApp::LightingPass(FrameResource* currentFrameResource)
 
     mCommandList->SetGraphicsRootConstantBufferView(1, currentFrameResource->PassCB->Resource()->GetGPUVirtualAddress());
 
-    mCommandList->SetGraphicsRootDescriptorTable(2, gBufferSrvHeap->GetGPUDescriptorHandleForHeapStart());
+    mCommandList->SetGraphicsRootDescriptorTable(2, renderPassSrvHeap->GetGPUDescriptorHandleForHeapStart());
 
     mCommandList->SetGraphicsRootDescriptorTable(3, mShadowResources->GetStartGpuSrv());
 
