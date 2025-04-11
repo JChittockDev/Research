@@ -55,7 +55,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Programming\Library\nlohmann\include;D:\Programming\Library\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Programming\Library\nlohmann\include;D:\Programming\Library\assimp\include;C:\Users\josep\OneDrive\Documents\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -98,22 +98,32 @@
     <ClCompile Include="Build\CompileShader.cpp" />
     <ClCompile Include="Build\SetRenderPassResources.cpp" />
     <ClCompile Include="Build\SetRootSignatures.cpp" />
-    <ClCompile Include="Build\SetSSAORootSignature.cpp" />
     <ClCompile Include="Build\ImportTextures.cpp" />
     <ClCompile Include="Build\SerializeLevel.cpp" />
+    <ClCompile Include="Gui\GuiManager.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\imgui_tables.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Objects\Camera.cpp" />
     <ClCompile Include="D3D12\D3DApp.cpp" />
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
     <ClCompile Include="Objects\ViewFrustum.cpp" />
-    <ClCompile Include="Render\Passes\DepthPass.cpp" />
-    <ClCompile Include="Render\Passes\DiffusePass.cpp" />
     <ClCompile Include="Render\Manager\Render.cpp" />
+    <ClCompile Include="Render\Passes\GBufferPass.cpp" />
+    <ClCompile Include="Render\Passes\LightingPass.cpp" />
+    <ClCompile Include="Render\Resources\GBuffer.cpp" />
     <ClCompile Include="Render\Resources\MeshAnimationResource.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
+    <ClCompile Include="Render\Resources\RenderTextures.cpp" />
+    <ClCompile Include="Render\Resources\ShadowMap.cpp" />
+    <ClCompile Include="Render\Resources\ShadowResources.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Render\Passes\ShadowPass.cpp" />
-    <ClCompile Include="Render\Passes\SsaoPass.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
@@ -126,17 +136,23 @@
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
     <ClCompile Include="Build\PushGenericMesh.cpp" />
     <ClCompile Include="Render\Resources\Mesh.cpp" />
-    <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="EngineApp.cpp" />
-    <ClCompile Include="Render\Resources\SsaoMap.cpp" />
     <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp" />
     <ClCompile Include="Update\UpdateRenderItems.cpp" />
     <ClCompile Include="Update\UpdateShadowPass.cpp" />
-    <ClCompile Include="Update\UpdateSSAO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Gui\GuiManager.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx12.h" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="Objects\Camera.h" />
     <ClInclude Include="D3D12\D3DApp.h" />
     <ClInclude Include="D3D12\D3DUtil.h" />
@@ -144,9 +160,13 @@
     <ClInclude Include="Models\External\DDSTextureLoader.h" />
     <ClInclude Include="Objects\ViewFrustum.h" />
     <ClInclude Include="Render\Resources\Blendshapes.h" />
+    <ClInclude Include="Render\Resources\GBuffer.h" />
     <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\MeshAnimationResource.h" />
+    <ClInclude Include="Render\Resources\RenderTextures.h" />
+    <ClInclude Include="Render\Resources\ShadowMap.h" />
+    <ClInclude Include="Render\Resources\ShadowResources.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Render\Resources\TransformNode.h" />
     <ClInclude Include="Serialize\LevelReader.h" />
@@ -160,8 +180,7 @@
     <ClInclude Include="Render\Resources\FrameResource.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
     <ClInclude Include="Render\Resources\Skinning.h" />
-    <ClInclude Include="Render\Resources\ShadowMap.h" />
-    <ClInclude Include="Render\Resources\SsaoMap.h" />
+    <ClInclude Include="Utilities\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

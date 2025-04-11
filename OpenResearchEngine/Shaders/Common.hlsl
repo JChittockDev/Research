@@ -27,14 +27,14 @@ struct MaterialData
     uint DiffuseMapIndex;
 	uint NormalMapIndex;
     uint RoughnessMapIndex;
-    uint MetalnesssMapIndex;
-    uint SpecularsMapIndex;
-    uint HeightsMapIndex;
-    uint OpacitysMapIndex;
-    uint OcclusionsMapIndex;
-    uint RefractionsMapIndex;
-    uint EmissivesMapIndex;
-    uint SubsurfacesMapIndex;
+    uint MetalnessMapIndex;
+    uint SpecularMapIndex;
+    uint HeightMapIndex;
+    uint OpacityMapIndex;
+    uint OcclusionMapIndex;
+    uint RefractionMapIndex;
+    uint EmissiveMapIndex;
+    uint SubsurfaceMapIndex;
 	uint MatPad1;
 };
 

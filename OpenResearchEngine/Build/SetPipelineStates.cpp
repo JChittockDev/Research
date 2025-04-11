@@ -1,4 +1,4 @@
-#include "../EngineApp.h"
+﻿#include "../EngineApp.h"
 
 void EngineApp::SetPipelineStates()
 {
@@ -37,6 +37,11 @@ void EngineApp::SetPipelineStates()
     forceComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["forceCS"]->GetBufferPointer()), mShaders["forceCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&forceComputePSO, IID_PPV_ARGS(&mPSOs["force"])));
 
+    D3D12_COMPUTE_PIPELINE_STATE_DESC tensionComputePSO = {};
+    tensionComputePSO.pRootSignature = mTensionRootSignature.Get();
+    tensionComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["tensionCS"]->GetBufferPointer()), mShaders["tensionCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&tensionComputePSO, IID_PPV_ARGS(&mPSOs["tension"])));
+
     D3D12_COMPUTE_PIPELINE_STATE_DESC preSolveComputePSO = {};
     preSolveComputePSO.pRootSignature = mPreSolveRootSignature.Get();
     preSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["preSolveCS"]->GetBufferPointer()), mShaders["preSolveCS"]->GetBufferSize() };
@@ -47,15 +52,10 @@ void EngineApp::SetPipelineStates()
     postSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["postSolveCS"]->GetBufferPointer()), mShaders["postSolveCS"]->GetBufferSize() };
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&postSolveComputePSO, IID_PPV_ARGS(&mPSOs["postSolve"])));
 
-    D3D12_COMPUTE_PIPELINE_STATE_DESC stretchConstraintSolveComputePSO = {};
-    stretchConstraintSolveComputePSO.pRootSignature = mStretchConstraintSolveRootSignature.Get();
-    stretchConstraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["stretchConstraintSolveCS"]->GetBufferPointer()), mShaders["stretchConstraintSolveCS"]->GetBufferSize() };
-    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&stretchConstraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["stretchConstraintSolve"])));
-
-    D3D12_COMPUTE_PIPELINE_STATE_DESC bendingConstraintSolveComputePSO = {};
-    bendingConstraintSolveComputePSO.pRootSignature = mBendingConstraintSolveRootSignature.Get();
-    bendingConstraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["bendingConstraintSolveCS"]->GetBufferPointer()), mShaders["bendingConstraintSolveCS"]->GetBufferSize() };
-    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&bendingConstraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["bendingConstraintSolve"])));
+    D3D12_COMPUTE_PIPELINE_STATE_DESC constraintSolveComputePSO = {};
+    constraintSolveComputePSO.pRootSignature = mConstraintSolveRootSignature.Get();
+    constraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["constraintSolveCS"]->GetBufferPointer()), mShaders["constraintSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&constraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["constraintSolve"])));
 
 
     //
@@ -103,44 +103,6 @@ void EngineApp::SetPipelineStates()
     ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&debugPsoDesc, IID_PPV_ARGS(&mPSOs["debug"])));
 
     //
-    // PSO for drawing normals.
-    //
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC drawNormalsPsoDesc = opaquePsoDesc;
-    drawNormalsPsoDesc.VS = {reinterpret_cast<BYTE*>(mShaders["drawNormalsVS"]->GetBufferPointer()), mShaders["drawNormalsVS"]->GetBufferSize()};
-    drawNormalsPsoDesc.PS = {reinterpret_cast<BYTE*>(mShaders["drawNormalsPS"]->GetBufferPointer()), mShaders["drawNormalsPS"]->GetBufferSize()};
-    drawNormalsPsoDesc.RTVFormats[0] = SsaoMap::NormalMapFormat;
-    drawNormalsPsoDesc.SampleDesc.Count = 1;
-    drawNormalsPsoDesc.SampleDesc.Quality = 0;
-    drawNormalsPsoDesc.DSVFormat = mDepthStencilFormat;
-    ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&drawNormalsPsoDesc, IID_PPV_ARGS(&mPSOs["drawNormals"])));
-
-    //
-    // PSO for SSAO.
-    //
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC ssaoPsoDesc = opaquePsoDesc;
-    ssaoPsoDesc.InputLayout = { nullptr, 0 };
-    ssaoPsoDesc.pRootSignature = mSsaoRootSignature.Get();
-    ssaoPsoDesc.VS = {reinterpret_cast<BYTE*>(mShaders["ssaoVS"]->GetBufferPointer()), mShaders["ssaoVS"]->GetBufferSize()};
-    ssaoPsoDesc.PS = {reinterpret_cast<BYTE*>(mShaders["ssaoPS"]->GetBufferPointer()), mShaders["ssaoPS"]->GetBufferSize()};
-
-    // SSAO effect does not need the depth buffer.
-    ssaoPsoDesc.DepthStencilState.DepthEnable = false;
-    ssaoPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
-    ssaoPsoDesc.RTVFormats[0] = SsaoMap::AmbientMapFormat;
-    ssaoPsoDesc.SampleDesc.Count = 1;
-    ssaoPsoDesc.SampleDesc.Quality = 0;
-    ssaoPsoDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
-    ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&ssaoPsoDesc, IID_PPV_ARGS(&mPSOs["ssao"])));
-
-    //
-    // PSO for SSAO blur.
-    //
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC ssaoBlurPsoDesc = ssaoPsoDesc;
-    ssaoBlurPsoDesc.VS = {reinterpret_cast<BYTE*>(mShaders["ssaoBlurVS"]->GetBufferPointer()), mShaders["ssaoBlurVS"]->GetBufferSize()};
-    ssaoBlurPsoDesc.PS = {reinterpret_cast<BYTE*>(mShaders["ssaoBlurPS"]->GetBufferPointer()), mShaders["ssaoBlurPS"]->GetBufferSize()};
-    ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&ssaoBlurPsoDesc, IID_PPV_ARGS(&mPSOs["ssaoBlur"])));
-
-    //
     // PSO for sky.
     //
     D3D12_GRAPHICS_PIPELINE_STATE_DESC skyPsoDesc = opaquePsoDesc;
@@ -150,4 +112,24 @@ void EngineApp::SetPipelineStates()
     skyPsoDesc.VS = {reinterpret_cast<BYTE*>(mShaders["skyVS"]->GetBufferPointer()), mShaders["skyVS"]->GetBufferSize()};
     skyPsoDesc.PS = {reinterpret_cast<BYTE*>(mShaders["skyPS"]->GetBufferPointer()), mShaders["skyPS"]->GetBufferSize()};
     ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&skyPsoDesc, IID_PPV_ARGS(&mPSOs["sky"])));
+
+    // **5️⃣ Configure the Graphics Pipeline State**
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC gBufferPsoDesc = opaquePsoDesc;
+    gBufferPsoDesc.pRootSignature = mGBufferRootSignature.Get();
+    gBufferPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["GBufferVS"]->GetBufferPointer()), mShaders["GBufferVS"]->GetBufferSize() };
+    gBufferPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["GBufferPS"]->GetBufferPointer()), mShaders["GBufferPS"]->GetBufferSize() };
+    gBufferPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gPosition
+    gBufferPsoDesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gNormal
+    gBufferPsoDesc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gAlbedoSpec
+    gBufferPsoDesc.NumRenderTargets = 3;
+    md3dDevice->CreateGraphicsPipelineState(&gBufferPsoDesc, IID_PPV_ARGS(&mPSOs["GBuffer"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC lightingPsoDesc = opaquePsoDesc;
+    lightingPsoDesc.InputLayout = { nullptr, 0 };
+    lightingPsoDesc.pRootSignature = mLightingRootSignature.Get();
+    lightingPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["LightingVS"]->GetBufferPointer()), mShaders["LightingVS"]->GetBufferSize() };
+    lightingPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["LightingPS"]->GetBufferPointer()), mShaders["LightingPS"]->GetBufferSize() };
+    lightingPsoDesc.DepthStencilState.DepthEnable = false;
+    lightingPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&lightingPsoDesc, IID_PPV_ARGS(&mPSOs["Lighting"]));
 }

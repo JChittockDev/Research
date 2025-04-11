@@ -43,9 +43,9 @@ public:
     {
         if (pNodeAnim->weightKeys.size() == 1) {
 
-            for (int i = 0; i < pNodeAnim->weightKeys[0].mNumValuesAndWeights; ++i)
+            for (UINT i = 0; i < pNodeAnim->weightKeys[0].mNumValuesAndWeights; ++i)
             {
-                weights[pNodeAnim->weightKeys[0].mValues[i]] = pNodeAnim->weightKeys[0].mWeights[i];
+                weights[pNodeAnim->weightKeys[0].mValues[i]] = (float)pNodeAnim->weightKeys[0].mWeights[i];
             }
 
             return;
@@ -57,10 +57,10 @@ public:
         float DeltaTime = (float)(pNodeAnim->weightKeys[NextWeightIndex].mTime - pNodeAnim->weightKeys[WeightIndex].mTime);
         float Factor = Math::Clamp((AnimationTime - (float)pNodeAnim->weightKeys[WeightIndex].mTime) / DeltaTime, 0.0f, 1.0f);
 
-        for (int i = 0; i < pNodeAnim->weightKeys[WeightIndex].mNumValuesAndWeights; ++i)
+        for (UINT i = 0; i < pNodeAnim->weightKeys[WeightIndex].mNumValuesAndWeights; ++i)
         {
-            const float& Start = pNodeAnim->weightKeys[WeightIndex].mWeights[i];
-            const float& End = pNodeAnim->weightKeys[NextWeightIndex].mWeights[i];
+            const float& Start = (float)pNodeAnim->weightKeys[WeightIndex].mWeights[i];
+            const float& End = (float)pNodeAnim->weightKeys[NextWeightIndex].mWeights[i];
             float Delta = End - Start;
 
             weights[pNodeAnim->weightKeys[WeightIndex].mValues[i]] = Start + Factor * Delta;

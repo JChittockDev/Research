@@ -9,6 +9,11 @@
 #include <crtdbg.h>
 #endif
 
+#include "../ImGui/imgui_internal.h"
+#include "../ImGui/imgui_impl_win32.h"
+#include "../ImGui/imgui_impl_dx12.h"
+
+#include "../Gui/GuiManager.h"
 #include "D3DUtil.h"
 
 #include "../Utilities/GameTimer.h"
@@ -85,6 +90,8 @@ protected:
 	bool      mResizing = false;   // are the resize bars being dragged?
     bool      mFullscreenState = false;// fullscreen enabled
 
+    GuiManager gui;
+
 	// Set true to use 4X MSAA (§4.1.8).  The default is false.
     bool      m4xMsaaState = false;    // 4X MSAA enabled
     UINT      m4xMsaaQuality = 0;      // quality level of 4X MSAA
@@ -110,6 +117,9 @@ protected:
 
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mRtvHeap;
     Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mDsvHeap;
+
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> gBufferRtvHeap;
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> gBufferSrvHeap;
 
     D3D12_VIEWPORT mScreenViewport; 
     D3D12_RECT mScreenScissorRect;

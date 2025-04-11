@@ -81,7 +81,7 @@ private:
 	DirectX::XMFLOAT3 mLook = { 0.0f, 0.0f, 1.0f };
 
 	// Cache frustum properties.
-	float mNearZ = 0.0f;
+	float mNearZ = 0.00001f;
 	float mFarZ = 0.0f;
 	float mAspect = 0.0f;
 	float mFovY = 0.0f;

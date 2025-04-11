@@ -96,7 +96,7 @@ void EngineApp::PushMaterials()
 	def->EmissiveSrvHeapIndex = mTextures["default_diffuse"]->second;
 	def->SubsurfaceSrvHeapIndex = mTextures["default_diffuse"]->second;
 	def->DiffuseAlbedo = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	def->FresnelR0 = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
+	def->FresnelR0 = DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f);
 	def->Roughness = 0.9f;
 	mMaterials["default"] = std::move(def);
 
@@ -150,8 +150,8 @@ void EngineApp::PushMaterials()
 		subsurfaceName = subsurfaceName.substr(0, subsurfaceName.find_last_of("."));
 		mat->SubsurfaceSrvHeapIndex = mTextures[subsurfaceName]->second;
 
-		mat->DiffuseAlbedo = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-		mat->FresnelR0 = DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f);
+		mat->DiffuseAlbedo = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
+		mat->FresnelR0 = DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f);
 		mat->Roughness = 0.9f;
 		
 		mMaterials[mat->Name] = std::move(mat);

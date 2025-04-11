@@ -30,4 +30,9 @@ public:
         
         skeleton->GetTransforms(TimePos, rootNode, animation, DirectX::XMMatrixIdentity(), DirectX::XMMatrixInverse(nullptr, rootNode->transform), transforms);
     }
+
+    void InitSkinning()
+    {
+        skeleton->InitTransforms(rootNode, DirectX::XMMatrixIdentity(), DirectX::XMMatrixInverse(nullptr, rootNode->transform), transforms);
+    }
 };

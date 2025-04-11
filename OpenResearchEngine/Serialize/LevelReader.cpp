@@ -28,6 +28,14 @@ void LevelReader::SetRenderItemData(const json& item_data, ItemData& renderItemS
     {
         renderItemStruct.animation = item_data["Animation"];
     }
+    if (item_data.contains("Deformable"))
+    {
+        renderItemStruct.deformable = item_data["Deformable"];
+    }
+    else
+    {
+        renderItemStruct.deformable = false;
+    }
     if (item_data.contains("RenderLayer"))
     {
         renderItemStruct.render_layer = item_data["RenderLayer"];
@@ -51,6 +59,14 @@ void LevelReader::SetRenderItemData(const json& item_data, ItemData& renderItemS
             else
             {
                 renderItemStruct.settings[riSettings.key()].Simulation = false;
+            }
+            if (riSettings.value().contains("SimulationMask"))
+            {
+                renderItemStruct.settings[riSettings.key()].SimulationMask = riSettings.value()["SimulationMask"];
+            }
+            else
+            {
+                renderItemStruct.settings[riSettings.key()].SimulationMask = "none";
             }
         }
     }
@@ -138,6 +154,69 @@ void LevelReader::SetPBRMaterialData(const json& item_data, PBRMaterialData& pbr
     }
 }
 
+void LevelReader::SetLightData(const json& light_data, LightData& lightDataStruct)
+{
+    if (light_data.contains("Type"))
+    {
+        if (light_data["Type"] != "")
+        {
+            lightDataStruct.type = light_data["Type"];
+        }
+    }
+    if (light_data.contains("Position"))
+    {
+        if (light_data["Position"] != "")
+        {
+            std::vector<double> position = light_data["Position"];
+            lightDataStruct.position = position;
+        }
+    }
+    if (light_data.contains("Direction"))
+    {
+        if (light_data["Direction"] != "")
+        {
+            std::vector<double> direction = light_data["Direction"];
+            lightDataStruct.direction = direction;
+        }
+    }
+    if (light_data.contains("Strength"))
+    {
+        if (light_data["Strength"] != "")
+        {
+            std::vector<double> strength = light_data["Strength"];
+            lightDataStruct.strength = strength;
+        }
+    }
+    if (light_data.contains("FalloffStart"))
+    {
+        if (light_data["FalloffStart"] != "")
+        {
+            lightDataStruct.falloff_start = light_data["FalloffStart"];
+        }
+    }
+    if (light_data.contains("FalloffEnd"))
+    {
+        if (light_data["FalloffEnd"] != "")
+        {
+            lightDataStruct.falloff_end = light_data["FalloffEnd"];
+        }
+    }
+    if (light_data.contains("InnerConeAngle"))
+    {
+        if (light_data["InnerConeAngle"] != "")
+        {
+            lightDataStruct.inner_cone_angle = light_data["InnerConeAngle"];
+        }
+    }
+    if (light_data.contains("OuterConeAngle"))
+    {
+        if (light_data["OuterConeAngle"] != "")
+        {
+            lightDataStruct.outer_cone_angle = light_data["OuterConeAngle"];
+        }
+    }
+}
+
 LevelReader::LevelReader(const std::string& filename)
 {
     level = std::make_unique<LevelData>();
@@ -150,8 +229,10 @@ LevelReader::LevelReader(const std::string& filename)
         json assets = data["Assets"];
         json materials = assets["Materials"];
         json render_items = assets["RenderItems"];
+        json lights = assets["Lights"];
         std::unordered_map<std::string, ItemData> renderItemsDict;
         std::unordered_map<std::string, PBRMaterialData> pbrMaterialDict;
+        std::unordered_map<std::string, LightData> lightDict;
 
         for (const auto& material : materials.items())
         {
@@ -171,6 +252,15 @@ LevelReader::LevelReader(const std::string& filename)
             renderItemsDict[item_name] = renderItemData;
         }
 
+        for (const auto& light : lights.items())
+        {
+            LightData lightData;
+            std::string light_name = light.key();
+            json light_data = light.value();
+            SetLightData(light_data, lightData);
+            lightDict[light_name] = lightData;
+        }
+
         level->name = level_name;
         std::unique_ptr<LevelItemData> renderItems = std::make_unique<LevelItemData>();
         renderItems->renderItemDataDict = std::make_unique<std::unordered_map<std::string, ItemData>>(renderItemsDict);
@@ -178,9 +268,13 @@ LevelReader::LevelReader(const std::string& filename)
         std::unique_ptr<LevelMaterialData> levelMaterials = std::make_unique<LevelMaterialData>();
         levelMaterials->pbrMaterialDataDict = std::make_unique<std::unordered_map<std::string, PBRMaterialData>>(pbrMaterialDict);
 
+        std::unique_ptr<LevelLightData> levelLights = std::make_unique<LevelLightData>();
+        levelLights->lightDataDict = std::make_unique<std::unordered_map<std::string, LightData>>(lightDict);
+
         std::unique_ptr<LevelAssetData> assetData = std::make_unique<LevelAssetData>();
         assetData->renderItemData = std::move(renderItems);
         level->data = std::move(assetData);
         level->materialData = std::move(levelMaterials);
+        level->lightData = std::move(levelLights);
     }
 }

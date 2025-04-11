@@ -3,4 +3,10 @@
   <PropertyGroup>
     <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerAttach>false</LocalDebuggerAttach>
+    <RemoteDebuggerCommand>D:\Programming\Research\OpenResearchEngine\x64\Debug\OpenResearchEngine.exe</RemoteDebuggerCommand>
+    <RemoteDebuggerAttach>true</RemoteDebuggerAttach>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

@@ -32,10 +32,8 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const DirectX::XM
 			ritem->BlendshapeSubsets = ritem->Geo->DrawArgs[submeshName].BlendshapeSubsets;
 			ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[submeshName].SimMeshVertexCount;
 			ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[submeshName].SimMeshIndexCount;
-			ritem->SimMeshStretchConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshStretchConstraintCount;
-			ritem->SimMeshStretchConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshStretchConstraintStart;
-			ritem->SimMeshBendingConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshBendingConstraintCount;
-			ritem->SimMeshBendingConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshBendingConstraintStart;
+			ritem->SimMeshConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshConstraintCount;
+			ritem->SimMeshConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshConstraintStart;
 			ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[submeshName].SimMeshTriangleCount;
 			ritem->SimMeshIndexStart = ritem->Geo->DrawArgs[submeshName].SimMeshIndexStart;
 			ritem->SimMeshVertexStart = ritem->Geo->DrawArgs[submeshName].SimMeshVertexStart;
@@ -61,14 +59,24 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 	std::shared_ptr<SkinningController> mSkinningController = std::make_shared<SkinningController>();
 	mSkinningController->skeleton = skeletons.at(meshName);
 	mSkinningController->rootNode = transforms.at(mSkinningController->skeleton->rootNodeName);
-	mSkinningController->animation = animations.at(animationClip);
+
+	if (animationClip != "")
+	{ 
+		mSkinningController->animation = animations.at(animationClip);
+	}
+
 	mSkinningController->transforms.resize(mSkinningController->skeleton->bones.size());
+	mSkinningController->InitSkinning();
 	mSkinningController->TimePos = 0.0f;
 	mSkinningController->Speed = 20.0f;
 	mSkinningController->Loop = true;
 
 	std::shared_ptr<BlendshapeController> mBlendshapeController = std::make_shared<BlendshapeController>();
-	mBlendshapeController->animation = animations.at(animationClip);
+
+	if (animationClip != "")
+	{
+		mBlendshapeController->animation = animations.at(animationClip);
+	}
 	mBlendshapeController->TimePos = mSkinningController->TimePos;
 	mBlendshapeController->Speed = mSkinningController->Speed;
 	mBlendshapeController->Loop = mSkinningController->Loop;
@@ -103,10 +111,8 @@ void RenderItem::BuildRenderItems(const std::string& meshName, const std::string
 			ritem->BlendshapeSubsets = ritem->Geo->DrawArgs[submeshName].BlendshapeSubsets;
 			ritem->SimMeshVertexCount = ritem->Geo->DrawArgs[submeshName].SimMeshVertexCount;
 			ritem->SimMeshIndexCount = ritem->Geo->DrawArgs[submeshName].SimMeshIndexCount;
-			ritem->SimMeshStretchConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshStretchConstraintCount;
-			ritem->SimMeshStretchConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshStretchConstraintStart;
-			ritem->SimMeshBendingConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshBendingConstraintCount;
-			ritem->SimMeshBendingConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshBendingConstraintStart;
+			ritem->SimMeshConstraintCount = ritem->Geo->DrawArgs[submeshName].SimMeshConstraintCount;
+			ritem->SimMeshConstraintStart = ritem->Geo->DrawArgs[submeshName].SimMeshConstraintStart;
 			ritem->SimMeshTriangleCount = ritem->Geo->DrawArgs[submeshName].SimMeshTriangleCount;
 			ritem->SimMeshIndexStart = ritem->Geo->DrawArgs[submeshName].SimMeshIndexStart;
 			ritem->SimMeshVertexStart = ritem->Geo->DrawArgs[submeshName].SimMeshVertexStart;

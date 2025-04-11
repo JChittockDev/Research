@@ -127,5 +127,9 @@ public:
 
 		return length;
 	}
+
+	static DirectX::XMFLOAT3 QuaternionToEuler(const DirectX::XMFLOAT4& quat);
+
+	static DirectX::XMVECTOR EulerToQuaternion(const DirectX::XMFLOAT3& euler);
 };
 

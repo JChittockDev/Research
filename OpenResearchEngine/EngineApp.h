@@ -8,9 +8,11 @@
 #include "Render/Resources/FrameResource.h"
 #include "Render/Resources/Mesh.h"
 #include "Render/Resources/ShadowMap.h"
-#include "Render/Resources/SsaoMap.h"
+#include "Render/Resources/ShadowResources.h"
+#include "Render/Resources/GBuffer.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Skinning.h"
+#include "Render/Resources/RenderTextures.h"
 #include "Serialize/LevelReader.h"
 
 using Microsoft::WRL::ComPtr;
@@ -42,7 +44,6 @@ private:
     void UpdateShadowTransform(const GameTimer& gt);
     void UpdateMainPassCB(const GameTimer& gt);
     void UpdateShadowPassCB(const GameTimer& gt);
-    void UpdateSsaoCB(const GameTimer& gt);
     void UpdateLights(const GameTimer& gt);
     void UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms);
 
@@ -52,7 +53,6 @@ private:
     void PushMaterials();
     void PushRenderItems();
     void ImportTextures();
-    void PopulateDescriptorHeaps();
     void CompileShaders();
     void SetPipelineStates();
     void SetFenceResources();
@@ -72,10 +72,10 @@ private:
     void ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeStretchConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeBendingConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
     void ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
+    void ComputeTension(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
 
     void SetBlendRootSignature();
     void SetSkinnedRootSignature();
@@ -84,29 +84,22 @@ private:
     void SetSimMeshTransferRootSignature();
     void SetPreSolveRootSignature();
     void SetPostSolveRootSignature();
-    void SetStretchConstraintSolveRootSignature();
-    void SetBendingConstraintSolveRootSignature();
+    void SetConstraintSolveRootSignature();
     void SetMeshTransferRootSignature();
     void SetForceRootSignature();
+    void SetTensionRootSignature();
+    void SetGBufferRootSignature();
+    void SetLightingRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
-    void DepthPass(const D3D12_CPU_DESCRIPTOR_HANDLE& dsv, FrameResource* currentFrameResource);
-    void SsaoPass(int blurCount, FrameResource* currentFrameResource);
-    void DiffusePass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource);
     void DeformationPass(FrameResource* currentFrameResource);
-    void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& PointLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
-    
-    void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& ritems);
-    void DrawSceneToShadowMap();
-    void DrawNormalsAndDepth();
+    void GBufferPass(FrameResource* currentFrameResource);
+    void LightingPass(FrameResource* currentFrameResource);
+
+    void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
 
     std::string extractFileName(const std::string& filePath);
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuSrv(int index)const;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuSrv(int index)const;
-    CD3DX12_CPU_DESCRIPTOR_HANDLE GetDsv(int index)const;
-    CD3DX12_CPU_DESCRIPTOR_HANDLE GetRtv(int index)const;
 
     std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -118,19 +111,19 @@ private:
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mBlendRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSkinnedRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mTensionRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mForceRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPreSolveRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mPostSolveRootSignature = nullptr;
-    ComPtr<ID3D12RootSignature> mStretchConstraintSolveRootSignature = nullptr;
-    ComPtr<ID3D12RootSignature> mBendingConstraintSolveRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mConstraintSolveRootSignature = nullptr;
 
     ComPtr<ID3D12RootSignature> mTriangleNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mVertexNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mMeshTransferRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSimMeshTransferRootSignature = nullptr;
-    ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mGBufferRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mLightingRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE mNullSrv;
 
     DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
@@ -162,7 +155,7 @@ private:
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mRenderItemLayers;
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;
     std::unordered_map<std::string, std::unordered_map<std::string, PBRMaterialData>> mLevelMaterials;
-    std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndicies;
+    std::unordered_map<std::string, std::unordered_map<std::string, LightData>> mLevelLights;
 
     UINT BlendCBIndex = 0;
     UINT SkinnedCBIndex = 0;
@@ -170,7 +163,11 @@ private:
 
     PassConstants mMainPassCB;
     std::vector<PassConstants> mShadowPassCBs;
-    
-    std::unique_ptr<SsaoMap> mSsaoMap;
     std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
+
+    std::unique_ptr<GBuffer> mGBuffer;
+    std::unique_ptr<RenderTextures> mRenderTextures;
+    std::unique_ptr<ShadowResources> mShadowResources;
+
+    ComPtr<ID3D12DescriptorHeap> imGuiSrvDescriptorHeap = nullptr;
 };

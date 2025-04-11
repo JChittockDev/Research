@@ -29,13 +29,11 @@ public:
 	UINT SimMeshTriangleCount = 0;
 	UINT BlendshapeCount = 0;
 	UINT BlendshapeVertexCount = 0;
-	UINT SimMeshStretchConstraintCount = 0;
-	UINT SimMeshBendingConstraintCount = 0;
+	UINT SimMeshConstraintCount = 0;
 
 	UINT BlendshapeStart = 0;
 	UINT BlendshapeVertexStart = 0;
-	UINT SimMeshStretchConstraintStart = 0;
-	UINT SimMeshBendingConstraintStart = 0;
+	UINT SimMeshConstraintStart = 0;
 
 	UINT IndexStart = 0;
 	UINT VertexStart = 0;

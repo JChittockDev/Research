@@ -3,16 +3,17 @@
 void EngineApp::SetRootSignatures()
 {
 	SetGenericRootSignature();
+	SetGBufferRootSignature();
+	SetLightingRootSignature();
 	SetBlendRootSignature();
 	SetSkinnedRootSignature();
 	SetMeshTransferRootSignature();
+	SetTensionRootSignature();
 	SetForceRootSignature();
 	SetPreSolveRootSignature();
-	SetStretchConstraintSolveRootSignature();
-	SetBendingConstraintSolveRootSignature();
+	SetConstraintSolveRootSignature();
 	SetPostSolveRootSignature();
 	SetSimMeshTransferRootSignature();
 	SetTriangleNormalRootSignature();
 	SetVertexNormalRootSignature();
-	SetSsaoRootSignature();
 }

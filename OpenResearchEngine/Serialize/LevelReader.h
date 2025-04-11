@@ -14,4 +14,5 @@ public:
 private:
     void SetRenderItemData(const json& item_data, ItemData& renderItemStruct);
     void SetPBRMaterialData(const json& item_data, PBRMaterialData& pbrMaterialStruct);
+    void SetLightData(const json& light_data, LightData& lightDataStruct);
 };

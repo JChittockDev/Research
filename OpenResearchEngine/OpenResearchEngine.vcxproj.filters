@@ -39,13 +39,7 @@
     <ClCompile Include="Render\Resources\FrameResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\ShadowMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EngineApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Resources\SsaoMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\PushGenericMesh.cpp">
@@ -75,9 +69,6 @@
     <ClCompile Include="Build\SetGenericRootSignature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\SetSSAORootSignature.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Build\PopulateDescriptorHeaps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -85,9 +76,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Controls\Controls.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Update\UpdateSSAO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Update\UpdateShadowPass.cpp">
@@ -144,15 +132,6 @@
     <ClCompile Include="Render\Passes\ShadowPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Passes\DepthPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Passes\SsaoPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Passes\DiffusePass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Build\SetRenderPassResources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -160,6 +139,48 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utilities\MLResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_dx12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\GuiManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Passes\GBufferPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Resources\GBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Passes\LightingPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Resources\RenderTextures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Resources\ShadowResources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Resources\ShadowMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -192,12 +213,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\FrameResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Resources\ShadowMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Resources\SsaoMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EngineApp.h">
@@ -239,9 +254,47 @@
     <ClInclude Include="Utilities\MLResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll" />
-    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime_providers_shared.dll" />
+    <ClInclude Include="ImGui\imconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_dx12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_win32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_rectpack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_textedit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\GuiManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Resources\GBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Resources\RenderTextures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Resources\ShadowResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Resources\ShadowMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,6 +19,10 @@
 #include <math.h>
 #include "../Objects/ViewFrustum.h"
 #include <algorithm>
+#include "../ImGui/imgui_internal.h"
+#include "../ImGui/imgui_impl_win32.h"
+#include "../ImGui/imgui_impl_dx12.h"
+
 
 #define MaxLights 16
 
@@ -83,6 +87,12 @@ struct TangentNormals
 struct Neighbours
 {
     UINT index[8];
+};
+
+struct VertexNeighbours
+{
+    UINT index[8];
+    float length[8];
 };
 
 struct UINT3
@@ -302,10 +312,8 @@ struct Subset
     UINT SimMeshIndexStart = 0;
     UINT SimMeshIndexCount = 0;
 
-    UINT SimMeshStretchConstraintStart = 0;
-    UINT SimMeshStretchConstraintCount = 0;
-    UINT SimMeshBendingConstraintStart = 0;
-    UINT SimMeshBendingConstraintCount = 0;
+    UINT SimMeshConstraintStart = 0;
+    UINT SimMeshConstraintCount = 0;
 
     UINT SimMeshTriangleStart = 0;
     UINT SimMeshTriangleCount = 0;
@@ -348,10 +356,8 @@ struct SubmeshGeometry
     UINT SimMeshVertexCount = 0;
     UINT SimMeshIndexCount = 0;
 
-    UINT SimMeshStretchConstraintStart = 0;
-    UINT SimMeshStretchConstraintCount = 0;
-    UINT SimMeshBendingConstraintStart = 0;
-    UINT SimMeshBendingConstraintCount = 0;
+    UINT SimMeshConstraintStart = 0;
+    UINT SimMeshConstraintCount = 0;
 
     UINT SimMeshTriangleCount = 0;
     UINT SimMeshIndexStart = 0;
@@ -369,6 +375,7 @@ struct MeshDeformationData
     std::vector<Vector3> simMeshForce;
     std::vector<Vector3> simMeshSolverAccumulation;
     std::vector<UINT> simMeshSolverCount;
+    std::vector<Vector4> simMeshTension;
 };
 
 struct MeshGeometry
@@ -396,11 +403,13 @@ struct MeshGeometry
 
     // Simulation Buffers
 
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintsBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshBendingConstraintIDsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexColorBufferCPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshStretchConstraintsBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshStretchConstraintIDsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshVertexNeighbourBufferCPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshConstraintsBufferCPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> SimMeshConstraintIDsBufferCPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshNullSolverAccumulationBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshNullSolverCountBufferCPU = nullptr;
@@ -408,11 +417,13 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3DBlob> SimMeshTransferBufferCPU = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> MeshTransferBufferCPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexColorBufferGPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintsBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintIDsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexNeighbourBufferGPU = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshConstraintsBufferGPU = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshConstraintIDsBufferGPU = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNullSolverAccumulationBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNullSolverCountBufferGPU = nullptr;
@@ -420,11 +431,13 @@ struct MeshGeometry
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshTransferBufferGPU = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> MeshTransferBufferGPU = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintsBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshBendingConstraintIDsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexColorBufferUploader = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintsBufferUploader = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshStretchConstraintIDsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshVertexNeighbourBufferUploader = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshConstraintsBufferUploader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshConstraintIDsBufferUploader = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNullSolverAccumulationBufferUploader = nullptr;
     Microsoft::WRL::ComPtr<ID3D12Resource> SimMeshNullSolverCountBufferUploader = nullptr;
@@ -473,10 +486,11 @@ struct MeshGeometry
     {
         VertexBufferUploader = nullptr;
         IndexBufferUploader = nullptr;
-        SimMeshBendingConstraintsBufferUploader = nullptr;
-        SimMeshBendingConstraintIDsBufferUploader = nullptr;
-        SimMeshStretchConstraintsBufferUploader = nullptr;
-        SimMeshStretchConstraintIDsBufferUploader = nullptr;
+        SimMeshVertexColorBufferUploader = nullptr;
+        SimMeshVertexBufferUploader = nullptr;
+        SimMeshVertexNeighbourBufferUploader = nullptr;
+        SimMeshConstraintsBufferUploader = nullptr;
+        SimMeshConstraintIDsBufferUploader = nullptr;
         SimMeshNullSolverAccumulationBufferUploader = nullptr;
         SimMeshNullSolverCountBufferUploader = nullptr;
         SimMeshTransferBufferUploader = nullptr;
@@ -583,6 +597,7 @@ struct Animation
 struct RenderItemSettings
 {
     bool Simulation = false;
+    std::string SimulationMask = "none";
     std::string Material = "default";
 };
 
@@ -591,6 +606,7 @@ struct ItemData
     std::string item_name;
     std::string geometry;
     std::string animation;
+    bool deformable;
     std::vector<double> position;
     std::vector<double> rotation;
     std::vector<double> scale;
@@ -619,9 +635,26 @@ struct PBRMaterialData
     std::string subsurface_tex_path;
 };
 
+struct LightData
+{
+    std::string type;
+    std::vector<double> position;
+    std::vector<double> direction;
+    std::vector<double> strength;
+    double falloff_start;
+    double falloff_end;
+    double inner_cone_angle;
+    double outer_cone_angle;
+};
+
 struct LevelMaterialData
 {
     std::unique_ptr<std::unordered_map<std::string, PBRMaterialData>> pbrMaterialDataDict;
+};
+
+struct LevelLightData
+{
+    std::unique_ptr<std::unordered_map<std::string, LightData>> lightDataDict;
 };
 
 struct LevelAssetData
@@ -634,128 +667,5 @@ struct LevelData
     std::string name;
     std::unique_ptr<LevelAssetData> data;
     std::unique_ptr<LevelMaterialData> materialData;
+    std::unique_ptr<LevelLightData> lightData;
 };
-
-/*class SearlizedNode
-{
-public:
-    SearlizedNode::SearlizedNode(std::string name, const json& input_dictionary)
-    {
-        for (auto& node : input_dictionary["graph"]["node"])
-        {
-            if (node["input"][0] == name)
-            {
-                name = node["input"][0];
-                output_name = node["output"][0];
-                weight_name = node["input"][1];
-                operation = node["opType"];
-
-                for (auto& initializer : input_dictionary["graph"]["initializer"])
-                {
-                    if (name == initializer["name"])
-                    {
-                        initializer_dims = initializer["name"]["dims"];
-                        weights = initializer["name"]["floatData"];
-                    }
-                }
-            }
-        }
-
-        for (auto& input : input_dictionary["graph"]["input"])
-        {
-            if (input["name"] == name)
-            {
-                input_dims = { input["type"]["tensorType"]["shape"]["dim"][0]["dimValue"], 
-                               input["type"]["tensorType"]["shape"]["dim"][0]["dimValue"] };
-            }
-        }
-
-        for (auto& output : input_dictionary["graph"]["output"])
-        {
-            if (output["name"] == name)
-            {
-                output_dims = { output["type"]["tensorType"]["shape"]["dim"][0]["dimValue"],
-                                output["type"]["tensorType"]["shape"]["dim"][0]["dimValue"] };
-            }
-        }
-
-        output = new SearlizedNode(this, input_dictionary);
-    };
-
-    SearlizedNode::SearlizedNode(SearlizedNode* input_node, const json& input_dictionary)
-    {
-        for (auto& node : input_dictionary["graph"]["node"])
-        {
-            if (node["input"][0] == input_node->output_name)
-            {
-                name = node["input"][0];
-                output_name = node["output"][0];
-                weight_name = node["input"][1];
-                operation = node["opType"];
-
-                for (auto& initializer : input_dictionary["graph"]["initializer"])
-                {
-                    if (name == initializer["name"])
-                    {
-                        initializer_dims = initializer["name"]["dims"];
-                        weights = initializer["name"]["floatData"];
-                    }
-                }
-
-            }
-        }
-
-        input = input_node;
-        output = new SearlizedNode(this, input_dictionary);
-    };
-
-
-public:
-    std::string name;
-    std::string output_name;
-    std::string weight_name;
-    std::string operation;
-
-    std::vector<std::string> input_dims;
-    std::vector<std::string> output_dims;
-
-    std::vector<std::string> initializer_dims;
-    std::vector<std::string> weights;
-
-    SearlizedNode* input = nullptr;
-    SearlizedNode* output = nullptr;
-
-};
-
-class MLKernel
-{
-public:
-    MLKernel::MLKernel(Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, std::vector<float>& kernelWeights)
-    {
-        const UINT kernelBufferByteSize = (UINT)kernelWeights.size() * sizeof(float);
-        ThrowIfFailed(D3DCreateBlob(kernelBufferByteSize, &KernelBufferCPU));
-        CopyMemory(KernelBufferCPU->GetBufferPointer(), kernelWeights.data(), kernelBufferByteSize);
-        KernelBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), kernelWeights.data(), kernelBufferByteSize, KernelBufferUploader);
-        mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(KernelBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
-    };
-
-    Microsoft::WRL::ComPtr<ID3DBlob> KernelBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> KernelBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> KernelBufferUploader = nullptr;
-};
-
-class MLBias
-{
-    MLBias::MLBias(Microsoft::WRL::ComPtr<ID3D12Device>& md3dDevice, Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, std::vector<float>& BiasWeights)
-    {
-        const UINT BiasBufferByteSize = (UINT)BiasWeights.size() * sizeof(float);
-        ThrowIfFailed(D3DCreateBlob(BiasBufferByteSize, &BiasBufferCPU));
-        CopyMemory(BiasBufferCPU->GetBufferPointer(), BiasWeights.data(), BiasBufferByteSize);
-        BiasBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), BiasWeights.data(), BiasBufferByteSize, BiasBufferUploader);
-        mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(BiasBufferGPU.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
-    };
-
-    Microsoft::WRL::ComPtr<ID3DBlob> BiasBufferCPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> BiasBufferGPU = nullptr;
-    Microsoft::WRL::ComPtr<ID3D12Resource> BiasBufferUploader = nullptr;
-};*/

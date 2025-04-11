@@ -7,7 +7,6 @@ void EngineApp::BuildScene()
     PushMesh();
     ImportTextures();
     SetRootSignatures();
-    PopulateDescriptorHeaps();
     CompileShaders();
     PushGenericMesh();
     PushMaterials();

@@ -4,13 +4,13 @@ void EngineApp::ImportTextures()
 {
     // Default Materials will init texture data arrays
     mTextureData = {
-    {"bricks2" , "Textures/bricks2.dds"},
-    {"bricks2_nmap", "Textures/bricks2_nmap.dds"},
-    {"tile", "Textures/tile.dds"},
-    {"tile_nmap", "Textures/tile_nmap.dds"},
-    {"default_diffuse", "Textures/default_diffuse.dds"},
-    {"default_nmap", "Textures/default_nmap.dds"},
-    {"desertcube1024", "Textures/skycube.dds"}
+    {"bricks2" , "D:/Programming/Research/OpenResearchEngine/Textures/bricks2.dds"},
+    {"bricks2_nmap", "D:/Programming/Research/OpenResearchEngine/Textures/bricks2_nmap.dds"},
+    {"tile", "D:/Programming/Research/OpenResearchEngine/Textures/tile.dds"},
+    {"tile_nmap", "D:/Programming/Research/OpenResearchEngine/Textures/tile_nmap.dds"},
+    {"default_diffuse", "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds"},
+    {"default_nmap", "D:/Programming/Research/OpenResearchEngine/Textures/default_nmap.dds"},
+    {"desertcube1024", "D:/Programming/Research/OpenResearchEngine/Textures/skycube.dds"}
     };
 
     for (const auto& item : mLevelMaterials.at("DemoLevel"))

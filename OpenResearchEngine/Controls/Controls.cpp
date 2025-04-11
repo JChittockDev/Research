@@ -31,19 +31,24 @@ void EngineApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 void EngineApp::OnKeyboardInput(const GameTimer& gt)
 {
+	bool imguiCapturingKeyboard = ImGui::GetIO().WantCaptureKeyboard;
+
 	const float dt = gt.DeltaTime();
 
-	if (GetAsyncKeyState('W') & 0x8000)
-		mCamera.Walk(10.0f * dt);
+	if (!imguiCapturingKeyboard)
+	{
+		if (GetAsyncKeyState('W') & 0x8000)
+			mCamera.Walk(10.0f * dt);
 
-	if (GetAsyncKeyState('S') & 0x8000)
-		mCamera.Walk(-10.0f * dt);
+		if (GetAsyncKeyState('S') & 0x8000)
+			mCamera.Walk(-10.0f * dt);
 
-	if (GetAsyncKeyState('A') & 0x8000)
-		mCamera.Strafe(-10.0f * dt);
+		if (GetAsyncKeyState('A') & 0x8000)
+			mCamera.Strafe(-10.0f * dt);
 
-	if (GetAsyncKeyState('D') & 0x8000)
-		mCamera.Strafe(10.0f * dt);
+		if (GetAsyncKeyState('D') & 0x8000)
+			mCamera.Strafe(10.0f * dt);
 
-	mCamera.UpdateViewMatrix();
+		mCamera.UpdateViewMatrix();
+	}
 }

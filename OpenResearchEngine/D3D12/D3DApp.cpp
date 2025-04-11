@@ -5,9 +5,14 @@
 #include "D3DApp.h"
 #include <WindowsX.h>
 
+#include "../ImGui/imgui_impl_win32.h"
+#include "../ImGui/imgui_impl_dx12.h"
+
 using Microsoft::WRL::ComPtr;
 using namespace std;
 using namespace DirectX;
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK
 MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -33,8 +38,12 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 
 D3DApp::~D3DApp()
 {
-	if(md3dDevice != nullptr)
+	if (md3dDevice != nullptr)
+	{
 		FlushCommandQueue();
+	}
+
+	ImGui_ImplWin32_Shutdown();
 }
 
 HINSTANCE D3DApp::AppInst()const
@@ -237,140 +246,146 @@ void D3DApp::OnResize()
  
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	switch( msg )
-	{
-	// WM_ACTIVATE is sent when the window is activated or deactivated.  
-	// We pause the game when the window is deactivated and unpause it 
-	// when it becomes active.  
-	case WM_ACTIVATE:
-		if( LOWORD(wParam) == WA_INACTIVE )
-		{
-			mAppPaused = true;
-			mTimer.Stop();
-		}
-		else
-		{
-			mAppPaused = false;
-			mTimer.Start();
-		}
-		return 0;
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+    {
+        return true;
+    }
 
-	// WM_SIZE is sent when the user resizes the window.  
-	case WM_SIZE:
-		// Save the new client area dimensions.
-		mClientWidth  = LOWORD(lParam);
-		mClientHeight = HIWORD(lParam);
-		if( md3dDevice )
-		{
-			if( wParam == SIZE_MINIMIZED )
-			{
-				mAppPaused = true;
-				mMinimized = true;
-				mMaximized = false;
-			}
-			else if( wParam == SIZE_MAXIMIZED )
-			{
-				mAppPaused = false;
-				mMinimized = false;
-				mMaximized = true;
-				OnResize();
-			}
-			else if( wParam == SIZE_RESTORED )
-			{
-				
-				// Restoring from minimized state?
-				if( mMinimized )
-				{
-					mAppPaused = false;
-					mMinimized = false;
-					OnResize();
-				}
+    // Check if ImGui is capturing the mouse or keyboard. If so, skip certain cases.
+    bool imguiCapturingMouse = ImGui::GetIO().WantCaptureMouse;
+    bool imguiCapturingKeyboard = ImGui::GetIO().WantCaptureKeyboard;
 
-				// Restoring from maximized state?
-				else if( mMaximized )
-				{
-					mAppPaused = false;
-					mMaximized = false;
-					OnResize();
-				}
-				else if( mResizing )
-				{
-					// If user is dragging the resize bars, we do not resize 
-					// the buffers here because as the user continuously 
-					// drags the resize bars, a stream of WM_SIZE messages are
-					// sent to the window, and it would be pointless (and slow)
-					// to resize for each WM_SIZE message received from dragging
-					// the resize bars.  So instead, we reset after the user is 
-					// done resizing the window and releases the resize bars, which 
-					// sends a WM_EXITSIZEMOVE message.
-				}
-				else // API call such as SetWindowPos or mSwapChain->SetFullscreenState.
-				{
-					OnResize();
-				}
-			}
-		}
-		return 0;
+    switch (msg)
+    {
+        // Handle window activation/deactivation for pausing.
+    case WM_ACTIVATE:
+        if (LOWORD(wParam) == WA_INACTIVE)
+        {
+            mAppPaused = true;
+            mTimer.Stop();
+        }
+        else
+        {
+            mAppPaused = false;
+            mTimer.Start();
+        }
+        return 0;
 
-	// WM_EXITSIZEMOVE is sent when the user grabs the resize bars.
-	case WM_ENTERSIZEMOVE:
-		mAppPaused = true;
-		mResizing  = true;
-		mTimer.Stop();
-		return 0;
+        // Handle window resizing.
+    case WM_SIZE:
+        mClientWidth = LOWORD(lParam);
+        mClientHeight = HIWORD(lParam);
+        if (md3dDevice)
+        {
+            if (wParam == SIZE_MINIMIZED)
+            {
+                mAppPaused = true;
+                mMinimized = true;
+                mMaximized = false;
+            }
+            else if (wParam == SIZE_MAXIMIZED)
+            {
+                mAppPaused = false;
+                mMinimized = false;
+                mMaximized = true;
+                OnResize();
+            }
+            else if (wParam == SIZE_RESTORED)
+            {
+                if (mMinimized)
+                {
+                    mAppPaused = false;
+                    mMinimized = false;
+                    OnResize();
+                }
+                else if (mMaximized)
+                {
+                    mAppPaused = false;
+                    mMaximized = false;
+                    OnResize();
+                }
+                else if (!mResizing)
+                {
+                    OnResize();
+                }
+            }
+        }
+        return 0;
 
-	// WM_EXITSIZEMOVE is sent when the user releases the resize bars.
-	// Here we reset everything based on the new window dimensions.
-	case WM_EXITSIZEMOVE:
-		mAppPaused = false;
-		mResizing  = false;
-		mTimer.Start();
-		OnResize();
-		return 0;
- 
-	// WM_DESTROY is sent when the window is being destroyed.
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
+        // Window resize dragging messages.
+    case WM_ENTERSIZEMOVE:
+        mAppPaused = true;
+        mResizing = true;
+        mTimer.Stop();
+        return 0;
 
-	// The WM_MENUCHAR message is sent when a menu is active and the user presses 
-	// a key that does not correspond to any mnemonic or accelerator key. 
-	case WM_MENUCHAR:
-        // Don't beep when we alt-enter.
+    case WM_EXITSIZEMOVE:
+        mAppPaused = false;
+        mResizing = false;
+        mTimer.Start();
+        OnResize();
+        return 0;
+
+        // Window close.
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+
+        // Handle menu character to avoid beep sound.
+    case WM_MENUCHAR:
         return MAKELRESULT(0, MNC_CLOSE);
 
-	// Catch this message so to prevent the window from becoming too small.
-	case WM_GETMINMAXINFO:
-		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
-		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200; 
-		return 0;
-
-	case WM_LBUTTONDOWN:
-	case WM_MBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		return 0;
-	case WM_LBUTTONUP:
-	case WM_MBUTTONUP:
-	case WM_RBUTTONUP:
-		OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		return 0;
-	case WM_MOUSEMOVE:
-		OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		return 0;
-    case WM_KEYUP:
-        if(wParam == VK_ESCAPE)
-        {
-            PostQuitMessage(0);
-        }
-        else if((int)wParam == VK_F2)
-            Set4xMsaaState(!m4xMsaaState);
-
+        // Prevent the window from being too small.
+    case WM_GETMINMAXINFO:
+        ((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
+        ((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
         return 0;
-	}
 
-	return DefWindowProc(hwnd, msg, wParam, lParam);
+        // Handle mouse button events only if ImGui isn't capturing mouse input.
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+        if (!imguiCapturingMouse)
+        {
+            OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        }
+        return 0;
+
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+        if (!imguiCapturingMouse)
+        {
+            OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        }
+        return 0;
+
+    case WM_MOUSEMOVE:
+        if (!imguiCapturingMouse)
+        {
+            OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        }
+        return 0;
+
+        // Handle keyboard events only if ImGui isn't capturing keyboard input.
+    case WM_KEYUP:
+        if (!imguiCapturingKeyboard)
+        {
+            if (wParam == VK_ESCAPE)
+            {
+                PostQuitMessage(0);
+            }
+            else if ((int)wParam == VK_F2)
+            {
+                Set4xMsaaState(!m4xMsaaState);
+            }
+        }
+        return 0;
+    }
+
+    return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+
 
 bool D3DApp::InitMainWindow()
 {
@@ -407,6 +422,9 @@ bool D3DApp::InitMainWindow()
 	}
 
 	ShowWindow(mhMainWnd, SW_SHOW);
+
+	ImGui_ImplWin32_Init(mhMainWnd);
+
 	UpdateWindow(mhMainWnd);
 
 	return true;
