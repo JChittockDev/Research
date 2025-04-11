@@ -35,6 +35,9 @@ void RenderTextures::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& hCpuSrv, CD
         hCpuSrv.Offset(1, cbvSrvUavDescriptorSize);
         hGpuSrv.Offset(1, cbvSrvUavDescriptorSize);
     }
+
+    hCpuSrv = hCpuSrv.Offset(1, cbvSrvUavDescriptorSize);
+    hGpuSrv = hGpuSrv.Offset(1, cbvSrvUavDescriptorSize);
 }
 
 RenderTextures::RenderTextures(ID3D12Device* device)

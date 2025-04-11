@@ -35,6 +35,12 @@ void GBuffer::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3D
     mhNormalGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
     mhAlbedoSpecGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
+    cpuRtvHandle = cpuRtvHandle.Offset(1, rtvDescriptorSize);
+    cpuSrvHandle = cpuSrvHandle.Offset(1, srvDescriptorSize);
+    gpuSrvHandle = gpuSrvHandle.Offset(1, srvDescriptorSize);
+
+
+
     RebuildDescriptors();
 }
 

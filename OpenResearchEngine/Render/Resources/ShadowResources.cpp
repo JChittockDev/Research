@@ -27,6 +27,10 @@ void ShadowResources::BuildDescriptors(const int numLights, CD3DX12_CPU_DESCRIPT
         hCpuDsv.Offset(1, dsvDescriptorSize);
     }
 
+    hCpuSrv = hCpuSrv.Offset(1, srvDescriptorSize);
+    hGpuSrv = hGpuSrv.Offset(1, srvDescriptorSize);
+    hCpuDsv = hCpuDsv.Offset(1, dsvDescriptorSize);
+
 }
 
 ShadowResources::ShadowResources(ID3D12Device* device)
