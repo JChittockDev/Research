@@ -142,34 +142,6 @@ void EngineApp::Draw(const GameTimer& gt)
    
     mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 }
- 
-CD3DX12_CPU_DESCRIPTOR_HANDLE EngineApp::GetCpuSrv(int index)const
-{
-    auto srv = CD3DX12_CPU_DESCRIPTOR_HANDLE(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-    srv.Offset(index, mCbvSrvUavDescriptorSize);
-    return srv;
-}
-
-CD3DX12_GPU_DESCRIPTOR_HANDLE EngineApp::GetGpuSrv(int index)const
-{
-    auto srv = CD3DX12_GPU_DESCRIPTOR_HANDLE(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
-    srv.Offset(index, mCbvSrvUavDescriptorSize);
-    return srv;
-}
-
-CD3DX12_CPU_DESCRIPTOR_HANDLE EngineApp::GetDsv(int index)const
-{
-    auto dsv = CD3DX12_CPU_DESCRIPTOR_HANDLE(mDsvHeap->GetCPUDescriptorHandleForHeapStart());
-    dsv.Offset(index, mDsvDescriptorSize);
-    return dsv;
-}
-
-CD3DX12_CPU_DESCRIPTOR_HANDLE EngineApp::GetRtv(int index)const
-{
-    auto rtv = CD3DX12_CPU_DESCRIPTOR_HANDLE(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
-    rtv.Offset(index, mRtvDescriptorSize);
-    return rtv;
-}
 
 std::string EngineApp::extractFileName(const std::string& filePath) {
     size_t found = filePath.find_last_of("/\\");

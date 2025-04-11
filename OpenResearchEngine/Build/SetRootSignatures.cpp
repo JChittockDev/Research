@@ -16,5 +16,4 @@ void EngineApp::SetRootSignatures()
 	SetSimMeshTransferRootSignature();
 	SetTriangleNormalRootSignature();
 	SetVertexNormalRootSignature();
-	SetSsaoRootSignature();
 }

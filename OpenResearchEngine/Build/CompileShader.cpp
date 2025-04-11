@@ -56,15 +56,6 @@ void EngineApp::CompileShaders ()
     mShaders["debugVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ShadowDebug.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["debugPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ShadowDebug.hlsl", nullptr, "PS", "ps_5_1");
 
-    mShaders["drawNormalsVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/DrawNormals.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["drawNormalsPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/DrawNormals.hlsl", nullptr, "PS", "ps_5_1");
-
-    mShaders["ssaoVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Ssao.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["ssaoPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Ssao.hlsl", nullptr, "PS", "ps_5_1");
-
-    mShaders["ssaoBlurVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/SsaoBlur.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["ssaoBlurPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/SsaoBlur.hlsl", nullptr, "PS", "ps_5_1");
-
     mShaders["skyVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Sky.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["skyPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Sky.hlsl", nullptr, "PS", "ps_5_1");
 

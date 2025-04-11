@@ -12,7 +12,7 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     DeformationPass(currentFrameResource);
     ShadowPass(dynamicLights, currentFrameResource);
     GBufferPass(currentFrameResource);
-    LightingPass(mLayoutIndicies, currentFrameResource);
+    LightingPass(currentFrameResource);
 }
 
 void EngineApp::DeformationPass(FrameResource* currentFrameResource)

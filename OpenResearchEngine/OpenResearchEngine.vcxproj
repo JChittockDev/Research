@@ -98,7 +98,6 @@
     <ClCompile Include="Build\CompileShader.cpp" />
     <ClCompile Include="Build\SetRenderPassResources.cpp" />
     <ClCompile Include="Build\SetRootSignatures.cpp" />
-    <ClCompile Include="Build\SetSSAORootSignature.cpp" />
     <ClCompile Include="Build\ImportTextures.cpp" />
     <ClCompile Include="Build\SerializeLevel.cpp" />
     <ClCompile Include="Gui\GuiManager.cpp" />

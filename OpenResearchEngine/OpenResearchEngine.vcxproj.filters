@@ -69,9 +69,6 @@
     <ClCompile Include="Build\SetGenericRootSignature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Build\SetSSAORootSignature.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Build\PopulateDescriptorHeaps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

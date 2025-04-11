@@ -53,7 +53,6 @@ private:
     void PushMaterials();
     void PushRenderItems();
     void ImportTextures();
-    void PopulateDescriptorHeaps();
     void CompileShaders();
     void SetPipelineStates();
     void SetFenceResources();
@@ -96,16 +95,11 @@ private:
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
     void DeformationPass(FrameResource* currentFrameResource);
     void GBufferPass(FrameResource* currentFrameResource);
-    void LightingPass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource);
+    void LightingPass(FrameResource* currentFrameResource);
 
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
 
     std::string extractFileName(const std::string& filePath);
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE GetCpuSrv(int index)const;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE GetGpuSrv(int index)const;
-    CD3DX12_CPU_DESCRIPTOR_HANDLE GetDsv(int index)const;
-    CD3DX12_CPU_DESCRIPTOR_HANDLE GetRtv(int index)const;
 
     std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
 
@@ -127,11 +121,9 @@ private:
     ComPtr<ID3D12RootSignature> mVertexNormalRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mMeshTransferRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSimMeshTransferRootSignature = nullptr;
-    ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mGBufferRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mLightingRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE mNullSrv;
 
     DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
@@ -164,9 +156,6 @@ private:
     std::unordered_map<std::string, std::unordered_map<std::string, ItemData>> mLevelRenderItems;
     std::unordered_map<std::string, std::unordered_map<std::string, PBRMaterialData>> mLevelMaterials;
     std::unordered_map<std::string, std::unordered_map<std::string, LightData>> mLevelLights;
-    std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndicies;
-
-    std::unordered_map<std::string, std::pair<INT, UINT>> mLayoutIndiciesNew;
 
     UINT BlendCBIndex = 0;
     UINT SkinnedCBIndex = 0;

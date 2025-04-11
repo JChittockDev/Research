@@ -1,6 +1,6 @@
 #include "../../EngineApp.h"
 
-void EngineApp::LightingPass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource)
+void EngineApp::LightingPass(FrameResource* currentFrameResource)
 {
     auto matBuffer = currentFrameResource->MaterialBuffer->Resource();
     mCommandList->SetGraphicsRootSignature(mLightingRootSignature.Get());
