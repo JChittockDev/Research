@@ -11,12 +11,7 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     // Add render pass instructions
     DeformationPass(currentFrameResource);
     ShadowPass(dynamicLights, currentFrameResource);
-    //DepthPass(DepthStencilView(), currentFrameResource);
     GBufferPass(currentFrameResource);
-
-
-    //SsaoPass(2, currentFrameResource);
-    //DiffusePass(mLayoutIndicies, currentFrameResource);
     LightingPass(mLayoutIndicies, currentFrameResource);
 }
 

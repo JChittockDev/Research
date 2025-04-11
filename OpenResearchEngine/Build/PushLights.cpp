@@ -29,13 +29,13 @@ void EngineApp::PushLights()
     for (const auto& item : mLevelLights.at("DemoLevel"))
     {
         Light light;
-        light.Position = DirectX::XMFLOAT3(item.second.position[0], item.second.position[1], item.second.position[2]);
-        light.Direction = DirectX::XMFLOAT3(item.second.direction[0], item.second.direction[1], item.second.direction[2]);
-        light.Strength = DirectX::XMFLOAT3(item.second.strength[0], item.second.strength[1], item.second.strength[2]);
-        light.FalloffStart = item.second.falloff_start;
-        light.FalloffEnd = item.second.falloff_end;
-        light.InnerConeAngle = item.second.inner_cone_angle;
-        light.OuterConeAngle = item.second.outer_cone_angle;
+        light.Position = DirectX::XMFLOAT3((float)item.second.position[0], (float)item.second.position[1], (float)item.second.position[2]);
+        light.Direction = DirectX::XMFLOAT3((float)item.second.direction[0], (float)item.second.direction[1], (float)item.second.direction[2]);
+        light.Strength = DirectX::XMFLOAT3((float)item.second.strength[0], (float)item.second.strength[1], (float)item.second.strength[2]);
+        light.FalloffStart = (float)item.second.falloff_start;
+        light.FalloffEnd = (float)item.second.falloff_end;
+        light.InnerConeAngle = (float)item.second.inner_cone_angle;
+        light.OuterConeAngle = (float)item.second.outer_cone_angle;
 
         if (item.second.type == "Directional")
         {

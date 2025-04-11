@@ -10,6 +10,5 @@ void EngineApp::UpdateRenderAssets(const GameTimer& gt)
 	UpdateShadowTransform(gt);
 	UpdateMainPassCB(gt);
 	UpdateShadowPassCB(gt);
-	UpdateSsaoCB(gt);
 	ImGui::End();
 }

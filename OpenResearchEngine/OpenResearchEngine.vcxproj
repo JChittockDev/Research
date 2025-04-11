@@ -114,8 +114,6 @@
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
     <ClCompile Include="Objects\ViewFrustum.cpp" />
-    <ClCompile Include="Render\Passes\DepthPass.cpp" />
-    <ClCompile Include="Render\Passes\DiffusePass.cpp" />
     <ClCompile Include="Render\Manager\Render.cpp" />
     <ClCompile Include="Render\Passes\GBufferPass.cpp" />
     <ClCompile Include="Render\Passes\LightingPass.cpp" />
@@ -123,10 +121,10 @@
     <ClCompile Include="Render\Resources\MeshAnimationResource.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\RenderTextures.cpp" />
+    <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="Render\Resources\ShadowResources.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Render\Passes\ShadowPass.cpp" />
-    <ClCompile Include="Render\Passes\SsaoPass.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
@@ -139,15 +137,12 @@
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
     <ClCompile Include="Build\PushGenericMesh.cpp" />
     <ClCompile Include="Render\Resources\Mesh.cpp" />
-    <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="EngineApp.cpp" />
-    <ClCompile Include="Render\Resources\SsaoMap.cpp" />
     <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp" />
     <ClCompile Include="Update\UpdateRenderItems.cpp" />
     <ClCompile Include="Update\UpdateShadowPass.cpp" />
-    <ClCompile Include="Update\UpdateSSAO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Gui\GuiManager.h" />
@@ -171,6 +166,7 @@
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\MeshAnimationResource.h" />
     <ClInclude Include="Render\Resources\RenderTextures.h" />
+    <ClInclude Include="Render\Resources\ShadowMap.h" />
     <ClInclude Include="Render\Resources\ShadowResources.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Render\Resources\TransformNode.h" />
@@ -185,8 +181,6 @@
     <ClInclude Include="Render\Resources\FrameResource.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
     <ClInclude Include="Render\Resources\Skinning.h" />
-    <ClInclude Include="Render\Resources\ShadowMap.h" />
-    <ClInclude Include="Render\Resources\SsaoMap.h" />
     <ClInclude Include="Utilities\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

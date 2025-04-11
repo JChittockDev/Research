@@ -21,9 +21,9 @@ public:
     std::vector<CD3DX12_GPU_DESCRIPTOR_HANDLE> GetGpuSrvHandles() { return gpuSrvHandles; }
     std::vector<CD3DX12_CPU_DESCRIPTOR_HANDLE> GetCpuDsvHandles() { return cpuDsvHandles; }
 
-    int GetNumCpuSrvHandles() { return cpuSrvHandles.size(); }
-    int GetNumGpuSrvHandles() { return gpuSrvHandles.size(); }
-    int GetNumCpuDsvHandles() { return cpuDsvHandles.size(); }
+    size_t GetNumCpuSrvHandles() { return cpuSrvHandles.size(); }
+    size_t GetNumGpuSrvHandles() { return gpuSrvHandles.size(); }
+    size_t GetNumCpuDsvHandles() { return cpuDsvHandles.size(); }
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetStartCpuSrv() const { return startCpuSrv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetStartGpuSrv() const { return startGpuSrv; }

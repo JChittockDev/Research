@@ -9,7 +9,6 @@
 #include "Render/Resources/Mesh.h"
 #include "Render/Resources/ShadowMap.h"
 #include "Render/Resources/ShadowResources.h"
-#include "Render/Resources/SsaoMap.h"
 #include "Render/Resources/GBuffer.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Skinning.h"
@@ -45,7 +44,6 @@ private:
     void UpdateShadowTransform(const GameTimer& gt);
     void UpdateMainPassCB(const GameTimer& gt);
     void UpdateShadowPassCB(const GameTimer& gt);
-    void UpdateSsaoCB(const GameTimer& gt);
     void UpdateLights(const GameTimer& gt);
     void UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms);
 
@@ -96,11 +94,7 @@ private:
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
-    void DepthPass(const D3D12_CPU_DESCRIPTOR_HANDLE& dsv, FrameResource* currentFrameResource);
-    void SsaoPass(int blurCount, FrameResource* currentFrameResource);
-    void DiffusePass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource);
     void DeformationPass(FrameResource* currentFrameResource);
-
     void GBufferPass(FrameResource* currentFrameResource);
     void LightingPass(const std::unordered_map<std::string, std::pair<INT, UINT>>& layoutIndexMap, FrameResource* currentFrameResource);
 
@@ -180,8 +174,6 @@ private:
 
     PassConstants mMainPassCB;
     std::vector<PassConstants> mShadowPassCBs;
-    
-    std::unique_ptr<SsaoMap> mSsaoMap;
     std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
 
     std::unique_ptr<GBuffer> mGBuffer;
