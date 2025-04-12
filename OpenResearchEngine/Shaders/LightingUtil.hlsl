@@ -176,4 +176,3 @@ float4 ComputeLighting(Light gLights[MaxLights], Material mat, float3 pos, float
     return float4(result, 0.0f);
 }
 
-

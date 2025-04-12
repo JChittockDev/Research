@@ -7,11 +7,15 @@ void EngineApp::LightingPass(FrameResource* currentFrameResource)
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
 
-    mCommandList->SetGraphicsRootConstantBufferView(1, currentFrameResource->PassCB->Resource()->GetGPUVirtualAddress());
+    auto objectCBAddress = currentFrameResource->ObjectCB->Resource()->GetGPUVirtualAddress();
+    auto passCBAddress = currentFrameResource->PassCB->Resource()->GetGPUVirtualAddress();
+    auto matBAddress = currentFrameResource->MaterialBuffer->Resource()->GetGPUVirtualAddress();
 
-    mCommandList->SetGraphicsRootDescriptorTable(2, renderPassSrvHeap->GetGPUDescriptorHandleForHeapStart());
-
-    mCommandList->SetGraphicsRootDescriptorTable(3, mShadowResources->GetStartGpuSrv());
+    mCommandList->SetGraphicsRootConstantBufferView(0, objectCBAddress);
+    mCommandList->SetGraphicsRootConstantBufferView(1, passCBAddress);
+    mCommandList->SetGraphicsRootShaderResourceView(2, matBAddress);
+    mCommandList->SetGraphicsRootDescriptorTable(3, renderPassSrvHeap->GetGPUDescriptorHandleForHeapStart());
+    mCommandList->SetGraphicsRootDescriptorTable(4, mShadowResources->GetStartGpuSrv());
 
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
     mCommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightSteelBlue, 0, nullptr);

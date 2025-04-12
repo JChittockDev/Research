@@ -90,6 +90,7 @@ private:
     void SetTensionRootSignature();
     void SetGBufferRootSignature();
     void SetLightingRootSignature();
+    void SetShadowsRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -122,6 +123,7 @@ private:
     ComPtr<ID3D12RootSignature> mMeshTransferRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSimMeshTransferRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mGBufferRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mShadowsRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mLightingRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 

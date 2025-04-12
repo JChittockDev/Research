@@ -142,7 +142,7 @@ PixelOut PS(VertexOut pin)
     diffuseAlbedo *= gTextureMaps[diffuseMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
     float specular = gTextureMaps[specMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord).x;
 
-    pout.Position = pin.Position;
+    pout.Position = float4(pin.WorldPosition, 1.0);
     pout.Normal = float4(normalize(pin.Normal), 1.0);
     pout.AlbedoSpec = float4(diffuseAlbedo.xyz, specular);
     
