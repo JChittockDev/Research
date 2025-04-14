@@ -12,7 +12,7 @@ void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 		{
 			DirectX::XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
 
-			MaterialData matData;
+			MaterialConstants matData;
 			matData.DiffuseAlbedo = mat->DiffuseAlbedo;
 			matData.FresnelR0 = mat->FresnelR0;
 			matData.Roughness = mat->Roughness;

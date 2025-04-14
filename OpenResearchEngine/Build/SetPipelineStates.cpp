@@ -121,7 +121,8 @@ void EngineApp::SetPipelineStates()
     gBufferPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gPosition
     gBufferPsoDesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gNormal
     gBufferPsoDesc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gAlbedoSpec
-    gBufferPsoDesc.NumRenderTargets = 3;
+    gBufferPsoDesc.RTVFormats[3] = DXGI_FORMAT_R32_UINT;     // gAlbedoSpec
+    gBufferPsoDesc.NumRenderTargets = 4;
     md3dDevice->CreateGraphicsPipelineState(&gBufferPsoDesc, IID_PPV_ARGS(&mPSOs["GBuffer"]));
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC lightingPsoDesc = opaquePsoDesc;

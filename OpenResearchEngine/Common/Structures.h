@@ -246,7 +246,7 @@ struct SsaoConstants
     float SurfaceEpsilon = 0.05f;
 };
 
-struct MaterialData
+struct MaterialConstants
 {
     DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
     DirectX::XMFLOAT3 FresnelR0 = { 0.01f, 0.01f, 0.01f };

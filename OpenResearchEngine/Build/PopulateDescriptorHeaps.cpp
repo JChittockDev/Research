@@ -17,7 +17,7 @@ void EngineApp::CreateRtvAndDsvDescriptorHeaps()
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
 
 	D3D12_DESCRIPTOR_HEAP_DESC renderPassRtvHeapDesc = {};
-	renderPassRtvHeapDesc.NumDescriptors = 3;
+	renderPassRtvHeapDesc.NumDescriptors = 6;
 	renderPassRtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	renderPassRtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	renderPassRtvHeapDesc.NodeMask = 0;
