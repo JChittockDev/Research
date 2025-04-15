@@ -112,7 +112,7 @@ struct PixelOut
     float4 Position : SV_Target0;
     float4 Normal : SV_Target1;
     float4 AlbedoSpec : SV_Target2;
-    uint MatId : SV_Target3;
+    float4 MatId : SV_Target3;
 };
 
 VertexOut VS(VertexIn vin, uint vertexID : SV_VertexID)
@@ -146,7 +146,7 @@ PixelOut PS(VertexOut pin)
     pout.Position = float4(pin.WorldPosition, 1.0);
     pout.Normal = float4(normalize(pin.Normal), 1.0);
     pout.AlbedoSpec = float4(diffuseAlbedo.xyz, specular);
-    //pout.MatId = gMaterialIndex;
+    pout.MatId = float4(gMaterialIndex, 0.0, 0.0, 1.0);
     
     return pout;
 }

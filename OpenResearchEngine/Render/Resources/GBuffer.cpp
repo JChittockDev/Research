@@ -42,8 +42,6 @@ void GBuffer::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3D
     cpuSrvHandle = cpuSrvHandle.Offset(1, srvDescriptorSize);
     gpuSrvHandle = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
-
-
     RebuildDescriptors();
 }
 
@@ -52,12 +50,12 @@ void GBuffer::RebuildDescriptors()
     CreateGBufferRTV(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition, mhPositionCpuRtv);
     CreateGBufferRTV(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal, mhNormalCpuRtv);
     CreateGBufferRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec, mhAlbedoSpecCpuRtv);
-    CreateGBufferRTV(DXGI_FORMAT_R32_UINT, mMaterialId, mhMaterialIdCpuRtv);
+    CreateGBufferRTV(DXGI_FORMAT_R32G32B32A32_FLOAT, mMaterialId, mhMaterialIdCpuRtv);
 
     CreateGBufferSRV(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition, mhPositionCpuSrv);
     CreateGBufferSRV(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal, mhNormalCpuSrv);
     CreateGBufferSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec, mhAlbedoSpecCpuSrv);
-    CreateGBufferSRV(DXGI_FORMAT_R32_UINT, mMaterialId, mhMaterialIdCpuSrv);
+    CreateGBufferSRV(DXGI_FORMAT_R32G32B32A32_FLOAT, mMaterialId, mhMaterialIdCpuSrv);
 }
 
 void GBuffer::CreateGBufferRTV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle)
@@ -129,6 +127,6 @@ void GBuffer::BuildResources()
     CreateGBufferTexture(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition);
     CreateGBufferTexture(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal);
     CreateGBufferTexture(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec);
-    CreateGBufferTexture(DXGI_FORMAT_R32_UINT, mMaterialId);
+    CreateGBufferTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, mMaterialId);
 }
 

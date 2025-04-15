@@ -3,10 +3,9 @@
 void EngineApp::ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource)
 {
     auto matBuffer = currentFrameResource->MaterialBuffer->Resource();
-    mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+    mCommandList->SetGraphicsRootSignature(mShadowsRootSignature.Get());
     mCommandList->SetGraphicsRootShaderResourceView(2, matBuffer->GetGPUVirtualAddress());
-    //mCommandList->SetGraphicsRootDescriptorTable(3, mNullSrv);
-    mCommandList->SetGraphicsRootDescriptorTable(4, mRenderTextures->GetStartGpuSrv());
+    mCommandList->SetGraphicsRootDescriptorTable(3, mRenderTextures->GetStartGpuSrv());
 
     for (int i = 0; i < lights.LightTransforms.size(); i++)
     {

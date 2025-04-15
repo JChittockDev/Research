@@ -17,7 +17,8 @@
 Texture2D gPosition : register(t0);
 Texture2D gNormal : register(t1);
 Texture2D gAlbedoSpec : register(t2);
-Texture2D gShadowMap[16] : register(t3);
+Texture2D gMaterialId : register(t3);
+Texture2D gShadowMap[16] : register(t4);
 
 SamplerState gsamPointWrap : register(s0);
 SamplerState gsamPointClamp : register(s1);
@@ -149,7 +150,9 @@ float4 PS(VertexOut pin) : SV_Target
     float3 Albedo = gAlbedoSpec.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
     float Specular = gAlbedoSpec.Sample(gsamAnisotropicWrap, pin.TexC).a;
     
-    MaterialData matData = gMaterialData[gMaterialIndex];
+    uint MatId = gMaterialId.Sample(gsamAnisotropicWrap, pin.TexC).r;
+    
+    MaterialData matData = gMaterialData[MatId];
     float3 fresnelR0 = matData.FresnelR0;
     float roughness = matData.Roughness;
     

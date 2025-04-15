@@ -86,7 +86,7 @@ void EngineApp::SetPipelineStates()
     smapPsoDesc.RasterizerState.DepthBias = 100000;
     smapPsoDesc.RasterizerState.DepthBiasClamp = 0.0f;
     smapPsoDesc.RasterizerState.SlopeScaledDepthBias = 1.0f;
-    smapPsoDesc.pRootSignature = mRootSignature.Get();
+    smapPsoDesc.pRootSignature = mShadowsRootSignature.Get();
     smapPsoDesc.VS = {reinterpret_cast<BYTE*>(mShaders["shadowVS"]->GetBufferPointer()), mShaders["shadowVS"]->GetBufferSize()};
     smapPsoDesc.PS = {reinterpret_cast<BYTE*>(mShaders["shadowOpaquePS"]->GetBufferPointer()), mShaders["shadowOpaquePS"]->GetBufferSize()};
     smapPsoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
@@ -121,7 +121,7 @@ void EngineApp::SetPipelineStates()
     gBufferPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gPosition
     gBufferPsoDesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gNormal
     gBufferPsoDesc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gAlbedoSpec
-    gBufferPsoDesc.RTVFormats[3] = DXGI_FORMAT_R32_UINT;     // gAlbedoSpec
+    gBufferPsoDesc.RTVFormats[3] = DXGI_FORMAT_R32G32B32A32_FLOAT;     // gAlbedoSpec
     gBufferPsoDesc.NumRenderTargets = 4;
     md3dDevice->CreateGraphicsPipelineState(&gBufferPsoDesc, IID_PPV_ARGS(&mPSOs["GBuffer"]));
 

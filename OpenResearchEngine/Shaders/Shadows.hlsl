@@ -46,11 +46,7 @@ struct MaterialData
     uint MatPad1;
 };
 
-TextureCube gCubeMap : register(t0);
-Texture2D gShadowMap[16] : register(t1);
-Texture2D gSsaoMap : register(t17);
-Texture2D gTextureMaps[48] : register(t18);
-
+Texture2D gTextureMaps[48] : register(t0);
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
 
 SamplerState gsamPointWrap : register(s0);
