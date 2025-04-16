@@ -152,6 +152,13 @@ void LevelReader::SetPBRMaterialData(const json& item_data, PBRMaterialData& pbr
             pbrMaterialStruct.subsurface_tex_path = item_data["Subsurface"];
         }
     }
+    if (item_data.contains("Reflection"))
+    {
+        if (item_data["Reflection"] != "")
+        {
+            pbrMaterialStruct.subsurface_tex_path = item_data["Reflection"];
+        }
+    }
 }
 
 void LevelReader::SetLightData(const json& light_data, LightData& lightDataStruct)

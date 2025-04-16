@@ -43,8 +43,19 @@ struct MaterialData
     uint RefractionMapIndex;
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
-    uint MatPad1;
+    uint ReflectionMapIndex;
 };
+
+float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW)
+{
+    float3 normalT = 2.0f * normalMapSample - 1.0f;
+    float3 N = unitNormalW;
+    float3 T = normalize(tangentW - dot(tangentW, N) * N);
+    float3 B = cross(N, T);
+    float3x3 TBN = float3x3(T, B, N);
+    float3 bumpedNormalW = mul(normalT, TBN);
+    return bumpedNormalW;
+}
 
 Texture2D gTextureMaps[48] : register(t0);
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
@@ -140,11 +151,14 @@ PixelOut PS(VertexOut pin)
     uint specMapIndex = matData.SpecularMapIndex;
 	
     // Dynamically look up the texture in the array.
-    diffuseAlbedo *= gTextureMaps[diffuseMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
-    float specular = gTextureMaps[specMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord).x;
+    diffuseAlbedo *= gTextureMaps[matData.DiffuseMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
+    float specular = gTextureMaps[matData.SpecularMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord).x;
+    
+    float4 normalMapSample = gTextureMaps[matData.NormalMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
+    float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample.rgb, pin.Normal, pin.Tangent);
 
     pout.Position = float4(pin.WorldPosition, 1.0);
-    pout.Normal = float4(normalize(pin.Normal), 1.0);
+    pout.Normal = float4(normalize(bumpedNormalW), 1.0);
     pout.AlbedoSpec = float4(diffuseAlbedo.xyz, specular);
     pout.MatId = float4(gMaterialIndex, 0.0, 0.0, 1.0);
     

@@ -3,19 +3,12 @@
   "Assets":
   {
     "Materials": {
-      "FaceMaterial": {
-        "Diffuse": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Normal": "D:/Programming/Research/OpenResearchEngine/Textures/default_nmap.dds",
-        "Roughness": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Metalness": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Specular": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Height": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Opacity": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Occlusion": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Refraction": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Emissive": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds",
-        "Subsurface": "D:/Programming/Research/OpenResearchEngine/Textures/default_diffuse.dds"
-      }
+      "Skin": {},
+      "Bricks": {
+        "Diffuse": "D:/Programming/Research/OpenResearchEngine/Textures/bricks2.dds",
+        "Normal": "D:/Programming/Research/OpenResearchEngine/Textures/bricks2_nmap.dds"
+      },
+      "Mirror": {}
     },
     "RenderItems": {
       "skyDome": {
@@ -23,9 +16,9 @@
         "Position": [ 0.0, 0.0, 0.0 ],
         "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
         "Scale": [ 5000.0, 5000.0, 5000.0 ],
-        "RenderLayer": "Sky",
+        "RenderLayer": "Opaque",
         "Settings": {
-          "sphere": { "Material": "sky" }
+          "sphere": {}
         }
       },
 
@@ -36,7 +29,7 @@
         "Scale": [ 1.0, 1.0, 1.0 ],
         "RenderLayer": "Opaque",
         "Settings": {
-          "grid": {}
+          "grid": { "Material": "Bricks" }
         }
       },
       "mirrorDome1": {
@@ -46,7 +39,7 @@
         "Scale": [ 2.0, 2.0, 2.0 ],
         "RenderLayer": "Opaque",
         "Settings": {
-          "sphere": { "Material": "mirror0" }
+          "sphere": { "Material": "Mirror" }
         }
       },
 
@@ -71,7 +64,7 @@
         "Settings": {
           "Ch31_Body": {
             "Simulation": true,
-            "Material": "FaceMaterial"
+            "Material": "Skin"
           }
         }
       }

@@ -40,9 +40,6 @@ void EngineApp::CompileShaders ()
     const D3D_SHADER_MACRO skinnedDefines[2] = {skinningMacro, null};
     const D3D_SHADER_MACRO clothDefines[2] = { quantizeMacro, null };
 
-    mShaders["standardVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Default.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["opaquePS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Default.hlsl", opaqueDefines, "PS", "ps_5_1");
-
     mShaders["LightingVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Lighting.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["LightingPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Lighting.hlsl", opaqueDefines, "PS", "ps_5_1");
 
@@ -52,12 +49,6 @@ void EngineApp::CompileShaders ()
     mShaders["shadowVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", nullptr, "VS", "vs_5_1");
     mShaders["shadowOpaquePS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", nullptr, "PS", "ps_5_1");
     mShaders["shadowAlphaTestedPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", alphaTestDefines, "PS", "ps_5_1");
-
-    mShaders["debugVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ShadowDebug.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["debugPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ShadowDebug.hlsl", nullptr, "PS", "ps_5_1");
-
-    mShaders["skyVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Sky.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["skyPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Sky.hlsl", nullptr, "PS", "ps_5_1");
 
     mShaders["blendCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeBlendshapes.hlsl", nullptr, "CS", "cs_5_1");
     mShaders["skinnedCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeSkinning.hlsl", nullptr, "CS", "cs_5_1");

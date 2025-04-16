@@ -258,15 +258,15 @@ struct MaterialConstants
     UINT DiffuseMapIndex = 0;
     UINT NormalMapIndex = 0;
     UINT RoughnessMapIndex = 0;
-    UINT MetalnesssMapIndex = 0;
-    UINT SpecularsMapIndex = 0;
-    UINT HeightsMapIndex = 0;
-    UINT OpacitysMapIndex = 0;
-    UINT OcclusionsMapIndex = 0;
-    UINT RefractionsMapIndex = 0;
-    UINT EmissivesMapIndex = 0;
-    UINT SubsurfacesMapIndex = 0;
-    UINT MaterialPad1 = 0;
+    UINT MetalnessMapIndex = 0;
+    UINT SpecularMapIndex = 0;
+    UINT HeightMapIndex = 0;
+    UINT OpacityMapIndex = 0;
+    UINT OcclusionMapIndex = 0;
+    UINT RefractionMapIndex = 0;
+    UINT EmissiveMapIndex = 0;
+    UINT SubsurfaceMapIndex = 0;
+    UINT ReflectionMapIndex = 0;
 };
 
 struct Vertex
@@ -521,6 +521,7 @@ struct Material
     int RefractionSrvHeapIndex = -1;
     int EmissiveSrvHeapIndex = -1;
     int SubsurfaceSrvHeapIndex = -1;
+    int ReflectionSrvHeapIndex = -1;
 
     // Dirty flag indicating the material has changed and we need to update the constant buffer.
     // Because we have a material constant buffer for each FrameResource, we have to apply the
@@ -633,6 +634,7 @@ struct PBRMaterialData
     std::string refraction_tex_path;
     std::string emissive_tex_path;
     std::string subsurface_tex_path;
+    std::string reflection_tex_path;
 };
 
 struct LightData

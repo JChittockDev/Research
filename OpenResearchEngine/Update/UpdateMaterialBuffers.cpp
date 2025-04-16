@@ -20,14 +20,15 @@ void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 			matData.DiffuseMapIndex = mat->DiffuseSrvHeapIndex;
 			matData.NormalMapIndex = mat->NormalSrvHeapIndex;
 			matData.RoughnessMapIndex = mat->DiffuseSrvHeapIndex;
-			matData.MetalnesssMapIndex = mat->MetalnessSrvHeapIndex;
-			matData.SpecularsMapIndex = mat->SpecularSrvHeapIndex;
-			matData.HeightsMapIndex = mat->HeightSrvHeapIndex;
-			matData.OpacitysMapIndex = mat->OpacitySrvHeapIndex;
-			matData.OcclusionsMapIndex = mat->OcclusionSrvHeapIndex;
-			matData.RefractionsMapIndex = mat->RefractionSrvHeapIndex;
-			matData.EmissivesMapIndex = mat->EmissiveSrvHeapIndex;
-			matData.SubsurfacesMapIndex = mat->SubsurfaceSrvHeapIndex;
+			matData.MetalnessMapIndex = mat->MetalnessSrvHeapIndex;
+			matData.SpecularMapIndex = mat->SpecularSrvHeapIndex;
+			matData.HeightMapIndex = mat->HeightSrvHeapIndex;
+			matData.OpacityMapIndex = mat->OpacitySrvHeapIndex;
+			matData.OcclusionMapIndex = mat->OcclusionSrvHeapIndex;
+			matData.RefractionMapIndex = mat->RefractionSrvHeapIndex;
+			matData.EmissiveMapIndex = mat->EmissiveSrvHeapIndex;
+			matData.SubsurfaceMapIndex = mat->SubsurfaceSrvHeapIndex;
+			matData.ReflectionMapIndex = mat->ReflectionSrvHeapIndex;
 
 			currMaterialBuffer->CopyData(mat->MaterialIndex, matData);
 

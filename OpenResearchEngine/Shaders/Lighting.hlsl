@@ -88,7 +88,7 @@ struct MaterialData
     uint RefractionMapIndex;
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
-    uint MatPad1;
+    uint ReflectionMapIndex;
 };
 
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);

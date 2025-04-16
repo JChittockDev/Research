@@ -43,7 +43,7 @@ struct MaterialData
     uint RefractionMapIndex;
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
-    uint MatPad1;
+    uint ReflectionMapIndex;
 };
 
 Texture2D gTextureMaps[48] : register(t0);
