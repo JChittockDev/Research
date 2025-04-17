@@ -123,7 +123,8 @@ struct PixelOut
     float4 Position : SV_Target0;
     float4 Normal : SV_Target1;
     float4 AlbedoSpec : SV_Target2;
-    float4 MatId : SV_Target3;
+    float4 Reflection : SV_Target3;
+    float4 MatId : SV_Target4;
 };
 
 VertexOut VS(VertexIn vin, uint vertexID : SV_VertexID)
@@ -147,8 +148,6 @@ PixelOut PS(VertexOut pin)
 	// Fetch the material data.
     MaterialData matData = gMaterialData[gMaterialIndex];
     float4 diffuseAlbedo = matData.DiffuseAlbedo;
-    uint diffuseMapIndex = matData.DiffuseMapIndex;
-    uint specMapIndex = matData.SpecularMapIndex;
 	
     // Dynamically look up the texture in the array.
     diffuseAlbedo *= gTextureMaps[matData.DiffuseMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
@@ -156,10 +155,13 @@ PixelOut PS(VertexOut pin)
     
     float4 normalMapSample = gTextureMaps[matData.NormalMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
     float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample.rgb, pin.Normal, pin.Tangent);
+    
+    float4 reflection = gTextureMaps[matData.ReflectionMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
 
     pout.Position = float4(pin.WorldPosition, 1.0);
     pout.Normal = float4(normalize(bumpedNormalW), 1.0);
     pout.AlbedoSpec = float4(diffuseAlbedo.xyz, specular);
+    pout.Reflection = reflection;
     pout.MatId = float4(gMaterialIndex, 0.0, 0.0, 1.0);
     
     return pout;

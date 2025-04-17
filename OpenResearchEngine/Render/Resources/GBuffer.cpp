@@ -26,16 +26,19 @@ void GBuffer::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3D
     mhPositionCpuRtv = cpuRtvHandle;
     mhNormalCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
     mhAlbedoSpecCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
+    mhReflectionCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
     mhMaterialIdCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
 
     mhPositionCpuSrv = cpuSrvHandle;
     mhNormalCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
     mhAlbedoSpecCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhReflectionCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
     mhMaterialIdCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
 
     mhPositionGpuSrv = gpuSrvHandle;
     mhNormalGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
     mhAlbedoSpecGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhReflectionGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
     mhMaterialIdGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
     cpuRtvHandle = cpuRtvHandle.Offset(1, rtvDescriptorSize);
@@ -50,11 +53,13 @@ void GBuffer::RebuildDescriptors()
     CreateGBufferRTV(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition, mhPositionCpuRtv);
     CreateGBufferRTV(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal, mhNormalCpuRtv);
     CreateGBufferRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec, mhAlbedoSpecCpuRtv);
+    CreateGBufferRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mReflection, mhReflectionCpuRtv);
     CreateGBufferRTV(DXGI_FORMAT_R32G32B32A32_FLOAT, mMaterialId, mhMaterialIdCpuRtv);
 
     CreateGBufferSRV(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition, mhPositionCpuSrv);
     CreateGBufferSRV(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal, mhNormalCpuSrv);
     CreateGBufferSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec, mhAlbedoSpecCpuSrv);
+    CreateGBufferSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mReflection, mhReflectionCpuSrv);
     CreateGBufferSRV(DXGI_FORMAT_R32G32B32A32_FLOAT, mMaterialId, mhMaterialIdCpuSrv);
 }
 
@@ -127,6 +132,7 @@ void GBuffer::BuildResources()
     CreateGBufferTexture(DXGI_FORMAT_R16G16B16A16_FLOAT, mPosition);
     CreateGBufferTexture(DXGI_FORMAT_R16G16B16A16_FLOAT, mNormal);
     CreateGBufferTexture(DXGI_FORMAT_R8G8B8A8_UNORM, mAlbedoSpec);
+    CreateGBufferTexture(DXGI_FORMAT_R8G8B8A8_UNORM, mReflection);
     CreateGBufferTexture(DXGI_FORMAT_R32G32B32A32_FLOAT, mMaterialId);
 }
 

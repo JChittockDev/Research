@@ -17,8 +17,9 @@
 Texture2D gPosition : register(t0);
 Texture2D gNormal : register(t1);
 Texture2D gAlbedoSpec : register(t2);
-Texture2D gMaterialId : register(t3);
-Texture2D gShadowMap[16] : register(t4);
+Texture2D gReflection : register(t3);
+Texture2D gMaterialId : register(t4);
+Texture2D gShadowMap[16] : register(t5);
 
 SamplerState gsamPointWrap : register(s0);
 SamplerState gsamPointClamp : register(s1);
@@ -178,7 +179,7 @@ float4 PS(VertexOut pin) : SV_Target
 
     // Reflections
     float3 reflected = reflect(-toEyeW, Normal);
-    float4 reflectionColor = float4(1.0, 1.0, 1.0, 1.0);//gCubeMap.Sample(gsamLinearWrap, reflected);
+    float4 reflectionColor = gReflection.Sample(gsamAnisotropicWrap, pin.TexC);
     float3 fresnelFactor = SchlickFresnel(fresnelR0, Normal, reflected);
     litColor.rgb += shininess * fresnelFactor * reflectionColor.rgb;
 
