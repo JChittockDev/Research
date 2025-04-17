@@ -31,6 +31,7 @@ struct MaterialData
     float4 DiffuseAlbedo;
     float3 FresnelR0;
     float Roughness;
+    int Lit;
     float4x4 MatTransform;
     uint DiffuseMapIndex;
     uint NormalMapIndex;
@@ -44,6 +45,9 @@ struct MaterialData
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
     uint ReflectionMapIndex;
+    float Pad1;
+    float Pad2;
+    float Pad3;
 };
 
 float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW)

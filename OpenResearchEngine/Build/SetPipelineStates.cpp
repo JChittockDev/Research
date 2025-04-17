@@ -58,13 +58,25 @@ void EngineApp::SetPipelineStates()
     ThrowIfFailed(md3dDevice->CreateComputePipelineState(&constraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["constraintSolve"])));
 
 
+    D3D12_RASTERIZER_DESC noCullingRasterDesc = {};
+    noCullingRasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
+    noCullingRasterDesc.CullMode = D3D12_CULL_MODE_NONE;
+    noCullingRasterDesc.FrontCounterClockwise = FALSE;
+    noCullingRasterDesc.DepthClipEnable = TRUE;
+
+    D3D12_RASTERIZER_DESC cullingRasterDesc = {};
+    cullingRasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
+    cullingRasterDesc.CullMode = D3D12_CULL_MODE_NONE;
+    cullingRasterDesc.FrontCounterClockwise = FALSE;
+    cullingRasterDesc.DepthClipEnable = TRUE;
+
     //
     // PSO for opaque objects.
     //
     D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
     ZeroMemory(&opaquePsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
     opaquePsoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
-    opaquePsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    opaquePsoDesc.RasterizerState = noCullingRasterDesc;
     opaquePsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
     opaquePsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
     opaquePsoDesc.SampleMask = UINT_MAX;

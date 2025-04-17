@@ -178,6 +178,13 @@ void LevelReader::SetPBRMaterialData(const json& item_data, PBRMaterialData& pbr
         pbrMaterialStruct.rough_coeff = rough_coeff;
 
     }
+
+    if (item_data.contains("Lit"))
+    {
+        int lit = item_data["Lit"];
+        pbrMaterialStruct.lit = lit;
+
+    }
 }
 
 void LevelReader::SetLightData(const json& light_data, LightData& lightDataStruct)

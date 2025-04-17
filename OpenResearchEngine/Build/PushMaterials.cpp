@@ -190,6 +190,8 @@ void EngineApp::PushMaterials()
 		{
 			mat->Roughness = 0.9f;
 		}
+
+		mat->Lit = item.second.lit;
 		
 		mMaterials[mat->Name] = std::move(mat);
 	}

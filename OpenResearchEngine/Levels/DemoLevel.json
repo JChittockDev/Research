@@ -15,9 +15,8 @@
       },
       "Sky": {
         "Diffuse": "D:/Programming/Research/OpenResearchEngine/Textures/desertcube1024.dds",
-        "Tint": [ 0.0, 0.0, 0.0, 1.0 ],
-        "ReflectionCoeff": [ 0.0, 0.0, 0.0 ],
-        "RoughnessCoeff": 0.01
+        "Lit": 0
+
       }
     },
     "RenderItems": {
@@ -25,7 +24,7 @@
         "Geometry": "shapeGeo",
         "Position": [ 0.0, 0.0, 0.0 ],
         "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
-        "Scale": [ 5000.0, 5000.0, 5000.0 ],
+        "Scale": [ 1000.0, 1000.0, 1000.0 ],
         "RenderLayer": "Opaque",
         "Settings": {
           "sphere": { "Material": "Sky" }

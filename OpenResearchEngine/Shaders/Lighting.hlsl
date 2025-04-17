@@ -77,19 +77,23 @@ struct MaterialData
     float4 DiffuseAlbedo;
     float3 FresnelR0;
     float Roughness;
+    int Lit;
     float4x4 MatTransform;
     uint DiffuseMapIndex;
     uint NormalMapIndex;
     uint RoughnessMapIndex;
     uint MetalnessMapIndex;
     uint SpecularMapIndex;
-    uint HeightMapIndex;
+    uint HeightsMapIndex;
     uint OpacityMapIndex;
     uint OcclusionMapIndex;
     uint RefractionMapIndex;
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
     uint ReflectionMapIndex;
+    float Pad1;
+    float Pad2;
+    float Pad3;
 };
 
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
@@ -185,6 +189,12 @@ float4 PS(VertexOut pin) : SV_Target
 
     // Alpha = 1 for deferred (unless you handle transparency separately)
     litColor.a = 1.0f;
+    
+    if (matData.Lit == 0)
+    {
+        litColor = float4(Albedo, 1.0f);
+
+    }
     
     return litColor;
 }
