@@ -159,6 +159,25 @@ void LevelReader::SetPBRMaterialData(const json& item_data, PBRMaterialData& pbr
             pbrMaterialStruct.subsurface_tex_path = item_data["Reflection"];
         }
     }
+
+    if (item_data.contains("Tint"))
+    {
+        std::vector<double> tint = item_data["Tint"];
+        pbrMaterialStruct.tint = tint;
+    }
+
+    if (item_data.contains("ReflectionCoeff"))
+    {
+        std::vector<double> ref_coeff = item_data["ReflectionCoeff"];
+        pbrMaterialStruct.ref_coeff = ref_coeff;
+    }
+
+    if (item_data.contains("RoughnessCoeff"))
+    {
+        double rough_coeff = item_data["RoughnessCoeff"];
+        pbrMaterialStruct.rough_coeff = rough_coeff;
+
+    }
 }
 
 void LevelReader::SetLightData(const json& light_data, LightData& lightDataStruct)

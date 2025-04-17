@@ -164,9 +164,32 @@ void EngineApp::PushMaterials()
 			mat->ReflectionSrvHeapIndex = mTextures["default_reflection"]->second;
 		}
 
-		mat->DiffuseAlbedo = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 0.5f);
-		mat->FresnelR0 = DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f);
-		mat->Roughness = 0.9f;
+		if (item.second.tint.size() != 0)
+		{
+			mat->DiffuseAlbedo = DirectX::XMFLOAT4(item.second.tint[0], item.second.tint[1], item.second.tint[2], item.second.tint[3]);
+		}
+		else
+		{
+			mat->DiffuseAlbedo = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+		}
+
+		if (item.second.ref_coeff.size() != 0)
+		{
+			mat->FresnelR0 = DirectX::XMFLOAT3(item.second.ref_coeff[0], item.second.ref_coeff[0], item.second.ref_coeff[0]);
+		}
+		else
+		{
+			mat->FresnelR0 = DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f);
+		}
+
+		if (item.second.rough_coeff != 0.0)
+		{
+			mat->Roughness = item.second.rough_coeff;
+		}
+		else
+		{
+			mat->Roughness = 0.9f;
+		}
 		
 		mMaterials[mat->Name] = std::move(mat);
 	}

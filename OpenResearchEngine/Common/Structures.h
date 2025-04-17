@@ -635,6 +635,9 @@ struct PBRMaterialData
     std::string emissive_tex_path;
     std::string subsurface_tex_path;
     std::string reflection_tex_path;
+    std::vector<double> tint;
+    std::vector<double> ref_coeff;
+    double rough_coeff = 0.0f;
 };
 
 struct LightData
