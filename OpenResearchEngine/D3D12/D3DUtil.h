@@ -23,6 +23,8 @@
 #include <fstream>
 #include <sstream>
 #include <cassert>
+#include <filesystem>
+#include <string>
 #include "D3Dx12.h"
 #include "../Common/Math.h"
 

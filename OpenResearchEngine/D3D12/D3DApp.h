@@ -48,6 +48,13 @@ public:
     virtual bool Initialize();
     virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+    std::filesystem::path GetProgramPath() { return mProgramPath; }
+    std::filesystem::path GetDirectoryPath() { return mDirectoryPath; }
+
+    std::string GetFullPath(const char* path) { return (GetDirectoryPath() / std::filesystem::path(path)).string(); }
+
+    bool PathExists(std::string path) { return std::filesystem::exists(GetFullPath(path.c_str())); }
+
 protected:
     virtual void CreateRtvAndDsvDescriptorHeaps();
 	virtual void OnResize(); 
@@ -130,6 +137,9 @@ protected:
 
 	// Derived class should set these in derived constructor to customize starting values.
 	std::wstring mMainWndCaption = L"";
+    std::filesystem::path mProgramPath;
+    std::filesystem::path mDirectoryPath;
+
 	D3D_DRIVER_TYPE md3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
     DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;

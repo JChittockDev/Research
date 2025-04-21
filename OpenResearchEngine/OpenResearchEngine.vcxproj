@@ -64,6 +64,12 @@
       <AdditionalLibraryDirectories>D:\Programming\Library\assimp\library\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /I "$(ProjectDir)Shaders\*" "$(OutDir)Shaders\"
+xcopy /Y /I "$(ProjectDir)Levels\*" "$(OutDir)Levels\"
+xcopy /Y /I "$(ProjectDir)Textures\*" "$(OutDir)Textures\"
+xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -75,6 +81,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\Programming\Library\nlohmann\include;D:\Programming\Library\assimp-debug\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -84,6 +91,12 @@
       <AdditionalLibraryDirectories>D:\Programming\Library\assimp-debug\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /I "$(ProjectDir)Shaders\*" "$(OutDir)Shaders\"
+xcopy /Y /I "$(ProjectDir)Levels\*" "$(OutDir)Levels\"
+xcopy /Y /I "$(ProjectDir)Textures\*" "$(OutDir)Textures\"
+xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Build\PushLights.cpp" />

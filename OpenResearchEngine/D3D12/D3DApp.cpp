@@ -34,6 +34,13 @@ D3DApp::D3DApp(HINSTANCE hInstance)
     // Only one D3DApp can be constructed.
     assert(mApp == nullptr);
     mApp = this;
+
+    wchar_t path[MAX_PATH];
+    DWORD length = GetModuleFileNameW(NULL, path, MAX_PATH);
+
+    std::wstring exePath(path, length);
+    mProgramPath = exePath;
+    mDirectoryPath = mProgramPath.parent_path();
 }
 
 D3DApp::~D3DApp()
