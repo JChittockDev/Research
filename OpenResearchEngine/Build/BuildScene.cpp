@@ -4,11 +4,11 @@ void EngineApp::BuildScene()
 {
     SerializeLevel();
     PushLights();
+    PushGenericMesh();
     PushMesh();
     ImportTextures();
     SetRootSignatures();
     CompileShaders();
-    PushGenericMesh();
     PushMaterials();
     PushRenderItems();
     SetFenceResources();

@@ -55,6 +55,8 @@ public:
 
     bool PathExists(std::string path) { return std::filesystem::exists(GetFullPath(path.c_str())); }
 
+    std::string ChangeExtension(std::string path, std::string ext) { return std::filesystem::path(path).replace_extension(ext).string(); }
+
 protected:
     virtual void CreateRtvAndDsvDescriptorHeaps();
 	virtual void OnResize(); 
