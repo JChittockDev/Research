@@ -3,7 +3,12 @@
   "Assets":
   {
     "Materials": {
-      "Skin": {},
+      "Skin": {
+        "Diffuse": "Textures/Face_Albedo.dds",
+        "Normal": "Textures/Face_Normal.dds",
+        "ReflectionCoeff": [ 0.01, 0.01, 0.01 ],
+        "RoughnessCoeff": 0.3
+      },
       "Bricks": {
         "Diffuse": "Textures/bricks2.dds",
         "Normal": "Textures/bricks2_nmap.dds"
@@ -63,18 +68,20 @@
         }
       },
 
-      "WalkingMan": {
+      "TestFace": {
         "Deformable": true,
         "Geometry": "Models/test.fbx",
-        "Position": [ 0.0, 0.0, -5.0 ],
+        "Position": [ 0.0, 2.0, -5.0 ],
         "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
-        "Scale": [ 0.05, 0.05, -0.05 ],
+        "Scale": [ 10.00, 10.00, 10.00 ],
         "RenderLayer": "Opaque",
         "Settings": {
-          "Ch31_Body": {
-            "Simulation": true,
-            "Material": "Skin"
-          }
+          "face": { "Simulation": false, "Material": "Skin" },
+          "eyeL": {},
+          "eyeR": {},
+          "eyebrows": {},
+          "tearline": {},
+          "lashes": {}
         }
       }
     },
@@ -83,7 +90,9 @@
         "Type": "Directional",
         "Position": [ 0.0, 20.0, 0.0 ],
         "Direction": [ 0.57, -0.57, 0.57 ],
-        "Strength": [ 0.9, 0.9, 0.7 ],
+        "Strength": [ 1.5, 1.5, 1.5
+
+        ],
         "FalloffStart": 0.0,
         "FalloffEnd": 0.0,
         "InnerConeAngle": 0.0,

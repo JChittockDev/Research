@@ -1,0 +1,206 @@
+﻿  PushLights.cpp
+  BuildScene.cpp
+  PopulateDescriptorHeaps.cpp
+  SetFenceResources.cpp
+  PushMaterials.cpp
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,124): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,124): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,124): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,124): warning C4244:             _Ty=double
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,124): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,103): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,103): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,103): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,103): warning C4244:             _Ty=double
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,103): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,82): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,82): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,82): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,82): warning C4244:             _Ty=double
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,82): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,61): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,61): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,61): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,61): warning C4244:             _Ty=double
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(169,61): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,114): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,114): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,114): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,114): warning C4244:             _Ty=double
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,114): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,88): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,88): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,88): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,88): warning C4244:             _Ty=double
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,88): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,62): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,62): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,62): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,62): warning C4244:             _Ty=double
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(178,62): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Build\PushMaterials.cpp(187,32): warning C4244: '=': conversion from 'const double' to 'float', possible loss of data
+  PushMesh.cpp
+  SetPipelineStates.cpp
+  PushRenderItems.cpp
+  SetGenericRootSignature.cpp
+  CompileShader.cpp
+  SetRenderPassResources.cpp
+  SetRootSignatures.cpp
+  ImportTextures.cpp
+  SerializeLevel.cpp
+  GuiManager.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_dx12.cpp
+  imgui_impl_win32.cpp
+  Compiling...
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  Camera.cpp
+  D3DApp.cpp
+  D3DUtil.cpp
+  DDSTextureLoader.cpp
+  ViewFrustum.cpp
+  Render.cpp
+  GBufferPass.cpp
+  LightingPass.cpp
+  GBuffer.cpp
+  MeshAnimationResource.cpp
+  RenderItem.cpp
+  RenderTextures.cpp
+  ShadowMap.cpp
+  ShadowResources.cpp
+  Skeleton.cpp
+  ShadowPass.cpp
+  LevelReader.cpp
+  UpdateLights.cpp
+  Compiling...
+  UpdateRenderAssets.cpp
+  UpdateAnimConstants.cpp
+  MLResource.cpp
+  GameTimer.cpp
+  GeometryGenerator.cpp
+  Math.cpp
+  Controls.cpp
+  FrameResource.cpp
+  PushGenericMesh.cpp
+  Mesh.cpp
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(118,17): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(122,23): warning C4018: '<': signed/unsigned mismatch
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,159): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,159): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,159): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,159): warning C4244:             _Ty=int
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,159): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,132): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,132): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,132): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,132): warning C4244:             _Ty=int
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,132): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,105): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,105): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,105): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,105): warning C4244:             _Ty=int
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,105): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,78): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,78): warning C4244:         with
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,78): warning C4244:         [
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,78): warning C4244:             _Ty=int
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(130,78): warning C4244:         ]
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(338,46): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(471,57): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(487,40): warning C4267: '=': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(504,23): warning C4018: '<': signed/unsigned mismatch
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(528,54): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(529,54): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(530,54): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(543,63): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(559,40): warning C4267: '=': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(580,20): warning C4267: 'initializing': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(604,62): warning C4267: '=': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(617,40): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(633,20): warning C4267: 'initializing': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(662,23): warning C4267: 'initializing': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(750,62): warning C4267: '=': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(763,40): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(1002,43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Programming\Research\OpenResearchEngine\Render\Resources\Mesh.cpp(1002,26): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
+  EngineApp.cpp
+  StaticSamplers.cpp
+  UpdateMainPass.cpp
+  UpdateMaterialBuffers.cpp
+  UpdateRenderItems.cpp
+  UpdateShadowPass.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 11880 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  OpenResearchEngine.vcxproj -> D:\Programming\Research\OpenResearchEngine\x64\Release\OpenResearchEngine.exe
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeBlendshapes.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeConstraintSolve.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeForce.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeMeshTransfer.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputePostSolve.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputePreSolve.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeSimMeshTransfer.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeSkinning.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeTension.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeTriangleNormals.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\ComputeVertexNormals.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\GBuffer.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\Lighting.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\LightingUtil.hlsl
+  D:\Programming\Research\OpenResearchEngine\Shaders\Shadows.hlsl
+  15 File(s) copied
+  D:\Programming\Research\OpenResearchEngine\Levels\DemoLevel.json
+  D:\Programming\Research\OpenResearchEngine\Levels\DemoLevelOld.json
+  2 File(s) copied
+  D:\Programming\Research\OpenResearchEngine\Textures\bricks.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\bricks2.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\bricks2_nmap.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\bricks3.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\bricks_nmap.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\checkboard.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\default_diffuse.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\default_nmap.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\desertcube1024.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\Face_Albedo.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\Face_Normal.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\grass.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\grasscube1024.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\head_diff.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\head_norm.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\ice.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\jacket_diff.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\jacket_norm.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\pants_diff.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\pants_norm.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\skycube.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\snowcube1024.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\stone.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\sunsetcube1024.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\test.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\tile.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\tile_nmap.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\tree0.bmp
+  D:\Programming\Research\OpenResearchEngine\Textures\tree01S.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\tree02S.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\tree1.bmp
+  D:\Programming\Research\OpenResearchEngine\Textures\tree2.bmp
+  D:\Programming\Research\OpenResearchEngine\Textures\tree35S.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\treearray.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\treeArray2.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\upBody_diff.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\upbody_norm.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\water1.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\WireFence.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\WoodCrate01.dds
+  D:\Programming\Research\OpenResearchEngine\Textures\WoodCrate02.dds
+  41 File(s) copied
+  D:\Programming\Research\OpenResearchEngine\Models\directionallight.obj
+  D:\Programming\Research\OpenResearchEngine\Models\pointlight.obj
+  D:\Programming\Research\OpenResearchEngine\Models\spotlight.obj
+  D:\Programming\Research\OpenResearchEngine\Models\test.fbx
+  D:\Programming\Research\OpenResearchEngine\Models\test.jpg
+  5 File(s) copied
