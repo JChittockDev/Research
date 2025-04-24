@@ -40,31 +40,65 @@ void EngineApp::CompileShaders ()
     const D3D_SHADER_MACRO skinnedDefines[2] = {skinningMacro, null};
     const D3D_SHADER_MACRO clothDefines[2] = { quantizeMacro, null };
 
-    mShaders["LightingVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Lighting.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["LightingPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Lighting.hlsl", opaqueDefines, "PS", "ps_5_1");
+    std::string shaderPath = GetFullPath("Shaders/Lighting.hlsl");
+    std::wstring wLightingShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["LightingVS"] = d3dUtil::CompileShader(wLightingShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["LightingPS"] = d3dUtil::CompileShader(wLightingShaderPath, opaqueDefines, "PS", "ps_5_1");
 
-    mShaders["GBufferVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/GBuffer.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["GBufferPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/GBuffer.hlsl", opaqueDefines, "PS", "ps_5_1");
+    shaderPath = GetFullPath("Shaders/GBuffer.hlsl");
+    std::wstring wGbufferShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["GBufferVS"] = d3dUtil::CompileShader(wGbufferShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["GBufferPS"] = d3dUtil::CompileShader(wGbufferShaderPath, opaqueDefines, "PS", "ps_5_1");
 
-    mShaders["shadowVS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", nullptr, "VS", "vs_5_1");
-    mShaders["shadowOpaquePS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", nullptr, "PS", "ps_5_1");
-    mShaders["shadowAlphaTestedPS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/Shadows.hlsl", alphaTestDefines, "PS", "ps_5_1");
+    shaderPath = GetFullPath("Shaders/Shadows.hlsl");
+    std::wstring wShadowShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["shadowVS"] = d3dUtil::CompileShader(wShadowShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["shadowOpaquePS"] = d3dUtil::CompileShader(wShadowShaderPath, nullptr, "PS", "ps_5_1");
+    mShaders["shadowAlphaTestedPS"] = d3dUtil::CompileShader(wShadowShaderPath, alphaTestDefines, "PS", "ps_5_1");
 
-    mShaders["blendCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeBlendshapes.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["skinnedCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeSkinning.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["triangleNormalCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeTriangleNormals.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["vertexNormalCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeVertexNormals.hlsl", nullptr, "CS", "cs_5_1");
+    shaderPath = GetFullPath("Shaders/ComputeBlendshapes.hlsl");
+    std::wstring wBlendshapeShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["blendCS"] = d3dUtil::CompileShader(wBlendshapeShaderPath, nullptr, "CS", "cs_5_1");
 
-    mShaders["meshTransferCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["simMeshTransferCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeSimMeshTransfer.hlsl", nullptr, "CS", "cs_5_1");
+    shaderPath = GetFullPath("Shaders/ComputeSkinning.hlsl");
+    std::wstring wSkinningShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["skinnedCS"] = d3dUtil::CompileShader(wSkinningShaderPath, nullptr, "CS", "cs_5_1");
 
-    mShaders["tensionCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeTension.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["forceCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeForce.hlsl", nullptr, "CS", "cs_5_1");
-    mShaders["preSolveCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputePreSolve.hlsl", nullptr, "CS", "cs_5_1");
+    shaderPath = GetFullPath("Shaders/ComputeTriangleNormals.hlsl");
+    std::wstring wTriangleNormalsShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["triangleNormalCS"] = d3dUtil::CompileShader(wTriangleNormalsShaderPath, nullptr, "CS", "cs_5_1");
 
-    mShaders["constraintSolveCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputeConstraintSolve.hlsl", clothDefines, "CS", "cs_5_1");
+    shaderPath = GetFullPath("Shaders/ComputeVertexNormals.hlsl");
+    std::wstring wVertexNormalsShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["vertexNormalCS"] = d3dUtil::CompileShader(wVertexNormalsShaderPath, nullptr, "CS", "cs_5_1");
 
-    mShaders["postSolveCS"] = d3dUtil::CompileShader(L"D:/Programming/Research/OpenResearchEngine/Shaders/ComputePostSolve.hlsl", clothDefines, "CS", "cs_5_1");
+    shaderPath = GetFullPath("Shaders/ComputeMeshTransfer.hlsl");
+    std::wstring wMeshTransferShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["meshTransferCS"] = d3dUtil::CompileShader(wMeshTransferShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ComputeSimMeshTransfer.hlsl");
+    std::wstring wSimMeshTransferShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["simMeshTransferCS"] = d3dUtil::CompileShader(wSimMeshTransferShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ComputeTension.hlsl");
+    std::wstring wTensionShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["tensionCS"] = d3dUtil::CompileShader(wTensionShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ComputeForce.hlsl");
+    std::wstring wForceShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["forceCS"] = d3dUtil::CompileShader(wForceShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ComputePreSolve.hlsl");
+    std::wstring wPreSolveShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["preSolveCS"] = d3dUtil::CompileShader(wPreSolveShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ComputeConstraintSolve.hlsl");
+    std::wstring wConstraintSolveShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["constraintSolveCS"] = d3dUtil::CompileShader(wConstraintSolveShaderPath, clothDefines, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ComputePostSolve.hlsl");
+    std::wstring wPostSolveShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["postSolveCS"] = d3dUtil::CompileShader(wPostSolveShaderPath, clothDefines, "CS", "cs_5_1");
 
     mInputLayout = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
