@@ -16,10 +16,11 @@
 
 Texture2D gPosition : register(t0);
 Texture2D gNormal : register(t1);
-Texture2D gAlbedoSpec : register(t2);
-Texture2D gReflection : register(t3);
-Texture2D gMaterialId : register(t4);
-Texture2D gShadowMap[16] : register(t5);
+Texture2D gViewNormal : register(t2);
+Texture2D gAlbedoSpec : register(t3);
+Texture2D gReflection : register(t4);
+Texture2D gMaterialId : register(t5);
+Texture2D gShadowMap[16] : register(t6);
 
 SamplerState gsamPointWrap : register(s0);
 SamplerState gsamPointClamp : register(s1);

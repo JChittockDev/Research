@@ -126,9 +126,10 @@ struct PixelOut
 {
     float4 Position : SV_Target0;
     float4 Normal : SV_Target1;
-    float4 AlbedoSpec : SV_Target2;
-    float4 Reflection : SV_Target3;
-    float4 MatId : SV_Target4;
+    float4 ViewNormal : SV_Target2;
+    float4 AlbedoSpec : SV_Target3;
+    float4 Reflection : SV_Target4;
+    float4 MatId : SV_Target5;
 };
 
 VertexOut VS(VertexIn vin, uint vertexID : SV_VertexID)
@@ -164,6 +165,7 @@ PixelOut PS(VertexOut pin)
 
     pout.Position = float4(pin.WorldPosition, 1.0);
     pout.Normal = float4(normalize(bumpedNormalW), 1.0);
+    pout.ViewNormal = mul(pout.Normal, gView);
     pout.AlbedoSpec = float4(diffuseAlbedo.xyz, specular);
     pout.Reflection = reflection;
     pout.MatId = float4(gMaterialIndex, 0.0, 0.0, 1.0);

@@ -13,6 +13,7 @@ void EngineApp::GBufferPass(FrameResource* currentFrameResource)
     float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     mCommandList->ClearRenderTargetView(mGBuffer->GetPositionCpuRtv(), clearColor, 0, nullptr);
     mCommandList->ClearRenderTargetView(mGBuffer->GetNormalCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetViewNormalCpuRtv(), clearColor, 0, nullptr);
     mCommandList->ClearRenderTargetView(mGBuffer->GetAlbedoSpecCpuRtv(), clearColor, 0, nullptr);
     mCommandList->ClearRenderTargetView(mGBuffer->GetReflectionCpuRtv(), clearColor, 0, nullptr);
     mCommandList->ClearRenderTargetView(mGBuffer->GetMaterialIdCpuRtv(), clearColor, 0, nullptr);
@@ -21,13 +22,14 @@ void EngineApp::GBufferPass(FrameResource* currentFrameResource)
     D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
         mGBuffer->GetPositionCpuRtv(),
         mGBuffer->GetNormalCpuRtv(),
+        mGBuffer->GetViewNormalCpuRtv(),
         mGBuffer->GetAlbedoSpecCpuRtv(),
         mGBuffer->GetReflectionCpuRtv(),
         mGBuffer->GetMaterialIdCpuRtv()
     };
 
     mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-    mCommandList->OMSetRenderTargets(5, rtvs, false, &DepthStencilView());
+    mCommandList->OMSetRenderTargets(6, rtvs, false, &DepthStencilView());
 
     // Set root parameters
     auto objectCBAddress = currentFrameResource->ObjectCB->Resource()->GetGPUVirtualAddress();
