@@ -65,10 +65,6 @@ public:
 
 private:
 	ID3D12Device* md3dDevice;
-
-    Microsoft::WRL::ComPtr<ID3D12RootSignature> mGBufferRootSig;
-    
-    ID3D12PipelineState* mGBufferPso = nullptr;
 	 
     Microsoft::WRL::ComPtr<ID3D12Resource> mPosition;
     Microsoft::WRL::ComPtr<ID3D12Resource> mNormal;

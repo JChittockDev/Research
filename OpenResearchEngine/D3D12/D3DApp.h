@@ -57,6 +57,8 @@ public:
 
     std::string ChangeExtension(std::string path, std::string ext) { return std::filesystem::path(path).replace_extension(ext).string(); }
 
+    Microsoft::WRL::ComPtr<ID3D12Resource> GetDepthBuffer() { return mDepthStencilBuffer; }
+
 protected:
     virtual void CreateRtvAndDsvDescriptorHeaps();
 	virtual void OnResize(); 
