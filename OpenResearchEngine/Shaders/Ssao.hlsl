@@ -9,8 +9,6 @@ cbuffer cbSsao : register(b0)
     float4x4 gProjTex;
 	float4   gOffsetVectors[14];
 
-    float2 gInvRenderTargetSize;
-
     float    gOcclusionRadius;
     float    gOcclusionFadeStart;
     float    gOcclusionFadeEnd;
@@ -20,8 +18,8 @@ cbuffer cbSsao : register(b0)
  
 // Nonnumeric values cannot be added to a cbuffer.
 Texture2D gNormalMap    : register(t0);
-Texture2D gDepthMap     : register(t1);
-Texture2D gRandomVecMap : register(t2);
+Texture2D gRandomVecMap : register(t1);
+Texture2D gDepthMap : register(t2);
 
 SamplerState gsamPointClamp : register(s0);
 SamplerState gsamLinearClamp : register(s1);

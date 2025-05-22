@@ -234,8 +234,6 @@ struct SsaoConstants
     DirectX::XMFLOAT4X4 ProjTex;
     DirectX::XMFLOAT4   OffsetVectors[14];
 
-    DirectX::XMFLOAT2 InvRenderTargetSize = { 0.0f, 0.0f };
-
     // Coordinates given in view space.
     float OcclusionRadius = 0.5f;
     float OcclusionFadeStart = 0.2f;
