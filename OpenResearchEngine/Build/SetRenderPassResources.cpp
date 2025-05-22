@@ -21,5 +21,4 @@ void EngineApp::SetRenderPassResources()
     cpuDsvHandle = cpuDsvHandle.Offset(1, mDsvDescriptorSize);
     mShadowResources = std::make_unique<ShadowResources>(md3dDevice.Get());
     mShadowResources->BuildDescriptors(dynamicLights.GetNumLights(), cpuSrvHandle, gpuSrvHandle, cpuDsvHandle, mCbvSrvUavDescriptorSize, mDsvDescriptorSize);
-
 }

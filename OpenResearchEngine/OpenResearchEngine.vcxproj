@@ -143,6 +143,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
     <ClCompile Include="Update\UpdateAnimConstants.cpp" />
+    <ClCompile Include="Update\UpdateSSAO.cpp" />
     <ClCompile Include="Utilities\MLResource.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />

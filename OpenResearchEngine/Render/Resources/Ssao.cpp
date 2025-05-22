@@ -35,7 +35,6 @@ void Ssao::GetOffsetVectors(DirectX::XMFLOAT4 offsets[14])
 void Ssao::BuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize)
 {
     mhAmbientCpuRtv = cpuRtvHandle;
-    mhRandomVectorCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
 
     mhAmbientCpuSrv = cpuSrvHandle;
     mhRandomVectorCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
@@ -77,7 +76,7 @@ void Ssao::CreateSsaoSRV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D1
     md3dDevice->CreateShaderResourceView(texture.Get(), &srvDesc, srvHandle);
 }
 
-void Ssao::CreateSsaoTexture(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, const std::vector<float>& clear)
+void Ssao::CreateSsaoTexture(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture)
 {
     D3D12_RESOURCE_DESC textureDesc = {};
     textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -92,10 +91,10 @@ void Ssao::CreateSsaoTexture(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<I
 
     D3D12_CLEAR_VALUE clearValue = {};
     clearValue.Format = format;
-    clearValue.Color[0] = clear[0];
-    clearValue.Color[1] = clear[1];
-    clearValue.Color[2] = clear[2];
-    clearValue.Color[3] = clear[3];
+    clearValue.Color[0] = 1.0f;
+    clearValue.Color[1] = 1.0f;
+    clearValue.Color[2] = 1.0f;
+    clearValue.Color[3] = 1.0f;
 
     md3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue, IID_PPV_ARGS(&texture));
 }
@@ -103,7 +102,6 @@ void Ssao::CreateSsaoTexture(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<I
 void Ssao::RebuildDescriptors()
 {
     CreateSsaoRTV(DXGI_FORMAT_R16_UNORM, mAmbient, mhAmbientCpuRtv);
-    CreateSsaoRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mRandomVector, mhRandomVectorCpuRtv);
 
     CreateSsaoSRV(DXGI_FORMAT_R16_UNORM, mAmbient, mhAmbientCpuSrv);
     CreateSsaoSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mRandomVector, mhRandomVectorCpuSrv);
@@ -113,7 +111,7 @@ void Ssao::RebuildDescriptors()
 
 void Ssao::BuildResources()
 {
-    CreateSsaoTexture(DXGI_FORMAT_R16_UNORM, mAmbient, {1.0, 1.0, 1.0, 1.0});
+    CreateSsaoTexture(DXGI_FORMAT_R16_UNORM, mAmbient);
 }
 
 
