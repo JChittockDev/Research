@@ -165,7 +165,7 @@ PixelOut PS(VertexOut pin)
 
     pout.Position = float4(pin.WorldPosition, 1.0);
     pout.Normal = float4(normalize(bumpedNormalW), 1.0);
-    pout.ViewNormal = mul(pout.Normal, gView);
+    pout.ViewNormal = mul(float4(pin.Normal, 1.0), gView);
     pout.AlbedoSpec = float4(diffuseAlbedo.xyz, specular);
     pout.Reflection = reflection;
     pout.MatId = float4(gMaterialIndex, 0.0, 0.0, 1.0);

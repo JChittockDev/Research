@@ -26,6 +26,5 @@ void EngineApp::SsaoPass(FrameResource* currentFrameResource)
     mCommandList->IASetIndexBuffer(nullptr);
     mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     mCommandList->DrawInstanced(6, 1, 0, 0);
-    
-    mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mSsao->GetAmbient().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_GENERIC_READ));
+
 }

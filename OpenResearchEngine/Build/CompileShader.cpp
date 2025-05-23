@@ -45,6 +45,11 @@ void EngineApp::CompileShaders ()
     mShaders["LightingVS"] = d3dUtil::CompileShader(wLightingShaderPath, nullptr, "VS", "vs_5_1");
     mShaders["LightingPS"] = d3dUtil::CompileShader(wLightingShaderPath, opaqueDefines, "PS", "ps_5_1");
 
+    shaderPath = GetFullPath("Shaders/Ssao.hlsl");
+    std::wstring wSsaoShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["SsaoVS"] = d3dUtil::CompileShader(wSsaoShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["SsaoPS"] = d3dUtil::CompileShader(wSsaoShaderPath, opaqueDefines, "PS", "ps_5_1");
+
     shaderPath = GetFullPath("Shaders/GBuffer.hlsl");
     std::wstring wGbufferShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["GBufferVS"] = d3dUtil::CompileShader(wGbufferShaderPath, nullptr, "VS", "vs_5_1");

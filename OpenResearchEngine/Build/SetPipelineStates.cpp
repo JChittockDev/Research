@@ -123,4 +123,16 @@ void EngineApp::SetPipelineStates()
     lightingPsoDesc.DepthStencilState.DepthEnable = false;
     lightingPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     md3dDevice->CreateGraphicsPipelineState(&lightingPsoDesc, IID_PPV_ARGS(&mPSOs["Lighting"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC ssaoPsoDesc = opaquePsoDesc;
+    ssaoPsoDesc.InputLayout = { nullptr, 0 };
+    ssaoPsoDesc.pRootSignature = mSsaoRootSignature.Get();
+
+    ssaoPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16_UNORM;
+
+    ssaoPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["SsaoVS"]->GetBufferPointer()), mShaders["SsaoVS"]->GetBufferSize() };
+    ssaoPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["SsaoPS"]->GetBufferPointer()), mShaders["SsaoPS"]->GetBufferSize() };
+    ssaoPsoDesc.DepthStencilState.DepthEnable = false;
+    ssaoPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&ssaoPsoDesc, IID_PPV_ARGS(&mPSOs["Ssao"]));
 }
