@@ -20,7 +20,8 @@ Texture2D gViewNormal : register(t2);
 Texture2D gAlbedoSpec : register(t3);
 Texture2D gReflection : register(t4);
 Texture2D gMaterialId : register(t5);
-Texture2D gShadowMap[16] : register(t6);
+Texture2D gAmbient : register(t6);
+Texture2D gShadowMap[16] : register(t7);
 
 SamplerState gsamPointWrap : register(s0);
 SamplerState gsamPointClamp : register(s1);
@@ -29,6 +30,7 @@ SamplerState gsamLinearClamp : register(s3);
 SamplerState gsamAnisotropicWrap : register(s4);
 SamplerState gsamAnisotropicClamp : register(s5);
 SamplerComparisonState gsamShadow : register(s6);
+SamplerState gsamDepth : register(s7);
 
 cbuffer cbPerObject : register(b0)
 {
@@ -181,6 +183,8 @@ float4 PS(VertexOut pin) : SV_Target
     float4 directLight = ComputeLighting(gLights, mat, FragPos, Normal, toEyeW, shadowFactor);
 
     float4 litColor = ambient + directLight;
+    
+    litColor *= gAmbient.Sample(gsamAnisotropicWrap, pin.TexC).r;
 
     // Reflections
     float3 reflected = reflect(-toEyeW, Normal);

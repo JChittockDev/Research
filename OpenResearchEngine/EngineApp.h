@@ -105,7 +105,7 @@ private:
 
     std::string extractFileName(const std::string& filePath);
 
-    std::array<const CD3DX12_STATIC_SAMPLER_DESC, 7> GetStaticSamplers();
+    std::array<const CD3DX12_STATIC_SAMPLER_DESC, 8> GetStaticSamplers();
 
 private:
     POINT mLastMousePos;

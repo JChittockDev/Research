@@ -142,10 +142,10 @@ void EngineApp::SetLightingRootSignature()
 {
 
     CD3DX12_DESCRIPTOR_RANGE texTable0;
-    texTable0.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 6, 0, 0);
+    texTable0.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0, 0);
 
     CD3DX12_DESCRIPTOR_RANGE texTable1;
-    texTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 16, 6, 0);
+    texTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 16, 7, 0);
 
     CD3DX12_ROOT_PARAMETER slotRootParameter[5];
 

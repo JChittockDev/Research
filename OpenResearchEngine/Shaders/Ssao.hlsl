@@ -21,10 +21,14 @@ Texture2D gNormalMap    : register(t0);
 Texture2D gRandomVecMap : register(t1);
 Texture2D gDepthMap : register(t2);
 
-SamplerState gsamPointClamp : register(s0);
-SamplerState gsamLinearClamp : register(s1);
-SamplerState gsamDepthMap : register(s2);
-SamplerState gsamLinearWrap : register(s3);
+SamplerState gsamPointWrap : register(s0);
+SamplerState gsamPointClamp : register(s1);
+SamplerState gsamLinearWrap : register(s2);
+SamplerState gsamLinearClamp : register(s3);
+SamplerState gsamAnisotropicWrap : register(s4);
+SamplerState gsamAnisotropicClamp : register(s5);
+SamplerComparisonState gsamShadow : register(s6);
+SamplerState gsamDepth : register(s7);
 
 static const int gSampleCount = 14;
  
@@ -113,7 +117,7 @@ float4 PS(VertexOut pin) : SV_Target
 
 	// Get viewspace normal and z-coord of this pixel.  
     float3 n = gNormalMap.SampleLevel(gsamPointClamp, pin.TexC, 0.0f).xyz;
-    float pz = gDepthMap.SampleLevel(gsamDepthMap, pin.TexC, 0.0f).r;
+    float pz = gDepthMap.SampleLevel(gsamDepth, pin.TexC, 0.0f).r;
     pz = NdcDepthToViewDepth(pz);
 
 	//
@@ -151,7 +155,7 @@ float4 PS(VertexOut pin) : SV_Target
 		// the depth of q, as q is just an arbitrary point near p and might
 		// occupy empty space).  To find the nearest depth we look it up in the depthmap.
 
-		float rz = gDepthMap.SampleLevel(gsamDepthMap, projQ.xy, 0.0f).r;
+		float rz = gDepthMap.SampleLevel(gsamDepth, projQ.xy, 0.0f).r;
         rz = NdcDepthToViewDepth(rz);
 
 		// Reconstruct full view space position r = (rx,ry,rz).  We know r
@@ -176,8 +180,10 @@ float4 PS(VertexOut pin) : SV_Target
 		float dp = max(dot(n, normalize(r - p)), 0.0f);
 		float occlusion = dp * OcclusionFunction(distZ);
 		
-		occlusionSum += occlusion;
-	}
+        float rangeCheck = smoothstep(0.0, 1.0, gOcclusionRadius / abs(distZ));
+		
+        occlusionSum += occlusion * rangeCheck;
+    }
 	
 	occlusionSum /= gSampleCount;
 	
