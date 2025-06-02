@@ -50,6 +50,11 @@ void EngineApp::CompileShaders ()
     mShaders["SsaoVS"] = d3dUtil::CompileShader(wSsaoShaderPath, nullptr, "VS", "vs_5_1");
     mShaders["SsaoPS"] = d3dUtil::CompileShader(wSsaoShaderPath, opaqueDefines, "PS", "ps_5_1");
 
+    shaderPath = GetFullPath("Shaders/EdgeBlur.hlsl");
+    std::wstring wEdgeBlurShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["EdgeBlurVS"] = d3dUtil::CompileShader(wEdgeBlurShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["EdgeBlurPS"] = d3dUtil::CompileShader(wEdgeBlurShaderPath, opaqueDefines, "PS", "ps_5_1");
+
     shaderPath = GetFullPath("Shaders/GBuffer.hlsl");
     std::wstring wGbufferShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["GBufferVS"] = d3dUtil::CompileShader(wGbufferShaderPath, nullptr, "VS", "vs_5_1");

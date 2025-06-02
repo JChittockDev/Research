@@ -241,6 +241,16 @@ struct SsaoConstants
     float SurfaceEpsilon = 0.05f;
 };
 
+struct SsaoBlurConstants
+{
+    DirectX::XMFLOAT4X4 Proj;                  // 64 bytes
+    DirectX::XMFLOAT4 BlurWeights[3];          // 48 bytes
+    DirectX::XMFLOAT2 InvRenderTargetSize;     // 8 bytes
+    UINT BlurRadius;                           // 4 bytes
+    UINT HorizontalBlur;                       // 4 bytes
+    UINT padding1 = 0;                         // 4 bytes
+    UINT padding2 = 0;                         // 4 bytes
+};
 struct MaterialConstants
 {
     DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };

@@ -21,7 +21,9 @@ Texture2D gAlbedoSpec : register(t3);
 Texture2D gReflection : register(t4);
 Texture2D gMaterialId : register(t5);
 Texture2D gAmbient : register(t6);
-Texture2D gShadowMap[16] : register(t7);
+Texture2D gAmbientVerticalBlur : register(t7);
+Texture2D gAmbientHorizontalBlur : register(t8);
+Texture2D gShadowMap[16] : register(t9);
 
 SamplerState gsamPointWrap : register(s0);
 SamplerState gsamPointClamp : register(s1);
@@ -184,7 +186,7 @@ float4 PS(VertexOut pin) : SV_Target
 
     float4 litColor = ambient + directLight;
     
-    litColor *= gAmbient.Sample(gsamAnisotropicWrap, pin.TexC).r;
+    litColor *= gAmbientHorizontalBlur.Sample(gsamAnisotropicWrap, pin.TexC).r;
 
     // Reflections
     float3 reflected = reflect(-toEyeW, Normal);

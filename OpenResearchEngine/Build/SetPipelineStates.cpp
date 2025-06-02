@@ -127,12 +127,20 @@ void EngineApp::SetPipelineStates()
     D3D12_GRAPHICS_PIPELINE_STATE_DESC ssaoPsoDesc = opaquePsoDesc;
     ssaoPsoDesc.InputLayout = { nullptr, 0 };
     ssaoPsoDesc.pRootSignature = mSsaoRootSignature.Get();
-
     ssaoPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16_UNORM;
-
     ssaoPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["SsaoVS"]->GetBufferPointer()), mShaders["SsaoVS"]->GetBufferSize() };
     ssaoPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["SsaoPS"]->GetBufferPointer()), mShaders["SsaoPS"]->GetBufferSize() };
     ssaoPsoDesc.DepthStencilState.DepthEnable = false;
     ssaoPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     md3dDevice->CreateGraphicsPipelineState(&ssaoPsoDesc, IID_PPV_ARGS(&mPSOs["Ssao"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC edgeBlurPsoDesc = opaquePsoDesc;
+    edgeBlurPsoDesc.InputLayout = { nullptr, 0 };
+    edgeBlurPsoDesc.pRootSignature = mEdgeBlurRootSignature.Get();
+    edgeBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16_UNORM;
+    edgeBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["EdgeBlurVS"]->GetBufferPointer()), mShaders["EdgeBlurVS"]->GetBufferSize() };
+    edgeBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["EdgeBlurPS"]->GetBufferPointer()), mShaders["EdgeBlurPS"]->GetBufferSize() };
+    edgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    edgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&edgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["EdgeBlur"]));
 }

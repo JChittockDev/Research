@@ -13,6 +13,7 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     ShadowPass(dynamicLights, currentFrameResource);
     GBufferPass(currentFrameResource);
     SsaoPass(currentFrameResource);
+    SsaoBlurPass(currentFrameResource);
     LightingPass(currentFrameResource);
 }
 

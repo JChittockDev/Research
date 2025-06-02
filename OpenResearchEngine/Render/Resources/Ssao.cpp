@@ -35,12 +35,18 @@ void Ssao::GetOffsetVectors(DirectX::XMFLOAT4 offsets[14])
 void Ssao::BuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize)
 {
     mhAmbientCpuRtv = cpuRtvHandle;
+    mhAmbientVerticalBlurCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
+    mhAmbientHorizontalBlurCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
 
     mhAmbientCpuSrv = cpuSrvHandle;
+    mhAmbientVerticalBlurCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhAmbientHorizontalBlurCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
     mhRandomVectorCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
     mhDepthCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
 
     mhAmbientGpuSrv = gpuSrvHandle;
+    mhAmbientVerticalBlurGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhAmbientHorizontalBlurGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
     mhRandomVectorGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
     mhDepthGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
@@ -48,9 +54,7 @@ void Ssao::BuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilB
     cpuSrvHandle = cpuSrvHandle.Offset(1, srvDescriptorSize);
     gpuSrvHandle = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
-    mDepth = depthStencilBuffer;
-
-    RebuildDescriptors();
+    RebuildDescriptors(depthStencilBuffer);
 }
 
 void Ssao::CreateSsaoRTV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle)
@@ -99,19 +103,27 @@ void Ssao::CreateSsaoTexture(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<I
     md3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue, IID_PPV_ARGS(&texture));
 }
 
-void Ssao::RebuildDescriptors()
+void Ssao::RebuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer)
 {
     CreateSsaoRTV(DXGI_FORMAT_R16_UNORM, mAmbient, mhAmbientCpuRtv);
-
     CreateSsaoSRV(DXGI_FORMAT_R16_UNORM, mAmbient, mhAmbientCpuSrv);
+
+    CreateSsaoRTV(DXGI_FORMAT_R16_UNORM, mAmbientVerticalBlur, mhAmbientVerticalBlurCpuRtv);
+    CreateSsaoSRV(DXGI_FORMAT_R16_UNORM, mAmbientVerticalBlur, mhAmbientVerticalBlurCpuSrv);
+
+    CreateSsaoRTV(DXGI_FORMAT_R16_UNORM, mAmbientHorizontalBlur, mhAmbientHorizontalBlurCpuRtv);
+    CreateSsaoSRV(DXGI_FORMAT_R16_UNORM, mAmbientHorizontalBlur, mhAmbientHorizontalBlurCpuSrv);
+
     CreateSsaoSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mRandomVector, mhRandomVectorCpuSrv);
-    CreateSsaoSRV(DXGI_FORMAT_R24_UNORM_X8_TYPELESS, mDepth, mhDepthCpuSrv);
+    CreateSsaoSRV(DXGI_FORMAT_R24_UNORM_X8_TYPELESS, depthStencilBuffer, mhDepthCpuSrv);
 }
 
 
 void Ssao::BuildResources()
 {
     CreateSsaoTexture(DXGI_FORMAT_R16_UNORM, mAmbient);
+    CreateSsaoTexture(DXGI_FORMAT_R16_UNORM, mAmbientVerticalBlur);
+    CreateSsaoTexture(DXGI_FORMAT_R16_UNORM, mAmbientHorizontalBlur);
 }
 
 
@@ -212,3 +224,35 @@ void Ssao::BuildOffsetVectors()
 	}
 }
 
+std::vector<float> Ssao::CalcGaussWeights(float sigma)
+{
+    float twoSigma2 = 2.0f * sigma * sigma;
+
+    // Estimate the blur radius based on sigma since sigma controls the "width" of the bell curve.
+    // For example, for sigma = 3, the width of the bell curve is 
+    int blurRadius = (int)ceil(2.0f * sigma);
+
+    assert(blurRadius <= MaxBlurRadius);
+
+    std::vector<float> weights;
+    weights.resize(2 * blurRadius + 1);
+
+    float weightSum = 0.0f;
+
+    for (int i = -blurRadius; i <= blurRadius; ++i)
+    {
+        float x = (float)i;
+
+        weights[i + blurRadius] = expf(-x * x / twoSigma2);
+
+        weightSum += weights[i + blurRadius];
+    }
+
+    // Divide by the sum so all the weights add up to 1.0.
+    for (int i = 0; i < weights.size(); ++i)
+    {
+        weights[i] /= weightSum;
+    }
+
+    return weights;
+}

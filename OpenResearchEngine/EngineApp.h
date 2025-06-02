@@ -93,6 +93,7 @@ private:
     void SetLightingRootSignature();
     void SetShadowsRootSignature();
     void SetSsaoRootSignature();
+    void SetEdgeBlurRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -100,6 +101,7 @@ private:
     void GBufferPass(FrameResource* currentFrameResource);
     void LightingPass(FrameResource* currentFrameResource);
     void SsaoPass(FrameResource* currentFrameResource);
+    void SsaoBlurPass(FrameResource* currentFrameResource);
 
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
 
@@ -129,6 +131,7 @@ private:
     ComPtr<ID3D12RootSignature> mShadowsRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mLightingRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mEdgeBlurRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
 
     DynamicLights dynamicLights;

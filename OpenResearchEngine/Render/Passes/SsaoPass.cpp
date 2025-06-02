@@ -10,10 +10,7 @@ void EngineApp::SsaoPass(FrameResource* currentFrameResource)
 
     mCommandList->SetGraphicsRootConstantBufferView(0, ssaoCBAddress);
 
-    CD3DX12_GPU_DESCRIPTOR_HANDLE renderPassHandle(renderPassSrvHeap->GetGPUDescriptorHandleForHeapStart());
-    renderPassHandle.Offset(2, mRtvDescriptorSize);
-
-    mCommandList->SetGraphicsRootDescriptorTable(1, renderPassHandle);
+    mCommandList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetNormalGpuSrv());
     mCommandList->SetGraphicsRootDescriptorTable(2, mSsao->GetRandomVectorGpuSrv());
 
     float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };

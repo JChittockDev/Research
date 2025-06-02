@@ -79,6 +79,12 @@ void EngineApp::OnResize()
         mGBuffer->OnResize(mClientWidth, mClientHeight);
         mGBuffer->RebuildDescriptors();
     }
+
+    if (mSsao != nullptr)
+    {
+        mSsao->OnResize(mClientWidth, mClientHeight);
+        mSsao->RebuildDescriptors(GetDepthBuffer());
+    }
 }
 
 void EngineApp::Update(const GameTimer& gt)
