@@ -3,7 +3,7 @@ cbuffer cbSsao : register(b0)
     float4x4 gProj; //16
     float4 gBlurWeights[3]; //16
     float2 gInvRenderTargetSize; //8
-    uint gBlurRadius; //4 put this back to bool and see if the blur starts working again, look at what the constant buffer values for the other stuff is then
+    int gBlurRadius; //4 put this back to bool and see if the blur starts working again, look at what the constant buffer values for the other stuff is then
     uint gHorizontalBlur; //4
     uint gPadding1; //4
     uint gPadding2; // 4
@@ -79,7 +79,7 @@ float4 PS(VertexOut pin) : SV_Target
     float3 centerNormal = gNormalMap.SampleLevel(gsamPointClamp, pin.TexC, 0.0f).xyz;
     float centerDepth = NdcDepthToViewDepth(gDepthMap.SampleLevel(gsamDepth, pin.TexC, 0.0f).r);
 
-	for(float i = -gBlurRadius; i <=gBlurRadius; ++i)
+	for(int i = -gBlurRadius; i <=gBlurRadius; ++i)
 	{
 		if( i == 0 )
         {

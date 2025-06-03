@@ -30,10 +30,10 @@ void EngineApp::UpdateSsaoCB(const GameTimer& gt)
     ssaoVerticalBlurCB.BlurRadius = 5;
 
     // Default SSAO settings if ImGui is not modifying them
-    static float occlusionRadius = 0.05f;
-    static float occlusionFadeStart = 0.2f;
-    static float occlusionFadeEnd = 2.0f;
-    static float surfaceEpsilon = 0.065f;
+    static float occlusionRadius = 0.85f;
+    static float occlusionFadeStart = 1.2f;
+    static float occlusionFadeEnd = 4.3f;
+    static float surfaceEpsilon = 0.001f;
 
     static int blurRadius = 5;
 
@@ -44,7 +44,7 @@ void EngineApp::UpdateSsaoCB(const GameTimer& gt)
         ImGui::SliderFloat("Occlusion Radius", &occlusionRadius, 0.001f, 5.0f, "%.3f");
         ImGui::SliderFloat("Fade Start", &occlusionFadeStart, 0.0f, 10.0f, "%.3f");
         ImGui::SliderFloat("Fade End", &occlusionFadeEnd, 1.0f, 10.0f, "%.3f");
-        ImGui::SliderFloat("Surface Epsilon", &surfaceEpsilon, 0.001f, 0.5f, "%.3f");
+        ImGui::SliderFloat("Surface Epsilon", &surfaceEpsilon, 0.00001f, 0.5f, "%.5f");
         ImGui::SliderInt("Blur Radius", &blurRadius, 1, 5);
         ImGui::TreePop();
     }
