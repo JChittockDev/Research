@@ -50,6 +50,11 @@ void EngineApp::CompileShaders ()
     mShaders["SsaoVS"] = d3dUtil::CompileShader(wSsaoShaderPath, nullptr, "VS", "vs_5_1");
     mShaders["SsaoPS"] = d3dUtil::CompileShader(wSsaoShaderPath, opaqueDefines, "PS", "ps_5_1");
 
+    shaderPath = GetFullPath("Shaders/Ssgi.hlsl");
+    std::wstring wSsgiShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["SsgiVS"] = d3dUtil::CompileShader(wSsgiShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["SsgiPS"] = d3dUtil::CompileShader(wSsgiShaderPath, opaqueDefines, "PS", "ps_5_1");
+
     shaderPath = GetFullPath("Shaders/EdgeBlur.hlsl");
     std::wstring wEdgeBlurShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["EdgeBlurVS"] = d3dUtil::CompileShader(wEdgeBlurShaderPath, nullptr, "VS", "vs_5_1");
@@ -59,6 +64,11 @@ void EngineApp::CompileShaders ()
     std::wstring wGbufferShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["GBufferVS"] = d3dUtil::CompileShader(wGbufferShaderPath, nullptr, "VS", "vs_5_1");
     mShaders["GBufferPS"] = d3dUtil::CompileShader(wGbufferShaderPath, opaqueDefines, "PS", "ps_5_1");
+
+    shaderPath = GetFullPath("Shaders/Composite.hlsl");
+    std::wstring wCompositeShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["CompositeVS"] = d3dUtil::CompileShader(wCompositeShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["CompositePS"] = d3dUtil::CompileShader(wCompositeShaderPath, opaqueDefines, "PS", "ps_5_1");
 
     shaderPath = GetFullPath("Shaders/Shadows.hlsl");
     std::wstring wShadowShaderPath(shaderPath.begin(), shaderPath.end());

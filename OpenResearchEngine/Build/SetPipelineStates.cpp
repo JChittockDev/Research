@@ -143,4 +143,34 @@ void EngineApp::SetPipelineStates()
     edgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
     edgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     md3dDevice->CreateGraphicsPipelineState(&edgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["EdgeBlur"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC ssgiPsoDesc = opaquePsoDesc;
+    ssgiPsoDesc.InputLayout = { nullptr, 0 };
+    ssgiPsoDesc.pRootSignature = mSsgiRootSignature.Get();
+    ssgiPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    ssgiPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["SsgiVS"]->GetBufferPointer()), mShaders["SsgiVS"]->GetBufferSize() };
+    ssgiPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["SsgiPS"]->GetBufferPointer()), mShaders["SsgiPS"]->GetBufferSize() };
+    ssgiPsoDesc.DepthStencilState.DepthEnable = false;
+    ssgiPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&ssgiPsoDesc, IID_PPV_ARGS(&mPSOs["Ssgi"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC colorEdgeBlurPsoDesc = opaquePsoDesc;
+    colorEdgeBlurPsoDesc.InputLayout = { nullptr, 0 };
+    colorEdgeBlurPsoDesc.pRootSignature = mColorEdgeBlurRootSignature.Get();
+    colorEdgeBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    colorEdgeBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["EdgeBlurVS"]->GetBufferPointer()), mShaders["EdgeBlurVS"]->GetBufferSize() };
+    colorEdgeBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["EdgeBlurPS"]->GetBufferPointer()), mShaders["EdgeBlurPS"]->GetBufferSize() };
+    colorEdgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    colorEdgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&colorEdgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["ColorEdgeBlur"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC compositePsoDesc = opaquePsoDesc;
+    colorEdgeBlurPsoDesc.InputLayout = { nullptr, 0 };
+    colorEdgeBlurPsoDesc.pRootSignature = mCompositeRootSignature.Get();
+    colorEdgeBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    colorEdgeBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["CompositeVS"]->GetBufferPointer()), mShaders["CompositeVS"]->GetBufferSize() };
+    colorEdgeBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["CompositePS"]->GetBufferPointer()), mShaders["CompositePS"]->GetBufferSize() };
+    colorEdgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    colorEdgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&colorEdgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["Composite"]));
 }

@@ -9,7 +9,7 @@ void EngineApp::UpdateRenderAssets(const GameTimer& gt)
 	UpdateMaterialBuffer(gt);
 	UpdateShadowTransform(gt);
 	UpdateMainPassCB(gt);
-	UpdateSsaoCB(gt);
+	UpdateScreenSpaceCB(gt);
 	UpdateShadowPassCB(gt);
 	ImGui::End();
 }

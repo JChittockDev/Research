@@ -251,6 +251,33 @@ struct SsaoBlurConstants
     UINT padding1 = 0;                         // 4 bytes
     UINT padding2 = 0;                         // 4 bytes
 };
+
+struct SsgiConstants
+{
+    DirectX::XMFLOAT4X4 Proj;
+    DirectX::XMFLOAT4X4 InvProj;
+    DirectX::XMFLOAT4X4 ProjTex;
+    DirectX::XMFLOAT4   OffsetVectors[14];
+
+    // Coordinates given in view space.
+    float GiSampleRadius = 0.5f;
+    float GiFalloffScale = 1.0f;
+
+    float padding1 = 0.0f;
+    float padding2 = 0.0f;
+};
+
+struct SsgiBlurConstants
+{
+    DirectX::XMFLOAT4X4 Proj;                  // 64 bytes
+    DirectX::XMFLOAT4 BlurWeights[3];          // 48 bytes
+    DirectX::XMFLOAT2 InvRenderTargetSize;     // 8 bytes
+    int BlurRadius;                           // 4 bytes
+    UINT HorizontalBlur;                       // 4 bytes
+    UINT padding1 = 0;                         // 4 bytes
+    UINT padding2 = 0;                         // 4 bytes
+};
+
 struct MaterialConstants
 {
     DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };

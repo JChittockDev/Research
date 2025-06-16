@@ -17,9 +17,9 @@ void EngineApp::LightingPass(FrameResource* currentFrameResource)
     mCommandList->SetGraphicsRootDescriptorTable(3, renderPassSrvHeap->GetGPUDescriptorHandleForHeapStart());
     mCommandList->SetGraphicsRootDescriptorTable(4, mShadowResources->GetStartGpuSrv());
 
-    mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-    mCommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightSteelBlue, 0, nullptr);
-    mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, nullptr);
+    float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    mCommandList->ClearRenderTargetView(mLighting->GetLightingCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->OMSetRenderTargets(1, &mLighting->GetLightingCpuRtv(), true, nullptr);
 
     mCommandList->SetPipelineState(mPSOs.at("Lighting").Get());
 
@@ -27,6 +27,4 @@ void EngineApp::LightingPass(FrameResource* currentFrameResource)
     mCommandList->IASetIndexBuffer(nullptr);
     mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     mCommandList->DrawInstanced(6, 1, 0, 0);
-
-    mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 }

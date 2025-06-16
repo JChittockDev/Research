@@ -15,6 +15,9 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     SsaoPass(currentFrameResource);
     SsaoBlurPass(currentFrameResource);
     LightingPass(currentFrameResource);
+    SsgiPass(currentFrameResource);
+    SsgiBlurPass(currentFrameResource);
+    CompositePass(currentFrameResource);
 }
 
 void EngineApp::DeformationPass(FrameResource* currentFrameResource)

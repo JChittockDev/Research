@@ -1,9 +1,9 @@
 cbuffer cbSsao : register(b0)
 {
-    float4x4 gProj; //16
-    float4 gBlurWeights[3]; //16
+    float4x4 gProj; //64
+    float4 gBlurWeights[3]; //48
     float2 gInvRenderTargetSize; //8
-    int gBlurRadius; //4 put this back to bool and see if the blur starts working again, look at what the constant buffer values for the other stuff is then
+    int gBlurRadius; //4
     uint gHorizontalBlur; //4
     uint gPadding1; //4
     uint gPadding2; // 4
