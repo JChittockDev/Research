@@ -280,9 +280,10 @@ struct SsgiBlurConstants
 
 struct MaterialConstants
 {
-    DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
-    DirectX::XMFLOAT3 FresnelR0 = { 0.01f, 0.01f, 0.01f };
+    DirectX::XMFLOAT4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float Reflectance = 0.04f;
     float Roughness = 0.5f;
+    float Metalness = 0.0f;
     int Lit = 1;
 
     // Used in texture mapping.
@@ -301,9 +302,7 @@ struct MaterialConstants
     UINT SubsurfaceMapIndex = 0;
     UINT ReflectionMapIndex = 0;
 
-    UINT MaterialPad1 = 0;
-    UINT MaterialPad2 = 0;
-    UINT MaterialPad3 = 0;
+    UINT padding = 0;
 };
 
 struct Vertex
@@ -567,9 +566,10 @@ struct Material
     int NumFramesDirty = gNumFrameResources;
 
     // Material constant buffer data used for shading.
-    DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
-    DirectX::XMFLOAT3 FresnelR0 = { 0.01f, 0.01f, 0.01f };
-    float Roughness = .25f;
+    DirectX::XMFLOAT4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float Reflectance = 0.04f;
+    float Roughness = 0.5f;
+    float Metalness = 0.0;
     DirectX::XMFLOAT4X4 MatTransform = Math::Identity4x4();
     int Lit = 1;
 };
@@ -674,8 +674,9 @@ struct PBRMaterialData
     std::string subsurface_tex_path;
     std::string reflection_tex_path;
     std::vector<double> tint;
-    std::vector<double> ref_coeff;
-    double rough_coeff = 0.0f;
+    double ref_coeff = 0.04f;
+    double rough_coeff = 0.5f;
+    double metalness_coeff = 0.0f;
     int lit = 1;
 };
 

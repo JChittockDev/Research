@@ -20,9 +20,10 @@ void EngineApp::PushMaterials()
 	def->EmissiveSrvHeapIndex = mTextures["default_emissive"]->second;
 	def->SubsurfaceSrvHeapIndex = mTextures["default_subsurface"]->second;
 	def->ReflectionSrvHeapIndex = mTextures["default_reflection"]->second;
-	def->DiffuseAlbedo = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	def->FresnelR0 = DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f);
-	def->Roughness = 0.9f;
+	def->Color = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	def->Reflectance = 0.04f;
+	def->Roughness = 0.5f;
+	def->Metalness = 0.0f;
 	mMaterials["default"] = std::move(def);
 
 	for (const auto& item : mLevelMaterials.at("DemoLevel"))
@@ -166,29 +167,38 @@ void EngineApp::PushMaterials()
 
 		if (item.second.tint.size() != 0)
 		{
-			mat->DiffuseAlbedo = DirectX::XMFLOAT4(item.second.tint[0], item.second.tint[1], item.second.tint[2], item.second.tint[3]);
+			mat->Color = DirectX::XMFLOAT4(item.second.tint[0], item.second.tint[1], item.second.tint[2], item.second.tint[3]);
 		}
 		else
 		{
-			mat->DiffuseAlbedo = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+			mat->Color = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 		}
 
-		if (item.second.ref_coeff.size() != 0)
+		if (item.second.ref_coeff != 0.04)
 		{
-			mat->FresnelR0 = DirectX::XMFLOAT3(item.second.ref_coeff[0], item.second.ref_coeff[0], item.second.ref_coeff[0]);
+			mat->Reflectance = item.second.ref_coeff;
 		}
 		else
 		{
-			mat->FresnelR0 = DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f);
+			mat->Reflectance = 0.04f;
 		}
 
-		if (item.second.rough_coeff != 0.0)
+		if (item.second.rough_coeff != 0.5)
 		{
 			mat->Roughness = item.second.rough_coeff;
 		}
 		else
 		{
-			mat->Roughness = 0.9f;
+			mat->Roughness = 0.5f;
+		}
+
+		if (item.second.metalness_coeff != 0.0)
+		{
+			mat->Metalness = item.second.metalness_coeff;
+		}
+		else
+		{
+			mat->Metalness = 0.0f;
 		}
 
 		mat->Lit = item.second.lit;

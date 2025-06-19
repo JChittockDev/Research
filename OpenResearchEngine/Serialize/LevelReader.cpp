@@ -168,7 +168,7 @@ void LevelReader::SetPBRMaterialData(const json& item_data, PBRMaterialData& pbr
 
     if (item_data.contains("ReflectionCoeff"))
     {
-        std::vector<double> ref_coeff = item_data["ReflectionCoeff"];
+        double ref_coeff = item_data["ReflectionCoeff"];
         pbrMaterialStruct.ref_coeff = ref_coeff;
     }
 
@@ -176,6 +176,13 @@ void LevelReader::SetPBRMaterialData(const json& item_data, PBRMaterialData& pbr
     {
         double rough_coeff = item_data["RoughnessCoeff"];
         pbrMaterialStruct.rough_coeff = rough_coeff;
+
+    }
+
+    if (item_data.contains("MetalnessCoeff"))
+    {
+        double metalness_coeff = item_data["MetalnessCoeff"];
+        pbrMaterialStruct.metalness_coeff = metalness_coeff;
 
     }
 

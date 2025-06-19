@@ -2,20 +2,36 @@
 
 void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 {
+	ImGui::SeparatorText("Materials");
+
 	auto currMaterialBuffer = mCurrFrameResource->MaterialBuffer.get();
 	for (auto& e : mMaterials)
 	{
 		// Only update the cbuffer data if the constants have changed.  If the cbuffer
 		// data changes, it needs to be updated for each FrameResource.
 		Material* mat = e.second.get();
+
+		if (ImGui::TreeNode(mat->Name.c_str()))
+		{
+			ImGui::SliderFloat("Reflectance", &mat->Reflectance, 0.001f, 1.0f, "%.5f");
+			ImGui::SliderFloat("Roughness", &mat->Roughness, 0.001f, 1.0f, "%.5f");
+			ImGui::SliderFloat("Metalness", &mat->Metalness, 0.001f, 1.0f, "%.5f");
+
+			mat->NumFramesDirty = gNumFrameResources;
+
+			ImGui::TreePop();
+		}
+
 		if (mat->NumFramesDirty > 0)
 		{
 			DirectX::XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
 
 			MaterialConstants matData;
-			matData.DiffuseAlbedo = mat->DiffuseAlbedo;
-			matData.FresnelR0 = mat->FresnelR0;
+			matData.Color = mat->Color;
+
+			matData.Reflectance = mat->Reflectance;
 			matData.Roughness = mat->Roughness;
+			matData.Metalness = mat->Metalness;
 			matData.Lit = mat->Lit;
 			XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
 			matData.DiffuseMapIndex = mat->DiffuseSrvHeapIndex;

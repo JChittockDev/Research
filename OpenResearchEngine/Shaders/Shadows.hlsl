@@ -28,22 +28,25 @@ struct Light
 
 struct MaterialData
 {
-    float4 DiffuseAlbedo;
-    float3 FresnelR0;
+    float4 Color;
+    float Reflectance;
     float Roughness;
+    float Metalness;
+    int Lit;
     float4x4 MatTransform;
     uint DiffuseMapIndex;
     uint NormalMapIndex;
     uint RoughnessMapIndex;
     uint MetalnessMapIndex;
     uint SpecularMapIndex;
-    uint HeightMapIndex;
+    uint HeightsMapIndex;
     uint OpacityMapIndex;
     uint OcclusionMapIndex;
     uint RefractionMapIndex;
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
     uint ReflectionMapIndex;
+    uint Padding0; // to align total size to 16 bytes
 };
 
 Texture2D gTextureMaps[48] : register(t0);
@@ -128,7 +131,7 @@ void PS(VertexOut pin)
 {
 	// Fetch the material data.
 	MaterialData matData = gMaterialData[gMaterialIndex];
-	float4 diffuseAlbedo = matData.DiffuseAlbedo;
+    float4 diffuseAlbedo = matData.Color;
     uint diffuseMapIndex = matData.DiffuseMapIndex;
 	
 	// Dynamically look up the texture in the array.

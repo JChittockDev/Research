@@ -28,9 +28,10 @@ struct Light
 
 struct MaterialData
 {
-    float4 DiffuseAlbedo;
-    float3 FresnelR0;
+    float4 Color;
+    float Reflectance;
     float Roughness;
+    float Metalness;
     int Lit;
     float4x4 MatTransform;
     uint DiffuseMapIndex;
@@ -45,9 +46,7 @@ struct MaterialData
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
     uint ReflectionMapIndex;
-    float Pad1;
-    float Pad2;
-    float Pad3;
+    uint Padding0; // to align total size to 16 bytes
 };
 
 float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW)
@@ -153,7 +152,7 @@ PixelOut PS(VertexOut pin)
     PixelOut pout;
 	// Fetch the material data.
     MaterialData matData = gMaterialData[gMaterialIndex];
-    float4 diffuseAlbedo = matData.DiffuseAlbedo;
+    float4 diffuseAlbedo = matData.Color;
 	
     // Dynamically look up the texture in the array.
     diffuseAlbedo *= gTextureMaps[matData.DiffuseMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);

@@ -25,15 +25,6 @@ Texture2D gAmbientVerticalBlur : register(t7);
 Texture2D gAmbientHorizontalBlur : register(t8);
 Texture2D gShadowMap[16] : register(t9);
 
-SamplerState gsamPointWrap : register(s0);
-SamplerState gsamPointClamp : register(s1);
-SamplerState gsamLinearWrap : register(s2);
-SamplerState gsamLinearClamp : register(s3);
-SamplerState gsamAnisotropicWrap : register(s4);
-SamplerState gsamAnisotropicClamp : register(s5);
-SamplerComparisonState gsamShadow : register(s6);
-SamplerState gsamDepth : register(s7);
-
 cbuffer cbPerObject : register(b0)
 {
     float4x4 gWorld;
@@ -79,9 +70,10 @@ static const float2 gTexCoords[6] =
 
 struct MaterialData
 {
-    float4 DiffuseAlbedo;
-    float3 FresnelR0;
+    float4 Color;
+    float Reflectance;
     float Roughness;
+    float Metalness;
     int Lit;
     float4x4 MatTransform;
     uint DiffuseMapIndex;
@@ -96,9 +88,7 @@ struct MaterialData
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
     uint ReflectionMapIndex;
-    float Pad1;
-    float Pad2;
-    float Pad3;
+    uint Padding0; // to align total size to 16 bytes
 };
 
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
@@ -163,8 +153,6 @@ float4 PS(VertexOut pin) : SV_Target
     uint MatId = gMaterialId.Sample(gsamAnisotropicWrap, pin.TexC).r;
     
     MaterialData matData = gMaterialData[MatId];
-    float3 fresnelR0 = matData.FresnelR0;
-    float roughness = matData.Roughness;
     
     float3 toEyeW = normalize(gEyePosW - FragPos);
     
@@ -177,22 +165,18 @@ float4 PS(VertexOut pin) : SV_Target
     {
         shadowFactor[i] = CalcShadowFactor(mul(float4(FragPos, 1.0), gShadowTransform[i]), gShadowMap[i]);
     }
-
+    
+    float3 R = reflect(-toEyeW, Normal); // View-reflected vector (world space)
+    float3 reflectedColor = gReflection.Sample(gsamAnisotropicWrap, R.xy);
+    
     // Material for lighting calculation
-    const float shininess = (1.0f - roughness) * Specular;
-    Material mat = { float4(Albedo, 1.0f), fresnelR0, shininess };
+    LightingParameters mat = { Albedo, matData.Reflectance * Specular, matData.Roughness, matData.Metalness, reflectedColor };
 
     float4 directLight = ComputeLighting(gLights, mat, FragPos, Normal, toEyeW, shadowFactor);
 
     float4 litColor = ambient + directLight;
     
     litColor *= gAmbientHorizontalBlur.Sample(gsamAnisotropicWrap, pin.TexC).r;
-
-    // Reflections
-    float3 reflected = reflect(-toEyeW, Normal);
-    float4 reflectionColor = gReflection.Sample(gsamAnisotropicWrap, pin.TexC);
-    float3 fresnelFactor = SchlickFresnel(fresnelR0, Normal, reflected);
-    litColor.rgb += shininess * fresnelFactor * reflectionColor.rgb;
 
     // Alpha = 1 for deferred (unless you handle transparency separately)
     litColor.a = 1.0f;
