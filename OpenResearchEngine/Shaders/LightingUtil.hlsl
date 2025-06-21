@@ -176,7 +176,7 @@ float3 BRDF_Lighting(
     // Lambertian diffuse reflection
     float3 diffuse = kD * albedo / PI;
     
-    float3 fresnel = FresnelSchlick(max(dot(N, V), 0.0), F0);
+    float3 fresnel = FresnelSchlick(max(dot(N, H), 0.0), F0);
 
     // Chrome ball: mostly reflect, especially at low roughness
     float3 refMapSpecular = reflectedColor * fresnel;
