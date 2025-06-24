@@ -13,9 +13,10 @@ void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 
 		if (ImGui::TreeNode(mat->Name.c_str()))
 		{
-			ImGui::SliderFloat("Reflectance", &mat->Reflectance, 0.001f, 1.0f, "%.5f");
+			ImGui::SliderFloat("Reflectance", &mat->Reflectance, 0.001f, 2.0f, "%.5f");
 			ImGui::SliderFloat("Roughness", &mat->Roughness, 0.001f, 1.0f, "%.5f");
 			ImGui::SliderFloat("Metalness", &mat->Metalness, 0.001f, 1.0f, "%.5f");
+			ImGui::SliderFloat("Bump", &mat->Bump, 0.001f, 1.0f, "%.5f");
 
 			mat->NumFramesDirty = gNumFrameResources;
 
@@ -32,6 +33,7 @@ void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 			matData.Reflectance = mat->Reflectance;
 			matData.Roughness = mat->Roughness;
 			matData.Metalness = mat->Metalness;
+			matData.Bump = mat->Bump;
 			matData.Lit = mat->Lit;
 			XMStoreFloat4x4(&matData.MatTransform, XMMatrixTranspose(matTransform));
 			matData.DiffuseMapIndex = mat->DiffuseSrvHeapIndex;

@@ -74,6 +74,7 @@ struct MaterialData
     float Reflectance;
     float Roughness;
     float Metalness;
+    float Bump;
     int Lit;
     float4x4 MatTransform;
     uint DiffuseMapIndex;
@@ -88,7 +89,6 @@ struct MaterialData
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
     uint ReflectionMapIndex;
-    uint Padding0; // to align total size to 16 bytes
 };
 
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);

@@ -281,9 +281,10 @@ struct SsgiBlurConstants
 struct MaterialConstants
 {
     DirectX::XMFLOAT4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    float Reflectance = 0.04f;
+    float Reflectance = 1.0f;
     float Roughness = 0.5f;
     float Metalness = 0.0f;
+    float Bump = 1.0f;
     int Lit = 1;
 
     // Used in texture mapping.
@@ -301,8 +302,6 @@ struct MaterialConstants
     UINT EmissiveMapIndex = 0;
     UINT SubsurfaceMapIndex = 0;
     UINT ReflectionMapIndex = 0;
-
-    UINT padding = 0;
 };
 
 struct Vertex
@@ -567,9 +566,10 @@ struct Material
 
     // Material constant buffer data used for shading.
     DirectX::XMFLOAT4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    float Reflectance = 0.04f;
+    float Reflectance = 1.0f;
     float Roughness = 0.5f;
     float Metalness = 0.0;
+    float Bump = 1.0;
     DirectX::XMFLOAT4X4 MatTransform = Math::Identity4x4();
     int Lit = 1;
 };
@@ -674,9 +674,10 @@ struct PBRMaterialData
     std::string subsurface_tex_path;
     std::string reflection_tex_path;
     std::vector<double> tint;
-    double ref_coeff = 0.04f;
+    double ref_coeff = 1.0f;
     double rough_coeff = 0.5f;
     double metalness_coeff = 0.0f;
+    double bump_coeff = 1.0f;
     int lit = 1;
 };
 

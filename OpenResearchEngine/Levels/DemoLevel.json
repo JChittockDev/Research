@@ -3,16 +3,24 @@
   "Assets":
   {
     "Materials": {
-      "Skin": {},
+      "Skin": {
+        "Diffuse": "Textures/face_albedo.dds",
+        "Normal": "Textures/face_normal.dds",
+        "Roughness": "Textures/face_roughness.dds",
+        "Reflection": "Textures/face_reflection.dds",
+        "ReflectionCoeff": 1.0,
+        "RoughnessCoeff": 0.55,
+        "BumpCoeff": 0.75
+      },
       "Bricks": {
         "Diffuse": "Textures/bricks2.dds",
         "Normal": "Textures/bricks2_nmap.dds"
       },
       "Mirror": {
-        "Tint": [ 0.0, 0.0, 0.0, 1.0 ],
-        "ReflectionCoeff": 0.04,
-        "RoughnessCoeff": 0.5,
-        "MetalnessCoeff": 0.0
+        "Tint": [ 0.5, 0.5, 0.5, 1.0 ],
+        "ReflectionCoeff": 1.0,
+        "RoughnessCoeff": 0.1,
+        "MetalnessCoeff": 0.8
       },
       "Sky": {
         "Diffuse": "Textures/desertcube1024.dds",
@@ -101,9 +109,9 @@
       },
       "Light3": {
         "Type": "Spot",
-        "Position": [ -5.0, 13.0, 5.0 ],
+        "Position": [ -3.0, 7.0, 1.0 ],
         "Direction": [ 0.5, -0.5, -0.707 ],
-        "Strength": [ 1.65, 1.65, 1.65 ],
+        "Strength": [ 5.5, 5.5, 5.5 ],
         "FalloffStart": 1.0,
         "FalloffEnd": 100.0,
         "InnerConeAngle": 0.8,

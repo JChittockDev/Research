@@ -32,6 +32,7 @@ struct MaterialData
     float Reflectance;
     float Roughness;
     float Metalness;
+    float Bump;
     int Lit;
     float4x4 MatTransform;
     uint DiffuseMapIndex;
@@ -46,17 +47,27 @@ struct MaterialData
     uint EmissiveMapIndex;
     uint SubsurfaceMapIndex;
     uint ReflectionMapIndex;
-    uint Padding0; // to align total size to 16 bytes
 };
 
-float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW)
+float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW, float bump)
 {
-    float3 normalT = 2.0f * normalMapSample - 1.0f;
-    float3 N = unitNormalW;
+    // BC5: .r = x, .g = y, reconstruct z
+    float2 encXY = 2.0f * normalMapSample.rg - 1.0f;
+    float z = sqrt(saturate(1.0f - dot(encXY, encXY)));
+    float3 normalT = float3(encXY, z);
+
+    // Create orthonormal TBN matrix
+    float3 N = normalize(unitNormalW);
     float3 T = normalize(tangentW - dot(tangentW, N) * N);
     float3 B = cross(N, T);
     float3x3 TBN = float3x3(T, B, N);
+
+    // Transform to world space
     float3 bumpedNormalW = mul(normalT, TBN);
+
+    // Blend between original normal and bumped normal using bump intensity
+    bumpedNormalW = normalize(lerp(N, bumpedNormalW, bump));
+
     return bumpedNormalW;
 }
 
@@ -159,7 +170,7 @@ PixelOut PS(VertexOut pin)
     float specular = gTextureMaps[matData.SpecularMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord).x;
     
     float4 normalMapSample = gTextureMaps[matData.NormalMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
-    float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample.rgb, pin.Normal, pin.Tangent);
+    float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample.rgb, pin.Normal, pin.Tangent, matData.Bump);
     
     float4 reflection = gTextureMaps[matData.ReflectionMapIndex].Sample(gsamAnisotropicWrap, pin.TexCoord);
 

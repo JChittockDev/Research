@@ -162,9 +162,10 @@ float3 BRDF_Lighting(
 
     // Dot product of normal and light
     float NdotL = max(dot(N, L), 0.0);
-
+    
     // Base reflectivity at normal incidence
-    float3 F0 = float3(reflectance, reflectance, reflectance); // Dielectrics reflect ~4%
+    float cRef = saturate(reflectance * 0.04);
+    float3 F0 = float3(cRef, cRef, cRef); // Dielectrics reflect ~4%
     F0 = lerp(F0, albedo, metalness); // Metals use albedo as F0
 
     // Compute specular term using Cook-Torrance BRDF

@@ -186,6 +186,13 @@ void LevelReader::SetPBRMaterialData(const json& item_data, PBRMaterialData& pbr
 
     }
 
+    if (item_data.contains("BumpCoeff"))
+    {
+        double bump_coeff = item_data["BumpCoeff"];
+        pbrMaterialStruct.bump_coeff = bump_coeff;
+
+    }
+
     if (item_data.contains("Lit"))
     {
         int lit = item_data["Lit"];
