@@ -134,6 +134,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Passes\SsaoPass.cpp" />
     <ClCompile Include="Render\Passes\SsgiBlurPass.cpp" />
     <ClCompile Include="Render\Passes\SsgiPass.cpp" />
+    <ClCompile Include="Render\Passes\SssPass.cpp" />
     <ClCompile Include="Render\Resources\Composite.cpp" />
     <ClCompile Include="Render\Resources\GBuffer.cpp" />
     <ClCompile Include="Render\Resources\Lighting.cpp" />
@@ -146,11 +147,13 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Passes\ShadowPass.cpp" />
     <ClCompile Include="Render\Resources\Ssao.cpp" />
     <ClCompile Include="Render\Resources\Ssgi.cpp" />
+    <ClCompile Include="Render\Resources\SSS.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
     <ClCompile Include="Update\UpdateAnimConstants.cpp" />
     <ClCompile Include="Update\UpdateSSCB.cpp" />
+    <ClCompile Include="Update\UpdateSSSCB.cpp" />
     <ClCompile Include="Utilities\MLResource.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
@@ -195,6 +198,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Render\Resources\Ssao.h" />
     <ClInclude Include="Render\Resources\Ssgi.h" />
+    <ClInclude Include="Render\Resources\SSS.h" />
     <ClInclude Include="Render\Resources\TransformNode.h" />
     <ClInclude Include="Serialize\LevelReader.h" />
     <ClInclude Include="Utilities\MLResource.h" />

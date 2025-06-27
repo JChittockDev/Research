@@ -173,4 +173,14 @@ void EngineApp::SetPipelineStates()
     colorEdgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
     colorEdgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     md3dDevice->CreateGraphicsPipelineState(&colorEdgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["Composite"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC sssPsoDesc = opaquePsoDesc;
+    sssPsoDesc.InputLayout = { nullptr, 0 };
+    sssPsoDesc.pRootSignature = mSssRootSignature.Get();
+    sssPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sssPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["SssVS"]->GetBufferPointer()), mShaders["SssVS"]->GetBufferSize() };
+    sssPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["SssPS"]->GetBufferPointer()), mShaders["SssPS"]->GetBufferSize() };
+    sssPsoDesc.DepthStencilState.DepthEnable = false;
+    sssPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&sssPsoDesc, IID_PPV_ARGS(&mPSOs["Sss"]));
 }

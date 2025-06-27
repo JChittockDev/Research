@@ -278,6 +278,24 @@ struct SsgiBlurConstants
     UINT padding2 = 0;                         // 4 bytes
 };
 
+struct SssConstants
+{
+    DirectX::XMFLOAT4X4 Proj;
+    DirectX::XMFLOAT4X4 InvProj;
+    DirectX::XMFLOAT4X4 ViewProj;
+    DirectX::XMFLOAT4X4 ProjTex;
+    DirectX::XMFLOAT3 EyePosW;
+    float Anisotropy;
+    float Thickness;
+    DirectX::XMFLOAT3 TransmissionColor;
+    DirectX::XMFLOAT3 ScatteringProfile;
+    UINT SampleCount;
+    float Scale;
+    float padding1 = 0.0f;
+    float padding2 = 0.0f;
+    float padding3 = 0.0f;
+};
+
 struct MaterialConstants
 {
     DirectX::XMFLOAT4 Color = { 1.0f, 1.0f, 1.0f, 1.0f };

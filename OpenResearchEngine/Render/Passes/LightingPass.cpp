@@ -14,7 +14,7 @@ void EngineApp::LightingPass(FrameResource* currentFrameResource)
     mCommandList->SetGraphicsRootConstantBufferView(0, objectCBAddress);
     mCommandList->SetGraphicsRootConstantBufferView(1, passCBAddress);
     mCommandList->SetGraphicsRootShaderResourceView(2, matBAddress);
-    mCommandList->SetGraphicsRootDescriptorTable(3, renderPassSrvHeap->GetGPUDescriptorHandleForHeapStart());
+    mCommandList->SetGraphicsRootDescriptorTable(3, mGBuffer->GetPositionGpuSrv());
     mCommandList->SetGraphicsRootDescriptorTable(4, mShadowResources->GetStartGpuSrv());
 
     float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };

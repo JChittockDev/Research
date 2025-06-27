@@ -6,6 +6,7 @@ FrameResource::FrameResource(ID3D12Device* device, UINT passCount, UINT objectCo
     PassCB = std::make_unique<UploadBuffer<PassConstants>>(device, passCount, true);
     SsaoCB = std::make_unique<UploadBuffer<SsaoConstants>>(device, 1, true);
     SsgiCB = std::make_unique<UploadBuffer<SsgiConstants>>(device, 1, true);
+    SssCB = std::make_unique<UploadBuffer<SssConstants>>(device, 1, true);
     SsaoVerticalBlurCB = std::make_unique<UploadBuffer<SsaoBlurConstants>>(device, 1, true);
     SsaoHorizontalBlurCB = std::make_unique<UploadBuffer<SsaoBlurConstants>>(device, 1, true);
     SsgiVerticalBlurCB = std::make_unique<UploadBuffer<SsgiBlurConstants>>(device, 1, true);

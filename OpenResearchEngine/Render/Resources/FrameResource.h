@@ -25,6 +25,7 @@ public:
     std::unique_ptr<UploadBuffer<SkinnedConstants>> SkinnedCB = nullptr;
     std::unique_ptr<UploadBuffer<SsaoConstants>> SsaoCB = nullptr;
     std::unique_ptr<UploadBuffer<SsgiConstants>> SsgiCB = nullptr;
+    std::unique_ptr<UploadBuffer<SssConstants>> SssCB = nullptr;
     std::unique_ptr<UploadBuffer<SsaoBlurConstants>> SsaoVerticalBlurCB = nullptr;
     std::unique_ptr<UploadBuffer<SsaoBlurConstants>> SsaoHorizontalBlurCB = nullptr;
     std::unique_ptr<UploadBuffer<SsgiBlurConstants>> SsgiVerticalBlurCB = nullptr;

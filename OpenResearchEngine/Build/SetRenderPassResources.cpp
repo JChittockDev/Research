@@ -21,6 +21,9 @@ void EngineApp::SetRenderPassResources()
     mSsgi = std::make_unique<Ssgi>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
     mSsgi->BuildDescriptors(GetDepthBuffer(), cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
+    mSss = std::make_unique<SSS>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mSss->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+
     mComposite = std::make_unique<Composite>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
     mComposite->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 

@@ -9,6 +9,7 @@
 #include "Render/Resources/Mesh.h"
 #include "Render/Resources/ShadowMap.h"
 #include "Render/Resources/Ssao.h"
+#include "Render/Resources/SSS.h"
 #include "Render/Resources/Composite.h"
 #include "Render/Resources/Lighting.h"
 #include "Render/Resources/Ssgi.h"
@@ -51,6 +52,7 @@ private:
     void UpdateLights(const GameTimer& gt);
     void UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms);
     void UpdateScreenSpaceCB(const GameTimer& gt);
+    void UpdateSssCB(const GameTimer& gt);
 
     void PushLights();
     void PushMesh();
@@ -91,6 +93,7 @@ private:
     void SetConstraintSolveRootSignature();
     void SetMeshTransferRootSignature();
     void SetForceRootSignature();
+    void SetSssRootSignature();
     void SetTensionRootSignature();
     void SetGBufferRootSignature();
     void SetLightingRootSignature();
@@ -111,6 +114,7 @@ private:
     void SsaoBlurPass(FrameResource* currentFrameResource);
     void SsgiPass(FrameResource* currentFrameResource);
     void SsgiBlurPass(FrameResource* currentFrameResource);
+    void SssPass(FrameResource* currentFrameResource);
 
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
 
@@ -141,6 +145,7 @@ private:
     ComPtr<ID3D12RootSignature> mLightingRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsgiRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mSssRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mEdgeBlurRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mColorEdgeBlurRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mCompositeRootSignature = nullptr;
@@ -190,6 +195,7 @@ private:
     std::unique_ptr<Lighting> mLighting;
     std::unique_ptr<Ssao> mSsao;
     std::unique_ptr<Ssgi> mSsgi;
+    std::unique_ptr<SSS> mSss;
     std::unique_ptr<Composite> mComposite;
     std::unique_ptr<RenderTextures> mRenderTextures;
     std::unique_ptr<ShadowResources> mShadowResources;
