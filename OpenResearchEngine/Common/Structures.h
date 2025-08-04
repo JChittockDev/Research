@@ -174,7 +174,7 @@ struct Light
     DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };
     float InnerConeAngle = 5.0f;
     float OuterConeAngle = 250.0f;
-    float Pad1 = 0.0f;
+    int Type = 0;
     float Pad2 = 0.0f;
     float Pad3 = 0.0f;
 };
@@ -225,6 +225,25 @@ struct PassConstants
     // indices [NUM_DIR_LIGHTS+NUM_POINT_LIGHTS, NUM_DIR_LIGHTS+NUM_POINT_LIGHT+NUM_SPOT_LIGHTS)
     // are spot lights for a maximum of MaxLights per object.
     Light Lights[MaxLights];
+};
+
+struct RadianceConstants
+{
+    DirectX::XMFLOAT4X4 View = Math::Identity4x4();           // 64 bytes
+    DirectX::XMFLOAT4X4 InvView = Math::Identity4x4();        // 64 bytes
+    DirectX::XMFLOAT4X4 Proj = Math::Identity4x4();           // 64 bytes
+    DirectX::XMFLOAT4X4 InvProj = Math::Identity4x4();        // 64 bytes
+    DirectX::XMFLOAT4X4 LightTransform;                       // 64 bytes
+
+    DirectX::XMFLOAT3 EyePosW = { 0.0f, 0.0f, 0.0f };         // 12 bytes
+    float Padding1 = 0.0f;                                    // 4 bytes (to align next struct)
+
+    Light Light;                                              // Ensure `Light` is 16-byte aligned internally
+
+    UINT LightType = 0;                                       // 4 bytes
+    float Padding2 = 0.0f;
+    float Padding3 = 0.0f;
+    float Padding4 = 0.0f;
 };
 
 struct SsaoConstants
@@ -285,7 +304,7 @@ struct SssConstants
     DirectX::XMFLOAT4X4 ViewProj;
     DirectX::XMFLOAT4X4 ProjTex;
     DirectX::XMFLOAT3 EyePosW;
-    float Anisotropy;
+    float Blend;
     float Thickness;
     DirectX::XMFLOAT3 TransmissionColor;
     DirectX::XMFLOAT3 ScatteringProfile;
@@ -294,6 +313,7 @@ struct SssConstants
     float padding1 = 0.0f;
     float padding2 = 0.0f;
     float padding3 = 0.0f;
+    Light Lights[MaxLights];
 };
 
 struct MaterialConstants

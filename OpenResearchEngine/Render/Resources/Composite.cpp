@@ -27,9 +27,9 @@ void Composite::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD
     mhCompositeCpuSrv = cpuSrvHandle;
     mhCompositeGpuSrv = gpuSrvHandle;
 
-    cpuRtvHandle = cpuRtvHandle.Offset(1, rtvDescriptorSize);
-    cpuSrvHandle = cpuSrvHandle.Offset(1, srvDescriptorSize);
-    gpuSrvHandle = gpuSrvHandle.Offset(1, srvDescriptorSize);
+    cpuRtvHandle.Offset(1, rtvDescriptorSize);
+    cpuSrvHandle.Offset(1, srvDescriptorSize);
+    gpuSrvHandle.Offset(1, srvDescriptorSize);
 
     RebuildDescriptors();
 }

@@ -26,7 +26,7 @@ struct Light
     float3 Position; // point light only
     float InnerConeAngle; // spot light only
     float OuterConeAngle; // spot light only
-    int Type;
+    uint LightType;
     float Pad2;
     float Pad3;
 };
@@ -146,61 +146,56 @@ float3 CookTorranceBRDF(float3 N, float3 V, float3 L, float roughness, float3 F0
 
 // Main BRDF lighting function: combines diffuse + specular
 // Simple energy-conserving diffuse reflection (only for non-metals).
-float3 BRDF_Lighting(
+void BRDF_Lighting(
     float3 N, // Surface normal
     float3 V, // View direction
     float3 L, // Light direction
     float3 albedo, // Base color of the material
-    float roughness, // Surface microfacet roughness (0=smooth, 1=rough),
+    float roughness, // Surface microfacet roughness (0=smooth, 1=rough)
     float reflectance,
-    float metalness, // Metalness (0 = dielectric, 1 = metal),
-    float3 reflectedColor
+    float metalness, // Metalness (0 = dielectric, 1 = metal)
+    float3 reflectedColor,
+    out float3 diffuseReflectance, // without albedo
+    out float3 specularReflectance
 )
 {
-    // Halfway vector between light and view
     float3 H = normalize(V + L);
-
-    // Dot product of normal and light
     float NdotL = max(dot(N, L), 0.0);
     
-    // Base reflectivity at normal incidence
     float cRef = saturate(reflectance * 0.04);
-    float3 F0 = float3(cRef, cRef, cRef); // Dielectrics reflect ~4%
-    F0 = lerp(F0, albedo, metalness); // Metals use albedo as F0
+    float3 F0 = float3(cRef, cRef, cRef);
+    F0 = lerp(F0, albedo, metalness);
 
-    // Compute specular term using Cook-Torrance BRDF
     float3 specular = CookTorranceBRDF(N, V, L, roughness, F0);
-
-    // Diffuse coefficient: only for non-metals (metals have no diffuse)
     float3 kD = (1.0 - F0) * (1.0 - metalness);
 
-    // Lambertian diffuse reflection
-    float3 diffuse = kD * albedo / PI;
-    
-    float3 fresnel = FresnelSchlick(max(dot(N, H), 0.0), F0);
+    diffuseReflectance = kD * (albedo / PI) * NdotL;
 
-    // Chrome ball: mostly reflect, especially at low roughness
+    float3 fresnel = FresnelSchlick(max(dot(N, H), 0.0), F0);
     float3 refMapSpecular = reflectedColor * fresnel;
 
-    // Final color
-    return (diffuse + specular) * NdotL + refMapSpecular * metalness;
+    specularReflectance = (specular * NdotL) + (refMapSpecular * metalness);
 }
 
 //---------------------------------------------------------------------------------------
 // Evaluates the lighting equation for directional lights.
 //---------------------------------------------------------------------------------------
-float3 ComputeDirectionalLight(Light L, LightingParameters mat, float3 normal, float3 toEye)
+void ComputeDirectionalLight(Light L, LightingParameters mat, float3 normal, float3 toEye, out float3 diffuseReflectance, out float3 specularReflectance)
 {
     // The light vector aims opposite the direction the light rays travel.
     float3 lightVec = -L.Direction;
+    
+    BRDF_Lighting(normal, toEye, lightVec, mat.Color, mat.Roughness, mat.Reflectance, mat.Metalness, mat.ReflectedColor, diffuseReflectance, specularReflectance);
+    
+    diffuseReflectance *= L.Strength;
+    specularReflectance *= L.Strength;
 
-    return BRDF_Lighting(normal, toEye, lightVec, mat.Color, mat.Roughness, mat.Reflectance, mat.Metalness, mat.ReflectedColor) * L.Strength;
 }
 
 //---------------------------------------------------------------------------------------
-// Evaluates the lighting equation for spot lights.
+// Evaluates the lighting equation for point lights.
 //---------------------------------------------------------------------------------------
-float3 ComputeSpotLight(Light L, LightingParameters mat, float3 pos, float3 normal, float3 toEye)
+void ComputePointLight(Light L, LightingParameters mat, float3 pos, float3 normal, float3 toEye, out float3 diffuseReflectance, out float3 specularReflectance)
 {
     // The vector from the surface to the light.
     float3 lightVec = L.Position - pos;
@@ -210,7 +205,34 @@ float3 ComputeSpotLight(Light L, LightingParameters mat, float3 pos, float3 norm
 
     // Range test.
     if(d > L.FalloffEnd)
-        return 0.0f;
+        return;
+
+    // Normalize the light vector.
+    lightVec /= d;
+
+    // Attenuate light by distance.
+    float att = CalcAttenuation(d, L.FalloffStart, L.FalloffEnd);
+    
+    BRDF_Lighting(normal, toEye, lightVec, mat.Color, mat.Roughness, mat.Reflectance, mat.Metalness, mat.ReflectedColor, diffuseReflectance, specularReflectance);
+    
+    diffuseReflectance *= L.Strength * att;
+    specularReflectance *= L.Strength * att;
+}
+
+//---------------------------------------------------------------------------------------
+// Evaluates the lighting equation for spot lights.
+//---------------------------------------------------------------------------------------
+void ComputeSpotLight(Light L, LightingParameters mat, float3 pos, float3 normal, float3 toEye, out float3 diffuseReflectance, out float3 specularReflectance)
+{
+    // The vector from the surface to the light.
+    float3 lightVec = L.Position - pos;
+
+    // The distance from surface to light.
+    float d = length(lightVec);
+
+    // Range test.
+    if(d > L.FalloffEnd)
+        return;
 
     // Normalize the light vector.
     lightVec /= d;
@@ -227,43 +249,27 @@ float3 ComputeSpotLight(Light L, LightingParameters mat, float3 pos, float3 norm
     float epsilon = abs(L.InnerConeAngle - L.OuterConeAngle);
     float coneAttenuation = clamp((spotAngle - L.OuterConeAngle) / epsilon, 0.0f, 1.0f);
     
-    return BRDF_Lighting(normal, toEye, lightVec, mat.Color, mat.Roughness, mat.Reflectance, mat.Metalness, mat.ReflectedColor) * L.Strength * att * coneAttenuation;
-}
-
-float4 ComputeLighting(Light gLights[MaxLights], LightingParameters mat, float3 pos, float3 normal, float3 toEye, float shadowFactor[MaxLights])
-{
-    float3 result = 0.0f;
-
-#if (NUM_LIGHTS > 0)
-    int i = 0;
+    BRDF_Lighting(normal, toEye, lightVec, mat.Color, mat.Roughness, mat.Reflectance, mat.Metalness, mat.ReflectedColor, diffuseReflectance, specularReflectance);
     
-    for(i = 0; i < NUM_LIGHTS; ++i)
-    {
-        if (gLights[i].Type == 0)
-        {
-            result += shadowFactor[i] * ComputeDirectionalLight(gLights[i], mat, normal, toEye);
-        }
-        else if (gLights[i].Type == 1)
-        {
-            result += shadowFactor[i] * ComputeSpotLight(gLights[i], mat, pos, normal, toEye);
-        }
-    }
-#endif 
-
-    return float4(result, 0.0f);
+    diffuseReflectance *= L.Strength * att * coneAttenuation;
+    specularReflectance *= L.Strength * att * coneAttenuation;
 }
 
-float3 GetLightVector(Light gLight, float3 pos)
+void ComputeLighting(Light gLight, LightingParameters mat, float3 pos, float3 normal, float3 toEye, out float3 diffuseReflectance, out float3 specularReflectance)
 {
-    if (gLight.Type == 0)
-    {
-        return normalize(-gLight.Direction);
-
-    }
-    else if (gLight.Type == 1)
-    {
-        return normalize(gLight.Position - pos);
-    }
     
-    return float3(0.0, 0.0, 0.0);
+    if (gLight.LightType == 0)
+    {
+        ComputeDirectionalLight(gLight, mat, normal, toEye, diffuseReflectance, specularReflectance);
+    }
+    else if (gLight.LightType == 1)
+    {
+        ComputePointLight(gLight, mat, pos, normal, toEye, diffuseReflectance, specularReflectance);
+    }
+    else
+    {
+        ComputeSpotLight(gLight, mat, pos, normal, toEye, diffuseReflectance, specularReflectance);
+    }
+
 }
+

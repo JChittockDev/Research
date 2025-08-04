@@ -112,8 +112,21 @@ void EngineApp::SetPipelineStates()
     gBufferPsoDesc.RTVFormats[3] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gAlbedoSpec
     gBufferPsoDesc.RTVFormats[4] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gReflection
     gBufferPsoDesc.RTVFormats[5] = DXGI_FORMAT_R32G32B32A32_FLOAT;     // gAlbedoSpec
-    gBufferPsoDesc.NumRenderTargets = 6;
+    gBufferPsoDesc.RTVFormats[6] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gTangent
+    gBufferPsoDesc.NumRenderTargets = 7;
     md3dDevice->CreateGraphicsPipelineState(&gBufferPsoDesc, IID_PPV_ARGS(&mPSOs["GBuffer"]));
+
+    // **5️⃣ Configure the Graphics Pipeline State**
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC gRadiancePsoDesc = opaquePsoDesc;
+    gRadiancePsoDesc.pRootSignature = mRadianceRootSignature.Get();
+    gRadiancePsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["RadianceVS"]->GetBufferPointer()), mShaders["RadianceVS"]->GetBufferSize() };
+    gRadiancePsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["RadiancePS"]->GetBufferPointer()), mShaders["RadiancePS"]->GetBufferSize() };
+    gRadiancePsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gDiffuseReflectance
+    gRadiancePsoDesc.RTVFormats[1] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gSpecularReflectance
+    gRadiancePsoDesc.DepthStencilState.DepthEnable = false;
+    gRadiancePsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    gRadiancePsoDesc.NumRenderTargets = 2;
+    md3dDevice->CreateGraphicsPipelineState(&gRadiancePsoDesc, IID_PPV_ARGS(&mPSOs["Radiance"]));
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC lightingPsoDesc = opaquePsoDesc;
     lightingPsoDesc.InputLayout = { nullptr, 0 };

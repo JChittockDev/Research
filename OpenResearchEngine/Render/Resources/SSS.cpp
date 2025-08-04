@@ -25,7 +25,7 @@ UINT SSS::SSSHeight()const
     return mRenderTargetHeight / 2;
 }
 
-void SSS::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize)
+void SSS::BuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize)
 {
     mhSSSCpuRtv = cpuRtvHandle;
     mhSSSVerticalBlurCpuRtv = cpuRtvHandle.Offset(1, rtvDescriptorSize);
@@ -34,16 +34,18 @@ void SSS::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_
     mhSSSCpuSrv = cpuSrvHandle;
     mhSSSVerticalBlurCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
     mhSSSHorizontalBlurCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhDepthCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
 
     mhSSSGpuSrv = gpuSrvHandle;
     mhSSSVerticalBlurGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
     mhSSSHorizontalBlurGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhDepthGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
     cpuRtvHandle = cpuRtvHandle.Offset(1, rtvDescriptorSize);
     cpuSrvHandle = cpuSrvHandle.Offset(1, srvDescriptorSize);
     gpuSrvHandle = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
-    RebuildDescriptors();
+    RebuildDescriptors(depthStencilBuffer);
 }
 
 void SSS::CreateSSSRTV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle)
@@ -92,7 +94,7 @@ void SSS::CreateSSSTexture(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3
     md3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue, IID_PPV_ARGS(&texture));
 }
 
-void SSS::RebuildDescriptors()
+void SSS::RebuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer)
 {
     CreateSSSRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mSSS, mhSSSCpuRtv);
     CreateSSSSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mSSS, mhSSSCpuSrv);
@@ -102,6 +104,8 @@ void SSS::RebuildDescriptors()
 
     CreateSSSRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mSSSHorizontalBlur, mhSSSHorizontalBlurCpuRtv);
     CreateSSSSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mSSSHorizontalBlur, mhSSSHorizontalBlurCpuSrv);
+
+    CreateSSSSRV(DXGI_FORMAT_R24_UNORM_X8_TYPELESS, depthStencilBuffer, mhDepthCpuSrv);
 }
 
 

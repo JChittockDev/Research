@@ -34,9 +34,10 @@ void EngineApp::UpdateLights(const GameTimer& gt)
             {
                 mDirectionalLightRenderItemMap.at(renderItemPath)[b]->NumFramesDirty = gNumFrameResources;
             }
-
+            
             mMainPassCB.Lights[count].Strength = dynamicLights.DirectionalLights[i].Strength;
             mMainPassCB.Lights[count].Direction = dynamicLights.DirectionalLights[i].Direction;
+            mMainPassCB.Lights[count].Type = dynamicLights.DirectionalLights[i].Type;
 
             ImGui::TreePop();
         }
@@ -88,6 +89,7 @@ void EngineApp::UpdateLights(const GameTimer& gt)
             mMainPassCB.Lights[count].Strength = dynamicLights.SpotLights[i].Strength;
             mMainPassCB.Lights[count].Direction = dynamicLights.SpotLights[i].Direction;
             mMainPassCB.Lights[count].Position = dynamicLights.SpotLights[i].Position;
+            mMainPassCB.Lights[count].Type = dynamicLights.SpotLights[i].Type;
 
             ImGui::TreePop();
         }

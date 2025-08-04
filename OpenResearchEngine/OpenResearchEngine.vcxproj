@@ -130,15 +130,19 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Passes\CompositePass.cpp" />
     <ClCompile Include="Render\Passes\GBufferPass.cpp" />
     <ClCompile Include="Render\Passes\LightingPass.cpp" />
+    <ClCompile Include="Render\Passes\RadiancePass.cpp" />
     <ClCompile Include="Render\Passes\SsaoBlurPass.cpp" />
     <ClCompile Include="Render\Passes\SsaoPass.cpp" />
     <ClCompile Include="Render\Passes\SsgiBlurPass.cpp" />
     <ClCompile Include="Render\Passes\SsgiPass.cpp" />
+    <ClCompile Include="Render\Passes\SssBlurPass.cpp" />
     <ClCompile Include="Render\Passes\SssPass.cpp" />
     <ClCompile Include="Render\Resources\Composite.cpp" />
     <ClCompile Include="Render\Resources\GBuffer.cpp" />
     <ClCompile Include="Render\Resources\Lighting.cpp" />
     <ClCompile Include="Render\Resources\MeshAnimationResource.cpp" />
+    <ClCompile Include="Render\Resources\Radiance.cpp" />
+    <ClCompile Include="Render\Resources\RadianceResources.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\RenderTextures.cpp" />
     <ClCompile Include="Render\Resources\ShadowMap.cpp" />
@@ -150,6 +154,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Resources\SSS.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
+    <ClCompile Include="Update\UpdateRadiancePass.cpp" />
     <ClCompile Include="Update\UpdateRenderAssets.cpp" />
     <ClCompile Include="Update\UpdateAnimConstants.cpp" />
     <ClCompile Include="Update\UpdateSSCB.cpp" />
@@ -192,6 +197,8 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\MeshAnimationResource.h" />
+    <ClInclude Include="Render\Resources\Radiance.h" />
+    <ClInclude Include="Render\Resources\RadianceResources.h" />
     <ClInclude Include="Render\Resources\RenderTextures.h" />
     <ClInclude Include="Render\Resources\ShadowMap.h" />
     <ClInclude Include="Render\Resources\ShadowResources.h" />

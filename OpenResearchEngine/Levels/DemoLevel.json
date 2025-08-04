@@ -10,7 +10,8 @@
         "Reflection": "Textures/face_reflection.dds",
         "ReflectionCoeff": 1.0,
         "RoughnessCoeff": 0.55,
-        "BumpCoeff": 0.75
+        "BumpCoeff": 0.75,
+        "Lit": 2
       },
       "Bricks": {
         "Diffuse": "Textures/bricks2.dds",

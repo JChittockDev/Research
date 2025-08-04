@@ -1,10 +1,4 @@
-#ifndef NUM_LIGHTS
-    #define NUM_LIGHTS 3
-#endif
-
-#define MaxLights 16
-
-#include "LightingUtil.hlsl"
+#include "RadianceUtil.hlsl"
 
 Texture2D gPosition : register(t0);
 Texture2D gNormal : register(t1);
@@ -12,11 +6,7 @@ Texture2D gViewNormal : register(t2);
 Texture2D gAlbedoSpec : register(t3);
 Texture2D gReflection : register(t4);
 Texture2D gMaterialId : register(t5);
-Texture2D gTangent : register(t6);
-Texture2D gAmbient : register(t7);
-Texture2D gAmbientVerticalBlur : register(t8);
-Texture2D gAmbientHorizontalBlur : register(t9);
-Texture2D gShadowMap[16] : register(t10);
+Texture2D gShadowMap : register(t6);
 
 cbuffer cbPerObject : register(b0)
 {
@@ -28,27 +18,21 @@ cbuffer cbPerObject : register(b0)
     uint gObjPad2;
 };
 
-cbuffer cbPass : register(b1)
+cbuffer cbRadiance : register(b1)
 {
     float4x4 gView;
     float4x4 gInvView;
     float4x4 gProj;
     float4x4 gInvProj;
-    float4x4 gViewProj;
-    float4x4 gInvViewProj;
-    float4x4 gViewProjTex;
-    float4x4 gShadowTransform[MaxLights];
+    float4x4 gShadowTransform;
     float3 gEyePosW;
-    float cbPerObjectPad1;
-    float2 gRenderTargetSize;
-    float2 gInvRenderTargetSize;
-    float gNearZ;
-    float gFarZ;
-    float gTotalTime;
-    float gDeltaTime;
-    float4 gAmbientLight;
-
-    Light gLights[MaxLights];
+    float uPadding1;
+    Light gLight;
+    uint gLightType;
+    float uPadding2;
+    float uPadding3;
+    float uPadding4;
+    
 };
 
 static const float2 gTexCoords[6] =
@@ -125,6 +109,12 @@ struct VertexOut
     float2 TexC : TEXCOORD0;
 };
 
+struct PixelOut
+{
+    float4 DiffuseReflect: SV_Target0;
+    float4 SpecularReflect : SV_Target1;
+};
+
 VertexOut VS(uint vid : SV_VertexID)
 {
     VertexOut vout;
@@ -136,8 +126,10 @@ VertexOut VS(uint vid : SV_VertexID)
     return vout;
 }
 
-float4 PS(VertexOut pin) : SV_Target
+
+PixelOut PS(VertexOut pin)
 {   
+    PixelOut pout;
     float3 FragPos = gPosition.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
     float3 Normal = gNormal.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
     float3 Albedo = gAlbedoSpec.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
@@ -149,36 +141,25 @@ float4 PS(VertexOut pin) : SV_Target
     
     float3 toEyeW = normalize(gEyePosW - FragPos);
     
-        // Ambient lighting
-    float4 ambient = gAmbientLight * float4(Albedo, 1.0f);
-
-    // Shadowing (if needed)
-    float shadowFactor[MaxLights];
-    for (int i = 0; i < NUM_LIGHTS; ++i)
-    {
-        shadowFactor[i] = CalcShadowFactor(mul(float4(FragPos, 1.0), gShadowTransform[i]), gShadowMap[i]);
-    }
-    
     float3 R = reflect(-toEyeW, Normal); // View-reflected vector (world space)
     float3 reflectedColor = gReflection.Sample(gsamAnisotropicWrap, R.xy);
+
+    // Shadowing (if needed)
+    float shadowFactor = CalcShadowFactor (mul(float4(FragPos, 1.0), gShadowTransform), gShadowMap);
+
+    float3 diffuseReflectance = 0.0;
+    float3 specularReflectance = 0.0;
     
     // Material for lighting calculation
-    LightingParameters mat = { Albedo, matData.Reflectance * Specular, matData.Roughness, matData.Metalness, reflectedColor };
-
-    float4 directLight = ComputeLighting(gLights, mat, FragPos, Normal, toEyeW, shadowFactor);
-
-    float4 litColor = ambient + directLight;
+    // No albedo just radiance
+    LightingParameters mat = { float3(1.0, 1.0, 1.0) , matData.Reflectance * Specular, matData.Roughness, matData.Metalness, reflectedColor };
     
-    litColor *= gAmbientHorizontalBlur.Sample(gsamAnisotropicWrap, pin.TexC).r;
-
-    // Alpha = 1 for deferred (unless you handle transparency separately)
-    litColor.a = 1.0f;
+    ComputeLighting(gLight, mat, FragPos, Normal, toEyeW, diffuseReflectance, specularReflectance);
     
-    if (matData.Lit == 0)
-    {
-        litColor = float4(Albedo, 1.0f);
+    diffuseReflectance *= shadowFactor;
+    specularReflectance *= shadowFactor;
 
-    }
-    
-    return litColor;
+    pout.DiffuseReflect = float4(diffuseReflectance, 1.0);
+    pout.SpecularReflect = float4(specularReflectance, 1.0);
+    return pout;
 }

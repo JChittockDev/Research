@@ -13,7 +13,7 @@ void EngineApp::SsgiPass(FrameResource* currentFrameResource)
     mCommandList->SetGraphicsRootDescriptorTable(2, mGBuffer->GetNormalGpuSrv());
     mCommandList->SetGraphicsRootDescriptorTable(3, mSsgi->GetRandomVectorGpuSrv());
 
-    float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float clearValue[] = { 0.0f, 0.0f, 0.0f, 0.0f };
     mCommandList->ClearRenderTargetView(mSsgi->GetGICpuRtv(), clearValue, 0, nullptr);
     mCommandList->OMSetRenderTargets(1, &mSsgi->GetGICpuRtv(), true, nullptr);
 

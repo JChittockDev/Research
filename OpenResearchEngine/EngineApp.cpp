@@ -92,6 +92,33 @@ void EngineApp::OnResize()
         mLighting->RebuildDescriptors();
     }
 
+    if (mRadianceResources != nullptr)
+    {
+        for (int i = 0; i < mRadianceResources->radianceMaps.size(); i++)
+        {
+            if (mRadianceResources->radianceMaps[i] != nullptr)
+            {
+                mRadianceResources->radianceMaps[i]->OnResize(mClientWidth, mClientHeight);
+            }
+        }
+
+        for (int i = 0; i < mRadianceResources->radianceMaps.size(); i++)
+        {
+            if (mRadianceResources->radianceMaps[i] != nullptr)
+            {
+                mRadianceResources->radianceMaps[i]->RebuildDiffuseDescriptors();
+            }
+        }
+
+        for (int i = 0; i < mRadianceResources->radianceMaps.size(); i++)
+        {
+            if (mRadianceResources->radianceMaps[i] != nullptr)
+            {
+                mRadianceResources->radianceMaps[i]->RebuildSpecularDescriptors();
+            }
+        }
+    }
+
     if (mSsgi != nullptr)
     {
         mSsgi->OnResize(mClientWidth, mClientHeight);
@@ -101,7 +128,13 @@ void EngineApp::OnResize()
     if (mSss != nullptr)
     {
         mSss->OnResize(mClientWidth, mClientHeight);
-        mSss->RebuildDescriptors();
+        mSss->RebuildDescriptors(GetDepthBuffer());
+    }
+
+    if (mComposite != nullptr)
+    {
+        mComposite->OnResize(mClientWidth, mClientHeight);
+        mComposite->RebuildDescriptors();
     }
 }
 

@@ -45,6 +45,11 @@ void EngineApp::CompileShaders ()
     mShaders["LightingVS"] = d3dUtil::CompileShader(wLightingShaderPath, nullptr, "VS", "vs_5_1");
     mShaders["LightingPS"] = d3dUtil::CompileShader(wLightingShaderPath, opaqueDefines, "PS", "ps_5_1");
 
+    shaderPath = GetFullPath("Shaders/Radiance.hlsl");
+    std::wstring wRadianceShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["RadianceVS"] = d3dUtil::CompileShader(wRadianceShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["RadiancePS"] = d3dUtil::CompileShader(wRadianceShaderPath, opaqueDefines, "PS", "ps_5_1");
+
     shaderPath = GetFullPath("Shaders/Sss.hlsl");
     std::wstring wSssShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["SssVS"] = d3dUtil::CompileShader(wSssShaderPath, nullptr, "VS", "vs_5_1");

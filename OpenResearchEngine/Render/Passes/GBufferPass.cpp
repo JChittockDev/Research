@@ -17,6 +17,7 @@ void EngineApp::GBufferPass(FrameResource* currentFrameResource)
     mCommandList->ClearRenderTargetView(mGBuffer->GetAlbedoSpecCpuRtv(), clearColor, 0, nullptr);
     mCommandList->ClearRenderTargetView(mGBuffer->GetReflectionCpuRtv(), clearColor, 0, nullptr);
     mCommandList->ClearRenderTargetView(mGBuffer->GetMaterialIdCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetTangentCpuRtv(), clearColor, 0, nullptr);
 
     // Set render targets for the G-Buffer
     D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
@@ -25,11 +26,12 @@ void EngineApp::GBufferPass(FrameResource* currentFrameResource)
         mGBuffer->GetViewNormalCpuRtv(),
         mGBuffer->GetAlbedoSpecCpuRtv(),
         mGBuffer->GetReflectionCpuRtv(),
-        mGBuffer->GetMaterialIdCpuRtv()
+        mGBuffer->GetMaterialIdCpuRtv(),
+        mGBuffer->GetTangentCpuRtv()
     };
 
     mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-    mCommandList->OMSetRenderTargets(6, rtvs, false, &DepthStencilView());
+    mCommandList->OMSetRenderTargets(7, rtvs, false, &DepthStencilView());
 
     // Set root parameters
     auto objectCBAddress = currentFrameResource->ObjectCB->Resource()->GetGPUVirtualAddress();

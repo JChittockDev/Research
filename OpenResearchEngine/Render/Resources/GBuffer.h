@@ -33,6 +33,7 @@ public:
     Microsoft::WRL::ComPtr<ID3D12Resource> GetAlbedoSpec() const { return mAlbedoSpec; }
     Microsoft::WRL::ComPtr<ID3D12Resource> GetReflection() const { return mReflection; }
     Microsoft::WRL::ComPtr<ID3D12Resource> GetMaterialId() const { return mMaterialId; }
+    Microsoft::WRL::ComPtr<ID3D12Resource> GetTangent() const { return mTangent; }
     
     D3D12_CPU_DESCRIPTOR_HANDLE GetPositionCpuRtv() const { return mhPositionCpuRtv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetNormalCpuRtv() const { return mhNormalCpuRtv; }
@@ -40,6 +41,7 @@ public:
     D3D12_CPU_DESCRIPTOR_HANDLE GetAlbedoSpecCpuRtv() const { return mhAlbedoSpecCpuRtv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetReflectionCpuRtv() const { return mhReflectionCpuRtv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetMaterialIdCpuRtv() const { return mhMaterialIdCpuRtv; }
+    D3D12_CPU_DESCRIPTOR_HANDLE GetTangentCpuRtv() const { return mhTangentCpuRtv; }
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetPositionCpuSrv() const { return mhPositionCpuSrv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetNormalCpuSrv() const { return mhNormalCpuSrv; }
@@ -47,6 +49,7 @@ public:
     D3D12_CPU_DESCRIPTOR_HANDLE GetAlbedoSpecCpuSrv() const { return mhAlbedoSpecCpuSrv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetReflectionCpuSrv() const { return mhReflectionCpuSrv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetMaterialIdCpuSrv() const { return mhMaterialIdCpuSrv; }
+    D3D12_CPU_DESCRIPTOR_HANDLE GetTangentCpuSrv() const { return mhTangentCpuSrv; }
 
     D3D12_GPU_DESCRIPTOR_HANDLE GetPositionGpuRtv() const { return mhPositionGpuRtv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetNormalGpuRtv() const { return mhNormalGpuRtv; }
@@ -54,6 +57,7 @@ public:
     D3D12_GPU_DESCRIPTOR_HANDLE GetAlbedoSpecGpuRtv() const { return mhAlbedoSpecGpuRtv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetReflectionGpuRtv() const { return mhReflectionGpuRtv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetMaterialIdGpuRtv() const { return mhMaterialIdGpuRtv; }
+    D3D12_GPU_DESCRIPTOR_HANDLE GetTangentGpuRtv() const { return mhTangentGpuRtv; }
 
     D3D12_GPU_DESCRIPTOR_HANDLE GetPositionGpuSrv() const { return mhPositionGpuSrv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetNormalGpuSrv() const { return mhNormalGpuSrv; }
@@ -61,6 +65,7 @@ public:
     D3D12_GPU_DESCRIPTOR_HANDLE GetAlbedoSpecGpuSrv() const { return mhAlbedoSpecGpuSrv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetReflectionGpuSrv() const { return mhReflectionGpuSrv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetMaterialIdGpuSrv() const { return mhMaterialIdGpuSrv; }
+    D3D12_GPU_DESCRIPTOR_HANDLE GetTangentGpuSrv() const { return mhTangentGpuSrv; }
 
 
 private:
@@ -72,6 +77,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> mAlbedoSpec;
     Microsoft::WRL::ComPtr<ID3D12Resource> mReflection;
     Microsoft::WRL::ComPtr<ID3D12Resource> mMaterialId;
+    Microsoft::WRL::ComPtr<ID3D12Resource> mTangent;
 
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhPositionCpuSrv;
@@ -86,6 +92,8 @@ private:
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhReflectionCpuRtv;
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhMaterialIdCpuSrv;
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhMaterialIdCpuRtv;
+    CD3DX12_CPU_DESCRIPTOR_HANDLE mhTangentCpuSrv;
+    CD3DX12_CPU_DESCRIPTOR_HANDLE mhTangentCpuRtv;
 
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhPositionGpuSrv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhPositionGpuRtv;
@@ -99,6 +107,8 @@ private:
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhReflectionGpuRtv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhMaterialIdGpuSrv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhMaterialIdGpuRtv;
+    CD3DX12_GPU_DESCRIPTOR_HANDLE mhTangentGpuSrv;
+    CD3DX12_GPU_DESCRIPTOR_HANDLE mhTangentGpuRtv;
 
 	UINT mRenderTargetWidth;
 	UINT mRenderTargetHeight;

@@ -15,9 +15,11 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     SsaoPass(currentFrameResource);
     SsaoBlurPass(currentFrameResource);
     LightingPass(currentFrameResource);
+    RadiancePass(dynamicLights, currentFrameResource);
     SssPass(currentFrameResource);
-    SsgiPass(currentFrameResource);
-    SsgiBlurPass(currentFrameResource);
+    SssBlurPass(currentFrameResource);
+    //SsgiPass(currentFrameResource);
+    //SsgiBlurPass(currentFrameResource);
     //CompositePass(currentFrameResource);
 }
 

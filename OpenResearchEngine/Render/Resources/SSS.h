@@ -27,6 +27,7 @@ public:
     D3D12_CPU_DESCRIPTOR_HANDLE GetSSSCpuSrv() const { return mhSSSCpuSrv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetSSSVerticalBlurCpuSrv() const { return mhSSSVerticalBlurCpuSrv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetSSSHorizontalBlurCpuSrv() const { return mhSSSHorizontalBlurCpuSrv; }
+    D3D12_CPU_DESCRIPTOR_HANDLE GetDepthCpuSrv() const { return mhDepthCpuSrv; }
 
     D3D12_GPU_DESCRIPTOR_HANDLE GetSSSGpuRtv() const { return mhSSSGpuRtv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetSSSVerticalBlurRtv() const { return mhSSSVerticalBlurGpuRtv; }
@@ -35,9 +36,10 @@ public:
     D3D12_GPU_DESCRIPTOR_HANDLE GetSSSGpuSrv() const { return mhSSSGpuSrv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetSSSVerticalBlurGpuSrv() const { return mhSSSVerticalBlurGpuSrv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetSSSHorizontalBlurGpuSrv() const { return mhSSSHorizontalBlurGpuSrv; }
+    D3D12_GPU_DESCRIPTOR_HANDLE GetDepthGpuSrv() const { return mhDepthGpuSrv; }
 
-    void BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize);
-    void RebuildDescriptors();
+    void BuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize);
+    void RebuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer);
 
 	void OnResize(UINT newWidth, UINT newHeight);
 
@@ -54,6 +56,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D12Resource> mSSSVerticalBlur;
     Microsoft::WRL::ComPtr<ID3D12Resource> mSSSHorizontalBlur;
 
+    CD3DX12_CPU_DESCRIPTOR_HANDLE mhDepthCpuSrv;
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSCpuSrv;
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSCpuRtv;
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSVerticalBlurCpuSrv;
@@ -61,6 +64,7 @@ private:
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSHorizontalBlurCpuSrv;
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSHorizontalBlurCpuRtv;
 
+    CD3DX12_GPU_DESCRIPTOR_HANDLE mhDepthGpuSrv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSGpuSrv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSGpuRtv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSVerticalBlurGpuSrv;
