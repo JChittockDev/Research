@@ -16,7 +16,8 @@ Texture2D gTangent : register(t6);
 Texture2D gAmbient : register(t7);
 Texture2D gAmbientVerticalBlur : register(t8);
 Texture2D gAmbientHorizontalBlur : register(t9);
-Texture2D gShadowMap[16] : register(t10);
+Texture2D gSSS : register(t10);
+Texture2D gRadiance[32] : register(t11);
 
 cbuffer cbPerObject : register(b0)
 {
@@ -86,38 +87,6 @@ struct MaterialData
 
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
 
-float CalcShadowFactor(float4 shadowPosH, Texture2D shadowMap)
-{
-    // Complete projection by doing division by w.
-    shadowPosH.xyz /= shadowPosH.w;
-
-    // Depth in NDC space.
-    float depth = shadowPosH.z;
-
-    uint width, height, numMips;
-    shadowMap.GetDimensions(0, width, height, numMips);
-
-    // Texel size.
-    float dx = 1.0f / (float) width;
-
-    float percentLit = 0.0f;
-    const float2 offsets[9] =
-    {
-        float2(-dx, -dx), float2(0.0f, -dx), float2(dx, -dx),
-        float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
-        float2(-dx, +dx), float2(0.0f, +dx), float2(dx, +dx)
-    };
-
-    [unroll]
-    for (int i = 0; i < 9; ++i)
-    {
-        percentLit += shadowMap.SampleCmpLevelZero(gsamShadow,
-            shadowPosH.xy + offsets[i], depth).r;
-    }
-    
-    return percentLit / 9.0f;
-}
-
 struct VertexOut
 {
     float4 PosH : SV_POSITION;
@@ -137,48 +106,36 @@ VertexOut VS(uint vid : SV_VertexID)
 }
 
 float4 PS(VertexOut pin) : SV_Target
-{   
-    float3 FragPos = gPosition.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
-    float3 Normal = gNormal.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
+{
     float3 Albedo = gAlbedoSpec.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
-    float Specular = gAlbedoSpec.Sample(gsamAnisotropicWrap, pin.TexC).a;
+    
+    float3 SSS = gSSS.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
+    
+    /// Greyscale radiance no albedo
+    float3 Radiance = float3(0.0, 0.0, 0.0);
+    /// Specular includes color from reflections
+    float3 Specular = float3(0.0, 0.0, 0.0);
+    
+    for (int i = 0; i < NUM_LIGHTS; ++i)
+    {
+        Radiance += gRadiance[i].Sample(gsamAnisotropicWrap, pin.TexC).rgb;
+        Specular += gRadiance[NUM_LIGHTS + i].Sample(gsamAnisotropicWrap, pin.TexC).rgb;
+    }
+    
+    float4 Ambient = gAmbientLight * float4(Albedo, 1.0f);
+    
+    float3 Lighting = Ambient.rgb + (Albedo * Radiance) + (Albedo * SSS) + Specular;
     
     uint MatId = gMaterialId.Sample(gsamAnisotropicWrap, pin.TexC).r;
     
     MaterialData matData = gMaterialData[MatId];
     
-    float3 toEyeW = normalize(gEyePosW - FragPos);
-    
-        // Ambient lighting
-    float4 ambient = gAmbientLight * float4(Albedo, 1.0f);
+    Lighting *= gAmbientHorizontalBlur.Sample(gsamAnisotropicWrap, pin.TexC).r;
 
-    // Shadowing (if needed)
-    float shadowFactor[MaxLights];
-    for (int i = 0; i < NUM_LIGHTS; ++i)
-    {
-        shadowFactor[i] = CalcShadowFactor(mul(float4(FragPos, 1.0), gShadowTransform[i]), gShadowMap[i]);
-    }
-    
-    float3 R = reflect(-toEyeW, Normal); // View-reflected vector (world space)
-    float3 reflectedColor = gReflection.Sample(gsamAnisotropicWrap, R.xy);
-    
-    // Material for lighting calculation
-    LightingParameters mat = { Albedo, matData.Reflectance * Specular, matData.Roughness, matData.Metalness, reflectedColor };
-
-    float4 directLight = ComputeLighting(gLights, mat, FragPos, Normal, toEyeW, shadowFactor);
-
-    float4 litColor = ambient + directLight;
-    
-    litColor *= gAmbientHorizontalBlur.Sample(gsamAnisotropicWrap, pin.TexC).r;
-
-    // Alpha = 1 for deferred (unless you handle transparency separately)
-    litColor.a = 1.0f;
-    
     if (matData.Lit == 0)
     {
-        litColor = float4(Albedo, 1.0f);
-
+        Lighting = Albedo;
     }
     
-    return litColor;
+    return float4(Lighting, 1.0f);
 }

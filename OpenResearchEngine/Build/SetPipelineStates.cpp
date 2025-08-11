@@ -131,6 +131,7 @@ void EngineApp::SetPipelineStates()
     D3D12_GRAPHICS_PIPELINE_STATE_DESC lightingPsoDesc = opaquePsoDesc;
     lightingPsoDesc.InputLayout = { nullptr, 0 };
     lightingPsoDesc.pRootSignature = mLightingRootSignature.Get();
+    lightingPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
     lightingPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["LightingVS"]->GetBufferPointer()), mShaders["LightingVS"]->GetBufferSize() };
     lightingPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["LightingPS"]->GetBufferPointer()), mShaders["LightingPS"]->GetBufferSize() };
     lightingPsoDesc.DepthStencilState.DepthEnable = false;

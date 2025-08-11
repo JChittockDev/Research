@@ -49,7 +49,7 @@ float4 PS(VertexOut pin) : SV_Target
 {   
     float3 FragPos = gLighting.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
     
-    FragPos += gGI.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
+    //FragPos += gGI.Sample(gsamAnisotropicWrap, pin.TexC).rgb;
     
     return float4(FragPos, 1.0);
 }

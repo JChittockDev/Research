@@ -182,7 +182,7 @@ float4 PS(VertexOut pin) : SV_Target
     uint MatId = gMaterialId.Sample(gsamAnisotropicWrap, pin.TexC).r;
     MaterialData matData = gMaterialData[MatId];
     
-    // This means that it is an SSS material. If it is not, it shouldnt render. 
+    // This means that it is an SSS material. If it is not, it shouldn't render. 
     // This shader should also check to make sure that it is not sampling from any non SSS objects.
     if (matData.Lit != 2)
     {
@@ -224,12 +224,19 @@ float4 PS(VertexOut pin) : SV_Target
         
         float3 lightDir = normalize(lightVector);
         
-        for (uint i = 0; i < sampleCount; ++i)
+        // Use rejection sampling to maintain consistent sample count
+        uint actualSamples = 0;
+        uint attempts = 0;
+        const uint maxAttempts = sampleCount * 4; // Prevent infinite loops
+        
+        while (actualSamples < sampleCount && attempts < maxAttempts)
         {
-            // Generate random numbers for this sample
-            float2 pixelSeed = pin.TexC * 1000.0 + float2(i + lightIndex * sampleCount, (i + lightIndex * sampleCount) * 2);
+            // Generate random numbers for this attempt
+            float2 pixelSeed = pin.TexC * 1000.0 + float2(attempts + lightIndex * maxAttempts, (attempts + lightIndex * maxAttempts) * 2);
             float2 rand2 = hash2(pixelSeed);
             float rand1 = hash(pixelSeed + float2(123.45, 678.90));
+            
+            attempts++;
             
             // Importance sample the diffusion profile to get radius
             float avgScatterDistance = (scatterDistance.r + scatterDistance.g + scatterDistance.b) / 3.0f;
@@ -262,6 +269,12 @@ float4 PS(VertexOut pin) : SV_Target
             if (all(sampleRadiance <= 0.0f) || length(sampleNormal) < 0.001f)
                 continue;
             
+            // Additional check: Make sure we're not sampling from non-SSS materials
+            uint sampleMatId = gMaterialId.SampleLevel(gsamPointClamp, sampleUV, 0).r;
+            MaterialData sampleMatData = gMaterialData[sampleMatId];
+            if (sampleMatData.Lit != 2)
+                continue; // Skip non-SSS materials in sampling
+            
             // Calculate actual distance from center
             float actualRadius = length(sampleOffset);
             if (actualRadius < 0.001f)
@@ -279,6 +292,7 @@ float4 PS(VertexOut pin) : SV_Target
             
             // Accumulate contribution
             sssAccum += sampleRadiance * bssrdf;
+            actualSamples++;
             validSamples++;
         }
     }

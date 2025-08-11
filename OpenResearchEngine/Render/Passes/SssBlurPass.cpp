@@ -2,7 +2,7 @@
 
 void EngineApp::SssBlurPass(FrameResource* currentFrameResource)
 {
-    mCommandList->SetGraphicsRootSignature(mEdgeBlurRootSignature.Get());
+    mCommandList->SetGraphicsRootSignature(mColorEdgeBlurRootSignature.Get());
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
 
@@ -13,11 +13,11 @@ void EngineApp::SssBlurPass(FrameResource* currentFrameResource)
     mCommandList->SetGraphicsRootDescriptorTable(2, mSss->GetDepthGpuSrv());
     mCommandList->SetGraphicsRootDescriptorTable(3, mSss->GetSSSGpuSrv());
 
-    float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float clearValue[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     mCommandList->ClearRenderTargetView(mSss->GetSSSVerticalBlurCpuRtv(), clearValue, 0, nullptr);
     mCommandList->OMSetRenderTargets(1, &mSss->GetSSSVerticalBlurCpuRtv(), true, nullptr);
 
-    mCommandList->SetPipelineState(mPSOs.at("EdgeBlur").Get());
+    mCommandList->SetPipelineState(mPSOs.at("ColorEdgeBlur").Get());
    
     mCommandList->IASetVertexBuffers(0, 0, nullptr);
     mCommandList->IASetIndexBuffer(nullptr);
@@ -26,7 +26,7 @@ void EngineApp::SssBlurPass(FrameResource* currentFrameResource)
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    mCommandList->SetGraphicsRootSignature(mEdgeBlurRootSignature.Get());
+    mCommandList->SetGraphicsRootSignature(mColorEdgeBlurRootSignature.Get());
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
 
@@ -40,7 +40,7 @@ void EngineApp::SssBlurPass(FrameResource* currentFrameResource)
     mCommandList->ClearRenderTargetView(mSss->GetSSSHorizontalBlurCpuRtv(), clearValue, 0, nullptr);
     mCommandList->OMSetRenderTargets(1, &mSss->GetSSSHorizontalBlurCpuRtv(), true, nullptr);
 
-    mCommandList->SetPipelineState(mPSOs.at("EdgeBlur").Get());
+    mCommandList->SetPipelineState(mPSOs.at("ColorEdgeBlur").Get());
 
     mCommandList->IASetVertexBuffers(0, 0, nullptr);
     mCommandList->IASetIndexBuffer(nullptr);

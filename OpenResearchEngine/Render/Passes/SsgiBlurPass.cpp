@@ -26,7 +26,7 @@ void EngineApp::SsgiBlurPass(FrameResource* currentFrameResource)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    mCommandList->SetGraphicsRootSignature(mEdgeBlurRootSignature.Get());
+    mCommandList->SetGraphicsRootSignature(mColorEdgeBlurRootSignature.Get());
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
 

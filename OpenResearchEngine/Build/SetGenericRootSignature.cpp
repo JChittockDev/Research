@@ -243,7 +243,7 @@ void EngineApp::SetSssRootSignature()
 
     // Perfomance TIP: Order from most frequent to least frequent.
     slotRootParameter[0].InitAsConstantBufferView(0);
-    slotRootParameter[1].InitAsConstantBufferView(0, 1);
+    slotRootParameter[1].InitAsShaderResourceView(0, 1);
     slotRootParameter[2].InitAsDescriptorTable(1, &texTable0, D3D12_SHADER_VISIBILITY_PIXEL);
     slotRootParameter[3].InitAsDescriptorTable(1, &texTable1, D3D12_SHADER_VISIBILITY_PIXEL);
     slotRootParameter[4].InitAsDescriptorTable(1, &texTable2, D3D12_SHADER_VISIBILITY_PIXEL);
@@ -310,20 +310,24 @@ void EngineApp::SetLightingRootSignature()
     texTable0.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 10, 0, 0);
 
     CD3DX12_DESCRIPTOR_RANGE texTable1;
-    texTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 16, 10, 0);
+    texTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 10, 0);
 
-    CD3DX12_ROOT_PARAMETER slotRootParameter[5];
+    CD3DX12_DESCRIPTOR_RANGE texTable2;
+    texTable2.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 32, 11, 0);
+
+    CD3DX12_ROOT_PARAMETER slotRootParameter[6];
 
     slotRootParameter[0].InitAsConstantBufferView(0);
     slotRootParameter[1].InitAsConstantBufferView(1);
     slotRootParameter[2].InitAsShaderResourceView(0, 1);
     slotRootParameter[3].InitAsDescriptorTable(1, &texTable0, D3D12_SHADER_VISIBILITY_PIXEL);
     slotRootParameter[4].InitAsDescriptorTable(1, &texTable1, D3D12_SHADER_VISIBILITY_PIXEL);
+    slotRootParameter[5].InitAsDescriptorTable(1, &texTable2, D3D12_SHADER_VISIBILITY_PIXEL);
 
     auto staticSamplers = GetStaticSamplers();
 
     // Define the root signature descriptor
-    CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(5, slotRootParameter, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+    CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(6, slotRootParameter, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
     // Serialize and create the root signature
     ComPtr<ID3DBlob> serializedRootSig = nullptr;
