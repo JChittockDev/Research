@@ -95,9 +95,9 @@ void Ssgi::CreateSsgiTexture(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<I
 
     D3D12_CLEAR_VALUE clearValue = {};
     clearValue.Format = format;
-    clearValue.Color[0] = 1.0f;
-    clearValue.Color[1] = 1.0f;
-    clearValue.Color[2] = 1.0f;
+    clearValue.Color[0] = 0.0f;
+    clearValue.Color[1] = 0.0f;
+    clearValue.Color[2] = 0.0f;
     clearValue.Color[3] = 1.0f;
 
     md3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue, IID_PPV_ARGS(&texture));

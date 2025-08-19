@@ -21,7 +21,7 @@ struct Light
     float3 Position; // point light only
     float InnerConeAngle; // spot light only
     float OuterConeAngle; // spot light only
-    float Pad1;
+    uint Type;
     float Pad2;
     float Pad3;
 };

@@ -213,7 +213,6 @@ float4 PS(VertexOut pin) : SV_Target
     
     // Accumulate SSS contribution
     float3 sssAccum = float3(0, 0, 0);
-    uint validSamples = 0;
     uint sampleCount = clamp(gSampleCount, 1, 64);
     
     for (uint lightIndex = 0; lightIndex < min(NUM_LIGHTS, 16); ++lightIndex)
@@ -225,11 +224,12 @@ float4 PS(VertexOut pin) : SV_Target
         float3 lightDir = normalize(lightVector);
         
         // Use rejection sampling to maintain consistent sample count
-        uint actualSamples = 0;
         uint attempts = 0;
         const uint maxAttempts = sampleCount * 4; // Prevent infinite loops
+        float3 lightSSSAccum = float3(0, 0, 0);
+        uint validSamples = 0;
         
-        while (actualSamples < sampleCount && attempts < maxAttempts)
+        while (validSamples < sampleCount && attempts < maxAttempts)
         {
             // Generate random numbers for this attempt
             float2 pixelSeed = pin.TexC * 1000.0 + float2(attempts + lightIndex * maxAttempts, (attempts + lightIndex * maxAttempts) * 2);
@@ -291,16 +291,16 @@ float4 PS(VertexOut pin) : SV_Target
             float3 bssrdf = profileWeight * cosThetaI / PI;
             
             // Accumulate contribution
-            sssAccum += sampleRadiance * bssrdf;
-            actualSamples++;
+            lightSSSAccum += sampleRadiance * bssrdf;
             validSamples++;
         }
-    }
-    
-    // Average over valid samples
-    if (validSamples > 0)
-    {
-        sssAccum /= float(validSamples);
+        
+        // Average over valid samples
+        if (validSamples > 0)
+        {
+            lightSSSAccum /= float(validSamples);
+            sssAccum += lightSSSAccum;
+        }
     }
     
     // Apply transmission color and combine with albedo

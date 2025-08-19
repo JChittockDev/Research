@@ -167,16 +167,16 @@ struct BlendConstants
 
 struct Light
 {
-    DirectX::XMFLOAT3 Strength = { 0.0f, 0.0f, 0.0f };
-    float FalloffStart = 1.0f;
-    DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f };
-    float FalloffEnd = 100.0f;                         
-    DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };
-    float InnerConeAngle = 5.0f;
-    float OuterConeAngle = 250.0f;
-    int Type = 0;
-    float Pad2 = 0.0f;
-    float Pad3 = 0.0f;
+    DirectX::XMFLOAT3 Strength = { 0.0f, 0.0f, 0.0f }; // 12
+    float FalloffStart = 1.0f; // 4
+    DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f }; // 12
+    float FalloffEnd = 100.0f; //4                         
+    DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f }; // 12
+    float InnerConeAngle = 5.0f; // 4
+    float OuterConeAngle = 250.0f; // 4
+    UINT Type = 0; // 4
+    float Pad2 = 0.0f; // 4
+    float Pad3 = 0.0f; // 4
 };
 
 struct LightTransform
@@ -239,11 +239,6 @@ struct RadianceConstants
     float Padding1 = 0.0f;                                    // 4 bytes (to align next struct)
 
     Light Light;                                              // Ensure `Light` is 16-byte aligned internally
-
-    UINT LightType = 0;                                       // 4 bytes
-    float Padding2 = 0.0f;
-    float Padding3 = 0.0f;
-    float Padding4 = 0.0f;
 };
 
 struct SsaoConstants
@@ -287,6 +282,17 @@ struct SsgiConstants
 };
 
 struct SsgiBlurConstants
+{
+    DirectX::XMFLOAT4X4 Proj;                  // 64 bytes
+    DirectX::XMFLOAT4 BlurWeights[3];          // 48 bytes
+    DirectX::XMFLOAT2 InvRenderTargetSize;     // 8 bytes
+    int BlurRadius;                           // 4 bytes
+    UINT HorizontalBlur;                       // 4 bytes
+    UINT padding1 = 0;                         // 4 bytes
+    UINT padding2 = 0;                         // 4 bytes
+};
+
+struct SssBlurConstants
 {
     DirectX::XMFLOAT4X4 Proj;                  // 64 bytes
     DirectX::XMFLOAT4 BlurWeights[3];          // 48 bytes

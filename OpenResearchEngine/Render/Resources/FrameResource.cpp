@@ -11,6 +11,7 @@ FrameResource::FrameResource(ID3D12Device* device, UINT lightCount, UINT objectC
     SsaoHorizontalBlurCB = std::make_unique<UploadBuffer<SsaoBlurConstants>>(device, 1, true);
     SsgiVerticalBlurCB = std::make_unique<UploadBuffer<SsgiBlurConstants>>(device, 1, true);
     SsgiHorizontalBlurCB = std::make_unique<UploadBuffer<SsgiBlurConstants>>(device, 1, true);
+    SssBlurCB = std::make_unique<UploadBuffer<SssBlurConstants>>(device, 1, true);
 	MaterialBuffer = std::make_unique<UploadBuffer<MaterialConstants>>(device, materialCount, false);
     ObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(device, objectCount, true);
     BlendCB = std::make_unique<UploadBuffer<BlendConstants>>(device, blendObjectCount, true);

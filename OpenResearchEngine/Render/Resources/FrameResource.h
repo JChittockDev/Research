@@ -30,6 +30,7 @@ public:
     std::unique_ptr<UploadBuffer<SsaoBlurConstants>> SsaoHorizontalBlurCB = nullptr;
     std::unique_ptr<UploadBuffer<SsgiBlurConstants>> SsgiVerticalBlurCB = nullptr;
     std::unique_ptr<UploadBuffer<SsgiBlurConstants>> SsgiHorizontalBlurCB = nullptr;
+    std::unique_ptr<UploadBuffer<SssBlurConstants>> SssBlurCB = nullptr;
 	std::unique_ptr<UploadBuffer<MaterialConstants>> MaterialBuffer = nullptr;
     std::unique_ptr<UploadBuffer<RadianceConstants>> RadianceCB = nullptr;
 

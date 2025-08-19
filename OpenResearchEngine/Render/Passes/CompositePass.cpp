@@ -12,7 +12,7 @@ void EngineApp::CompositePass(FrameResource* currentFrameResource)
     mCommandList->SetGraphicsRootDescriptorTable(1, mLighting->GetLightingGpuSrv());
     mCommandList->SetGraphicsRootDescriptorTable(2, mSsgi->GetGIHorizontalBlurGpuSrv());
 
-    float clearValue[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
     mCommandList->ClearRenderTargetView(CurrentBackBufferView(), clearValue, 0, nullptr);
     mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, nullptr);

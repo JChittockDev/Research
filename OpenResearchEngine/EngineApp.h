@@ -103,6 +103,7 @@ private:
     void SetSsaoRootSignature();
     void SetSsgiRootSignature();
     void SetEdgeBlurRootSignature();
+    void SetPoissonBlurRootSignature();
     void SetColorEdgeBlurRootSignature();
     void SetCompositeRootSignature();
     void SetRadianceRootSignature();
@@ -156,6 +157,7 @@ private:
     ComPtr<ID3D12RootSignature> mCompositeRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mRadianceRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
+    ComPtr<ID3D12RootSignature> mPoissonBlurRootSignature = nullptr;
 
     DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;

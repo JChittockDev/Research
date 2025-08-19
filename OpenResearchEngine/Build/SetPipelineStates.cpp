@@ -158,6 +158,16 @@ void EngineApp::SetPipelineStates()
     edgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     md3dDevice->CreateGraphicsPipelineState(&edgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["EdgeBlur"]));
 
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC poissonBlurPsoDesc = opaquePsoDesc;
+    poissonBlurPsoDesc.InputLayout = { nullptr, 0 };
+    poissonBlurPsoDesc.pRootSignature = mPoissonBlurRootSignature.Get();
+    poissonBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    poissonBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["PoissonBlurVS"]->GetBufferPointer()), mShaders["PoissonBlurVS"]->GetBufferSize() };
+    poissonBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["PoissonBlurPS"]->GetBufferPointer()), mShaders["PoissonBlurPS"]->GetBufferSize() };
+    poissonBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    poissonBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&poissonBlurPsoDesc, IID_PPV_ARGS(&mPSOs["PoissonBlur"]));
+
     D3D12_GRAPHICS_PIPELINE_STATE_DESC ssgiPsoDesc = opaquePsoDesc;
     ssgiPsoDesc.InputLayout = { nullptr, 0 };
     ssgiPsoDesc.pRootSignature = mSsgiRootSignature.Get();

@@ -70,6 +70,11 @@ void EngineApp::CompileShaders ()
     mShaders["EdgeBlurVS"] = d3dUtil::CompileShader(wEdgeBlurShaderPath, nullptr, "VS", "vs_5_1");
     mShaders["EdgeBlurPS"] = d3dUtil::CompileShader(wEdgeBlurShaderPath, opaqueDefines, "PS", "ps_5_1");
 
+    shaderPath = GetFullPath("Shaders/PoissonBlur.hlsl");
+    std::wstring wPoissonBlurShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["PoissonBlurVS"] = d3dUtil::CompileShader(wPoissonBlurShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["PoissonBlurPS"] = d3dUtil::CompileShader(wPoissonBlurShaderPath, opaqueDefines, "PS", "ps_5_1");
+
     shaderPath = GetFullPath("Shaders/GBuffer.hlsl");
     std::wstring wGbufferShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["GBufferVS"] = d3dUtil::CompileShader(wGbufferShaderPath, nullptr, "VS", "vs_5_1");

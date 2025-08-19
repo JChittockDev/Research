@@ -34,10 +34,10 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     ssaoVerticalBlurCB.BlurRadius = 5;
 
     // Default SSAO settings if ImGui is not modifying them
-    static float occlusionRadius = 0.85f;
+    static float occlusionRadius = 1.011f;
     static float occlusionFadeStart = 1.2f;
     static float occlusionFadeEnd = 4.3f;
-    static float surfaceEpsilon = 0.001f;
+    static float surfaceEpsilon = 0.002f;
 
     static int blurRadius = 5;
 
@@ -82,8 +82,8 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     ssgiCB.OffsetVectors[12] = ssaoCB.OffsetVectors[12];
     ssgiCB.OffsetVectors[13] = ssaoCB.OffsetVectors[13];
 
-    static float giSampleRadius = 0.2f;
-    static float giFalloffScale = 0.05f;
+    static float giSampleRadius = 0.02f;
+    static float giFalloffScale = 0.012f;
     static int giBlurRadius = 5;
 
     if (ImGui::TreeNode("SSGI Settings"))
@@ -107,12 +107,22 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     ssgiHorizontalBlurCB = ssgiVerticalBlurCB;
     ssgiHorizontalBlurCB.HorizontalBlur = 1;
 
+    SssBlurConstants sssBlurCB;
+    sssBlurCB.Proj = ssaoVerticalBlurCB.Proj;
+    sssBlurCB.BlurWeights[0] = ssaoVerticalBlurCB.BlurWeights[0];
+    sssBlurCB.BlurWeights[1] = ssaoVerticalBlurCB.BlurWeights[1];
+    sssBlurCB.BlurWeights[2] = ssaoVerticalBlurCB.BlurWeights[2];
+    sssBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSss->SSSWidth(), 1.0f / mSss->SSSHeight());
+    sssBlurCB.BlurRadius = 4;
+    sssBlurCB.HorizontalBlur = 0;
+
     auto currSsaoCB = mCurrFrameResource->SsaoCB.get();
     auto currSsaoVerticalBlurCB = mCurrFrameResource->SsaoVerticalBlurCB.get();
     auto currSsaoHorizontalBlurCB = mCurrFrameResource->SsaoHorizontalBlurCB.get();
     auto currSsgiCB = mCurrFrameResource->SsgiCB.get();
     auto currSsgiVerticalBlurCB = mCurrFrameResource->SsgiVerticalBlurCB.get();
     auto currSsgiHorizontalBlurCB = mCurrFrameResource->SsgiHorizontalBlurCB.get();
+    auto currSssBlurCB = mCurrFrameResource->SssBlurCB.get();
 
     currSsaoCB->CopyData(0, ssaoCB);
     currSsaoVerticalBlurCB->CopyData(0, ssaoVerticalBlurCB);
@@ -120,4 +130,5 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     currSsgiCB->CopyData(0, ssgiCB);
     currSsgiVerticalBlurCB->CopyData(0, ssgiVerticalBlurCB);
     currSsgiHorizontalBlurCB->CopyData(0, ssgiHorizontalBlurCB);
+    currSssBlurCB->CopyData(0, sssBlurCB);
 }

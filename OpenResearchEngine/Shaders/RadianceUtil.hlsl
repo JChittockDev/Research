@@ -162,7 +162,7 @@ void BRDF_Lighting(
     float3 H = normalize(V + L);
     float NdotL = max(dot(N, L), 0.0);
     
-    float cRef = saturate(reflectance * 0.04);
+    float cRef = saturate(0.16 * reflectance * reflectance);
     float3 F0 = float3(cRef, cRef, cRef);
     F0 = lerp(F0, albedo, metalness);
 
@@ -222,37 +222,66 @@ void ComputePointLight(Light L, LightingParameters mat, float3 pos, float3 norma
 //---------------------------------------------------------------------------------------
 // Evaluates the lighting equation for spot lights.
 //---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+// Evaluates the lighting equation for spot lights.
+//---------------------------------------------------------------------------------------
 void ComputeSpotLight(Light L, LightingParameters mat, float3 pos, float3 normal, float3 toEye, out float3 diffuseReflectance, out float3 specularReflectance)
 {
+    // Initialize outputs
+    diffuseReflectance = float3(0.0f, 0.0f, 0.0f);
+    specularReflectance = float3(0.0f, 0.0f, 0.0f);
+    
     // The vector from the surface to the light.
     float3 lightVec = L.Position - pos;
 
     // The distance from surface to light.
     float d = length(lightVec);
 
-    // Range test.
-    if(d > L.FalloffEnd)
+    // Range test - early exit if outside light range
+    if (d > L.FalloffEnd)
         return;
 
     // Normalize the light vector.
-    lightVec /= d;
+    float3 lightVecNorm = lightVec / d;
 
     // Attenuate light by distance.
     float att = CalcAttenuation(d, L.FalloffStart, L.FalloffEnd);
 
-    //float spotFactor = pow(max(dot(-lightVec, L.Direction), 0.0f), L.OuterConeAngle);
-    //lightStrength *= spotFactor;
+    // Calculate spotlight cone attenuation
+    // The angle between the light direction and the vector from light to surface
+    float cosAngle = dot(normalize(L.Direction), -lightVecNorm);
     
-    // Scale by spotlight
-    float spotAngle = dot(lightVec, -L.Direction);
+    // Convert cone angles from degrees to cosine values for comparison
+    float cosInnerCone = cos(radians(L.InnerConeAngle));
+    float cosOuterCone = cos(radians(L.OuterConeAngle));
     
-    float epsilon = abs(L.InnerConeAngle - L.OuterConeAngle);
-    float coneAttenuation = clamp((spotAngle - L.OuterConeAngle) / epsilon, 0.0f, 1.0f);
+    // Calculate cone attenuation with smooth falloff between inner and outer cone
+    float coneAttenuation = 0.0f;
+    if (cosAngle > cosOuterCone)
+    {
+        if (cosAngle > cosInnerCone)
+        {
+            // Inside inner cone - full intensity
+            coneAttenuation = 1.0f;
+        }
+        else
+        {
+            // Between inner and outer cone - smooth falloff
+            coneAttenuation = smoothstep(cosOuterCone, cosInnerCone, cosAngle);
+        }
+    }
+    // Outside outer cone - no light contribution (already 0.0f)
     
-    BRDF_Lighting(normal, toEye, lightVec, mat.Color, mat.Roughness, mat.Reflectance, mat.Metalness, mat.ReflectedColor, diffuseReflectance, specularReflectance);
-    
-    diffuseReflectance *= L.Strength * att * coneAttenuation;
-    specularReflectance *= L.Strength * att * coneAttenuation;
+    // Only calculate BRDF if there's actual light contribution
+    if (coneAttenuation > 0.0f && att > 0.0f)
+    {
+        BRDF_Lighting(normal, toEye, lightVecNorm, mat.Color, mat.Roughness, mat.Reflectance, mat.Metalness, mat.ReflectedColor, diffuseReflectance, specularReflectance);
+        
+        // Apply all attenuation factors
+        float totalAttenuation = att * coneAttenuation;
+        diffuseReflectance *= L.Strength * totalAttenuation;
+        specularReflectance *= L.Strength * totalAttenuation;
+    }
 }
 
 void ComputeLighting(Light gLight, LightingParameters mat, float3 pos, float3 normal, float3 toEye, out float3 diffuseReflectance, out float3 specularReflectance)

@@ -17,25 +17,20 @@ public:
     UINT SSSHeight()const;
 
     Microsoft::WRL::ComPtr<ID3D12Resource> GetSSS() const { return mSSS; }
-    Microsoft::WRL::ComPtr<ID3D12Resource> GetSSSVerticalBlur() const { return mSSSVerticalBlur; }
-    Microsoft::WRL::ComPtr<ID3D12Resource> GetSSSHorizontalBlur() const { return mSSSHorizontalBlur; }
+    Microsoft::WRL::ComPtr<ID3D12Resource> GetSSSBlur() const { return mSSSBlur; }
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetSSSCpuRtv() const { return mhSSSCpuRtv; }
-    D3D12_CPU_DESCRIPTOR_HANDLE GetSSSVerticalBlurCpuRtv() const { return mhSSSVerticalBlurCpuRtv; }
-    D3D12_CPU_DESCRIPTOR_HANDLE GetSSSHorizontalBlurCpuRtv() const { return mhSSSHorizontalBlurCpuRtv; }
+    D3D12_CPU_DESCRIPTOR_HANDLE GetSSSBlurCpuRtv() const { return mhSSSBlurCpuRtv; }
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetSSSCpuSrv() const { return mhSSSCpuSrv; }
-    D3D12_CPU_DESCRIPTOR_HANDLE GetSSSVerticalBlurCpuSrv() const { return mhSSSVerticalBlurCpuSrv; }
-    D3D12_CPU_DESCRIPTOR_HANDLE GetSSSHorizontalBlurCpuSrv() const { return mhSSSHorizontalBlurCpuSrv; }
+    D3D12_CPU_DESCRIPTOR_HANDLE GetSSSVBlurCpuSrv() const { return mhSSSBlurCpuSrv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetDepthCpuSrv() const { return mhDepthCpuSrv; }
 
     D3D12_GPU_DESCRIPTOR_HANDLE GetSSSGpuRtv() const { return mhSSSGpuRtv; }
-    D3D12_GPU_DESCRIPTOR_HANDLE GetSSSVerticalBlurRtv() const { return mhSSSVerticalBlurGpuRtv; }
-    D3D12_GPU_DESCRIPTOR_HANDLE GetSSSHorizontalBlurRtv() const { return mhSSSHorizontalBlurGpuRtv; }
+    D3D12_GPU_DESCRIPTOR_HANDLE GetSSSBlurRtv() const { return mhSSSBlurGpuRtv; }
 
     D3D12_GPU_DESCRIPTOR_HANDLE GetSSSGpuSrv() const { return mhSSSGpuSrv; }
-    D3D12_GPU_DESCRIPTOR_HANDLE GetSSSVerticalBlurGpuSrv() const { return mhSSSVerticalBlurGpuSrv; }
-    D3D12_GPU_DESCRIPTOR_HANDLE GetSSSHorizontalBlurGpuSrv() const { return mhSSSHorizontalBlurGpuSrv; }
+    D3D12_GPU_DESCRIPTOR_HANDLE GetSSSBlurGpuSrv() const { return mhSSSBlurGpuSrv; }
     D3D12_GPU_DESCRIPTOR_HANDLE GetDepthGpuSrv() const { return mhDepthGpuSrv; }
 
     void BuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBuffer, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize);
@@ -53,24 +48,19 @@ private:
 	ID3D12Device* md3dDevice;
 	 
     Microsoft::WRL::ComPtr<ID3D12Resource> mSSS;
-    Microsoft::WRL::ComPtr<ID3D12Resource> mSSSVerticalBlur;
-    Microsoft::WRL::ComPtr<ID3D12Resource> mSSSHorizontalBlur;
+    Microsoft::WRL::ComPtr<ID3D12Resource> mSSSBlur;
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhDepthCpuSrv;
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSCpuSrv;
     CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSCpuRtv;
-    CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSVerticalBlurCpuSrv;
-    CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSVerticalBlurCpuRtv;
-    CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSHorizontalBlurCpuSrv;
-    CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSHorizontalBlurCpuRtv;
+    CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSBlurCpuSrv;
+    CD3DX12_CPU_DESCRIPTOR_HANDLE mhSSSBlurCpuRtv;
 
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhDepthGpuSrv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSGpuSrv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSGpuRtv;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSVerticalBlurGpuSrv;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSVerticalBlurGpuRtv;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSHorizontalBlurGpuSrv;
-    CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSHorizontalBlurGpuRtv;
+    CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSBlurGpuSrv;
+    CD3DX12_GPU_DESCRIPTOR_HANDLE mhSSSBlurGpuRtv;
 
 	UINT mRenderTargetWidth;
 	UINT mRenderTargetHeight;

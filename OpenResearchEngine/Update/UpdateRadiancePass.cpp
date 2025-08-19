@@ -12,9 +12,8 @@ void EngineApp::UpdateRadiancePassCB(const GameTimer& gt)
         mRadianceCBs[lightIndex].Proj = mMainPassCB.Proj;
         mRadianceCBs[lightIndex].InvProj = mMainPassCB.InvProj;
         mRadianceCBs[lightIndex].EyePosW = mMainPassCB.EyePosW;
-        mRadianceCBs[lightIndex].LightTransform = mMainPassCB.LightTransforms[i];
-        mRadianceCBs[lightIndex].Light = mMainPassCB.Lights[i];
-        mRadianceCBs[lightIndex].LightType = 0;
+        mRadianceCBs[lightIndex].LightTransform = mMainPassCB.LightTransforms[lightIndex];
+        mRadianceCBs[lightIndex].Light = mMainPassCB.Lights[lightIndex];
 
         radianceCB->CopyData(lightIndex, mRadianceCBs[lightIndex]);
     }
@@ -26,9 +25,8 @@ void EngineApp::UpdateRadiancePassCB(const GameTimer& gt)
         mRadianceCBs[lightIndex].Proj = mMainPassCB.Proj;
         mRadianceCBs[lightIndex].InvProj = mMainPassCB.InvProj;
         mRadianceCBs[lightIndex].EyePosW = mMainPassCB.EyePosW;
-        mRadianceCBs[lightIndex].LightTransform = mMainPassCB.LightTransforms[i];
-        mRadianceCBs[lightIndex].Light = mMainPassCB.Lights[i];
-        mRadianceCBs[lightIndex].LightType = 1;
+        mRadianceCBs[lightIndex].LightTransform = mMainPassCB.LightTransforms[lightIndex];
+        mRadianceCBs[lightIndex].Light = mMainPassCB.Lights[lightIndex];
 
         radianceCB->CopyData(lightIndex, mRadianceCBs[lightIndex]);
     }

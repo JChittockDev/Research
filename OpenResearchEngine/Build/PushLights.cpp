@@ -42,9 +42,14 @@ void EngineApp::PushLights()
             light.Type = 0;
             dynamicLights.DirectionalLights.push_back(light);
         }
+        else if (item.second.type == "Point")
+        {
+			light.Type = 1;
+			dynamicLights.PointLights.push_back(light);
+		}
         else if (item.second.type == "Spot")
         {
-            light.Type = 1;
+            light.Type = 2;
             dynamicLights.SpotLights.push_back(light);
         }
     }

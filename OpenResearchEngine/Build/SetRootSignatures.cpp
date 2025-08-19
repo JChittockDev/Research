@@ -7,6 +7,7 @@ void EngineApp::SetRootSignatures()
 	SetSsaoRootSignature();
 	SetSsgiRootSignature();
 	SetSssRootSignature();
+	SetPoissonBlurRootSignature();
 	SetEdgeBlurRootSignature();
 	SetColorEdgeBlurRootSignature();
 	SetCompositeRootSignature();

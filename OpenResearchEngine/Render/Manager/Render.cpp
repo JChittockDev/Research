@@ -17,10 +17,10 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     RadiancePass(dynamicLights, currentFrameResource);
     SssPass(currentFrameResource);
     SssBlurPass(currentFrameResource);
-    //LightingPass(currentFrameResource);
-    //SsgiPass(currentFrameResource);
-    //SsgiBlurPass(currentFrameResource);
-    //CompositePass(currentFrameResource);
+    LightingPass(currentFrameResource);
+    SsgiPass(currentFrameResource);
+    SsgiBlurPass(currentFrameResource);
+    CompositePass(currentFrameResource);
 }
 
 void EngineApp::DeformationPass(FrameResource* currentFrameResource)

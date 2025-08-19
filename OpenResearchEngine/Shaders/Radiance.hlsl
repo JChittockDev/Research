@@ -28,11 +28,6 @@ cbuffer cbRadiance : register(b1)
     float3 gEyePosW;
     float uPadding1;
     Light gLight;
-    uint gLightType;
-    float uPadding2;
-    float uPadding3;
-    float uPadding4;
-    
 };
 
 static const float2 gTexCoords[6] =

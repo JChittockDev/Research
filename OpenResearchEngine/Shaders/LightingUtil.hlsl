@@ -26,7 +26,7 @@ struct Light
     float3 Position; // point light only
     float InnerConeAngle; // spot light only
     float OuterConeAngle; // spot light only
-    int Type;
+    uint Type;
     float Pad2;
     float Pad3;
 };
@@ -260,7 +260,7 @@ float3 GetLightVector(Light gLight, float3 pos)
         return normalize(-gLight.Direction);
 
     }
-    else if (gLight.Type == 1)
+    else if (gLight.Type == 2)
     {
         return normalize(gLight.Position - pos);
     }

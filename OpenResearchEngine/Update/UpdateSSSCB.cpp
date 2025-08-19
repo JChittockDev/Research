@@ -27,8 +27,8 @@ void EngineApp::UpdateSssCB(const GameTimer& gt)
     // Default SSAO settings if ImGui is not modifying them
     static float blend = 1.0f;
     static float thickness = 0.5f;
-    static float scale = 0.5f;
-    static DirectX::XMFLOAT3 transmissionColor(0.9, 0.6, 0.5);
+    static float scale = 0.43f;
+    static DirectX::XMFLOAT3 transmissionColor(0.5, 0.6, 0.5);
     static DirectX::XMFLOAT3 scatteringProfile(0.05, 0.01, 0.01);
     static int sampleCount = 64;
 
