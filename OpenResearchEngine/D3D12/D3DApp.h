@@ -1,7 +1,3 @@
-//***************************************************************************************
-// d3dApp.h by Frank Luna (C) 2015 All Rights Reserved.
-//***************************************************************************************
-
 #pragma once
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -18,7 +14,6 @@
 
 #include "../Utilities/GameTimer.h"
 
-// Link necessary d3d12 libraries.
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -93,21 +88,19 @@ protected:
 
     static D3DApp* mApp;
 
-    HINSTANCE mhAppInst = nullptr; // application instance handle
-    HWND      mhMainWnd = nullptr; // main window handle
-	bool      mAppPaused = false;  // is the application paused?
-	bool      mMinimized = false;  // is the application minimized?
-	bool      mMaximized = false;  // is the application maximized?
-	bool      mResizing = false;   // are the resize bars being dragged?
-    bool      mFullscreenState = false;// fullscreen enabled
+    HINSTANCE mhAppInst = nullptr;
+    HWND      mhMainWnd = nullptr;
+	bool      mAppPaused = false;
+	bool      mMinimized = false;
+	bool      mMaximized = false;
+	bool      mResizing = false; 
+    bool      mFullscreenState = false;
 
     GuiManager gui;
 
-	// Set true to use 4X MSAA (§4.1.8).  The default is false.
-    bool      m4xMsaaState = false;    // 4X MSAA enabled
-    UINT      m4xMsaaQuality = 0;      // quality level of 4X MSAA
+    bool      m4xMsaaState = false;
+    UINT      m4xMsaaQuality = 0;
 
-	// Used to keep track of the “delta-time” and game time (§4.4).
 	GameTimer mTimer;
 	
     Microsoft::WRL::ComPtr<IDXGIFactory4> mdxgiFactory;
@@ -139,7 +132,6 @@ protected:
 	UINT mDsvDescriptorSize = 0;
 	UINT mCbvSrvUavDescriptorSize = 0;
 
-	// Derived class should set these in derived constructor to customize starting values.
 	std::wstring mMainWndCaption = L"";
     std::filesystem::path mProgramPath;
     std::filesystem::path mDirectoryPath;
@@ -147,7 +139,7 @@ protected:
 	D3D_DRIVER_TYPE md3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
     DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	int mClientWidth = 800;
-	int mClientHeight = 600;
+	int mClientWidth = 1280;
+	int mClientHeight = 720;
 };
 

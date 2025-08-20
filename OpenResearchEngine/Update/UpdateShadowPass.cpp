@@ -1,5 +1,10 @@
 #include "../EngineApp.h"
 
+inline float DegreesToRadians(float degrees)
+{
+    return degrees * (DirectX::XM_PI / 180.0f);
+}
+
 void EngineApp::UpdateShadowPassCB(const GameTimer& gt)
 {
     auto currPassCB = mCurrFrameResource->PassCB.get();
@@ -89,6 +94,8 @@ void EngineApp::UpdateShadowTransform(const GameTimer& gt)
         float t = sphereCenterLS.y + mSceneBounds.Radius;
         float f = sphereCenterLS.z + mSceneBounds.Radius;
 
+        if (n < 0.1f) n = 0.1f;
+
         dynamicLights.LightTransforms[lightIndex].NearZ = n;
         dynamicLights.LightTransforms[lightIndex].FarZ = f;
         
@@ -112,13 +119,14 @@ void EngineApp::UpdateShadowTransform(const GameTimer& gt)
         DirectX::XMVECTOR lightUp = XMLoadFloat3(&up);
         DirectX::XMMATRIX lightView = DirectX::XMMatrixLookAtLH(lightPos, DirectX::XMVectorAdd(lightPos,  DirectX::XMVector3Normalize(lightDir)), lightUp);
 
-        dynamicLights.LightTransforms[lightIndex].NearZ = 10.0f;
-        dynamicLights.LightTransforms[lightIndex].FarZ = 80.0f;
+        dynamicLights.LightTransforms[lightIndex].NearZ = mMainPassCB.Lights[lightIndex].FalloffStart;
+        dynamicLights.LightTransforms[lightIndex].FarZ = mMainPassCB.Lights[lightIndex].FalloffEnd;
 
         // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
         DirectX::XMMATRIX T(0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f);
             
-        DirectX::XMMATRIX lightProj = DirectX::XMMatrixPerspectiveFovLH(mMainPassCB.Lights[lightIndex].OuterConeAngle, 1.0f, dynamicLights.LightTransforms[lightIndex].NearZ, dynamicLights.LightTransforms[lightIndex].FarZ);
+        float fov = DegreesToRadians(mMainPassCB.Lights[lightIndex].OuterConeAngle * 2.0f);
+        DirectX::XMMATRIX lightProj = DirectX::XMMatrixPerspectiveFovLH(fov, 1.0f, dynamicLights.LightTransforms[lightIndex].NearZ, dynamicLights.LightTransforms[lightIndex].FarZ);
 
         DirectX::XMMATRIX S = lightView * lightProj * T;
         XMStoreFloat4x4(&dynamicLights.LightTransforms[lightIndex].ViewMatrix, lightView);

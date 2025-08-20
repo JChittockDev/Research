@@ -13,7 +13,7 @@ void EngineApp::SsgiBlurPass(FrameResource* currentFrameResource)
     mCommandList->SetGraphicsRootDescriptorTable(2, mSsgi->GetDepthGpuSrv());
     mCommandList->SetGraphicsRootDescriptorTable(3, mSsgi->GetGIGpuSrv());
 
-    float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float clearValue[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     mCommandList->ClearRenderTargetView(mSsgi->GetGIVerticalBlurCpuRtv(), clearValue, 0, nullptr);
     mCommandList->OMSetRenderTargets(1, &mSsgi->GetGIVerticalBlurCpuRtv(), true, nullptr);
 
@@ -26,7 +26,7 @@ void EngineApp::SsgiBlurPass(FrameResource* currentFrameResource)
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    mCommandList->SetGraphicsRootSignature(mEdgeBlurRootSignature.Get());
+    mCommandList->SetGraphicsRootSignature(mColorEdgeBlurRootSignature.Get());
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
 

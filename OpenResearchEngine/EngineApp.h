@@ -9,10 +9,12 @@
 #include "Render/Resources/Mesh.h"
 #include "Render/Resources/ShadowMap.h"
 #include "Render/Resources/Ssao.h"
+#include "Render/Resources/SSS.h"
 #include "Render/Resources/Composite.h"
 #include "Render/Resources/Lighting.h"
 #include "Render/Resources/Ssgi.h"
 #include "Render/Resources/ShadowResources.h"
+#include "Render/Resources/RadianceResources.h"
 #include "Render/Resources/GBuffer.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/Skinning.h"
@@ -51,6 +53,8 @@ private:
     void UpdateLights(const GameTimer& gt);
     void UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms);
     void UpdateScreenSpaceCB(const GameTimer& gt);
+    void UpdateSssCB(const GameTimer& gt);
+    void UpdateRadiancePassCB(const GameTimer& gt);
 
     void PushLights();
     void PushMesh();
@@ -91,6 +95,7 @@ private:
     void SetConstraintSolveRootSignature();
     void SetMeshTransferRootSignature();
     void SetForceRootSignature();
+    void SetSssRootSignature();
     void SetTensionRootSignature();
     void SetGBufferRootSignature();
     void SetLightingRootSignature();
@@ -98,8 +103,10 @@ private:
     void SetSsaoRootSignature();
     void SetSsgiRootSignature();
     void SetEdgeBlurRootSignature();
+    void SetPoissonBlurRootSignature();
     void SetColorEdgeBlurRootSignature();
     void SetCompositeRootSignature();
+    void SetRadianceRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -111,6 +118,9 @@ private:
     void SsaoBlurPass(FrameResource* currentFrameResource);
     void SsgiPass(FrameResource* currentFrameResource);
     void SsgiBlurPass(FrameResource* currentFrameResource);
+    void SssPass(FrameResource* currentFrameResource);
+    void SssBlurPass(FrameResource* currentFrameResource);
+    void RadiancePass(const DynamicLights& lights, FrameResource* currentFrameResource);
 
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
 
@@ -141,10 +151,13 @@ private:
     ComPtr<ID3D12RootSignature> mLightingRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsaoRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mSsgiRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mSssRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mEdgeBlurRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mColorEdgeBlurRootSignature = nullptr;
     ComPtr<ID3D12RootSignature> mCompositeRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mRadianceRootSignature = nullptr;
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
+    ComPtr<ID3D12RootSignature> mPoissonBlurRootSignature = nullptr;
 
     DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
@@ -184,15 +197,18 @@ private:
 
     PassConstants mMainPassCB;
     std::vector<PassConstants> mShadowPassCBs;
-    std::vector<std::unique_ptr<ShadowMap>> mShadowMaps;
+
+    std::vector<RadianceConstants> mRadianceCBs;
 
     std::unique_ptr<GBuffer> mGBuffer;
     std::unique_ptr<Lighting> mLighting;
     std::unique_ptr<Ssao> mSsao;
     std::unique_ptr<Ssgi> mSsgi;
+    std::unique_ptr<SSS> mSss;
     std::unique_ptr<Composite> mComposite;
     std::unique_ptr<RenderTextures> mRenderTextures;
     std::unique_ptr<ShadowResources> mShadowResources;
+    std::unique_ptr<RadianceResources> mRadianceResources;
 
     ComPtr<ID3D12DescriptorHeap> imGuiSrvDescriptorHeap = nullptr;
 };

@@ -112,12 +112,26 @@ void EngineApp::SetPipelineStates()
     gBufferPsoDesc.RTVFormats[3] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gAlbedoSpec
     gBufferPsoDesc.RTVFormats[4] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gReflection
     gBufferPsoDesc.RTVFormats[5] = DXGI_FORMAT_R32G32B32A32_FLOAT;     // gAlbedoSpec
-    gBufferPsoDesc.NumRenderTargets = 6;
+    gBufferPsoDesc.RTVFormats[6] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gTangent
+    gBufferPsoDesc.NumRenderTargets = 7;
     md3dDevice->CreateGraphicsPipelineState(&gBufferPsoDesc, IID_PPV_ARGS(&mPSOs["GBuffer"]));
+
+    // **5️⃣ Configure the Graphics Pipeline State**
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC gRadiancePsoDesc = opaquePsoDesc;
+    gRadiancePsoDesc.pRootSignature = mRadianceRootSignature.Get();
+    gRadiancePsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["RadianceVS"]->GetBufferPointer()), mShaders["RadianceVS"]->GetBufferSize() };
+    gRadiancePsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["RadiancePS"]->GetBufferPointer()), mShaders["RadiancePS"]->GetBufferSize() };
+    gRadiancePsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gDiffuseReflectance
+    gRadiancePsoDesc.RTVFormats[1] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gSpecularReflectance
+    gRadiancePsoDesc.DepthStencilState.DepthEnable = false;
+    gRadiancePsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    gRadiancePsoDesc.NumRenderTargets = 2;
+    md3dDevice->CreateGraphicsPipelineState(&gRadiancePsoDesc, IID_PPV_ARGS(&mPSOs["Radiance"]));
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC lightingPsoDesc = opaquePsoDesc;
     lightingPsoDesc.InputLayout = { nullptr, 0 };
     lightingPsoDesc.pRootSignature = mLightingRootSignature.Get();
+    lightingPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
     lightingPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["LightingVS"]->GetBufferPointer()), mShaders["LightingVS"]->GetBufferSize() };
     lightingPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["LightingPS"]->GetBufferPointer()), mShaders["LightingPS"]->GetBufferSize() };
     lightingPsoDesc.DepthStencilState.DepthEnable = false;
@@ -143,6 +157,16 @@ void EngineApp::SetPipelineStates()
     edgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
     edgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     md3dDevice->CreateGraphicsPipelineState(&edgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["EdgeBlur"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC poissonBlurPsoDesc = opaquePsoDesc;
+    poissonBlurPsoDesc.InputLayout = { nullptr, 0 };
+    poissonBlurPsoDesc.pRootSignature = mPoissonBlurRootSignature.Get();
+    poissonBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    poissonBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["PoissonBlurVS"]->GetBufferPointer()), mShaders["PoissonBlurVS"]->GetBufferSize() };
+    poissonBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["PoissonBlurPS"]->GetBufferPointer()), mShaders["PoissonBlurPS"]->GetBufferSize() };
+    poissonBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    poissonBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&poissonBlurPsoDesc, IID_PPV_ARGS(&mPSOs["PoissonBlur"]));
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC ssgiPsoDesc = opaquePsoDesc;
     ssgiPsoDesc.InputLayout = { nullptr, 0 };
@@ -173,4 +197,14 @@ void EngineApp::SetPipelineStates()
     colorEdgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
     colorEdgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     md3dDevice->CreateGraphicsPipelineState(&colorEdgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["Composite"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC sssPsoDesc = opaquePsoDesc;
+    sssPsoDesc.InputLayout = { nullptr, 0 };
+    sssPsoDesc.pRootSignature = mSssRootSignature.Get();
+    sssPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sssPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["SssVS"]->GetBufferPointer()), mShaders["SssVS"]->GetBufferSize() };
+    sssPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["SssPS"]->GetBufferPointer()), mShaders["SssPS"]->GetBufferSize() };
+    sssPsoDesc.DepthStencilState.DepthEnable = false;
+    sssPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&sssPsoDesc, IID_PPV_ARGS(&mPSOs["Sss"]));
 }

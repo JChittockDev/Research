@@ -6,6 +6,8 @@ void EngineApp::SetRootSignatures()
 	SetGBufferRootSignature();
 	SetSsaoRootSignature();
 	SetSsgiRootSignature();
+	SetSssRootSignature();
+	SetPoissonBlurRootSignature();
 	SetEdgeBlurRootSignature();
 	SetColorEdgeBlurRootSignature();
 	SetCompositeRootSignature();
@@ -22,4 +24,5 @@ void EngineApp::SetRootSignatures()
 	SetSimMeshTransferRootSignature();
 	SetTriangleNormalRootSignature();
 	SetVertexNormalRootSignature();
+	SetRadianceRootSignature();
 }

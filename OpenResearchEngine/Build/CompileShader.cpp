@@ -45,6 +45,16 @@ void EngineApp::CompileShaders ()
     mShaders["LightingVS"] = d3dUtil::CompileShader(wLightingShaderPath, nullptr, "VS", "vs_5_1");
     mShaders["LightingPS"] = d3dUtil::CompileShader(wLightingShaderPath, opaqueDefines, "PS", "ps_5_1");
 
+    shaderPath = GetFullPath("Shaders/Radiance.hlsl");
+    std::wstring wRadianceShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["RadianceVS"] = d3dUtil::CompileShader(wRadianceShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["RadiancePS"] = d3dUtil::CompileShader(wRadianceShaderPath, opaqueDefines, "PS", "ps_5_1");
+
+    shaderPath = GetFullPath("Shaders/Sss.hlsl");
+    std::wstring wSssShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["SssVS"] = d3dUtil::CompileShader(wSssShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["SssPS"] = d3dUtil::CompileShader(wSssShaderPath, opaqueDefines, "PS", "ps_5_1");
+
     shaderPath = GetFullPath("Shaders/Ssao.hlsl");
     std::wstring wSsaoShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["SsaoVS"] = d3dUtil::CompileShader(wSsaoShaderPath, nullptr, "VS", "vs_5_1");
@@ -59,6 +69,11 @@ void EngineApp::CompileShaders ()
     std::wstring wEdgeBlurShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["EdgeBlurVS"] = d3dUtil::CompileShader(wEdgeBlurShaderPath, nullptr, "VS", "vs_5_1");
     mShaders["EdgeBlurPS"] = d3dUtil::CompileShader(wEdgeBlurShaderPath, opaqueDefines, "PS", "ps_5_1");
+
+    shaderPath = GetFullPath("Shaders/PoissonBlur.hlsl");
+    std::wstring wPoissonBlurShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["PoissonBlurVS"] = d3dUtil::CompileShader(wPoissonBlurShaderPath, nullptr, "VS", "vs_5_1");
+    mShaders["PoissonBlurPS"] = d3dUtil::CompileShader(wPoissonBlurShaderPath, opaqueDefines, "PS", "ps_5_1");
 
     shaderPath = GetFullPath("Shaders/GBuffer.hlsl");
     std::wstring wGbufferShaderPath(shaderPath.begin(), shaderPath.end());

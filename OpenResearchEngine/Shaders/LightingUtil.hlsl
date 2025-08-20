@@ -26,7 +26,7 @@ struct Light
     float3 Position; // point light only
     float InnerConeAngle; // spot light only
     float OuterConeAngle; // spot light only
-    float Pad1;
+    uint Type;
     float Pad2;
     float Pad3;
 };
@@ -198,30 +198,6 @@ float3 ComputeDirectionalLight(Light L, LightingParameters mat, float3 normal, f
 }
 
 //---------------------------------------------------------------------------------------
-// Evaluates the lighting equation for point lights.
-//---------------------------------------------------------------------------------------
-float3 ComputePointLight(Light L, LightingParameters mat, float3 pos, float3 normal, float3 toEye)
-{
-    // The vector from the surface to the light.
-    float3 lightVec = L.Position - pos;
-
-    // The distance from surface to light.
-    float d = length(lightVec);
-
-    // Range test.
-    if(d > L.FalloffEnd)
-        return 0.0f;
-
-    // Normalize the light vector.
-    lightVec /= d;
-
-    // Attenuate light by distance.
-    float att = CalcAttenuation(d, L.FalloffStart, L.FalloffEnd);
-    
-    return BRDF_Lighting(normal, toEye, lightVec, mat.Color, mat.Roughness, mat.Reflectance, mat.Metalness, mat.ReflectedColor) * L.Strength * att;
-}
-
-//---------------------------------------------------------------------------------------
 // Evaluates the lighting equation for spot lights.
 //---------------------------------------------------------------------------------------
 float3 ComputeSpotLight(Light L, LightingParameters mat, float3 pos, float3 normal, float3 toEye)
@@ -258,29 +234,36 @@ float4 ComputeLighting(Light gLights[MaxLights], LightingParameters mat, float3 
 {
     float3 result = 0.0f;
 
+#if (NUM_LIGHTS > 0)
     int i = 0;
-
-#if (NUM_DIR_LIGHTS > 0)
-    for(i = 0; i < NUM_DIR_LIGHTS; ++i)
+    
+    for(i = 0; i < NUM_LIGHTS; ++i)
     {
-        result += shadowFactor[i] * ComputeDirectionalLight(gLights[i], mat, normal, toEye);
-    }
-#endif
-
-#if (NUM_POINT_LIGHTS > 0)
-    for(i = NUM_DIR_LIGHTS; i < NUM_DIR_LIGHTS+NUM_POINT_LIGHTS; ++i)
-    {
-        result += shadowFactor[i] * ComputePointLight(gLights[i], mat, pos, normal, toEye);
-    }
-#endif
-
-#if (NUM_SPOT_LIGHTS > 0)
-    for(i = NUM_DIR_LIGHTS + NUM_POINT_LIGHTS; i < NUM_DIR_LIGHTS + NUM_POINT_LIGHTS + NUM_SPOT_LIGHTS; ++i)
-    {
-        result += shadowFactor[i] * ComputeSpotLight(gLights[i], mat, pos, normal, toEye);
+        if (gLights[i].Type == 0)
+        {
+            result += shadowFactor[i] * ComputeDirectionalLight(gLights[i], mat, normal, toEye);
+        }
+        else if (gLights[i].Type == 1)
+        {
+            result += shadowFactor[i] * ComputeSpotLight(gLights[i], mat, pos, normal, toEye);
+        }
     }
 #endif 
 
     return float4(result, 0.0f);
 }
 
+float3 GetLightVector(Light gLight, float3 pos)
+{
+    if (gLight.Type == 0)
+    {
+        return normalize(-gLight.Direction);
+
+    }
+    else if (gLight.Type == 2)
+    {
+        return normalize(gLight.Position - pos);
+    }
+    
+    return float3(0.0, 0.0, 0.0);
+}

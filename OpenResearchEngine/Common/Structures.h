@@ -167,16 +167,16 @@ struct BlendConstants
 
 struct Light
 {
-    DirectX::XMFLOAT3 Strength = { 0.0f, 0.0f, 0.0f };
-    float FalloffStart = 1.0f;
-    DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f };
-    float FalloffEnd = 100.0f;                         
-    DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f };
-    float InnerConeAngle = 5.0f;
-    float OuterConeAngle = 250.0f;
-    float Pad1 = 0.0f;
-    float Pad2 = 0.0f;
-    float Pad3 = 0.0f;
+    DirectX::XMFLOAT3 Strength = { 0.0f, 0.0f, 0.0f }; // 12
+    float FalloffStart = 1.0f; // 4
+    DirectX::XMFLOAT3 Direction = { 0.0f, 0.0f, 0.0f }; // 12
+    float FalloffEnd = 100.0f; //4                         
+    DirectX::XMFLOAT3 Position = { 0.0f, 0.0f, 0.0f }; // 12
+    float InnerConeAngle = 5.0f; // 4
+    float OuterConeAngle = 250.0f; // 4
+    UINT Type = 0; // 4
+    float Pad2 = 0.0f; // 4
+    float Pad3 = 0.0f; // 4
 };
 
 struct LightTransform
@@ -225,6 +225,20 @@ struct PassConstants
     // indices [NUM_DIR_LIGHTS+NUM_POINT_LIGHTS, NUM_DIR_LIGHTS+NUM_POINT_LIGHT+NUM_SPOT_LIGHTS)
     // are spot lights for a maximum of MaxLights per object.
     Light Lights[MaxLights];
+};
+
+struct RadianceConstants
+{
+    DirectX::XMFLOAT4X4 View = Math::Identity4x4();           // 64 bytes
+    DirectX::XMFLOAT4X4 InvView = Math::Identity4x4();        // 64 bytes
+    DirectX::XMFLOAT4X4 Proj = Math::Identity4x4();           // 64 bytes
+    DirectX::XMFLOAT4X4 InvProj = Math::Identity4x4();        // 64 bytes
+    DirectX::XMFLOAT4X4 LightTransform;                       // 64 bytes
+
+    DirectX::XMFLOAT3 EyePosW = { 0.0f, 0.0f, 0.0f };         // 12 bytes
+    float Padding1 = 0.0f;                                    // 4 bytes (to align next struct)
+
+    Light Light;                                              // Ensure `Light` is 16-byte aligned internally
 };
 
 struct SsaoConstants
@@ -276,6 +290,36 @@ struct SsgiBlurConstants
     UINT HorizontalBlur;                       // 4 bytes
     UINT padding1 = 0;                         // 4 bytes
     UINT padding2 = 0;                         // 4 bytes
+};
+
+struct SssBlurConstants
+{
+    DirectX::XMFLOAT4X4 Proj;                  // 64 bytes
+    DirectX::XMFLOAT4 BlurWeights[3];          // 48 bytes
+    DirectX::XMFLOAT2 InvRenderTargetSize;     // 8 bytes
+    int BlurRadius;                           // 4 bytes
+    UINT HorizontalBlur;                       // 4 bytes
+    UINT padding1 = 0;                         // 4 bytes
+    UINT padding2 = 0;                         // 4 bytes
+};
+
+struct SssConstants
+{
+    DirectX::XMFLOAT4X4 Proj;
+    DirectX::XMFLOAT4X4 InvProj;
+    DirectX::XMFLOAT4X4 ViewProj;
+    DirectX::XMFLOAT4X4 ProjTex;
+    DirectX::XMFLOAT3 EyePosW;
+    float Blend;
+    float Thickness;
+    DirectX::XMFLOAT3 TransmissionColor;
+    DirectX::XMFLOAT3 ScatteringProfile;
+    UINT SampleCount;
+    float Scale;
+    float padding1 = 0.0f;
+    float padding2 = 0.0f;
+    float padding3 = 0.0f;
+    Light Lights[MaxLights];
 };
 
 struct MaterialConstants

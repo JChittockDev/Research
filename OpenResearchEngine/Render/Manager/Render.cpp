@@ -14,6 +14,9 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     GBufferPass(currentFrameResource);
     SsaoPass(currentFrameResource);
     SsaoBlurPass(currentFrameResource);
+    RadiancePass(dynamicLights, currentFrameResource);
+    SssPass(currentFrameResource);
+    SssBlurPass(currentFrameResource);
     LightingPass(currentFrameResource);
     SsgiPass(currentFrameResource);
     SsgiBlurPass(currentFrameResource);
