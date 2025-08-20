@@ -1,9 +1,6 @@
-//***************************************************************************************
-// Ssao.cpp by Frank Luna (C) 2011 All Rights Reserved.
-//***************************************************************************************
-
 #include "Ssao.h"
 #include <DirectXPackedVector.h>
+#include <random>
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -151,12 +148,14 @@ void Ssao::OnResize(UINT newWidth, UINT newHeight)
 
 void Ssao::BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList)
 {
-    D3D12_RESOURCE_DESC texDesc;
-    ZeroMemory(&texDesc, sizeof(D3D12_RESOURCE_DESC));
+    constexpr UINT texWidth = 512;
+    constexpr UINT texHeight = 512;
+
+    D3D12_RESOURCE_DESC texDesc = {};
     texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
     texDesc.Alignment = 0;
-    texDesc.Width = 256;
-    texDesc.Height = 256;
+    texDesc.Width = texWidth;
+    texDesc.Height = texHeight;
     texDesc.DepthOrArraySize = 1;
     texDesc.MipLevels = 1;
     texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -165,32 +164,59 @@ void Ssao::BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList)
     texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
     texDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-    ThrowIfFailed(md3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &texDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&mRandomVector)));
+    ThrowIfFailed(md3dDevice->CreateCommittedResource(
+        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+        D3D12_HEAP_FLAG_NONE,
+        &texDesc,
+        D3D12_RESOURCE_STATE_COPY_DEST,
+        nullptr,
+        IID_PPV_ARGS(&mRandomVector)));
 
+    // Calculate upload buffer size
     const UINT num2DSubresources = texDesc.DepthOrArraySize * texDesc.MipLevels;
     const UINT64 uploadBufferSize = GetRequiredIntermediateSize(mRandomVector.Get(), 0, num2DSubresources);
 
-    ThrowIfFailed(md3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize), D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(mRandomVectorUploadBuffer.GetAddressOf())));
+    ThrowIfFailed(md3dDevice->CreateCommittedResource(
+        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+        D3D12_HEAP_FLAG_NONE,
+        &CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(mRandomVectorUploadBuffer.GetAddressOf())));
 
-    XMCOLOR initData[256 * 256];
-    for(int i = 0; i < 256; ++i)
+    std::vector<XMFLOAT4> initData(texWidth * texHeight);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+    for (UINT i = 0; i < texHeight; ++i)
     {
-        for(int j = 0; j < 256; ++j)
+        for (UINT j = 0; j < texWidth; ++j)
         {
-            XMFLOAT3 v(Math::RandF(), Math::RandF(), Math::RandF());
+            UINT index = i * texWidth + j;
 
-            initData[i * 256 + j] = XMCOLOR(v.x, v.y, v.z, 0.0f);
+            initData[index] = XMFLOAT4(
+                dis(gen), // R: for radius sampling
+                dis(gen), // G: for disk sampling X
+                dis(gen), // B: for disk sampling Y  
+                dis(gen)  // A: extra random value for future use
+            );
         }
     }
 
     D3D12_SUBRESOURCE_DATA subResourceData = {};
-    subResourceData.pData = initData;
-    subResourceData.RowPitch = 256 * sizeof(XMCOLOR);
-    subResourceData.SlicePitch = subResourceData.RowPitch * 256;
+    subResourceData.pData = initData.data();
+    subResourceData.RowPitch = texWidth * sizeof(XMFLOAT4);
+    subResourceData.SlicePitch = subResourceData.RowPitch * texHeight;
 
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mRandomVector.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST));
-    UpdateSubresources(cmdList, mRandomVector.Get(), mRandomVectorUploadBuffer.Get(), 0, 0, num2DSubresources, &subResourceData);
-    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mRandomVector.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ));
+    UpdateSubresources(cmdList, mRandomVector.Get(), mRandomVectorUploadBuffer.Get(),
+        0, 0, num2DSubresources, &subResourceData);
+
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
+        mRandomVector.Get(),
+        D3D12_RESOURCE_STATE_COPY_DEST,
+        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 }
  
 void Ssao::BuildOffsetVectors()

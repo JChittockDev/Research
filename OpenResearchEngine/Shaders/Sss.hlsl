@@ -53,7 +53,8 @@ Texture2D gNormal : register(t1);
 Texture2D gAlbedo : register(t2);
 Texture2D gTangent : register(t3);
 Texture2D gMaterialId : register(t4);
-Texture2D gRadiance[16] : register(t5); // lighting without albedo
+Texture2D gRandomVector : register(t5);
+Texture2D gRadiance[16] : register(t6); // lighting without albedo
 
 StructuredBuffer<MaterialData> gMaterialData : register(t0, space1);
 
@@ -231,10 +232,11 @@ float4 PS(VertexOut pin) : SV_Target
         
         while (validSamples < sampleCount && attempts < maxAttempts)
         {
-            // Generate random numbers for this attempt
-            float2 pixelSeed = pin.TexC * 1000.0 + float2(attempts + lightIndex * maxAttempts, (attempts + lightIndex * maxAttempts) * 2);
-            float2 rand2 = hash2(pixelSeed);
-            float rand1 = hash(pixelSeed + float2(123.45, 678.90));
+            float2 sampleCoord1 = 4.0f * pin.TexC + float2(attempts * 0.1f, lightIndex * 0.05f);
+            float2 sampleCoord2 = 4.0f * pin.TexC + float2(attempts * 0.05f + 0.5f, lightIndex * 0.1f + 0.3f);
+
+            float rand1 = gRandomVector.SampleLevel(gsamLinearWrap, sampleCoord1, 0.0f).r;
+            float2 rand2 = gRandomVector.SampleLevel(gsamLinearWrap, sampleCoord2, 0.0f).gb;
             
             attempts++;
             

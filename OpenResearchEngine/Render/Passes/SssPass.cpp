@@ -16,7 +16,8 @@ void EngineApp::SssPass(FrameResource* currentFrameResource)
     mCommandList->SetGraphicsRootDescriptorTable(3, mGBuffer->GetAlbedoSpecGpuSrv());
     mCommandList->SetGraphicsRootDescriptorTable(4, mGBuffer->GetTangentGpuSrv());
     mCommandList->SetGraphicsRootDescriptorTable(5, mGBuffer->GetMaterialIdGpuSrv());
-    mCommandList->SetGraphicsRootDescriptorTable(6, mRadianceResources->GetStartGpuSrv());
+    mCommandList->SetGraphicsRootDescriptorTable(6, mSss->GetRandomVectorGpuSrv());
+    mCommandList->SetGraphicsRootDescriptorTable(7, mRadianceResources->GetStartGpuSrv());
 
     float clearValue[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     mCommandList->ClearRenderTargetView(mSss->GetSSSCpuRtv(), clearValue, 0, nullptr);

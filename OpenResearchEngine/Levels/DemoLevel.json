@@ -14,8 +14,6 @@
         "Lit": 2
       },
       "Bricks": {
-        "Diffuse": "Textures/bricks2.dds",
-        "Normal": "Textures/bricks2_nmap.dds"
       },
       "Mirror": {
         "Tint": [ 0.5, 0.5, 0.5, 1.0 ],
@@ -24,7 +22,7 @@
         "MetalnessCoeff": 0.8
       },
       "Sky": {
-        "Diffuse": "Textures/desertcube1024.dds",
+        "Diffuse": "Textures/sunsetcube1024.dds",
         "Lit": 0
 
       }
@@ -83,7 +81,9 @@
         "Settings": {
           "Head": {
             "Material": "Skin"
-          }
+          },
+          "LeftEyeball": {},
+          "RightEyeball": {}
         }
       }
     },

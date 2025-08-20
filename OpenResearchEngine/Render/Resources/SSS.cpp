@@ -1,8 +1,5 @@
-//***************************************************************************************
-// SSS.cpp by Frank Luna (C) 2011 All Rights Reserved.
-//***************************************************************************************
-
 #include "SSS.h"
+#include <random>
 #include <DirectXPackedVector.h>
 
 using namespace DirectX;
@@ -13,6 +10,7 @@ SSS::SSS(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, UINT width, U
 {
     md3dDevice = device;
     OnResize(width, height);
+    BuildRandomVectorTexture(cmdList);
 }
 
 UINT SSS::SSSWidth()const
@@ -32,10 +30,12 @@ void SSS::BuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilBu
 
     mhSSSCpuSrv = cpuSrvHandle;
     mhSSSBlurCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhRandomVectorCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
     mhDepthCpuSrv = cpuSrvHandle.Offset(1, srvDescriptorSize);
 
     mhSSSGpuSrv = gpuSrvHandle;
     mhSSSBlurGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
+    mhRandomVectorGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
     mhDepthGpuSrv = gpuSrvHandle.Offset(1, srvDescriptorSize);
 
     cpuRtvHandle = cpuRtvHandle.Offset(1, rtvDescriptorSize);
@@ -99,6 +99,7 @@ void SSS::RebuildDescriptors(Microsoft::WRL::ComPtr<ID3D12Resource> depthStencil
     CreateSSSRTV(DXGI_FORMAT_R8G8B8A8_UNORM, mSSSBlur, mhSSSBlurCpuRtv);
     CreateSSSSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mSSSBlur, mhSSSBlurCpuSrv);
 
+    CreateSSSSRV(DXGI_FORMAT_R8G8B8A8_UNORM, mRandomVector, mhRandomVectorCpuSrv);
     CreateSSSSRV(DXGI_FORMAT_R24_UNORM_X8_TYPELESS, depthStencilBuffer, mhDepthCpuSrv);
 }
 
@@ -129,4 +130,77 @@ void SSS::OnResize(UINT newWidth, UINT newHeight)
 
         BuildResources();
     }
+}
+
+void SSS::BuildRandomVectorTexture(ID3D12GraphicsCommandList* cmdList)
+{
+    constexpr UINT texWidth = 512;
+    constexpr UINT texHeight = 512;
+
+    D3D12_RESOURCE_DESC texDesc = {};
+    texDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+    texDesc.Alignment = 0;
+    texDesc.Width = texWidth;
+    texDesc.Height = texHeight;
+    texDesc.DepthOrArraySize = 1;
+    texDesc.MipLevels = 1;
+    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.SampleDesc.Quality = 0;
+    texDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+    texDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+    ThrowIfFailed(md3dDevice->CreateCommittedResource(
+        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+        D3D12_HEAP_FLAG_NONE,
+        &texDesc,
+        D3D12_RESOURCE_STATE_COPY_DEST,
+        nullptr,
+        IID_PPV_ARGS(&mRandomVector)));
+
+    // Calculate upload buffer size
+    const UINT num2DSubresources = texDesc.DepthOrArraySize * texDesc.MipLevels;
+    const UINT64 uploadBufferSize = GetRequiredIntermediateSize(mRandomVector.Get(), 0, num2DSubresources);
+
+    ThrowIfFailed(md3dDevice->CreateCommittedResource(
+        &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+        D3D12_HEAP_FLAG_NONE,
+        &CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(mRandomVectorUploadBuffer.GetAddressOf())));
+
+    std::vector<XMFLOAT4> initData(texWidth * texHeight);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+    for (UINT i = 0; i < texHeight; ++i)
+    {
+        for (UINT j = 0; j < texWidth; ++j)
+        {
+            UINT index = i * texWidth + j;
+
+            initData[index] = XMFLOAT4(
+                dis(gen), // R: for radius sampling
+                dis(gen), // G: for disk sampling X
+                dis(gen), // B: for disk sampling Y  
+                dis(gen)  // A: extra random value for future use
+            );
+        }
+    }
+
+    D3D12_SUBRESOURCE_DATA subResourceData = {};
+    subResourceData.pData = initData.data();
+    subResourceData.RowPitch = texWidth * sizeof(XMFLOAT4);
+    subResourceData.SlicePitch = subResourceData.RowPitch * texHeight;
+
+    UpdateSubresources(cmdList, mRandomVector.Get(), mRandomVectorUploadBuffer.Get(),
+        0, 0, num2DSubresources, &subResourceData);
+
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
+        mRandomVector.Get(),
+        D3D12_RESOURCE_STATE_COPY_DEST,
+        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 }
