@@ -84,7 +84,7 @@ float4 PS(VertexOut pin) : SV_Target
         
         float4 sampleColor = gInputMap.SampleLevel(gsamLinearClamp, sampleUV, 0);
         
-        // Simple uniform weighting (you can add distance-based weighting if needed)
+        // Simple uniform weighting
         float weight = 1.0;
         
         color += sampleColor * weight;

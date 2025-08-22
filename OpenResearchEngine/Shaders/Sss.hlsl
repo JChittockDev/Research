@@ -75,17 +75,6 @@ struct VertexOut
     float2 TexC : TEXCOORD0;
 };
 
-// Simple hash function for generating pseudo-random numbers
-float hash(float2 p)
-{
-    return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453123);
-}
-
-float2 hash2(float2 p)
-{
-    return frac(sin(float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)))) * 43758.5453);
-}
-
 // Burley diffusion profile implementation
 // Based on "Approximate Reflectance Profiles for Efficient Subsurface Scattering" (Burley 2015)
 float3 BurleyDiffusionProfile(float r, float3 scatterDistance)
@@ -182,13 +171,10 @@ float4 PS(VertexOut pin) : SV_Target
 {
     uint MatId = gMaterialId.Sample(gsamAnisotropicWrap, pin.TexC).r;
     MaterialData matData = gMaterialData[MatId];
-    
-    // This means that it is an SSS material. If it is not, it shouldn't render. 
-    // This shader should also check to make sure that it is not sampling from any non SSS objects.
+
     if (matData.Lit != 2)
     {
-        // Not an SSS material, return transparent/black or discard
-        discard; // Alternative: return float4(0, 0, 0, 0);
+        discard; 
     }
     
     // Load center pixel data
@@ -275,7 +261,7 @@ float4 PS(VertexOut pin) : SV_Target
             uint sampleMatId = gMaterialId.SampleLevel(gsamPointClamp, sampleUV, 0).r;
             MaterialData sampleMatData = gMaterialData[sampleMatId];
             if (sampleMatData.Lit != 2)
-                continue; // Skip non-SSS materials in sampling
+                continue; // Skip non-SSS materials in sampling, probably need to change this to only sample from this object
             
             // Calculate actual distance from center
             float actualRadius = length(sampleOffset);
