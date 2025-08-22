@@ -1,4 +1,4 @@
-ifndef SSAO_H
+#ifndef SSAO_H
 #define SSAO_H
 
 #pragma once
