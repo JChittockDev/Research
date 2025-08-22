@@ -16,6 +16,7 @@ List of research projects avalible as of 23/08/2022:
   - Skin simulation
   - Skinning
   - Blendshapes
+  - Tension Mapping
 
 - Lighting
   - Screen space global illumination
