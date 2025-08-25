@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using CanadaWalksAPI.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<CanadaWalksAPI.Data.CanadaWalksDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CanadaWalksConnectionString")));
+builder.Services.AddScoped<CanadaWalksAPI.Repositories.IRegionRepository, CanadaWalksAPI.Repositories.SQLRegionRepository>();
+
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
 
