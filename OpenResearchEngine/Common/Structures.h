@@ -759,3 +759,19 @@ struct LevelData
     std::unique_ptr<LevelMaterialData> materialData;
     std::unique_ptr<LevelLightData> lightData;
 };
+
+struct Tensor {
+    ComPtr<ID3D12Resource> buffer;
+    std::vector<int> shape;
+};
+
+struct Node {
+    std::string opType;
+    std::vector<int> inputs;
+    std::vector<int> outputs;
+};
+
+struct Graph {
+    std::vector<Tensor> tensors;
+    std::vector<Node> nodes;
+};
