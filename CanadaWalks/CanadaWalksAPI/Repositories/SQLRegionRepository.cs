@@ -1,6 +1,6 @@
 ﻿using CanadaWalksAPI.Data;
 using CanadaWalksAPI.Models.Domain;
-using CanadaWalksAPI.Models.DTO;
+using CanadaWalksAPI.Models.RTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace CanadaWalksAPI.Repositories
@@ -53,7 +53,7 @@ namespace CanadaWalksAPI.Repositories
             return await dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<Region?> UpdateRegionAsync(Guid id, Region region)
+        public async Task<Region?> UpdateRegionAsync(Guid id, UpdateRegionRTO region)
         {
             // Find the existing region by ID
             var foundRegion = await dbContext.Regions.FirstOrDefaultAsync(r => r.Id == id);

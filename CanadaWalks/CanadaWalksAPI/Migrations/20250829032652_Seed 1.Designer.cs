@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanadaWalksAPI.Migrations
 {
     [DbContext(typeof(CanadaWalksDbContext))]
-    [Migration("20250818235532_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250829032652_Seed 1")]
+    partial class Seed1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,23 @@ namespace CanadaWalksAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Difficulties");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a2f5e1b6-1c3b-4d5e-8f7a-9b0c1d2e3f40"),
+                            Name = "Easy"
+                        },
+                        new
+                        {
+                            Id = new Guid("c4d5e6f7-8a9b-4c1d-2e3f-4a5b6c7d8e9f"),
+                            Name = "Medium"
+                        },
+                        new
+                        {
+                            Id = new Guid("b3f6a2c7-2d4e-5f6a-9b0a-1b2c3d4e5f60"),
+                            Name = "Hard"
+                        });
                 });
 
             modelBuilder.Entity("CanadaWalksAPI.Models.Domain.Region", b =>
@@ -60,6 +77,36 @@ namespace CanadaWalksAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Regions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d1e2f3a4-b5c6-7d8e-9f0a-1b2c3d4e5f60"),
+                            Code = "BC",
+                            Name = "British Columbia",
+                            RegionImageUrl = "https://example.com/images/bc.jpg"
+                        },
+                        new
+                        {
+                            Id = new Guid("e2f3a4b5-c6d7-8e9f-0a1b-2c3d4e5f6a7b"),
+                            Code = "AB",
+                            Name = "Alberta",
+                            RegionImageUrl = "https://example.com/images/ab.jpg"
+                        },
+                        new
+                        {
+                            Id = new Guid("f3a4b5c6-d7e8-9f0a-1b2c-3d4e5f6a7b8c"),
+                            Code = "ON",
+                            Name = "Ontario",
+                            RegionImageUrl = "https://example.com/images/on.jpg"
+                        },
+                        new
+                        {
+                            Id = new Guid("a4b5c6d7-e8f9-0a1b-2c3d-4e5f6a7b8c9d"),
+                            Code = "QC",
+                            Name = "Quebec",
+                            RegionImageUrl = "https://example.com/images/qc.jpg"
+                        });
                 });
 
             modelBuilder.Entity("CanadaWalksAPI.Models.Domain.Walk", b =>

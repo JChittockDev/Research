@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CanadaWalksAPI.Models.DTO;
+using CanadaWalksAPI.Models.RTO;
 using CanadaWalksAPI.Models.Domain;
 
 using Microsoft.EntityFrameworkCore;
@@ -134,7 +135,7 @@ namespace CanadaWalksAPI.Controllers
             //};
 
             // Use AutoMapper to map the UpdateRegionDTO to a Region domain model
-            var domainRegion = mapper.Map<Region>(updateRegionDTO);
+            var domainRegion = mapper.Map<UpdateRegionRTO>(updateRegionDTO);
 
             // Update the region using the repository
             Region region = await regionRepository.UpdateRegionAsync(id, domainRegion);

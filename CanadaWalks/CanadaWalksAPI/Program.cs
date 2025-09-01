@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<CanadaWalksAPI.Data.CanadaWalksDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CanadaWalksConnectionString")));
 builder.Services.AddScoped<CanadaWalksAPI.Repositories.IRegionRepository, CanadaWalksAPI.Repositories.SQLRegionRepository>();
+builder.Services.AddScoped<CanadaWalksAPI.Repositories.IWalkRepository, CanadaWalksAPI.Repositories.SQLWalkRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
