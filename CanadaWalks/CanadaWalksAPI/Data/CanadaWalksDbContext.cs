@@ -6,15 +6,16 @@ namespace CanadaWalksAPI.Data
     public class CanadaWalksDbContext: DbContext
     {
         // Constructor that accepts DbContextOptions and passes it to the base class
-        public CanadaWalksDbContext(DbContextOptions dbContextOptions): base(dbContextOptions)
+        public CanadaWalksDbContext(DbContextOptions<CanadaWalksDbContext> dbContextOptions): base(dbContextOptions)
         {
             
         }
 
         // DbSet properties for each entity type
-        public DbSet<Models.Domain.Region> Regions { get; set; }
-        public DbSet<Models.Domain.Walk> Walks { get; set; }
-        public DbSet<Models.Domain.Difficulty> Difficulties { get; set; }
+        public DbSet<Region> Regions { get; set; }
+        public DbSet<Walk> Walks { get; set; }
+        public DbSet<Difficulty> Difficulties { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         // Override OnModelCreating to configure the model
         protected override void OnModelCreating(ModelBuilder modelBuilder)

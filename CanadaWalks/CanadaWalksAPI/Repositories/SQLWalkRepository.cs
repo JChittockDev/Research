@@ -43,10 +43,72 @@ namespace CanadaWalksAPI.Repositories
             return true;
         }
 
-        public async Task<List<Walk>> GetAllWalksAsync()
+        public async Task<List<Walk>> GetAllWalksAsync(
+            string? filterOn = null, 
+            string? filterQuery = null, 
+            string? sortBy = null, 
+            bool isAscending = true,
+            int pageNumber = 1,
+            int pageSize = 1000)
         {
             // Include related entities (Difficulty and Region) using eager loading to avoid lazy loading issues (this is like a pointer in C/C++) 
-            return await dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
+            var walks = dbContext.Walks.Include("Difficulty").Include("Region").AsQueryable();
+
+            // Filtering
+            // Check if filterOn and filterQuery are provided
+            if (!string.IsNullOrWhiteSpace(filterOn) && !string.IsNullOrWhiteSpace(filterQuery))
+            {
+                // This handles the case where filterOn is "Name"
+                if (filterOn.Equals("Name"))
+                {
+                    walks = walks.Where(x => x.Name.Contains(filterQuery));
+                }
+                else if (filterOn.Equals("Description"))
+                {
+                    walks = walks.Where(x => x.Description.Contains(filterQuery));
+                }
+                else if (filterOn.Equals("Region"))
+                {
+                    walks = walks.Where(x => x.Region.Name.Contains(filterQuery));
+                }
+                else if (filterOn.Equals("Difficulty"))
+                {
+                    walks = walks.Where(x => x.Difficulty.Name.Contains(filterQuery));
+                }
+                else if (filterOn.Equals("Length") && double.TryParse(filterQuery, out double length))
+                {
+                    // Exact match for Length
+                    walks = walks.Where(x => x.Length == length);
+                }
+            }
+            
+            // Sorting
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                if (sortBy.Equals("Name"))
+                {
+                    walks = isAscending ? walks.OrderBy(x => x.Name) : walks.OrderByDescending(x => x.Name);
+                }
+                else if (sortBy.Equals("Length"))
+                {
+                    walks = isAscending ? walks.OrderBy(x => x.Length) : walks.OrderByDescending(x => x.Length);
+                }
+                else if (sortBy.Equals("Region"))
+                {
+                    walks = isAscending ? walks.OrderBy(x => x.Region.Name) : walks.OrderByDescending(x => x.Region.Name);
+                }
+                else if (sortBy.Equals("Difficulty"))
+                {
+                    walks = isAscending ? walks.OrderBy(x => x.Difficulty.Name) : walks.OrderByDescending(x => x.Difficulty.Name);
+                }
+            }
+
+            // Pagination
+            // Calculate the number of records to skip based on the page number and page size
+            var skipResults = (pageNumber - 1) * pageSize;
+
+            // Apply pagination using Skip and Take
+            return await walks.Skip(skipResults).Take(pageSize).ToListAsync();
         }
 
         public async Task<Walk?> GetWalkByIdAsync(Guid id)

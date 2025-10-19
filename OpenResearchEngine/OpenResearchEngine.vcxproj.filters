@@ -138,9 +138,6 @@
     <ClCompile Include="Render\Resources\MeshAnimationResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities\MLResource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ImGui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -240,6 +237,9 @@
     <ClCompile Include="Render\Passes\SssBlurPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities\OnnxModelResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects\Camera.h">
@@ -308,9 +308,6 @@
     <ClInclude Include="Render\Resources\MeshAnimationResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities\MLResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ImGui\imconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -372,6 +369,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\RadianceResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\OnnxModelResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

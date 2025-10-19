@@ -780,3 +780,144 @@ void EngineApp::SetTensionRootSignature()
     ThrowIfFailed(hr);
     ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(mTensionRootSignature.GetAddressOf())));
 }
+
+void EngineApp::SetGemmRootSignature()
+{
+    // Define root signature parameters
+    CD3DX12_ROOT_PARAMETER rootParameters[5];
+    // Setup root parameters
+    rootParameters[0].InitAsConstants(4, 0);
+    rootParameters[1].InitAsShaderResourceView(0);
+    rootParameters[2].InitAsShaderResourceView(1);
+    rootParameters[3].InitAsShaderResourceView(2);
+    rootParameters[4].InitAsUnorderedAccessView(0);
+    auto staticSamplers = GetStaticSamplers();
+    // Create the root signature description
+    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(5, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+    ComPtr<ID3DBlob> serializedRootSig = nullptr;
+    ComPtr<ID3DBlob> errorBlob = nullptr;
+    HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+    if (errorBlob != nullptr)
+    {
+        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    }
+    ThrowIfFailed(hr);
+	ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(mGemmRootSignature.GetAddressOf())));
+}
+
+void EngineApp::SetReluRootSignature()
+{
+    // Define root signature parameters
+    CD3DX12_ROOT_PARAMETER rootParameters[3];
+    // Setup root parameters
+    rootParameters[0].InitAsConstants(4, 0);
+    rootParameters[1].InitAsShaderResourceView(0);
+    rootParameters[2].InitAsUnorderedAccessView(0);
+    auto staticSamplers = GetStaticSamplers();
+    // Create the root signature description
+    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(3, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+    ComPtr<ID3DBlob> serializedRootSig = nullptr;
+    ComPtr<ID3DBlob> errorBlob = nullptr;
+    HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+    if (errorBlob != nullptr)
+    {
+        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    }
+    ThrowIfFailed(hr);
+	ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig.Get()->GetBufferPointer(), serializedRootSig.Get()->GetBufferSize(), IID_PPV_ARGS(mReluRootSignature.GetAddressOf())));
+}
+
+void EngineApp::SetLeakyReluRootSignature()
+{
+    // Define root signature parameters
+    CD3DX12_ROOT_PARAMETER rootParameters[3];
+    // Setup root parameters
+    rootParameters[0].InitAsConstants(4, 0);
+    rootParameters[1].InitAsShaderResourceView(0);
+    rootParameters[2].InitAsUnorderedAccessView(0);
+    auto staticSamplers = GetStaticSamplers();
+    // Create the root signature description
+    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(3, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+    ComPtr<ID3DBlob> serializedRootSig = nullptr;
+    ComPtr<ID3DBlob> errorBlob = nullptr;
+    HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+    if (errorBlob != nullptr)
+    {
+        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    }
+    ThrowIfFailed(hr);
+	ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(mLeakyReluRootSignature.GetAddressOf())));
+}
+
+void EngineApp::SetSigmoidRootSignature()
+{
+    // Define root signature parameters
+    CD3DX12_ROOT_PARAMETER rootParameters[3];
+    // Setup root parameters
+    rootParameters[0].InitAsConstants(4, 0);
+    rootParameters[1].InitAsShaderResourceView(0);
+    rootParameters[2].InitAsUnorderedAccessView(0);
+    auto staticSamplers = GetStaticSamplers();
+    // Create the root signature description
+    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(3, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+    ComPtr<ID3DBlob> serializedRootSig = nullptr;
+    ComPtr<ID3DBlob> errorBlob = nullptr;
+    HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+    if (errorBlob != nullptr)
+    {
+        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    }
+    ThrowIfFailed(hr);
+	ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig.Get()->GetBufferPointer(), serializedRootSig.Get()->GetBufferSize(), IID_PPV_ARGS(mSigmoidRootSignature.GetAddressOf())));
+}
+
+void EngineApp::SetSoftmaxRootSignature()
+{
+    // Define root signature parameters
+    CD3DX12_ROOT_PARAMETER rootParameters[3];
+    // Setup root parameters
+    rootParameters[0].InitAsConstants(4, 0);
+    rootParameters[1].InitAsShaderResourceView(0);
+    rootParameters[2].InitAsUnorderedAccessView(0);
+    auto staticSamplers = GetStaticSamplers();
+    // Create the root signature description
+    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(3, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+    ComPtr<ID3DBlob> serializedRootSig = nullptr;
+    ComPtr<ID3DBlob> errorBlob = nullptr;
+    HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+    if (errorBlob != nullptr)
+    {
+        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    }
+    ThrowIfFailed(hr);
+	ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig.Get()->GetBufferPointer(), serializedRootSig.Get()->GetBufferSize(), IID_PPV_ARGS(mSoftmaxRootSignature.GetAddressOf())));
+}
+
+void EngineApp::SetTanhRootSignature()
+{
+    // Define root signature parameters
+    CD3DX12_ROOT_PARAMETER rootParameters[3];
+    // Setup root parameters
+    rootParameters[0].InitAsConstants(4, 0);
+    rootParameters[1].InitAsShaderResourceView(0);
+    rootParameters[2].InitAsUnorderedAccessView(0);
+    auto staticSamplers = GetStaticSamplers();
+    // Create the root signature description
+    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(3, rootParameters, (UINT)staticSamplers.size(), staticSamplers.data(), D3D12_ROOT_SIGNATURE_FLAG_NONE);
+    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+    ComPtr<ID3DBlob> serializedRootSig = nullptr;
+    ComPtr<ID3DBlob> errorBlob = nullptr;
+    HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+    if (errorBlob != nullptr)
+    {
+        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+    }
+    ThrowIfFailed(hr);
+    ThrowIfFailed(md3dDevice->CreateRootSignature(0, serializedRootSig.Get()->GetBufferPointer(), serializedRootSig.Get()->GetBufferSize(), IID_PPV_ARGS(mTanhRootSignature.GetAddressOf())));
+}
+

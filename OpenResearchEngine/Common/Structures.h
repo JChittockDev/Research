@@ -760,18 +760,29 @@ struct LevelData
     std::unique_ptr<LevelLightData> lightData;
 };
 
-struct Tensor {
-    ComPtr<ID3D12Resource> buffer;
-    std::vector<int> shape;
-};
-
 struct Node {
     std::string opType;
-    std::vector<int> inputs;
-    std::vector<int> outputs;
+    std::vector<std::string> inputs;
+    std::vector<std::string> outputs;
+    std::map<std::string, float> fAttrs;
 };
 
-struct Graph {
-    std::vector<Tensor> tensors;
+struct TensorInfo {
+    std::vector<int64_t> shape;
+    int elemType;
+};
+
+struct BufferResource {
+    Microsoft::WRL::ComPtr<ID3D12Resource> buffer;
+    Microsoft::WRL::ComPtr<ID3D12Resource> uploader;
+    D3D12_RESOURCE_STATES currentState = D3D12_RESOURCE_STATE_GENERIC_READ;
+};
+
+struct Graph 
+{
+    std::string inputBuffer;
     std::vector<Node> nodes;
+    std::map<std::string, TensorInfo> tensors;
+    std::map<std::string, std::vector<float>> initializers;
+    std::map<std::string, std::shared_ptr<BufferResource>> buffers;
 };

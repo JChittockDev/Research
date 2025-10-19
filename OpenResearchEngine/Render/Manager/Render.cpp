@@ -8,6 +8,11 @@ void EngineApp::Render(FrameResource* currentFrameResource)
     ID3D12DescriptorHeap* descriptorHeaps[] = { renderPassSrvHeap.Get()};
     mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
+
+    mOnnxModelResource->Evaluate(std::vector<float>{ 1.0f, 2.0f, 3.0f, 4.0f});
+    std::vector<float> output = mOnnxModelResource->GetOutputData();
+
+
     // Add render pass instructions
     DeformationPass(currentFrameResource);
     ShadowPass(dynamicLights, currentFrameResource);

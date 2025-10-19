@@ -18,6 +18,8 @@ namespace CanadaWalksAPI.Mappings
             CreateMap<DifficultyDTO, Difficulty>().ReverseMap();
             CreateMap<UpdateWalkRTO, UpdateWalkDTO>().ReverseMap();
             CreateMap<UpdateRegionRTO, UpdateRegionDTO>().ReverseMap();
+            CreateMap<ImageDTO, Image>().ReverseMap();
+            CreateMap<AddImageDTO, Image>().ReverseMap();
         }
 
     }

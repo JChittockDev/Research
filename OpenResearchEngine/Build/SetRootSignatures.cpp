@@ -25,4 +25,10 @@ void EngineApp::SetRootSignatures()
 	SetTriangleNormalRootSignature();
 	SetVertexNormalRootSignature();
 	SetRadianceRootSignature();
+	SetGemmRootSignature();
+	SetReluRootSignature();
+	SetLeakyReluRootSignature();
+	SetTanhRootSignature();
+	SetSigmoidRootSignature();
+	SetSoftmaxRootSignature();
 }

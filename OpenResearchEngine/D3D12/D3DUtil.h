@@ -73,6 +73,14 @@ public:
         UINT64 byteSize,
         Microsoft::WRL::ComPtr<ID3D12Resource>& uploadBuffer);
 
+    static void d3dUtil::UpdateDefaultBuffer(
+        ID3D12Device* device,
+        ID3D12GraphicsCommandList* cmdList,
+        ID3D12Resource* defaultBuffer,
+        const void* data,
+        UINT64 byteSize,
+        Microsoft::WRL::ComPtr<ID3D12Resource>& uploadBuffer);
+
 	static Microsoft::WRL::ComPtr<ID3DBlob> CompileShader(
 		const std::wstring& filename,
 		const D3D_SHADER_MACRO* defines,

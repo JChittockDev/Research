@@ -207,4 +207,66 @@ void EngineApp::SetPipelineStates()
     sssPsoDesc.DepthStencilState.DepthEnable = false;
     sssPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
     md3dDevice->CreateGraphicsPipelineState(&sssPsoDesc, IID_PPV_ARGS(&mPSOs["Sss"]));
+
+    // ML Compute PSOs
+    
+    // Gemm compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC gemmComputePSO = {};
+    gemmComputePSO.pRootSignature = mGemmRootSignature.Get();
+    gemmComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["GemmCS"]->GetBufferPointer()), 
+        mShaders["GemmCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &gemmComputePSO, IID_PPV_ARGS(&mPSOs["Gemm"])));
+
+    // LeakyRelu compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC leakyReluComputePSO = {};
+    leakyReluComputePSO.pRootSignature = mLeakyReluRootSignature.Get();
+    leakyReluComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["LeakyReluCS"]->GetBufferPointer()), 
+        mShaders["LeakyReluCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &leakyReluComputePSO, IID_PPV_ARGS(&mPSOs["LeakyRelu"])));
+
+    // Relu compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC reluComputePSO = {};
+    reluComputePSO.pRootSignature = mReluRootSignature.Get();
+    reluComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["ReluCS"]->GetBufferPointer()), 
+        mShaders["ReluCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &reluComputePSO, IID_PPV_ARGS(&mPSOs["Relu"])));
+
+    // Sigmoid compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC sigmoidComputePSO = {};
+    sigmoidComputePSO.pRootSignature = mSigmoidRootSignature.Get();
+    sigmoidComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["SigmoidCS"]->GetBufferPointer()), 
+        mShaders["SigmoidCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &sigmoidComputePSO, IID_PPV_ARGS(&mPSOs["Sigmoid"])));
+
+    // Tanh compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC tanhComputePSO = {};
+    tanhComputePSO.pRootSignature = mTanhRootSignature.Get();
+    tanhComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["TanhCS"]->GetBufferPointer()), 
+        mShaders["TanhCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &tanhComputePSO, IID_PPV_ARGS(&mPSOs["Tanh"])));
+
+    // Softmax compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC softmaxComputePSO = {};
+    softmaxComputePSO.pRootSignature = mSoftmaxRootSignature.Get();
+    softmaxComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["SoftmaxCS"]->GetBufferPointer()), 
+        mShaders["SoftmaxCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &softmaxComputePSO, IID_PPV_ARGS(&mPSOs["Softmax"])));
 }

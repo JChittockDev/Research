@@ -1,24 +1,36 @@
 // GemmCS.hlsl
 cbuffer GemmCB : register(b0)
 {
-    uint M, N, K;
+    uint M; // rows of A and C
+    uint N; // cols of B and C
+    uint K; // cols of A / rows of B
+    uint hasBias; // 0/1
 };
 
-StructuredBuffer<float> A : register(t0); // [M,K] input
-StructuredBuffer<float> B : register(t1); // [K,N] weights
-StructuredBuffer<float> Bias : register(t2); // [N]
-RWStructuredBuffer<float> C : register(u0); // [M,N]
+StructuredBuffer<float> A : register(t0); // [M*K], row-major
+StructuredBuffer<float> B : register(t1); // [K*N], row-major
+StructuredBuffer<float> Bias : register(t2); // [N], optional (hasBias==1)
+RWStructuredBuffer<float> C : register(u0); // [M*N], row-major
 
+// We use tid.x = m (row), tid.y = n (col)
 [numthreads(16, 16, 1)]
-void main(uint3 tid : SV_DispatchThreadID)
+void CS(uint3 tid : SV_DispatchThreadID)
 {
-    if (tid.x < M && tid.y < N)
+    const uint m = tid.x;
+    const uint n = tid.y;
+
+    if (m >= M || n >= N)
+        return;
+
+    float sum = 0.0f;
+    if (hasBias != 0)
+        sum = Bias[n];
+
+    [loop]
+    for (uint k = 0; k < K; ++k)
     {
-        float sum = Bias[tid.y];
-        for (uint k = 0; k < K; ++k)
-        {
-            sum += A[tid.x * K + k] * B[k * N + tid.y];
-        }
-        C[tid.x * N + tid.y] = sum;
+        sum += A[m * K + k] * B[k * N + n];
     }
+
+    C[m * N + n] = sum;
 }

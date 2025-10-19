@@ -14,6 +14,7 @@
 #include "Render/Resources/Lighting.h"
 #include "Render/Resources/Ssgi.h"
 #include "Render/Resources/ShadowResources.h"
+#include "Utilities/OnnxModelResource.h"
 #include "Render/Resources/RadianceResources.h"
 #include "Render/Resources/GBuffer.h"
 #include "Render/Resources/RenderItem.h"
@@ -107,6 +108,12 @@ private:
     void SetColorEdgeBlurRootSignature();
     void SetCompositeRootSignature();
     void SetRadianceRootSignature();
+	void SetGemmRootSignature();
+	void SetReluRootSignature();
+	void SetLeakyReluRootSignature();
+	void SetSigmoidRootSignature();
+	void SetTanhRootSignature();
+	void SetSoftmaxRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -159,6 +166,13 @@ private:
     ComPtr<ID3D12DescriptorHeap> mSrvDescriptorHeap = nullptr;
     ComPtr<ID3D12RootSignature> mPoissonBlurRootSignature = nullptr;
 
+    ComPtr<ID3D12RootSignature> mGemmRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mReluRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mLeakyReluRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mSigmoidRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mTanhRootSignature = nullptr;
+    ComPtr<ID3D12RootSignature> mSoftmaxRootSignature = nullptr;
+
     DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
     std::unordered_map<std::string, std::shared_ptr<std::pair<Texture, UINT>>> mTextures;
@@ -199,6 +213,8 @@ private:
     std::vector<PassConstants> mShadowPassCBs;
 
     std::vector<RadianceConstants> mRadianceCBs;
+
+	std::unique_ptr<OnnxModelResource> mOnnxModelResource;
 
     std::unique_ptr<GBuffer> mGBuffer;
     std::unique_ptr<Lighting> mLighting;

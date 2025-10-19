@@ -6,6 +6,8 @@ using CanadaWalksAPI.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 using CanadaWalksAPI.Repositories;
 using AutoMapper;
+using CanadaWalksAPI.CustomActionFilters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanadaWalksAPI.Controllers
 {
@@ -28,26 +30,12 @@ namespace CanadaWalksAPI.Controllers
         // Task <IActionResult> is the return type, indicating that the method will return an IActionResult wrapped in a Task
         // GET: https:localhost:7120/api/regions
         [HttpGet]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> GetAllRegions()
         {
             // Retrieve all regions from the database
             // using ToListAsync() to asynchronously fetch the list of regions, this ensures the thread is not blocked while waiting for the database operation to complete
             var regions = await regionRepository.GetAllRegionsAsync();
-
-            // Because fetching the list is async, we need to await the result
-            // This loop does not need to be async, as we are simply mapping the domain objects to DTOs
-            // Map region domain objects to DTOs
-            //var regionsDTO = new List<RegionDTO>();
-            //foreach (var region in regions)
-            //{
-            //    regionsDTO.Add(new RegionDTO
-            //    {
-            //        Id = region.Id,
-            //        Code = region.Code,
-            //        Name = region.Name,
-            //        RegionImageUrl = region.RegionImageUrl // This can be null
-            //    });
-            //}
 
             // Use AutoMapper to map the list of regions to a list of RegionDTOs
             var regionsDTO = mapper.Map<List<RegionDTO>>(regions);
@@ -59,6 +47,7 @@ namespace CanadaWalksAPI.Controllers
         // GET: https:localhost:7120/api/regions/{id}
         [HttpGet]
         [Route("{id:Guid}")] // Route parameter for Guid
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> GetRegionById([FromRoute] Guid id)
         {
             // Find the region by ID
@@ -67,14 +56,6 @@ namespace CanadaWalksAPI.Controllers
             // If the region is found, map it to a DTO
             if (region != null)
             {
-                //var regionDTO = new RegionDTO
-                //{
-                //    Id = region.Id,
-                //    Code = region.Code,
-                //    Name = region.Name,
-                //    RegionImageUrl = region.RegionImageUrl // This can be null
-                //};
-
                 // Use AutoMapper to map the region to a RegionDTO
                 var regionDTO = mapper.Map<RegionDTO>(region);
 
@@ -88,22 +69,16 @@ namespace CanadaWalksAPI.Controllers
 
         // POST: https:localhost:7120/api/regions
         [HttpPost]
+        [ValidateModel]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> CreateRegion([FromBody] AddRegionDTO addRegionDTO)
         {
+
             // Validate the incoming DTO
             if (addRegionDTO == null || string.IsNullOrEmpty(addRegionDTO.Code) || string.IsNullOrEmpty(addRegionDTO.Name))
             {
-                return BadRequest("Invalid region data.");
+                return BadRequest("Invalid region data - NULL");
             }
-
-            //// Map DTO to domain model
-            //var region = new Region
-            //{
-            //    Id = Guid.NewGuid(), // Generate a new unique ID
-            //    Code = addRegionDTO.Code,
-            //    Name = addRegionDTO.Name,
-            //    RegionImageUrl = addRegionDTO.RegionImageUrl // This can be null
-            //};
 
             // Use AutoMapper to map the AddRegionDTO to a Region domain model
             var region = mapper.Map<Region>(addRegionDTO);
@@ -116,23 +91,16 @@ namespace CanadaWalksAPI.Controllers
 
         // PUT: https:localhost:7120/api/regions
         [HttpPut]
+        [ValidateModel]
         [Route("{id:Guid}")] // Route parameter for Guid
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> UpdateRegion([FromRoute] Guid id, [FromBody] UpdateRegionDTO updateRegionDTO)
         {
             // Validate the incoming DTO
             if (updateRegionDTO == null)
             {
-                return BadRequest("Invalid region data.");
+                return BadRequest("Invalid region data - NULL");
             }
-
-            //// Convert UpdateRegionDTO to Region domain model
-            //var domainRegion = new Region
-            //{
-            //    Id = id, // Use the ID from the route
-            //    Code = updateRegionDTO.Code,
-            //    Name = updateRegionDTO.Name,
-            //    RegionImageUrl = updateRegionDTO.RegionImageUrl // This can be null
-            //};
 
             // Use AutoMapper to map the UpdateRegionDTO to a Region domain model
             var domainRegion = mapper.Map<UpdateRegionRTO>(updateRegionDTO);
@@ -146,15 +114,6 @@ namespace CanadaWalksAPI.Controllers
                 return NotFound();
             }
 
-            //// Return the updated region as a 200 response
-            //var updatedRegionDTO = new RegionDTO
-            //{
-            //    Id = region.Id,
-            //    Code = region.Code,
-            //    Name = region.Name,
-            //    RegionImageUrl = region.RegionImageUrl // This can be null
-            //};
-
             // Use AutoMapper to map the updated region to a RegionDTO
             var updatedRegionDTO = mapper.Map<RegionDTO>(region);
 
@@ -164,6 +123,7 @@ namespace CanadaWalksAPI.Controllers
         // DELETE: https:localhost:7120/api/regions/{id}
         [HttpDelete]
         [Route("{id:Guid}")] // Route parameter for Guid
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> DeleteRegion([FromRoute] Guid id)
         {
             // Attempt to delete the region by ID

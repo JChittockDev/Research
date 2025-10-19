@@ -135,6 +135,31 @@ void EngineApp::CompileShaders ()
     std::wstring wPostSolveShaderPath(shaderPath.begin(), shaderPath.end());
     mShaders["postSolveCS"] = d3dUtil::CompileShader(wPostSolveShaderPath, clothDefines, "CS", "cs_5_1");
 
+    shaderPath = GetFullPath("Shaders/ML/Gemm.hlsl");
+    std::wstring wGemmShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["GemmCS"] = d3dUtil::CompileShader(wGemmShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ML/LeakyReLU.hlsl");
+    std::wstring wLeakyReluShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["LeakyReluCS"] = d3dUtil::CompileShader(wLeakyReluShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ML/ReLU.hlsl");
+    std::wstring wReluShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["ReluCS"] = d3dUtil::CompileShader(wReluShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ML/Sigmoid.hlsl");
+    std::wstring wSigmoidShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["SigmoidCS"] = d3dUtil::CompileShader(wSigmoidShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ML/Softmax.hlsl");
+    std::wstring wSoftmaxShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["SoftmaxCS"] = d3dUtil::CompileShader(wSoftmaxShaderPath, nullptr, "CS", "cs_5_1");
+
+    shaderPath = GetFullPath("Shaders/ML/Tanh.hlsl");
+    std::wstring wTanhShaderPath(shaderPath.begin(), shaderPath.end());
+    mShaders["TanhCS"] = d3dUtil::CompileShader(wTanhShaderPath, nullptr, "CS", "cs_5_1");
+
+
     mInputLayout = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanadaWalksAPI", "CanadaWalksAPI\CanadaWalksAPI.csproj", "{48A74B93-0A72-45F7-9900-9107C7470B98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CanadaWalksAPI.UI", "CanadaWalksAPI.UI\CanadaWalksAPI.UI.csproj", "{61E1E66A-1ADB-4A31-A028-D149D8582097}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{48A74B93-0A72-45F7-9900-9107C7470B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48A74B93-0A72-45F7-9900-9107C7470B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48A74B93-0A72-45F7-9900-9107C7470B98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61E1E66A-1ADB-4A31-A028-D149D8582097}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61E1E66A-1ADB-4A31-A028-D149D8582097}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61E1E66A-1ADB-4A31-A028-D149D8582097}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61E1E66A-1ADB-4A31-A028-D149D8582097}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

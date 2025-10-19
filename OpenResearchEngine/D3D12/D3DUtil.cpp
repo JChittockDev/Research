@@ -35,6 +35,35 @@ ComPtr<ID3DBlob> d3dUtil::LoadBinary(const std::wstring& filename)
     return blob;
 }
 
+void d3dUtil::UpdateDefaultBuffer(
+    ID3D12Device* device,
+    ID3D12GraphicsCommandList* cmdList,
+    ID3D12Resource* defaultBuffer,
+    const void* data,
+    UINT64 byteSize,
+    Microsoft::WRL::ComPtr<ID3D12Resource>& uploadBuffer)
+{
+    if (uploadBuffer == nullptr)
+    {
+		throw std::runtime_error("Upload buffer is null");
+    }
+
+    // Copy data to the upload buffer
+    D3D12_SUBRESOURCE_DATA subResourceData = {};
+    subResourceData.pData = data;
+    subResourceData.RowPitch = byteSize;
+    subResourceData.SlicePitch = subResourceData.RowPitch;
+
+    // Schedule to copy the data from upload buffer to default buffer
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer,
+        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST));
+
+    UpdateSubresources<1>(cmdList, defaultBuffer, uploadBuffer.Get(), 0, 0, 1, &subResourceData);
+
+    cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer,
+        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ));
+}
+
 Microsoft::WRL::ComPtr<ID3D12Resource> d3dUtil::CreateDefaultBuffer(
     ID3D12Device* device,
     ID3D12GraphicsCommandList* cmdList,
