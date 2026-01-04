@@ -3,24 +3,4 @@
 This is a repository of personal research projects done in my spare time. These are intended to be purely educational, and not as commerical or production implementations.
 I am happy to implement any suggestions or fixes from the public, and hope you have some fun and play around with some of these tools :)
 
-I will upload further documentation in the future to give clearer instructions on how they are intended to be used, otherwise the comments will have to suffice for now.
-
-List of research projects avalible as of 23/08/2022:
-- 32 bit texture streaming for unreal, this allows you to send 32bit data from the CPU to the material graph via texture samplers
-- Tension Graph, this is a plugin that utilises the Optimus Graph to send vertex motion data through a compute buffer, and output tension data
-- TissueNode, this is a maya plugin that is a basic implementation of an amazing nvidia paper you can see here https://www.youtube.com/watch?v=QR5MFQnZM3k. In future I am planning to implement this in compute shaders in Unity or Unreal, the aim being to see if I can get this to run as a fast soft body solution for real time engines.
-- D3D12 engine intended for rendering research. Contains the following implementations:
-
-- GPU (Compute)
-  - Cloth simulation
-  - Skin simulation
-  - Skinning
-  - Blendshapes
-  - Tension Mapping
-
-- Lighting
-  - Screen space global illumination
-  - Physically based rendering
-  - PCF soft shadows
-  - 
 Cheers guys :D :D 
