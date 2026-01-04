@@ -22,7 +22,5 @@ List of research projects avalible as of 23/08/2022:
   - Screen space global illumination
   - Physically based rendering
   - PCF soft shadows
-
-Unfortunatley due to intellectual property clauses, 90% of my personal projects I cannot disclose to the public, as they are too closley related and/or are new propreiatry techniques and not derived from others work. I will upload anything I can here though, but it will be strictly building on the work of others, or projects unrelated to my current role.
-
+  - 
 Cheers guys :D :D 
