@@ -1,0 +1,123 @@
+{
+  "Level" : "DemoLevel",
+  "Assets":
+  {
+    "Materials": {
+      "Skin": {
+        "Diffuse": "Textures/face_albedo.dds",
+        "Normal": "Textures/face_normal.dds",
+        "Roughness": "Textures/face_roughness.dds",
+        "Reflection": "Textures/face_reflection.dds",
+        "ReflectionCoeff": 0.75,
+        "RoughnessCoeff": 0.55,
+        "BumpCoeff": 0.75,
+        "Lit": 2
+      },
+      "Bricks": {
+      },
+      "Mirror": {
+        "Tint": [ 0.5, 0.5, 0.5, 1.0 ],
+        "ReflectionCoeff": 1.0,
+        "RoughnessCoeff": 0.1,
+        "MetalnessCoeff": 0.8
+      },
+      "Sky": {
+        "Diffuse": "Textures/sunsetcube1024.dds",
+        "Lit": 0
+
+      }
+    },
+    "RenderItems": {
+      "skyDome": {
+        "Geometry": "shapeGeo",
+        "Position": [ 0.0, 0.0, 0.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1000.0, 1000.0, 1000.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "Sky" }
+        }
+      },
+
+      "floor": {
+        "Geometry": "shapeGeo",
+        "Position": [ 0.0, 0.0, 0.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "grid": { "Material": "Bricks" }
+        }
+      },
+      "mirrorDome1": {
+        "Geometry": "shapeGeo",
+        "Position": [ 4.0, 4.0, -5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 2.0, 2.0, 2.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": { "Material": "Mirror" }
+        }
+      },
+
+      "shaderDome1": {
+        "Geometry": "shapeGeo",
+        "Position": [ 7.0, 4.0, -5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 2.0, 2.0, 2.0 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "sphere": {}
+        }
+      },
+
+      "WalkingMan": {
+        "Deformable": true,
+        "Geometry": "Models/test.fbx",
+        "Position": [ 0.0, -4.0, -5.0 ],
+        "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],
+        "Scale": [ 0.05, 0.05, -0.05 ],
+        "RenderLayer": "Opaque",
+        "Settings": {
+          "Head": {
+            "Material": "Skin"
+          },
+          "LeftEyeball": {},
+          "RightEyeball": {}
+        }
+      }
+    },
+    "Lights": {
+      "Light1": {
+        "Type": "Directional",
+        "Position": [ 0.0, 20.0, 0.0 ],
+        "Direction": [ 0.57, -0.57, 0.57 ],
+        "Strength": [ 0.9, 0.9, 0.7 ],
+        "FalloffStart": 0.0,
+        "FalloffEnd": 0.0,
+        "InnerConeAngle": 0.0,
+        "OuterConeAngle": 0.0
+      },
+      "Light2": {
+        "Type": "Directional",
+        "Position": [ 5.0, 20.0, 0.0 ],
+        "Direction": [ 166.0, -99.0, 0.57 ],
+        "Strength": [ 2.0, 2.0, 2.0 ],
+        "FalloffStart": 0.0,
+        "FalloffEnd": 0.0,
+        "InnerConeAngle": 0.0,
+        "OuterConeAngle": 0.0
+      },
+      "Light3": {
+        "Type": "Spot",
+        "Position": [ -3.0, 7.0, 1.0 ],
+        "Direction": [ 24.0, 149.0, 0.0 ],
+        "Strength": [ 2.0, 2.0, 2.0 ],
+        "FalloffStart": 5.00,
+        "FalloffEnd": 100.0,
+        "InnerConeAngle": 45.0,
+        "OuterConeAngle": 50.0
+      }
+    }
+  }
+}

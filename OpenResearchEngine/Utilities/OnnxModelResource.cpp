@@ -1,4 +1,4 @@
-#include "OnnxModelResource.h"
+﻿#include "OnnxModelResource.h"
 
 std::vector<float> OnnxModelResource::LoadTensor(const onnx::TensorProto& tensor)
 {
@@ -60,37 +60,41 @@ std::shared_ptr<BufferResource> OnnxModelResource::CreateBufferResource(const st
         );
     }
     
-    return std::move(buf);
+    return buf;
 }
 
 void OnnxModelResource::CreateGemmNodeBuffers(const Node& node)
 {
-    // Input A
+    // A
     const auto& inputAName = node.inputs[0];
     const auto& inputAInfo = mGraph.tensors[inputAName];
     size_t inputASize = inputAInfo.shape[0] * inputAInfo.shape[1];
-    mGraph.buffers[inputAName] = CreateBufferResource(inputAName, inputASize);
+    if (mGraph.buffers.count(inputAName) == 0)
+        mGraph.buffers[inputAName] = CreateBufferResource(inputAName, inputASize);
 
-    // Input B
+    // B (weights)
     const auto& inputBName = node.inputs[1];
     const auto& inputBInfo = mGraph.tensors[inputBName];
     size_t inputBSize = inputBInfo.shape[0] * inputBInfo.shape[1];
-    mGraph.buffers[inputBName] = CreateBufferResource(inputBName, inputBSize);
+    if (mGraph.buffers.count(inputBName) == 0)
+        mGraph.buffers[inputBName] = CreateBufferResource(inputBName, inputBSize);
 
-    // Bias
+    // Bias (optional)
     if (node.inputs.size() > 2) {
         const auto& biasName = node.inputs[2];
         const auto& biasInfo = mGraph.tensors[biasName];
         size_t biasSize = biasInfo.shape[0];
-        mGraph.buffers[biasName] = CreateBufferResource(biasName, biasSize);
+        if (mGraph.buffers.count(biasName) == 0)
+            mGraph.buffers[biasName] = CreateBufferResource(biasName, biasSize);
     }
 
-    // Output
+    // Output is unique per node; keep as-is
     const auto& outputName = node.outputs[0];
     int64_t M = mGraph.tensors[node.inputs[0]].shape[0];
     int64_t N = mGraph.tensors[node.inputs[1]].shape[1];
     size_t outputSize = M * N;
-    mGraph.buffers[outputName] = CreateBufferResource(outputName, outputSize);
+    if (mGraph.buffers.count(outputName) == 0)
+        mGraph.buffers[outputName] = CreateBufferResource(outputName, outputSize);
 }
 
 void OnnxModelResource::CreateUnaryNodeBuffers(const Node& node)
@@ -336,57 +340,76 @@ void OnnxModelResource::UpdateInputBuffer(const std::vector<float>& inputData)
 {
 	auto buf = GetInputBufferResource();
     // Update buffer with new input data
-    d3dUtil::UpdateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), buf->buffer.Get(), inputData.data(), inputData.size() * sizeof(float), buf->uploader);
+    d3dUtil::UpdateDefaultBuffer(md3dDevice.Get(), mCommandList.Get(), buf->buffer.Get(), buf->currentState, inputData.data(), inputData.size() * sizeof(float), buf->uploader);
 }
 
-// Get output data from the last node's output buffer
-std::vector<float> OnnxModelResource::GetOutputData()
+void FlushCommandQueue(ID3D12Device* device, ID3D12CommandQueue* commandQueue)
 {
-    if (mGraph.nodes.empty()) {
-        throw std::runtime_error("No nodes in graph");
+    // Create a fence
+    Microsoft::WRL::ComPtr<ID3D12Fence> fence;
+    ThrowIfFailed(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));
+
+    // Signal the fence on the command queue
+    const UINT64 fenceValue = 1;
+    ThrowIfFailed(commandQueue->Signal(fence.Get(), fenceValue));
+
+    // Create an event handle to wait for GPU completion
+    HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+    if (eventHandle == nullptr)
+        ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+
+    // Wait until the GPU has completed commands up to this fence value
+    if (fence->GetCompletedValue() < fenceValue)
+    {
+        ThrowIfFailed(fence->SetEventOnCompletion(fenceValue, eventHandle));
+        WaitForSingleObject(eventHandle, INFINITE);
     }
 
-    // Get the last node's output buffer
+    CloseHandle(eventHandle);
+}
+
+// 1) Record copy only (no Map, no local readback ComPtr)
+void OnnxModelResource::ReadBackOutput()
+{
     const auto& lastNode = mGraph.nodes.back();
     const auto& outputName = lastNode.outputs[0];
     auto& output = mGraph.buffers[outputName];
 
+    // Transition for copy
     ChangeResourceState(output, D3D12_RESOURCE_STATE_COPY_SOURCE);
 
-    // Calculate output size
-    const auto& outputInfo = mGraph.tensors[outputName];
-    size_t outputSize = 1;
-    for (auto dim : outputInfo.shape) if (dim > 0) outputSize *= dim;
+    // Compute total bytes
+    const auto& info = mGraph.tensors[outputName];
+    size_t elemCount = 1;
+    for (auto d : info.shape) if (d > 0) elemCount *= d;
+    size_t bytes = elemCount * sizeof(float);
 
-    // Create readback buffer
-    Microsoft::WRL::ComPtr<ID3D12Resource> readbackBuffer;
-    CD3DX12_HEAP_PROPERTIES readbackHeapProps(D3D12_HEAP_TYPE_READBACK);
-    CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(outputSize * sizeof(float));
-    
-    ThrowIfFailed(md3dDevice->CreateCommittedResource(
-        &readbackHeapProps,
-        D3D12_HEAP_FLAG_NONE,
-        &bufferDesc,
-        D3D12_RESOURCE_STATE_COPY_DEST,
-        nullptr,
-        IID_PPV_ARGS(&readbackBuffer)));
+    // (Re)create persistent readback if needed
+    if (!mReadbackBuffer || mReadbackBytes < bytes) {
+        mReadbackBytes = bytes;
+        CD3DX12_HEAP_PROPERTIES readbackHeapProps(D3D12_HEAP_TYPE_READBACK);
+        CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(bytes);
+        ThrowIfFailed(md3dDevice->CreateCommittedResource(
+            &readbackHeapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc,
+            D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&mReadbackBuffer)));
+    }
 
-    // Copy data to readback buffer
-    mCommandList->CopyResource(readbackBuffer.Get(), output->buffer.Get());
-
-    // Wait for copy to complete and map buffer
-    void* mappedData;
-    ThrowIfFailed(readbackBuffer->Map(0, nullptr, &mappedData));
-    
-    // Copy to vector
-    std::vector<float> outputData(outputSize);
-    memcpy(outputData.data(), mappedData, outputSize * sizeof(float));
-    
-    // Cleanup
-    readbackBuffer->Unmap(0, nullptr);
-
-    return outputData;
+    // Record the copy into the *persistent* readback
+    mCommandList->CopyResource(mReadbackBuffer.Get(), output->buffer.Get());
 }
+
+// 2) After the queue is flushed & fence signaled, read back
+std::vector<float> OnnxModelResource::GetOutputData() const
+{
+    std::vector<float> out(mReadbackBytes / sizeof(float));
+    void* mapped = nullptr;
+    ThrowIfFailed(mReadbackBuffer->Map(0, nullptr, &mapped));
+    memcpy(out.data(), mapped, mReadbackBytes);
+    mReadbackBuffer->Unmap(0, nullptr);
+    return out;
+}
+
+
 
 // function to change resource state and set the current state
 void OnnxModelResource::ChangeResourceState(std::shared_ptr<BufferResource>& resource, const D3D12_RESOURCE_STATES& state)

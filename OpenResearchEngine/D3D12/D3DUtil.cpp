@@ -39,6 +39,7 @@ void d3dUtil::UpdateDefaultBuffer(
     ID3D12Device* device,
     ID3D12GraphicsCommandList* cmdList,
     ID3D12Resource* defaultBuffer,
+    const D3D12_RESOURCE_STATES& state,
     const void* data,
     UINT64 byteSize,
     Microsoft::WRL::ComPtr<ID3D12Resource>& uploadBuffer)
@@ -56,12 +57,12 @@ void d3dUtil::UpdateDefaultBuffer(
 
     // Schedule to copy the data from upload buffer to default buffer
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer,
-        D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_COPY_DEST));
+        state, D3D12_RESOURCE_STATE_COPY_DEST));
 
     UpdateSubresources<1>(cmdList, defaultBuffer, uploadBuffer.Get(), 0, 0, 1, &subResourceData);
 
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer,
-        D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ));
+        D3D12_RESOURCE_STATE_COPY_DEST, state));
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> d3dUtil::CreateDefaultBuffer(

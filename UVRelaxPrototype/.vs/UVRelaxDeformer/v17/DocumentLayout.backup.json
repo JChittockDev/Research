@@ -1,0 +1,101 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Programming\\Research\\UVRelaxPrototype\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:source\\node.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Programming\\Research\\UVRelaxPrototype\\source\\plugin.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:source\\plugin.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Programming\\Research\\UVRelaxPrototype\\source\\attr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:source\\attr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:source\\node.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Programming\\Research\\UVRelaxPrototype\\source\\common.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:source\\common.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "plugin.cpp",
+              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\plugin.cpp",
+              "RelativeDocumentMoniker": "source\\plugin.cpp",
+              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\plugin.cpp",
+              "RelativeToolTip": "source\\plugin.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-11-23T01:20:09.323Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "node.cpp",
+              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.cpp",
+              "RelativeDocumentMoniker": "source\\node.cpp",
+              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.cpp",
+              "RelativeToolTip": "source\\node.cpp",
+              "ViewState": "AgIAAK0BAAAAAAAAAAAAAMgBAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-11-23T01:19:48.243Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "attr.cpp",
+              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\attr.cpp",
+              "RelativeDocumentMoniker": "source\\attr.cpp",
+              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\attr.cpp",
+              "RelativeToolTip": "source\\attr.cpp",
+              "ViewState": "AgIAADAAAAAAAAAAAAAAABcAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-11-23T01:19:27.026Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "node.h",
+              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.h",
+              "RelativeDocumentMoniker": "source\\node.h",
+              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.h",
+              "RelativeToolTip": "source\\node.h",
+              "ViewState": "AgIAADkAAAAAAAAAAAAAAEsAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-11-23T01:18:49.376Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "common.h",
+              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\common.h",
+              "RelativeDocumentMoniker": "source\\common.h",
+              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\common.h",
+              "RelativeToolTip": "source\\common.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-11-23T01:18:47.116Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

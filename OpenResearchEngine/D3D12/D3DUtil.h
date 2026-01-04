@@ -77,6 +77,7 @@ public:
         ID3D12Device* device,
         ID3D12GraphicsCommandList* cmdList,
         ID3D12Resource* defaultBuffer,
+        const D3D12_RESOURCE_STATES& state,
         const void* data,
         UINT64 byteSize,
         Microsoft::WRL::ComPtr<ID3D12Resource>& uploadBuffer);

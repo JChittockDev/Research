@@ -187,6 +187,8 @@ void EngineApp::Draw(const GameTimer& gt)
 
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
+    mOnnxModelResource->ReadBackOutput();
+
     mCommandList->Close();
 
     ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
@@ -198,6 +200,9 @@ void EngineApp::Draw(const GameTimer& gt)
     mCurrFrameResource->Fence = ++mCurrentFence;
    
     mCommandQueue->Signal(mFence.Get(), mCurrentFence);
+
+	// Test model output retrieval
+    std::vector<float> output = mOnnxModelResource->GetOutputData();
 }
 
 std::string EngineApp::extractFileName(const std::string& filePath) {

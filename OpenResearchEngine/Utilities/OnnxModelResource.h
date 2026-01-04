@@ -34,7 +34,9 @@ public:
 
     void Evaluate(const std::vector<float>& inputData);
 
-    std::vector<float> GetOutputData();
+    void ReadBackOutput();
+
+    std::vector<float> GetOutputData() const;
 
 private:
 
@@ -50,6 +52,9 @@ private:
     void OnnxModelResource::ChangeResourceState(std::shared_ptr<BufferResource>& resource, const D3D12_RESOURCE_STATES& state);
 
 	Graph mGraph;
+
+    Microsoft::WRL::ComPtr<ID3D12Resource> mReadbackBuffer;
+    size_t mReadbackBytes = 0;
 
     Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice;
     Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> mCommandList;
