@@ -1,0 +1,14 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.SuperManager.cpp.obj": [
+			"QuickAssetAction.cpp.obj",
+			"AdvancedDeletionWidget.cpp.obj",
+			"SuperManager.cpp.obj"
+		],
+		"Module.SuperManager.gen.cpp.obj": [
+			"QuickAssetAction.gen.cpp.obj",
+			"SuperManager.init.gen.cpp.obj"
+		]
+	}
+}
