@@ -1,4 +1,5 @@
-#include <maya/MPxDeformerNode.h>
+#pragma once
+#include <maya/MPxNode.h>
 #include <maya/MTypeId.h>
 #include <maya/MObject.h>
 #include <maya/MPointArray.h>

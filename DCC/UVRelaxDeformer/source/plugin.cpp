@@ -2,7 +2,6 @@
 
 #include "node.h"
 #include <maya/MFnPlugin.h>
-#include <maya/MStreamUtils.h>
 
 MTypeId UVSpringRelaxNode::id(0x00081152);
 
@@ -21,13 +20,6 @@ MStatus initializePlugin(MObject obj)
 
 MStatus uninitializePlugin(MObject obj)
 {
-    MStatus result;
     MFnPlugin plugin(obj);
-
-    MStreamUtils::stdErrorStream();
-    MStreamUtils::stdOutStream();
-
-    result = plugin.deregisterNode(UVSpringRelaxNode::id);
-
-    return result;
+    return plugin.deregisterNode(UVSpringRelaxNode::id);
 }

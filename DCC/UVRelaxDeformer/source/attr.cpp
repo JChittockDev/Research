@@ -34,7 +34,7 @@ MStatus UVSpringRelaxNode::initialize()
     addAttribute(aOutputGeom);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Input geometry attribute (array, accepts mesh)
+    // Rest geometry attribute (reference mesh for computing rest edge lengths)
     aRestGeom = tAttr.create("restGeom", "rgeo", MFnData::kMesh, MObject::kNullObj, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     tAttr.setStorable(true);
@@ -48,7 +48,7 @@ MStatus UVSpringRelaxNode::initialize()
     CHECK_MSTATUS_AND_RETURN_IT(status);
     nAttr.setKeyable(true);
     nAttr.setMin(0.0);
-    nAttr.setMax(1000000000000.0);
+    nAttr.setMax(1.0);  // Fix #8: capped at 1.0 to prevent explosive UV values
     status = addAttribute(aStiffness);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
