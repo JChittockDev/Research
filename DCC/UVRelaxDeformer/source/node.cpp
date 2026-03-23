@@ -11,14 +11,19 @@ UVSpringRelaxNode::~UVSpringRelaxNode()
 {
 }
 
-MStatus UVSpringRelaxNode::setOutputGeom(const MPlug& plug, MDataBlock& block, MDataHandle& inputGeomHandle, const MFloatArray* newU, const MFloatArray* newV)
+// ---------------------------------------------------------------------------
+// Output geometry helper
+// ---------------------------------------------------------------------------
+
+MStatus UVSpringRelaxNode::setOutputGeom(const MPlug& plug, MDataBlock& block,
+    MDataHandle& inputGeomHandle,
+    const MFloatArray* newU, const MFloatArray* newV)
 {
     MStatus status;
 
     MDataHandle outputGeomHandle = block.outputValue(aOutputGeom, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Copy input mesh data to output so we never mutate the upstream mesh
     outputGeomHandle.copy(inputGeomHandle);
 
     if (newU && newV)
@@ -26,7 +31,6 @@ MStatus UVSpringRelaxNode::setOutputGeom(const MPlug& plug, MDataBlock& block, M
         MObject outputGeom = outputGeomHandle.asMesh();
         MFnMesh meshFn(outputGeom, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-
         status = meshFn.setUVs(*newU, *newV);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
@@ -35,6 +39,10 @@ MStatus UVSpringRelaxNode::setOutputGeom(const MPlug& plug, MDataBlock& block, M
     return MS::kSuccess;
 }
 
+// ---------------------------------------------------------------------------
+// Compute
+// ---------------------------------------------------------------------------
+
 MStatus UVSpringRelaxNode::compute(const MPlug& plug, MDataBlock& block)
 {
     if (plug != aOutputGeom)
@@ -42,34 +50,20 @@ MStatus UVSpringRelaxNode::compute(const MPlug& plug, MDataBlock& block)
 
     MStatus status;
 
-    MDataHandle enableHandle = block.inputValue(aEnableRelax, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    bool enable = enableHandle.asBool();
-
-    MDataHandle stiffnessHandle = block.inputValue(aStiffness, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    float stiffness = stiffnessHandle.asFloat();
-
-    MDataHandle stepSizeHandle = block.inputValue(aStepSize, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    float stepSize = stepSizeHandle.asFloat();
-
-    MDataHandle adaptiveStepSizeHandle = block.inputValue(aAdaptiveStepSize, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    bool adaptiveStepSize = adaptiveStepSizeHandle.asBool();
-
-    MDataHandle iterationsHandle = block.inputValue(aIterations, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    int iterations = iterationsHandle.asInt();
-
-    MDataHandle uvSetHandle = block.inputValue(aUVSet, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-    MString uvSetName = uvSetHandle.asString();
+    const bool  enable     = block.inputValue(aEnableRelax,    &status).asBool();  CHECK_MSTATUS_AND_RETURN_IT(status);
+    const float stiffness  = block.inputValue(aStiffness,      &status).asFloat(); CHECK_MSTATUS_AND_RETURN_IT(status);
+    const float stepSize   = block.inputValue(aStepSize,       &status).asFloat(); CHECK_MSTATUS_AND_RETURN_IT(status);
+    const bool  adaptive   = block.inputValue(aAdaptiveStepSize,&status).asBool(); CHECK_MSTATUS_AND_RETURN_IT(status);
+    const int   iterations = block.inputValue(aIterations,     &status).asInt();   CHECK_MSTATUS_AND_RETURN_IT(status);
+    MString     uvSetName  = block.inputValue(aUVSet,          &status).asString(); CHECK_MSTATUS_AND_RETURN_IT(status);
+    const bool  lockBorder = block.inputValue(aLockBorderUVs,  &status).asBool();  CHECK_MSTATUS_AND_RETURN_IT(status);
+    const bool  relaxAxisU = block.inputValue(aRelaxAxisU,     &status).asBool();  CHECK_MSTATUS_AND_RETURN_IT(status);
+    const bool  relaxAxisV = block.inputValue(aRelaxAxisV,     &status).asBool();  CHECK_MSTATUS_AND_RETURN_IT(status);
+    const bool  jacobiDamp = block.inputValue(aJacobiDamping,  &status).asBool();  CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MDataHandle inputGeomHandle = block.inputValue(aInputGeom, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MObject inputGeom = inputGeomHandle.asMesh();
-
     if (inputGeom.isNull())
         return MS::kSuccess;
 
@@ -80,14 +74,11 @@ MStatus UVSpringRelaxNode::compute(const MPlug& plug, MDataBlock& block)
     if (restGeom.isNull() || !enable)
         return setOutputGeom(plug, block, inputGeomHandle, nullptr, nullptr);
 
-    // Check each construction status independently
-    MStatus meshStatus;
-    MFnMesh meshFn(inputGeom, &meshStatus);
-    CHECK_MSTATUS_AND_RETURN_IT(meshStatus);
+    MFnMesh meshFn(inputGeom, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    MStatus restMeshStatus;
-    MFnMesh restMeshFn(restGeom, &restMeshStatus);
-    CHECK_MSTATUS_AND_RETURN_IT(restMeshStatus);
+    MFnMesh restMeshFn(restGeom, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (uvSetName.length() == 0)
     {
@@ -95,20 +86,22 @@ MStatus UVSpringRelaxNode::compute(const MPlug& plug, MDataBlock& block)
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    // Invalidate rest data cache when rest mesh topology or UV set changes
-    int currentRestEdgeCount = restMeshFn.numEdges();
+    // Invalidate cache when rest topology or UV set changes
+    const int edgeCount = restMeshFn.numEdges();
     if (!restEdgeLengths.empty() &&
-        (uvSetName != cachedUVSetName || currentRestEdgeCount != cachedRestEdgeCount))
+        (uvSetName != cachedUVSetName || edgeCount != cachedRestEdgeCount))
     {
         restEdgeLengths.clear();
     }
 
     if (restEdgeLengths.empty())
     {
+        restEdgeLengths.reserve(edgeCount);
         computeRestData(restMeshFn, restGeom, uvSetName, restEdgeLengths);
-        cachedUVSetName = uvSetName;
-        cachedRestEdgeCount = currentRestEdgeCount;
     }
+
+    cachedUVSetName     = uvSetName;
+    cachedRestEdgeCount = edgeCount;
 
     MPointArray points;
     status = meshFn.getPoints(points, MSpace::kObject);
@@ -119,284 +112,208 @@ MStatus UVSpringRelaxNode::compute(const MPlug& plug, MDataBlock& block)
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     std::set<int> borderUVs;
-    findUVShellBorders(meshFn, uvSetName, borderUVs);
+    if (lockBorder)
+        findUVShellBorders(inputGeom, uvSetName, borderUVs);
 
     MFloatArray newU, newV;
-    bool success = relaxUVs(meshFn, uArray, vArray, points, borderUVs, stiffness, stepSize, iterations, newU, newV, adaptiveStepSize);
-
-    if (success)
-        return setOutputGeom(plug, block, inputGeomHandle, &newU, &newV);
-    else
+    if (!relaxUVs(meshFn, uArray, vArray, points, borderUVs,
+                  stiffness, stepSize, iterations, newU, newV, adaptive, jacobiDamp))
         return MS::kFailure;
+
+    if (!relaxAxisU) newU = uArray;
+    if (!relaxAxisV) newV = vArray;
+
+    return setOutputGeom(plug, block, inputGeomHandle, &newU, &newV);
 }
 
+// ---------------------------------------------------------------------------
+// Rest data computation
+// ---------------------------------------------------------------------------
 
-void UVSpringRelaxNode::computeRestData(MFnMesh& meshFn, MObject& meshObj, const MString& uvSetName, std::map<int, EdgeData>& restEdgeLengths)
+void UVSpringRelaxNode::computeRestData(MFnMesh& meshFn, MObject& meshObj,
+    const MString& uvSetName, std::vector<EdgeData>& outEdges)
 {
     MStatus status;
 
     MPointArray restPoints;
-    status = meshFn.getPoints(restPoints, MSpace::kObject);
-    if (!status)
-        return;
+    if (!meshFn.getPoints(restPoints, MSpace::kObject)) return;
 
     MFloatArray restU, restV;
-    status = meshFn.getUVs(restU, restV, &uvSetName);
-    if (!status)
-        return;
+    if (!meshFn.getUVs(restU, restV, &uvSetName)) return;
 
     MItMeshEdge edgeIter(meshObj, &status);
-    if (!status)
-        return;
+    if (!status) return;
 
     for (; !edgeIter.isDone(); edgeIter.next())
     {
-        int edgeId = edgeIter.index(&status);
-        if (!status)
-            continue;
+        const int v0 = edgeIter.index(0, &status); if (!status) continue;
+        const int v1 = edgeIter.index(1, &status); if (!status) continue;
 
-        int v0 = edgeIter.index(0, &status);
-        if (!status)
-            continue;
+        const float restLength3D = (float)(restPoints[v1] - restPoints[v0]).length();
 
-        int v1 = edgeIter.index(1, &status);
-        if (!status)
-            continue;
-
-        // 3D rest length
-        MVector diff = restPoints[v1] - restPoints[v0];
-        float restLength3D = (float)diff.length();
-
-        // Per-face UV lookup: find an adjacent face and use getPolygonUVid to get UV
-        // indices for both vertices in that face's context. This guarantees both indices
-        // come from the same UV shell, which matters for seam-adjacent edges.
-        int edgeUV0 = -1, edgeUV1 = -1;
+        // Per-face UV lookup guarantees same-shell UV indices for both endpoints
+        int   edgeUV0      = -1, edgeUV1 = -1;
         float restLengthUV = 0.0f;
 
         MIntArray connectedFaces;
         edgeIter.getConnectedFaces(connectedFaces);
-
         for (unsigned int fi = 0; fi < connectedFaces.length(); ++fi)
         {
-            int polyId = connectedFaces[fi];
-
+            const int polyId = connectedFaces[fi];
             MIntArray faceVerts;
-            status = meshFn.getPolygonVertices(polyId, faceVerts);
-            if (!status)
-                continue;
+            if (!meshFn.getPolygonVertices(polyId, faceVerts)) continue;
 
-            int localIdx0 = -1, localIdx1 = -1;
+            int li0 = -1, li1 = -1;
             for (unsigned int lv = 0; lv < faceVerts.length(); ++lv)
             {
-                if (faceVerts[lv] == v0) localIdx0 = (int)lv;
-                if (faceVerts[lv] == v1) localIdx1 = (int)lv;
+                if (faceVerts[lv] == v0) li0 = (int)lv;
+                if (faceVerts[lv] == v1) li1 = (int)lv;
             }
-
-            if (localIdx0 < 0 || localIdx1 < 0)
-                continue;
+            if (li0 < 0 || li1 < 0) continue;
 
             int uvId0 = 0, uvId1 = 0;
-            MStatus s0 = meshFn.getPolygonUVid(polyId, localIdx0, uvId0, &uvSetName);
-            MStatus s1 = meshFn.getPolygonUVid(polyId, localIdx1, uvId1, &uvSetName);
-            if (!s0 || !s1)
-                continue;
+            if (!meshFn.getPolygonUVid(polyId, li0, uvId0, &uvSetName)) continue;
+            if (!meshFn.getPolygonUVid(polyId, li1, uvId1, &uvSetName)) continue;
 
-            float du = restU[uvId1] - restU[uvId0];
-            float dv = restV[uvId1] - restV[uvId0];
+            const float du = restU[uvId1] - restU[uvId0];
+            const float dv = restV[uvId1] - restV[uvId0];
             restLengthUV = sqrtf(du * du + dv * dv);
             edgeUV0 = uvId0;
             edgeUV1 = uvId1;
             break;
         }
 
-        EdgeData data;
-        data.length   = restLength3D;
-        data.uvLength = restLengthUV;
-        data.v0       = v0;
-        data.v1       = v1;
-        data.uv0      = edgeUV0;
-        data.uv1      = edgeUV1;
-
-        restEdgeLengths[edgeId] = data;
+        outEdges.push_back({ restLength3D, restLengthUV, v0, v1, edgeUV0, edgeUV1 });
     }
 }
 
-void UVSpringRelaxNode::findUVShellBorders(MFnMesh& meshFn,
-    const MString& uvSetName,
-    std::set<int>& borderUVs)
+// ---------------------------------------------------------------------------
+// Border UV detection
+// ---------------------------------------------------------------------------
+
+void UVSpringRelaxNode::findUVShellBorders(MObject& meshObj,
+    const MString& uvSetName, std::set<int>& borderUVs)
 {
     MStatus status;
-    std::map<int, std::set<int>> vertexUVCounts;
+    std::map<int, std::set<int>> vertexUVs;
 
-    MItMeshPolygon faceIter(meshFn.object(), &status);
-    if (!status)
-        return;
+    MItMeshPolygon faceIter(meshObj, &status);
+    if (!status) return;
 
     for (; !faceIter.isDone(); faceIter.next())
     {
-        MIntArray vertices;
-        status = faceIter.getVertices(vertices);
-        if (!status)
-            continue;
-
-        for (unsigned int i = 0; i < vertices.length(); ++i)
+        MIntArray verts;
+        if (!faceIter.getVertices(verts)) continue;
+        for (unsigned int i = 0; i < verts.length(); ++i)
         {
-            int vertId = vertices[i];
             int uvId = 0;
-            status = faceIter.getUVIndex(i, uvId, &uvSetName);
-            if (status)
-                vertexUVCounts[vertId].insert(uvId);
+            if (faceIter.getUVIndex(i, uvId, &uvSetName))
+                vertexUVs[verts[i]].insert(uvId);
         }
     }
 
-    // Vertices with multiple UV indices are at UV seams — lock all their UVs
-    for (std::map<int, std::set<int>>::const_iterator it = vertexUVCounts.begin();
-        it != vertexUVCounts.end(); ++it)
+    // Seam vertices: same mesh vertex maps to multiple UV indices
+    for (const auto& kv : vertexUVs)
     {
-        const std::set<int>& uvIds = it->second;
-        if (uvIds.size() > 1)
-        {
-            for (std::set<int>::const_iterator uvIt = uvIds.begin();
-                uvIt != uvIds.end(); ++uvIt)
-            {
-                borderUVs.insert(*uvIt);
-            }
-        }
+        if (kv.second.size() > 1)
+            borderUVs.insert(kv.second.begin(), kv.second.end());
     }
 
-    // Also lock UVs on mesh boundary edges
-    MObject meshObj = meshFn.object();
+    // Mesh boundary edges: lock all UV indices on open borders
     MItMeshEdge edgeIter(meshObj, &status);
-    if (!status)
-        return;
-
+    if (!status) return;
     for (; !edgeIter.isDone(); edgeIter.next())
     {
-        if (edgeIter.onBoundary(&status))
+        if (!edgeIter.onBoundary(&status)) continue;
+        const int v0 = edgeIter.index(0, &status);
+        const int v1 = edgeIter.index(1, &status);
+        for (int v : { v0, v1 })
         {
-            int v0 = edgeIter.index(0, &status);
-            int v1 = edgeIter.index(1, &status);
-
-            if (vertexUVCounts.find(v0) != vertexUVCounts.end())
-            {
-                const std::set<int>& uvIds = vertexUVCounts[v0];
-                borderUVs.insert(uvIds.begin(), uvIds.end());
-            }
-            if (vertexUVCounts.find(v1) != vertexUVCounts.end())
-            {
-                const std::set<int>& uvIds = vertexUVCounts[v1];
-                borderUVs.insert(uvIds.begin(), uvIds.end());
-            }
+            auto it = vertexUVs.find(v);
+            if (it != vertexUVs.end())
+                borderUVs.insert(it->second.begin(), it->second.end());
         }
     }
 }
 
+// ---------------------------------------------------------------------------
+// Spring relaxation
+// ---------------------------------------------------------------------------
+
 bool UVSpringRelaxNode::relaxUVs(MFnMesh& meshFn,
-    const MFloatArray& uArray,
-    const MFloatArray& vArray,
+    const MFloatArray& uArray, const MFloatArray& vArray,
     const MPointArray& currentPoints,
     const std::set<int>& borderUVs,
-    float stiffness,
-    float stepSize,
-    int iterations,
-    MFloatArray& newU,
-    MFloatArray& newV,
-    bool adaptiveStep)
+    float stiffness, float stepSize, int iterations,
+    MFloatArray& newU, MFloatArray& newV,
+    bool adaptiveStep, bool jacobiDamping)
 {
-    unsigned int numUVs = uArray.length();
-    if (numUVs == 0)
-        return false;
+    const unsigned int numUVs = uArray.length();
+    if (numUVs == 0) return false;
+
+    // Build O(1) border lookup to avoid repeated set searches in the hot loop
+    std::vector<bool> isBorder(numUVs, false);
+    for (int idx : borderUVs)
+        if ((unsigned int)idx < numUVs) isBorder[idx] = true;
 
     newU = uArray;
     newV = vArray;
 
+    std::vector<float> forceU(numUVs);
+    std::vector<float> forceV(numUVs);
+    std::vector<int>   nForce(numUVs);
+
     for (int iter = 0; iter < iterations; ++iter)
     {
-        std::vector<float> forceU(numUVs, 0.0f);
-        std::vector<float> forceV(numUVs, 0.0f);
+        std::fill(forceU.begin(), forceU.end(), 0.0f);
+        std::fill(forceV.begin(), forceV.end(), 0.0f);
+        std::fill(nForce.begin(), nForce.end(), 0);
 
         float step = stepSize * stiffness;
         if (adaptiveStep)
             step *= (1.0f - (float)iter / (float)iterations * 0.5f);
 
-        for (const auto& edge : restEdgeLengths)
+        for (const EdgeData& data : restEdgeLengths)
         {
-            const EdgeData& data = edge.second;
+            if (data.uv0 < 0 || data.uv1 < 0) continue;
 
-            // UV indices were resolved per-face in computeRestData — correct shell guaranteed
-            if (data.uv0 < 0 || data.uv1 < 0)
-                continue;
+            const int  uv0 = data.uv0, uv1 = data.uv1;
+            const bool b0  = isBorder[uv0];
+            const bool b1  = isBorder[uv1];
+            if (b0 && b1) continue;
 
-            int uv0 = data.uv0;
-            int uv1 = data.uv1;
+            const float currentLength3D = (float)(currentPoints[data.v1] - currentPoints[data.v0]).length();
+            const float stretchRatio3D  = (data.length > 0.0001f) ? currentLength3D / data.length : 1.0f;
 
-            bool uv0IsBorder = borderUVs.count(uv0) > 0;
-            bool uv1IsBorder = borderUVs.count(uv1) > 0;
+            const float du    = newU[uv1] - newU[uv0];
+            const float dv    = newV[uv1] - newV[uv0];
+            const float lenUV = sqrtf(du * du + dv * dv);
+            if (lenUV < 0.0001f) continue;
 
-            // No free endpoint — nothing to correct
-            if (uv0IsBorder && uv1IsBorder)
-                continue;
+            const float stretchRatioUV = (data.uvLength > 0.0001f) ? lenUV / data.uvLength : 1.0f;
+            if (fabsf(stretchRatio3D - stretchRatioUV) <= 0.001f) continue;
 
-            // Current 3D stretch ratio
-            MPoint p0 = currentPoints[data.v0];
-            MPoint p1 = currentPoints[data.v1];
-            float currentLength3D = (float)(p1 - p0).length();
+            const float edgeU        = du / lenUV;
+            const float edgeV        = dv / lenUV;
+            const float lengthChange = data.uvLength * stretchRatio3D - lenUV;
 
-            float stretchRatio3D = 1.0f;
-            if (data.length > 0.0001f)
-                stretchRatio3D = currentLength3D / data.length;
+            const float share = 0.5f;
+            const float dU    = edgeU * lengthChange * share * step;
+            const float dV    = edgeV * lengthChange * share * step;
 
-            // Current UV edge vector
-            float u0 = newU[uv0], v0 = newV[uv0];
-            float u1 = newU[uv1], v1 = newV[uv1];
-            float du = u1 - u0;
-            float dv = v1 - v0;
-            float currentLengthUV = sqrtf(du * du + dv * dv);
-
-            float stretchRatioUV = 1.0f;
-            if (data.uvLength > 0.0001f)
-                stretchRatioUV = currentLengthUV / data.uvLength;
-
-            float stretchDifference = stretchRatio3D - stretchRatioUV;
-
-            if (fabsf(stretchDifference) > 0.001f)
-            {
-                float edgeLength = sqrtf(du * du + dv * dv);
-                if (edgeLength > 0.0001f)
-                {
-                    float edgeU = du / edgeLength;
-                    float edgeV = dv / edgeLength;
-
-                    float targetLength  = data.uvLength * stretchRatio3D;
-                    float lengthChange  = targetLength - currentLengthUV;
-                    float displacementU = edgeU * lengthChange * 0.5f;
-                    float displacementV = edgeV * lengthChange * 0.5f;
-
-                    // Only apply force to free (non-border) endpoints
-                    if (!uv0IsBorder)
-                    {
-                        forceU[uv0] -= displacementU * step;
-                        forceV[uv0] -= displacementV * step;
-                    }
-                    if (!uv1IsBorder)
-                    {
-                        forceU[uv1] += displacementU * step;
-                        forceV[uv1] += displacementV * step;
-                    }
-                }
-            }
+            if (!b0) { forceU[uv0] -= dU; forceV[uv0] -= dV; ++nForce[uv0]; }
+            if (!b1) { forceU[uv1] += dU; forceV[uv1] += dV; ++nForce[uv1]; }
         }
 
-        // Apply forces — border UVs are never moved
-        for (unsigned int uvId = 0; uvId < numUVs; ++uvId)
+        const float jacobiFactor = jacobiDamping ? 1.0f / (1.0f + step) : 1.0f;
+        for (unsigned int i = 0; i < numUVs; ++i)
         {
-            if (borderUVs.count(uvId) == 0)
+            if (!isBorder[i] && nForce[i] > 0)
             {
-                newU[uvId] += forceU[uvId];
-                newV[uvId] += forceV[uvId];
+                newU[i] += forceU[i] / (float)nForce[i] * jacobiFactor;
+                newV[i] += forceV[i] / (float)nForce[i] * jacobiFactor;
             }
         }
     }
-
     return true;
 }

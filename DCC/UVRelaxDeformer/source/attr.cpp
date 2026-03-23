@@ -11,19 +11,23 @@ MObject UVSpringRelaxNode::aIterations;
 MObject UVSpringRelaxNode::aUVSet;
 MObject UVSpringRelaxNode::aEnableRelax;
 MObject UVSpringRelaxNode::aAdaptiveStepSize;
+MObject UVSpringRelaxNode::aLockBorderUVs;
+MObject UVSpringRelaxNode::aRelaxAxisU;
+MObject UVSpringRelaxNode::aRelaxAxisV;
+MObject UVSpringRelaxNode::aJacobiDamping;
 
 MStatus UVSpringRelaxNode::initialize()
 {
     MStatus status;
     MFnNumericAttribute nAttr;
-    MFnTypedAttribute tAttr;
+    MFnTypedAttribute   tAttr;
 
     aInputGeom = tAttr.create("inputGeom", "igeo", MFnData::kMesh, MObject::kNullObj, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     tAttr.setStorable(true);
     tAttr.setReadable(true);
     tAttr.setWritable(true);
-    addAttribute(aInputGeom);
+    status = addAttribute(aInputGeom);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     aOutputGeom = tAttr.create("outputGeom", "ogeo", MFnData::kMesh, MObject::kNullObj, &status);
@@ -31,10 +35,9 @@ MStatus UVSpringRelaxNode::initialize()
     tAttr.setStorable(false);
     tAttr.setWritable(false);
     tAttr.setReadable(true);
-    addAttribute(aOutputGeom);
+    status = addAttribute(aOutputGeom);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Rest geometry attribute (reference mesh for computing rest edge lengths)
     aRestGeom = tAttr.create("restGeom", "rgeo", MFnData::kMesh, MObject::kNullObj, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     tAttr.setStorable(true);
@@ -43,12 +46,11 @@ MStatus UVSpringRelaxNode::initialize()
     status = addAttribute(aRestGeom);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Stiffness attribute (0.0 to 1.0)
     aStiffness = nAttr.create("stiffness", "stf", MFnNumericData::kFloat, 0.5, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     nAttr.setKeyable(true);
     nAttr.setMin(0.0);
-    nAttr.setMax(1.0);  // Fix #8: capped at 1.0 to prevent explosive UV values
+    nAttr.setMax(1.0);
     status = addAttribute(aStiffness);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -66,7 +68,6 @@ MStatus UVSpringRelaxNode::initialize()
     status = addAttribute(aAdaptiveStepSize);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Iterations attribute
     aIterations = nAttr.create("iterations", "iter", MFnNumericData::kInt, 3, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     nAttr.setKeyable(true);
@@ -75,7 +76,6 @@ MStatus UVSpringRelaxNode::initialize()
     status = addAttribute(aIterations);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // UV Set name attribute
     MFnStringData stringData;
     MObject defaultString = stringData.create("", &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -85,22 +85,48 @@ MStatus UVSpringRelaxNode::initialize()
     status = addAttribute(aUVSet);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Enable/disable attribute
     aEnableRelax = nAttr.create("enable", "enble", MFnNumericData::kBoolean, true, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     nAttr.setKeyable(true);
     status = addAttribute(aEnableRelax);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Set up attribute affects relationships
-    attributeAffects(aInputGeom, aOutputGeom);
-    attributeAffects(aRestGeom, aOutputGeom);
-    attributeAffects(aStiffness, aOutputGeom);
-	attributeAffects(aAdaptiveStepSize, aOutputGeom);
-    attributeAffects(aStepSize, aOutputGeom);
-    attributeAffects(aIterations, aOutputGeom);
-    attributeAffects(aUVSet, aOutputGeom);
-    attributeAffects(aEnableRelax, aOutputGeom);
+    aLockBorderUVs = nAttr.create("lockBorderUVs", "lbuv", MFnNumericData::kBoolean, true, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    nAttr.setKeyable(true);
+    status = addAttribute(aLockBorderUVs);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    aRelaxAxisU = nAttr.create("relaxAxisU", "rau", MFnNumericData::kBoolean, true, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    nAttr.setKeyable(true);
+    status = addAttribute(aRelaxAxisU);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    aRelaxAxisV = nAttr.create("relaxAxisV", "rav", MFnNumericData::kBoolean, true, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    nAttr.setKeyable(true);
+    status = addAttribute(aRelaxAxisV);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    aJacobiDamping = nAttr.create("jacobiDamping", "jd", MFnNumericData::kBoolean, true, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    nAttr.setKeyable(true);
+    status = addAttribute(aJacobiDamping);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    attributeAffects(aInputGeom,        aOutputGeom);
+    attributeAffects(aRestGeom,         aOutputGeom);
+    attributeAffects(aStiffness,        aOutputGeom);
+    attributeAffects(aAdaptiveStepSize, aOutputGeom);
+    attributeAffects(aStepSize,         aOutputGeom);
+    attributeAffects(aIterations,       aOutputGeom);
+    attributeAffects(aUVSet,            aOutputGeom);
+    attributeAffects(aEnableRelax,      aOutputGeom);
+    attributeAffects(aLockBorderUVs,    aOutputGeom);
+    attributeAffects(aRelaxAxisU,       aOutputGeom);
+    attributeAffects(aRelaxAxisV,       aOutputGeom);
+    attributeAffects(aJacobiDamping,    aOutputGeom);
 
     return MS::kSuccess;
 }

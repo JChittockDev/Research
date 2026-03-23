@@ -9,16 +9,14 @@ public:
     UVSpringRelaxNode();
     virtual ~UVSpringRelaxNode();
 
-    static void* creator() { return new UVSpringRelaxNode(); }
+    static void*   creator()    { return new UVSpringRelaxNode(); }
     static MStatus initialize();
 
     virtual MStatus compute(const MPlug& plug, MDataBlock& data) override;
 
-    // Node information
     static MTypeId id;
     static MString typeName;
 
-    // Attributes
     static MObject aInputGeom;
     static MObject aOutputGeom;
     static MObject aRestGeom;
@@ -28,41 +26,41 @@ public:
     static MObject aIterations;
     static MObject aUVSet;
     static MObject aEnableRelax;
+    static MObject aLockBorderUVs;
+    static MObject aRelaxAxisU;
+    static MObject aRelaxAxisV;
+    static MObject aJacobiDamping;
 
 private:
 
-    MStatus setOutputGeom(const MPlug& plug, MDataBlock& block, MDataHandle& inputGeomHandle, const MFloatArray* newU, const MFloatArray* newV);
+    MStatus setOutputGeom(const MPlug& plug, MDataBlock& block,
+                          MDataHandle& inputGeomHandle,
+                          const MFloatArray* newU, const MFloatArray* newV);
 
     struct EdgeData {
         float length;    // 3D rest length
         float uvLength;  // UV rest length
-        int v0;          // mesh vertex index 0
-        int v1;          // mesh vertex index 1
-        int uv0;         // UV index 0, from per-face lookup (correct shell)
-        int uv1;         // UV index 1, from per-face lookup (correct shell)
+        int   v0, v1;    // mesh vertex indices
+        int   uv0, uv1;  // UV indices (per-face lookup, correct shell)
     };
 
-    // Cached rest data — invalidated when rest mesh topology or UV set changes
-    std::map<int, EdgeData> restEdgeLengths;
-    MString cachedUVSetName;
-    int cachedRestEdgeCount;
+    std::vector<EdgeData> restEdgeLengths;
+    MString               cachedUVSetName;
+    int                   cachedRestEdgeCount;
 
-    // Helper methods
-    void computeRestData(MFnMesh& meshFn, MObject& meshObj, const MString& uvSetName, std::map<int, EdgeData>& restEdgeLengths);
+    void computeRestData(MFnMesh& meshFn, MObject& meshObj,
+                         const MString& uvSetName,
+                         std::vector<EdgeData>& outEdges);
 
-    void findUVShellBorders(MFnMesh& meshFn,
-        const MString& uvSetName,
-        std::set<int>& borderUVs);
+    void findUVShellBorders(MObject& meshObj,
+                            const MString& uvSetName,
+                            std::set<int>& borderUVs);
 
     bool relaxUVs(MFnMesh& meshFn,
-        const MFloatArray& uArray,
-        const MFloatArray& vArray,
-        const MPointArray& currentPoints,
-        const std::set<int>& borderUVs,
-        float stiffness,
-        float stepSize,
-        int iterations,
-        MFloatArray& newU,
-        MFloatArray& newV,
-        bool adaptiveStep);
+                  const MFloatArray& uArray, const MFloatArray& vArray,
+                  const MPointArray& currentPoints,
+                  const std::set<int>& borderUVs,
+                  float stiffness, float stepSize, int iterations,
+                  MFloatArray& newU, MFloatArray& newV,
+                  bool adaptiveStep, bool jacobiDamping);
 };

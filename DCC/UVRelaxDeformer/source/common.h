@@ -3,13 +3,11 @@
 #include <maya/MTypeId.h>
 #include <maya/MObject.h>
 #include <maya/MPointArray.h>
+#include <maya/MPoint.h>
 #include <maya/MFloatArray.h>
 #include <maya/MIntArray.h>
 #include <maya/MVector.h>
 #include <maya/MString.h>
-#include <vector>
-#include <map>
-#include <set>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnTypedAttribute.h>
 #include <maya/MFnStringData.h>
@@ -18,9 +16,7 @@
 #include <maya/MItMeshPolygon.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MArrayDataHandle.h>
-#include <maya/MPoint.h>
-#include <maya/MPlugArray.h>
-#include <maya/MGlobal.h>
+#include <vector>
+#include <map>
+#include <set>
 #include <cmath>
-#include <algorithm>
