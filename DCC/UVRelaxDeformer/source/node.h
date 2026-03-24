@@ -26,10 +26,12 @@ public:
     static MObject aIterations;
     static MObject aUVSet;
     static MObject aEnableRelax;
-    static MObject aLockBorderUVs;
+    static MObject aLockMeshBoundary;
+    static MObject aLockUVSeams;
     static MObject aRelaxAxisU;
     static MObject aRelaxAxisV;
     static MObject aJacobiDamping;
+    static MObject aTolerance;
 
 private:
 
@@ -44,9 +46,19 @@ private:
         int   uv0, uv1;  // UV indices (per-face lookup, correct shell)
     };
 
+    // Rest data cache
     std::vector<EdgeData> restEdgeLengths;
     MString               cachedUVSetName;
     int                   cachedRestEdgeCount;
+    float                 cachedRestHash;
+
+    // Border UV cache
+    std::unordered_set<int> cachedBorderUVs;
+    int                     cachedInputEdgeCount;
+    bool                    cachedLockMeshBoundary;
+    bool                    cachedLockUVSeams;
+
+    static float hashPoints(const MPointArray& pts);
 
     void computeRestData(MFnMesh& meshFn, MObject& meshObj,
                          const MString& uvSetName,
@@ -54,13 +66,13 @@ private:
 
     void findUVShellBorders(MObject& meshObj,
                             const MString& uvSetName,
-                            std::set<int>& borderUVs);
+                            bool lockMeshBoundary, bool lockUVSeams,
+                            std::unordered_set<int>& borderUVs);
 
-    bool relaxUVs(MFnMesh& meshFn,
-                  const MFloatArray& uArray, const MFloatArray& vArray,
+    bool relaxUVs(const MFloatArray& uArray, const MFloatArray& vArray,
                   const MPointArray& currentPoints,
-                  const std::set<int>& borderUVs,
+                  const std::unordered_set<int>& borderUVs,
                   float stiffness, float stepSize, int iterations,
                   MFloatArray& newU, MFloatArray& newV,
-                  bool adaptiveStep, bool jacobiDamping);
+                  bool adaptiveStep, bool jacobiDamping, float tolerance);
 };

@@ -11,10 +11,12 @@ MObject UVSpringRelaxNode::aIterations;
 MObject UVSpringRelaxNode::aUVSet;
 MObject UVSpringRelaxNode::aEnableRelax;
 MObject UVSpringRelaxNode::aAdaptiveStepSize;
-MObject UVSpringRelaxNode::aLockBorderUVs;
+MObject UVSpringRelaxNode::aLockMeshBoundary;
+MObject UVSpringRelaxNode::aLockUVSeams;
 MObject UVSpringRelaxNode::aRelaxAxisU;
 MObject UVSpringRelaxNode::aRelaxAxisV;
 MObject UVSpringRelaxNode::aJacobiDamping;
+MObject UVSpringRelaxNode::aTolerance;
 
 MStatus UVSpringRelaxNode::initialize()
 {
@@ -91,10 +93,16 @@ MStatus UVSpringRelaxNode::initialize()
     status = addAttribute(aEnableRelax);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    aLockBorderUVs = nAttr.create("lockBorderUVs", "lbuv", MFnNumericData::kBoolean, true, &status);
+    aLockMeshBoundary = nAttr.create("lockMeshBoundary", "lmb", MFnNumericData::kBoolean, true, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     nAttr.setKeyable(true);
-    status = addAttribute(aLockBorderUVs);
+    status = addAttribute(aLockMeshBoundary);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    aLockUVSeams = nAttr.create("lockUVSeams", "luvs", MFnNumericData::kBoolean, true, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    nAttr.setKeyable(true);
+    status = addAttribute(aLockUVSeams);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     aRelaxAxisU = nAttr.create("relaxAxisU", "rau", MFnNumericData::kBoolean, true, &status);
@@ -115,6 +123,14 @@ MStatus UVSpringRelaxNode::initialize()
     status = addAttribute(aJacobiDamping);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
+    aTolerance = nAttr.create("tolerance", "tol", MFnNumericData::kFloat, 0.0001f, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    nAttr.setKeyable(true);
+    nAttr.setMin(0.0);
+    nAttr.setMax(0.1);
+    status = addAttribute(aTolerance);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
     attributeAffects(aInputGeom,        aOutputGeom);
     attributeAffects(aRestGeom,         aOutputGeom);
     attributeAffects(aStiffness,        aOutputGeom);
@@ -123,10 +139,12 @@ MStatus UVSpringRelaxNode::initialize()
     attributeAffects(aIterations,       aOutputGeom);
     attributeAffects(aUVSet,            aOutputGeom);
     attributeAffects(aEnableRelax,      aOutputGeom);
-    attributeAffects(aLockBorderUVs,    aOutputGeom);
+    attributeAffects(aLockMeshBoundary, aOutputGeom);
+    attributeAffects(aLockUVSeams,      aOutputGeom);
     attributeAffects(aRelaxAxisU,       aOutputGeom);
     attributeAffects(aRelaxAxisV,       aOutputGeom);
     attributeAffects(aJacobiDamping,    aOutputGeom);
+    attributeAffects(aTolerance,        aOutputGeom);
 
     return MS::kSuccess;
 }

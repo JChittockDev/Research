@@ -6,6 +6,7 @@
 #include <maya/MPoint.h>
 #include <maya/MFloatArray.h>
 #include <maya/MIntArray.h>
+#include <maya/MStringArray.h>
 #include <maya/MVector.h>
 #include <maya/MString.h>
 #include <maya/MFnNumericAttribute.h>
@@ -16,7 +17,10 @@
 #include <maya/MItMeshPolygon.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
+#include <maya/MGlobal.h>
 #include <vector>
 #include <map>
 #include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include <cmath>
