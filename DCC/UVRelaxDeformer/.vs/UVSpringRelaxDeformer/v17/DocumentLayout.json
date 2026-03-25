@@ -1,25 +1,25 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Programming\\Research\\UVRelaxPrototype\\",
+  "WorkspaceRootPath": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\UVRelaxPrototype\\source\\attr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|solutionrelative:source\\attr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\node.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|solutionrelative:source\\node.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\node.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|solutionrelative:source\\node.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\UVRelaxPrototype\\source\\common.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\attr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|solutionrelative:source\\attr.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\common.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|solutionrelative:source\\common.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\UVRelaxPrototype\\source\\plugin.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\plugin.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{7B76A6AD-0D38-4C76-8148-3616391578F9}|source\\UVSpringRelaxDeformer.vcxproj|solutionrelative:source\\plugin.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -30,15 +30,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "common.h",
-              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\common.h",
+              "DocumentMoniker": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\common.h",
               "RelativeDocumentMoniker": "source\\common.h",
-              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\common.h",
+              "ToolTip": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\common.h",
               "RelativeToolTip": "source\\common.h",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
@@ -48,9 +48,9 @@
               "$type": "Document",
               "DocumentIndex": 4,
               "Title": "plugin.cpp",
-              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\plugin.cpp",
+              "DocumentMoniker": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\plugin.cpp",
               "RelativeDocumentMoniker": "source\\plugin.cpp",
-              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\plugin.cpp",
+              "ToolTip": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\plugin.cpp",
               "RelativeToolTip": "source\\plugin.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
@@ -58,39 +58,39 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "node.h",
-              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.h",
+              "DocumentMoniker": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\node.h",
               "RelativeDocumentMoniker": "source\\node.h",
-              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.h",
+              "ToolTip": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\node.h",
               "RelativeToolTip": "source\\node.h",
-              "ViewState": "AgIAACoAAAAAAAAAAAAAAEwAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAAEoAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-11-23T01:50:27.884Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "attr.cpp",
-              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\attr.cpp",
+              "DocumentMoniker": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\attr.cpp",
               "RelativeDocumentMoniker": "source\\attr.cpp",
-              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\attr.cpp",
+              "ToolTip": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\attr.cpp",
               "RelativeToolTip": "source\\attr.cpp",
-              "ViewState": "AgIAACQAAAAAAAAAAAAAAEAAAAAbAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAIYAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-11-23T01:49:18.48Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "node.cpp",
-              "DocumentMoniker": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.cpp",
+              "DocumentMoniker": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\node.cpp",
               "RelativeDocumentMoniker": "source\\node.cpp",
-              "ToolTip": "D:\\Programming\\Research\\UVRelaxPrototype\\source\\node.cpp",
+              "ToolTip": "D:\\Programming\\Research\\DCC\\UVRelaxDeformer\\source\\node.cpp",
               "RelativeToolTip": "source\\node.cpp",
-              "ViewState": "AgIAADIAAAAAAAAAAAAAAFAAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAJ4AAAAAAAAAAAAAAIMBAABpAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-11-23T01:49:18.258Z",
               "EditorCaption": ""

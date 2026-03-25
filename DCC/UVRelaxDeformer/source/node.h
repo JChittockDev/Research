@@ -73,10 +73,7 @@ private:
 
     bool relaxUVs(const MFloatArray& uArray, const MFloatArray& vArray,
                   const MPointArray& currentPoints,
-<<<<<<< Updated upstream
-=======
                   const MPointArray& restPoints,
->>>>>>> Stashed changes
                   const std::unordered_set<int>& borderUVs,
                   float stiffness, float stepSize, int iterations,
                   MFloatArray& newU, MFloatArray& newV,

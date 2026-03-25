@@ -1,2 +1,7 @@
 ﻿  attr.cpp
-  UVSpringRelaxDeformer.vcxproj -> D:\Programming\Research\UVRelaxPrototype\x64\Debug\UVSpringRelaxDeformer.mll
+  node.cpp
+  plugin.cpp
+  Generating Code...
+  LINK : D:\Programming\Research\DCC\UVRelaxDeformer\x64\Debug\UVSpringRelaxDeformer.mll not found or not built by the last incremental link; performing full link
+     Creating library D:\Programming\Research\DCC\UVRelaxDeformer\x64\Debug\UVSpringRelaxDeformer.lib and object D:\Programming\Research\DCC\UVRelaxDeformer\x64\Debug\UVSpringRelaxDeformer.exp
+  UVSpringRelaxDeformer.vcxproj -> D:\Programming\Research\DCC\UVRelaxDeformer\x64\Debug\UVSpringRelaxDeformer.mll

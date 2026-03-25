@@ -173,11 +173,7 @@ MStatus UVSpringRelaxNode::compute(const MPlug& plug, MDataBlock& block)
     }
 
     MFloatArray newU, newV;
-<<<<<<< Updated upstream
-    if (!relaxUVs(uArray, vArray, points, cachedBorderUVs,
-=======
     if (!relaxUVs(uArray, vArray, points, restPoints, cachedBorderUVs,
->>>>>>> Stashed changes
                   stiffness, stepSize, iterations, newU, newV,
                   adaptive, jacobiDamp, tolerance))
         return MS::kFailure;
@@ -310,10 +306,7 @@ void UVSpringRelaxNode::findUVShellBorders(MObject& meshObj,
 bool UVSpringRelaxNode::relaxUVs(
     const MFloatArray& uArray, const MFloatArray& vArray,
     const MPointArray& currentPoints,
-<<<<<<< Updated upstream
-=======
     const MPointArray& restPoints,
->>>>>>> Stashed changes
     const std::unordered_set<int>& borderUVs,
     float stiffness, float stepSize, int iterations,
     MFloatArray& newU, MFloatArray& newV,
@@ -334,11 +327,7 @@ bool UVSpringRelaxNode::relaxUVs(
     std::vector<float> nForce(numUVs);
 
     const float tolSq = tolerance * tolerance;
-<<<<<<< Updated upstream
-
-=======
     
->>>>>>> Stashed changes
     for (int iter = 0; iter < iterations; ++iter)
     {
         std::fill(forceU.begin(), forceU.end(), 0.0f);
@@ -374,13 +363,12 @@ bool UVSpringRelaxNode::relaxUVs(
             const float lengthChange = data.uvLength * stretchRatio3D - lenUV;
             const float weight       = data.length;
 
-<<<<<<< Updated upstream
             const float dU = edgeU * lengthChange * 0.5f * step;
             const float dV = edgeV * lengthChange * 0.5f * step;
 
             if (!b0) { forceU[uv0] -= dU * weight; forceV[uv0] -= dV * weight; nForce[uv0] += weight; }
             if (!b1) { forceU[uv1] += dU * weight; forceV[uv1] += dV * weight; nForce[uv1] += weight; }
-=======
+
             const float movement0 = (float)(currentPoints[data.v0] - restPoints[data.v0]).length();
             const float movement1 = (float)(currentPoints[data.v1] - restPoints[data.v1]).length();
             const float totalMovement = movement0 + movement1;
@@ -398,7 +386,6 @@ bool UVSpringRelaxNode::relaxUVs(
 
             if (!b0) { forceU[uv0] -= dU0 * weight; forceV[uv0] -= dV0 * weight; nForce[uv0] += weight; }
             if (!b1) { forceU[uv1] += dU1 * weight; forceV[uv1] += dV1 * weight; nForce[uv1] += weight; }
->>>>>>> Stashed changes
         }
 
         const float jacobiFactor = jacobiDamping ? 1.0f / (1.0f + step) : 1.0f;
