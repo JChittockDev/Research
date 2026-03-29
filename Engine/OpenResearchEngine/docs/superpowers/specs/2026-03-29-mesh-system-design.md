@@ -44,9 +44,6 @@ Replaces `MeshGeometry` for the render side. Created once per unique file path.
 **Present only if the source has morph targets (`hasBlendshapes`):**
 - `BlendshapeBufferGPU` + uploader
 
-**Present only if any instance needs deformation normals (`hasDeformation`):**
-- `TriangleAdjacencyBufferGPU` + uploader (triangle neighbour indices for the render mesh)
-
 No simulation buffers of any kind.
 
 ### `SimMeshAsset`
@@ -65,6 +62,7 @@ Created by re-importing the same source file with the sim-specific Assimp flags 
 - `SimMeshTransferBufferGPU` — sim-vert → render-vert index map
 - `MeshTransferBufferGPU` — render-vert → sim-vert index map
 - `SimMeshVertexColorBufferGPU` — per-sim-vertex mask (loaded from vertex colour texture)
+- `TriangleAdjacencyBufferGPU` — triangle-neighbour indices for the **render** mesh (computed from render-mesh `segmentedIndices`); only needed by `PhysicsPass` post-simulation normal recalculation, so lives here rather than on `RenderMeshAsset`
 - Sim subset data: per-submesh counts/starts for sim verts, indices, triangles, constraints
 
 **`AssetManager` holds:**
@@ -90,9 +88,16 @@ public:
 };
 
 enum class DeformerType { Skin, Blendshape, Physics };
-```
 
-`DeformContext` carries what a deformer needs without it reaching into `EngineApp`: pointers to the pipeline state objects, the asset pointer, and per-instance CB indices.
+// Passed to each IDeformer::Execute — avoids reaching into AssetManager/EngineApp
+struct DeformContext {
+    AssetManager*        Assets;        // for PSO / root signature lookup
+    RenderMeshAsset*     MeshAsset;     // shared geometry
+    UINT                 ObjCBIndex;    // object constant buffer index
+    UINT                 SkinnedCBIndex;// skinning CB index (used by SkinDeformer)
+    UINT                 BlendCBIndex;  // blend CB index (used by BlendshapeDeformer)
+};
+```
 
 ### Concrete Deformers
 
