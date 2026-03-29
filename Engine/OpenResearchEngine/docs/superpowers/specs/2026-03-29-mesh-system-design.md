@@ -120,6 +120,9 @@ struct DeformContext {
   - `SimMeshSolverAccumulationBufferGPU`
   - `SimMeshSolverCountBufferGPU`
   - `SimMeshSolverVertexBufferGPU`
+  - `TransformedVertexBufferGPU` (intermediate: sim→render transfer output, input to normal calculation)
+  - `TriangleNormalBufferGPU` (intermediate: per-triangle normals)
+  - `VertexNormalBufferGPU` (**final output** — this is what `DrawRenderItems` binds as the vertex buffer)
 - References: `SimMeshAsset*` (non-owning, for topology buffers — mandatory, enforced at construction)
 - `Execute()` dispatches the full PBD pipeline: MeshTransfer → Tension → Force → PreSolve → ConstraintSolve → PostSolve → SimMeshTransfer → TriangleNormals → VertexNormals
 
@@ -130,20 +133,25 @@ class DeformationGraph {
 public:
     void AddDeformer(std::unique_ptr<IDeformer> d);
     void Execute(ID3D12GraphicsCommandList*, const DeformContext&);
-    ID3D12Resource* OutputBuffer() const; // SkinnedVertexBufferGPU from last deformer, or nullptr for static
 
-    // Owns the final transformed vertex buffer for normal passes
-    ComPtr<ID3D12Resource> TransformedVertexBufferGPU;
-    // ... uploader, size
+    // Returns the GPU resource to bind as vertex buffer for rendering:
+    //   PhysicsDeformer present → VertexNormalBufferGPU (state: VERTEX_AND_CONSTANT_BUFFER)
+    //   SkinDeformer only       → SkinnedVertexBufferGPU (state: VERTEX_AND_CONSTANT_BUFFER)
+    //   Empty graph (static)    → nullptr
+    ID3D12Resource* FinalVertexBuffer() const;
+
+    bool IsEmpty() const { return mDeformers.empty(); }
 
 private:
     std::vector<std::unique_ptr<IDeformer>> mDeformers;
 };
 ```
 
-The graph is always executed in declaration order: `Skin → Blendshape → Physics`. The graph owns `TransformedVertexBufferGPU` — the output that the GBuffer pass reads.
+The graph is always executed in declaration order: `Skin → Blendshape → Physics`. `FinalVertexBuffer()` dispatches to the appropriate deformer's output — no flags or branches needed at the call site.
 
-For **static meshes**, `DeformationGraph` is empty. `OutputBuffer()` returns `nullptr` and the GBuffer pass falls back to the asset's `VertexBufferGPU`.
+For **static meshes**, `DeformationGraph` is empty. `FinalVertexBuffer()` returns `nullptr` and the draw function falls back to the asset's `VertexBufferGPU`.
+
+**`BlendedVertexBufferGPU` base-pose reset:** `SkinDeformer::Execute()` must `CopyResource(asset->VertexBufferGPU → BlendedVertexBufferGPU)` at the end of skinning to reset it to the undeformed base pose for the next frame. This matches the current `ComputeSkinning` lines 118–122.
 
 ### `MeshInstance`
 
@@ -321,13 +329,71 @@ The `Mesh` class itself is deleted.
 
 ---
 
+## `DrawRenderItems` / `SetRenderItems` Changes
+
+Both `DrawRenderItems` (free function in `Render/DrawRenderItems.h`) and `EngineApp::SetRenderItems` (`Render/Manager/Render.cpp`) contain the same 3-way vertex buffer selection branch. Both must be updated to the same pattern:
+
+```cpp
+// OLD (3-way branch)
+if (ri->AnimationInstance != nullptr) {
+    if (!ri->Simulation)
+        cmdList->IASetVertexBuffers(0, 1, &ri->MeshAnimationResourceInstance->SkinnedVertexBufferView());
+    else
+        cmdList->IASetVertexBuffers(0, 1, &ri->MeshAnimationResourceInstance->VertexNormalBufferView());
+} else {
+    cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
+}
+
+// NEW (no branch — dispatched through MeshInstance)
+ID3D12Resource* vb = ri->Instance->Graph().FinalVertexBuffer();
+if (vb == nullptr)
+    vb = ri->Instance->Asset()->VertexBufferGPU.Get();
+D3D12_VERTEX_BUFFER_VIEW vbView = ri->Instance->Asset()->MakeVertexBufferView(vb);
+cmdList->IASetVertexBuffers(0, 1, &vbView);
+
+cmdList->IASetIndexBuffer(&ri->Instance->Asset()->IndexBufferView());
+cmdList->DrawIndexedInstanced(
+    ri->Instance->Asset()->DrawArgs[ri->SubsetName].IndexCount, 1,
+    ri->Instance->Asset()->DrawArgs[ri->SubsetName].IndexStart,
+    ri->Instance->Asset()->DrawArgs[ri->SubsetName].VertexStart, 0);
+```
+
+`RenderMeshAsset` exposes `IndexBufferView()` (unchanged layout from `MeshGeometry`). Vertex counts/starts/offsets come from `DrawArgs[SubsetName]` rather than being stored on `RenderItem`.
+
+## `RenderItem` Field → New Source Mapping
+
+Fields currently on `RenderItem` that move elsewhere:
+
+| Old `RenderItem` field | New location |
+|---|---|
+| `IndexCount`, `IndexStart`, `VertexStart` | `Instance->Asset()->DrawArgs[SubsetName]` |
+| `VertexCount`, `TriangleCount`, `TriangleStart` | `Instance->Asset()->DrawArgs[SubsetName]` |
+| `BlendshapeCount`, `BlendshapeStart`, `BlendshapeVertexStart`, `BlendshapeSubsets` | `Instance->Asset()->DrawArgs[SubsetName]` |
+| `SimMeshVertexCount`, `SimMeshVertexStart`, `SimMeshConstraintCount`, `SimMeshConstraintStart` | `PhysicsDeformer->SimMeshAsset()->SubsetData[SubsetName]` |
+| `SkinnedCBIndex` | `SkinDeformer::mCBIndex` (assigned at instance creation) |
+| `BlendCBIndex` | `BlendshapeDeformer::mCBIndex` (assigned at instance creation) |
+| `AnimationInstance` | `SkinDeformer::mController` |
+| `BlendshapeInstance` | `BlendshapeDeformer::mController` |
+| `MeshAnimationResourceInstance` | split across `SkinDeformer`, `BlendshapeDeformer`, `PhysicsDeformer` |
+| `Simulation` (bool flag) | presence of `PhysicsDeformer` in graph |
+| `Geo` | `Instance->Asset()` |
+
+## `UpdateAnimCBs` Changes
+
+Currently iterates `mSkinningControllers` and `mBlendshapeControllers` (maps keyed by filename), using a counter as the CB slot index. In the new design:
+
+- `AssetManager` maintains a flat list: `std::vector<SkinDeformer*> mSkinDeformers` and `std::vector<BlendshapeDeformer*> mBlendDeformers`, built in the order instances are created
+- Each deformer stores its assigned CB index (`mCBIndex`) at creation time matching its position in this list
+- `UpdateAnimCBs` iterates these lists, calls `controller->UpdateSkinning(dt)` (via `SkinDeformer::Controller()`), and copies to `SkinnedCB[mCBIndex]` / `BlendCB[mCBIndex]`
+- The existing ImGui debug tree (bone transforms, blendshape weights) is preserved by calling through the deformer's controller getter
+
 ## Pass Changes
 
-**`AnimationPass`:** Iterates `mRenderItems`, calls `Instance->Graph().Execute()` for any item with a non-empty graph. No longer branches on `AnimationInstance != nullptr`.
+**`AnimationPass` / `EngineApp::DeformationPass`:** Both exist with duplicate logic (`Render/Passes/AnimationPass.cpp` and `Render/Manager/Render.cpp`). The refactor updates the `IRenderPass` version and removes the EngineApp member methods. The pass calls `Instance->Graph().Execute()` for each render item with a non-empty graph. No `AnimationInstance != nullptr` check.
 
-**`PhysicsPass`:** No change to shader dispatch logic. Now reads topology from `PhysicsDeformer::SimMeshAsset()` instead of `RenderItem::Geo->SimMesh*`. Reads solver state from `PhysicsDeformer` member buffers instead of `MeshAnimationResource`.
+**`PhysicsPass`:** Shader dispatch logic is unchanged. Buffer access changes: `ri->Geo->SimMesh*` → `physicsDeformer->SimMeshAsset()->*`; `ri->MeshAnimationResourceInstance->*` → `physicsDeformer->*`. Count/start fields come from `SimMeshAsset` subset data.
 
-**`GBufferPass`:** Reads vertex buffer via `ri->Instance->FinalVertexBuffer()` — if the graph is non-empty, this is the deformed output; if empty (static), this is the asset's `VertexBufferGPU`. No flag checks needed.
+**`GBufferPass` / `ShadowPass`:** Both call `SetRenderItems` (EngineApp method) which is updated as above. No direct changes needed to the pass setup code.
 
 ---
 
@@ -345,9 +411,10 @@ The `Mesh` class itself is deleted.
 | `Build/PushRenderItems.cpp` | Replaced by `AssetManager::PushRenderItems` internal method |
 | `Serialize/LevelReader.cpp` | Parse `animated`, `simulated`, `simulationMask` — see detail below |
 | `Levels/DemoLevel.json` | Schema updated per above |
-| `Render/Passes/AnimationPass.h/.cpp` | Calls `Graph().Execute()` instead of branching on controllers |
-| `Render/Passes/PhysicsPass.h/.cpp` | Reads from deformer instead of `MeshAnimationResource` + `Geo` |
-| `Render/Passes/GBufferPass.h` | Uses `FinalVertexBuffer()` |
+| `Render/Passes/AnimationPass.h/.cpp` | Calls `Graph().Execute()`; EngineApp::DeformationPass + Compute* methods removed |
+| `Render/Passes/PhysicsPass.h/.cpp` | Buffer access via deformer instead of `MeshAnimationResource` + `Geo` |
+| `Render/DrawRenderItems.h` | Updated vertex buffer selection (see `DrawRenderItems` section) |
+| `Render/Manager/Render.cpp` | `DeformationPass`, `ComputeBlendshapes`, `ComputeSkinning`, and all `Compute*` EngineApp methods removed; replaced by `RenderPipeline::Execute()` dispatch |
 
 ---
 
