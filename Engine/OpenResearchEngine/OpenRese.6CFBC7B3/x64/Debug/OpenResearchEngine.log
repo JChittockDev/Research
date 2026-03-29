@@ -1,0 +1,1043 @@
+﻿  PushLights.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  BuildScene.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  PopulateDescriptorHeaps.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SetFenceResources.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  PushMaterials.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Build\PushMaterials.cpp(170,116): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=double
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Build\PushMaterials.cpp(170,95): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=double
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Build\PushMaterials.cpp(170,74): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=double
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Build\PushMaterials.cpp(170,53): warning C4244: 'argument': conversion from 'const _Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=double
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Build\PushMaterials.cpp(179,34): warning C4244: '=': conversion from 'const double' to 'float', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Build\PushMaterials.cpp(188,32): warning C4244: '=': conversion from 'const double' to 'float', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Build\PushMaterials.cpp(197,32): warning C4244: '=': conversion from 'const double' to 'float', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  PushMesh.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SetPipelineStates.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  PushRenderItems.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SetGenericRootSignature.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  CompileShader.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SetRenderPassResources.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SetRootSignatures.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  ImportTextures.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SerializeLevel.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  GuiManager.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_dx12.cpp
+  imgui_impl_win32.cpp
+  Generating Code...
+  Compiling...
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  Camera.cpp
+  D3DApp.cpp
+  D3DUtil.cpp
+  DDSTextureLoader.cpp
+  ViewFrustum.cpp
+  Render.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  CompositePass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  GBufferPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  LightingPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  RadiancePass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SsaoBlurPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SsaoPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SsgiBlurPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SsgiPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SssBlurPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  SssPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  Composite.cpp
+  GBuffer.cpp
+  Generating Code...
+  Compiling...
+  Lighting.cpp
+  MeshAnimationResource.cpp
+  Radiance.cpp
+  RadianceResources.cpp
+  RenderItem.cpp
+  RenderTextures.cpp
+  ShadowMap.cpp
+  ShadowResources.cpp
+  Skeleton.cpp
+  ShadowPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  Ssao.cpp
+  Ssgi.cpp
+  SSS.cpp
+  LevelReader.cpp
+  UpdateLights.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateRadiancePass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateRenderAssets.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateAnimConstants.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateSSCB.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateSSSCB.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Update\UpdateSSSCB.cpp(31,53): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Programming\Research\Engine\OpenResearchEngine\Update\UpdateSSSCB.cpp(31,48): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Programming\Research\Engine\OpenResearchEngine\Update\UpdateSSSCB.cpp(32,60): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Programming\Research\Engine\OpenResearchEngine\Update\UpdateSSSCB.cpp(32,54): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\Programming\Research\Engine\OpenResearchEngine\Update\UpdateSSSCB.cpp(32,48): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  Generating Code...
+  Compiling...
+  GameTimer.cpp
+  GeometryGenerator.cpp
+  Math.cpp
+  Controls.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  FrameResource.cpp
+  PushGenericMesh.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  Mesh.cpp
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(118,17): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(122,23): warning C4018: '<': signed/unsigned mismatch
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(130,159): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(130,132): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(130,105): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(130,78): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(338,46): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(471,57): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(487,40): warning C4267: '=': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(504,23): warning C4018: '<': signed/unsigned mismatch
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(528,54): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(529,54): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(530,54): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(543,63): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(559,40): warning C4267: '=': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(580,20): warning C4267: 'initializing': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(604,62): warning C4267: '=': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(617,40): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(633,20): warning C4267: 'initializing': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(662,23): warning C4267: 'initializing': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(750,62): warning C4267: '=': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(763,40): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(1002,43): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Render\Resources\Mesh.cpp(1002,26): warning C4267: 'initializing': conversion from 'size_t' to 'const int', possible loss of data
+  EngineApp.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  StaticSamplers.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateMainPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateMaterialBuffers.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateRenderItems.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  UpdateShadowPass.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  OnnxModelResource.cpp
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(83,25): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(88,20): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(96,14): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1626,32): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1631,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_ptr_field.h(1635,54): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\repeated_field.h(146,42): warning C4267: 'argument': conversion from 'size_t' to 'const _Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+D:\Programming\Research\Engine\OpenResearchEngine\Utilities\OnnxModelResource.cpp(474,44): warning C4244: 'argument': conversion from 'int64_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Utilities\OnnxModelResource.cpp(473,63): warning C4244: 'argument': conversion from 'int64_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Utilities\OnnxModelResource.cpp(501,66): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Utilities\OnnxModelResource.cpp(535,66): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Utilities\OnnxModelResource.cpp(560,66): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+D:\Programming\Research\Engine\OpenResearchEngine\Utilities\OnnxModelResource.cpp(585,66): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\absl-src\absl\log\internal\check_op.h(425,1): warning C4018: '>=': signed/unsigned mismatch
+C:\Users\josep\OneDrive\Documents\onnx_build\_deps\protobuf-src\src\google\protobuf\micro_string.h(77,7): message : see reference to function template instantiation 'const char *absl::lts_20250127::log_internal::Check_GEImpl<unsigned int,T>(const T1 &,const T2 &,const char *)' being compiled
+          with
+          [
+              T=google::protobuf::internal::MicroString::LargeRepKind,
+              T1=unsigned int,
+              T2=google::protobuf::internal::MicroString::LargeRepKind
+          ]
+  Generating Code...
+  OpenResearchEngine.vcxproj -> D:\Programming\Research\Engine\OpenResearchEngine\x64\Debug\OpenResearchEngine.exe
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\Composite.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeBlendshapes.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeConstraintSolve.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeForce.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeMeshTransfer.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputePostSolve.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputePreSolve.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeSimMeshTransfer.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeSkinning.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeTension.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeTriangleNormals.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ComputeVertexNormals.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\EdgeBlur.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\GBuffer.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\Lighting.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\LightingUtil.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\PoissonBlur.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\Radiance.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\RadianceUtil.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\RtxcrBsdf.hlsli
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\RtxcrMath.hlsli
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\Shadows.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\Ssao.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\Ssgi.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\Sss.hlsl
+  25 File(s) copied
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Add.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\AvgPool2D.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\BiasAdd.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Concat.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Conv2D.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\ConvTranspose2D.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\DepthConv2D.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Dequantize.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Gemm.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\LeakyReLU.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\MaxPool2D.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Quantize.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\ReLU.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Sigmoid.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Softmax.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Split.hlsl
+  D:\Programming\Research\Engine\OpenResearchEngine\Shaders\ML\Tanh.hlsl
+  17 File(s) copied
+  D:\Programming\Research\Engine\OpenResearchEngine\Levels\DemoLevel.json
+  D:\Programming\Research\Engine\OpenResearchEngine\Levels\DemoLevelOld.json
+  2 File(s) copied
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\bricks.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\bricks2.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\bricks2_nmap.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\bricks3.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\bricks_nmap.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\checkboard.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\default_diffuse.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\default_nmap.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\desertcube1024.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\face_albedo.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\face_normal.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\face_reflection.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\face_roughness.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\grass.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\grasscube1024.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\head_diff.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\head_norm.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\ice.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\jacket_diff.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\jacket_norm.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\pants_diff.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\pants_norm.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\skycube.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\snowcube1024.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\stone.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\sunsetcube1024.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\test.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\tile.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\tile_nmap.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\tree0.bmp
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\tree01S.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\tree02S.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\tree1.bmp
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\tree2.bmp
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\tree35S.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\treearray.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\treeArray2.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\upBody_diff.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\upbody_norm.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\water1.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\WireFence.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\WoodCrate01.dds
+  D:\Programming\Research\Engine\OpenResearchEngine\Textures\WoodCrate02.dds
+  43 File(s) copied
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\blendshapes.fbx
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\directionallight.obj
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\facerom.fbx
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\hiresrom.fbx
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\plane.fbx
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\plane2.fbx
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\pointlight.obj
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\rom.fbx
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\soldier.m3d
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\spotlight.obj
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\test.fbx
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\test.jpg
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\test2.fbx
+  D:\Programming\Research\Engine\OpenResearchEngine\Models\testVertexColor.png
+  14 File(s) copied
+  D:\Programming\Research\Engine\OpenResearchEngine\Onnx\test.onnx
+  1 File(s) copied
