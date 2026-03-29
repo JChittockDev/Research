@@ -343,11 +343,57 @@ The `Mesh` class itself is deleted.
 | `Common/Structures.h` | `MeshGeometry` deleted; `ItemData` and `RenderItemSettings` updated |
 | `Assets/AssetManager.h/.cpp` | New maps; old maps removed; `PushMesh` updated |
 | `Build/PushRenderItems.cpp` | Replaced by `AssetManager::PushRenderItems` internal method |
-| `Serialize/LevelReader.cpp` | Parse `animated`, `simulated`, `simulationMask` fields |
+| `Serialize/LevelReader.cpp` | Parse `animated`, `simulated`, `simulationMask` — see detail below |
 | `Levels/DemoLevel.json` | Schema updated per above |
 | `Render/Passes/AnimationPass.h/.cpp` | Calls `Graph().Execute()` instead of branching on controllers |
 | `Render/Passes/PhysicsPass.h/.cpp` | Reads from deformer instead of `MeshAnimationResource` + `Geo` |
 | `Render/Passes/GBufferPass.h` | Uses `FinalVertexBuffer()` |
+
+---
+
+## `LevelReader.cpp` — Exact Parsing Changes
+
+`SetRenderItemData` currently does three things that must change:
+
+**1. Replace `"Deformable"` with `"Animated"` and `"Simulated"` at item level:**
+
+```cpp
+// OLD
+if (item_data.contains("Deformable"))
+    renderItemStruct.deformable = item_data["Deformable"];
+else
+    renderItemStruct.deformable = false;
+
+// NEW
+renderItemStruct.animated  = item_data.value("Animated",  false);
+renderItemStruct.simulated = item_data.value("Simulated", false);
+```
+
+**2. Add item-level `"SimulationMask"` parsing:**
+
+```cpp
+// NEW — after the Simulated check
+renderItemStruct.simulationMask = item_data.value("SimulationMask", std::string("none"));
+```
+
+**3. Remove `"Simulation"` and `"SimulationMask"` from the per-subset Settings loop:**
+
+```cpp
+// OLD — inside the Settings items() loop
+if (riSettings.value().contains("Simulation"))
+    renderItemStruct.settings[riSettings.key()].Simulation = riSettings.value()["Simulation"];
+else
+    renderItemStruct.settings[riSettings.key()].Simulation = false;
+
+if (riSettings.value().contains("SimulationMask"))
+    renderItemStruct.settings[riSettings.key()].SimulationMask = riSettings.value()["SimulationMask"];
+else
+    renderItemStruct.settings[riSettings.key()].SimulationMask = "none";
+
+// NEW — both blocks deleted. Settings loop only parses "Material".
+```
+
+No other methods in `LevelReader.cpp` change.
 
 ---
 
