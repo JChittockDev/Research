@@ -2,37 +2,41 @@
 
 void EngineApp::PushMesh()
 {
-	std::string vertexColorFilename;
-	std::string filename = GetFullPath("Models/directionallight.obj");
-	std::shared_ptr<Mesh> directionalLightMesh = std::make_shared<Mesh>(filename, vertexColorFilename, md3dDevice, mCommandList, mGeometries, mSubsets, true);
-	mMesh[filename] = std::move(directionalLightMesh);
+    // ── Light source geometry (static, no animation) ──
+    for (const std::string relPath : { "Models/directionallight.obj", "Models/spotlight.obj" }) {
+        std::string fullPath = GetFullPath(relPath.c_str());
+        if (mRenderMeshAssets.count(fullPath)) continue;
+        std::string noVC;
+        mRenderMeshAssets[fullPath] = RenderMeshAsset::Load(
+            fullPath, noVC, /*forAnimation=*/false,
+            md3dDevice, mCommandList, mSubsets);
+    }
 
-	filename = GetFullPath("Models/spotlight.obj");
-	std::shared_ptr<Mesh> spotLightMesh = std::make_shared<Mesh>(filename, vertexColorFilename, md3dDevice, mCommandList, mGeometries, mSubsets, true);
-	mMesh[filename] = std::move(spotLightMesh);
+    // ── Level items ──
+    for (const auto& item : mLevelRenderItems.at("DemoLevel"))
+    {
+        const ItemData& data = item.second;
+        if (data.geometry.empty()) continue;
+        bool geoExists = PathExists(data.geometry);
+        if (!geoExists) continue;
 
-	for (const auto& item : mLevelRenderItems.at("DemoLevel"))
-	{
-		const std::string& itemName = item.first;
-		const ItemData& renderItemData = item.second;
+        std::string fullPath = GetFullPath(data.geometry.c_str());
+        if (mRenderMeshAssets.count(fullPath)) continue;  // already loaded (shared asset)
 
-		filename = GetFullPath(renderItemData.geometry.c_str());
+        // Vertex colour texture (replaces old .jpg detection)
+        std::string vcPath;
+        std::string texPath = ChangeExtension(fullPath, ".jpg");
+        if (PathExists(texPath)) vcPath = texPath;
 
-		bool geoExists = PathExists(renderItemData.geometry);
+        mRenderMeshAssets[fullPath] = RenderMeshAsset::Load(
+            fullPath, vcPath, data.animated,
+            md3dDevice, mCommandList, mSubsets);
 
-		if (geoExists)
-		{
-			std::string texFileName = ChangeExtension(filename, ".jpg");
-
-			bool texExists = PathExists(texFileName);
-
-			if (texExists)
-			{
-				vertexColorFilename = texFileName;
-			}
-
-			std::shared_ptr<Mesh> skinnedMesh = std::make_shared<Mesh>(filename, vertexColorFilename, md3dDevice, mCommandList, mGeometries, mSubsets, mSkeletons, mAnimations, mTransforms);
-			mMesh[filename] = std::move(skinnedMesh);
-		}
-	}
+        if (data.simulated) {
+            mSimMeshAssets[fullPath] = SimMeshAsset::Load(
+                fullPath, vcPath,
+                md3dDevice, mCommandList,
+                mRenderMeshAssets[fullPath]->DrawArgs);
+        }
+    }
 }
