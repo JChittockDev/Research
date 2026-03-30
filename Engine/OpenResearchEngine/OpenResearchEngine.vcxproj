@@ -146,6 +146,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Resources\Radiance.cpp" />
     <ClCompile Include="Render\Resources\RadianceResources.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
+    <ClCompile Include="Render\Resources\RenderMeshAsset.cpp" />
     <ClCompile Include="Render\Resources\RenderTextures.cpp" />
     <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="Render\Resources\ShadowResources.cpp" />
@@ -218,6 +219,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="Render\Resources\FrameResource.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
+    <ClInclude Include="Render\Resources\RenderMeshAsset.h" />
     <ClInclude Include="Render\Resources\Skinning.h" />
     <ClInclude Include="Utilities\OnnxModelResource.h" />
     <ClInclude Include="Utilities\stb_image.h" />
