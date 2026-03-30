@@ -1,0 +1,10 @@
+# Git worktrees
+.worktrees/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+x64/
+Debug/
+Release/
