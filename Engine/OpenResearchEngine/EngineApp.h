@@ -143,6 +143,8 @@ private:
 
     std::array<const CD3DX12_STATIC_SAMPLER_DESC, 8> GetStaticSamplers();
 
+    PhysicsDeformerResources MakePhysicsDeformerResources();
+
 private:
     POINT mLastMousePos;
     Camera mCamera;

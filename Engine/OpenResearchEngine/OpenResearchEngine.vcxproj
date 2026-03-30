@@ -108,6 +108,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Build\PushMaterials.cpp" />
     <ClCompile Include="Build\PushMesh.cpp" />
     <ClCompile Include="Build\SetPipelineStates.cpp" />
+    <ClCompile Include="Build\MakePhysicsDeformerResources.cpp" />
     <ClCompile Include="Build\PushRenderItems.cpp" />
     <ClCompile Include="Build\SetGenericRootSignature.cpp" />
     <ClCompile Include="Build\CompileShader.cpp" />
