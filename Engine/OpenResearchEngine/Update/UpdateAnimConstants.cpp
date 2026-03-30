@@ -1,146 +1,110 @@
 #include "../EngineApp.h"
 
-std::vector<Vector4> GetWeights(std::map<std::string, std::vector<float>>& weights)
-{
-    std::vector<Vector4> output;
-    for (auto subset : weights)
-    {
-        for (int i = 0; i < subset.second.size(); i++)
-        {
-            Vector4 packedWeight;
-            packedWeight.x = subset.second[i];
-            output.push_back(packedWeight);
-        }
-    }
-    return output;
-}
-
 void EngineApp::UpdateAnimCBs(const GameTimer& gt)
 {
     ImGui::SeparatorText("Animation Controllers");
 
     auto currSkinnedCB = mCurrFrameResource->SkinnedCB.get();
-    auto currBlendCB = mCurrFrameResource->BlendCB.get();
+    auto currBlendCB   = mCurrFrameResource->BlendCB.get();
 
-    int skinningIndex = 0;
-    std::map<std::string, SkinnedConstants> constants;
-    for (auto controller : mSkinningControllers)
-    {
-        bool animCheck = mSkinningControllers.at(controller.first)->animation == nullptr || mSkinningControllers.at(controller.first)->animation->TransformAnimNodes.size() == 0;
-        if (!animCheck)
-        {
-            mSkinningControllers.at(controller.first)->UpdateSkinning(gt.DeltaTime());
-        }
-        SkinnedConstants skinnedConstants;
-        std::copy(std::begin(mSkinningControllers.at(controller.first)->transforms), std::end(mSkinningControllers.at(controller.first)->transforms), &skinnedConstants.BoneTransforms[0]);
-        currSkinnedCB->CopyData(skinningIndex, skinnedConstants);
-        constants[controller.first] = skinnedConstants;
-        skinningIndex++;
+    // ── Update skinning controllers ──
+    for (SkinDeformer* sd : mSkinDeformers) {
+        SkinningController* ctrl = sd->Controller();
+        if (!ctrl) continue;
+        bool hasAnim = ctrl->animation &&
+                       !ctrl->animation->TransformAnimNodes.empty();
+        if (hasAnim)
+            ctrl->UpdateSkinning(gt.DeltaTime());
+
+        SkinnedConstants skc;
+        std::copy(ctrl->transforms.begin(), ctrl->transforms.end(),
+                  &skc.BoneTransforms[0]);
+        currSkinnedCB->CopyData(sd->CBIndex(), skc);
     }
 
-    if (ImGui::TreeNode("Skinning Controllers"))
-    {
-        int imguiSkinningIndex = 0;
-        for (auto controller : mSkinningControllers)
-        {
-            SkinnedConstants skinnedConstants = constants[controller.first];
-            if (ImGui::TreeNode(controller.first.c_str()))
-            {
-                for (int i = 0; i < mSkinningControllers.at(controller.first)->transforms.size(); i++)
-                {
-                    std::string transform_name = "Transform " + std::to_string(i);
-                    if (ImGui::TreeNode(transform_name.c_str()))
-                    {
-                        // Load the World matrix and decompose it into position, rotation, and scale
-                        DirectX::XMVECTOR scale, rotationQuat, translation;
-                        DirectX::XMMatrixDecompose(&scale, &rotationQuat, &translation, DirectX::XMLoadFloat4x4(&mSkinningControllers.at(controller.first)->transforms[i]));
-
-                        DirectX::XMFLOAT3 position, rotationEuler, scaleValues;
-                        DirectX::XMStoreFloat3(&position, translation);
-                        DirectX::XMStoreFloat3(&scaleValues, scale);
-
-                        // Convert quaternion rotation to Euler angles for display
-                        DirectX::XMFLOAT4 rotationQuatValues;
-                        DirectX::XMStoreFloat4(&rotationQuatValues, rotationQuat);
-                        rotationEuler = Math::QuaternionToEuler(rotationQuatValues);
-
-                        // Display position, rotation (Euler angles), and scale as read-only text
-                        ImGui::DragFloat3("Position", &position.x);
-                        ImGui::DragFloat3("Rotation (Euler)", &rotationEuler.x);
-                        ImGui::DragFloat3("Scale", &scaleValues.x);
-
-                        // If any values have changed, recompose the World matrix
-                        DirectX::XMVECTOR newScale = DirectX::XMLoadFloat3(&scaleValues);
-                        DirectX::XMVECTOR newRotation = Math::EulerToQuaternion(rotationEuler);
-                        DirectX::XMVECTOR newTranslation = DirectX::XMLoadFloat3(&position);
-
-                        // Create a new World matrix from modified position, rotation, and scale
-                        DirectX::XMMATRIX newWorld = DirectX::XMMatrixScalingFromVector(newScale) * DirectX::XMMatrixRotationQuaternion(newRotation) * DirectX::XMMatrixTranslationFromVector(newTranslation);
-
-                        DirectX::XMFLOAT4X4 transform;
-                        // Update the World matrix in RenderItem
-                        DirectX::XMStoreFloat4x4(&transform, newWorld);
-                        skinnedConstants.BoneTransforms[i] = transform;
-                        mSkinningControllers[controller.first]->transforms[i] = transform;
+    if (ImGui::TreeNode("Skinning Controllers")) {
+        for (SkinDeformer* sd : mSkinDeformers) {
+            SkinningController* ctrl = sd->Controller();
+            if (!ctrl) continue;
+            // No name field on SkinningController — use fallback label
+            const char* label = "Controller";
+            if (ImGui::TreeNode(label)) {
+                for (int i = 0; i < (int)ctrl->transforms.size(); i++) {
+                    std::string tname = "Transform " + std::to_string(i);
+                    if (ImGui::TreeNode(tname.c_str())) {
+                        DirectX::XMVECTOR scale, rot, trans;
+                        DirectX::XMMatrixDecompose(&scale, &rot, &trans,
+                            DirectX::XMLoadFloat4x4(&ctrl->transforms[i]));
+                        DirectX::XMFLOAT3 pos, sc;
+                        DirectX::XMFLOAT4 rq;
+                        DirectX::XMStoreFloat3(&pos, trans);
+                        DirectX::XMStoreFloat3(&sc, scale);
+                        DirectX::XMStoreFloat4(&rq, rot);
+                        DirectX::XMFLOAT3 euler = Math::QuaternionToEuler(rq);
+                        ImGui::DragFloat3("Position", &pos.x);
+                        ImGui::DragFloat3("Rotation", &euler.x);
+                        ImGui::DragFloat3("Scale",    &sc.x);
+                        DirectX::XMMATRIX newW =
+                            DirectX::XMMatrixScalingFromVector(DirectX::XMLoadFloat3(&sc))
+                            * DirectX::XMMatrixRotationQuaternion(Math::EulerToQuaternion(euler))
+                            * DirectX::XMMatrixTranslationFromVector(DirectX::XMLoadFloat3(&pos));
+                        DirectX::XMStoreFloat4x4(&ctrl->transforms[i], newW);
+                        SkinnedConstants skc;
+                        std::copy(ctrl->transforms.begin(), ctrl->transforms.end(),
+                                  &skc.BoneTransforms[0]);
+                        currSkinnedCB->CopyData(sd->CBIndex(), skc);
                         ImGui::TreePop();
                     }
                 }
                 ImGui::TreePop();
             }
-            currSkinnedCB->CopyData(imguiSkinningIndex, skinnedConstants);
-            imguiSkinningIndex++;
         }
         ImGui::TreePop();
     }
 
-    int blendIndex = 0;
-    for (auto controller : mBlendshapeControllers)
-    {
-        float time = gt.TotalTime();
-        BlendConstants blendConstants;
+    // ── Update blendshape controllers ──
+    for (BlendshapeDeformer* bd : mBlendshapeDeformers) {
+        BlendshapeController* ctrl = bd->Controller();
+        if (!ctrl) continue;
+        bool hasAnim = ctrl->animation &&
+                       !ctrl->animation->BlendAnimNodes.empty();
+        if (hasAnim)
+            ctrl->UpdateBlends(gt.DeltaTime());
 
-        bool animCheck = mBlendshapeControllers.at(controller.first)->animation == nullptr || mBlendshapeControllers.at(controller.first)->animation->BlendAnimNodes.size() == 0;
-        if (!animCheck)
-        {
-            mBlendshapeControllers.at(controller.first)->UpdateBlends(gt.DeltaTime());
+        BlendConstants bc;
+        int slot = 0;
+        for (auto& [setName, wts] : ctrl->weights) {
+            for (float w : wts) {
+                if (slot < 64) bc.Weights[slot++].x = w;
+            }
         }
-        std::vector<Vector4> weights = GetWeights(mBlendshapeControllers.at(controller.first)->weights);
-        std::copy(std::begin(weights), std::end(weights), &blendConstants.Weights[0]);
-        currBlendCB->CopyData(blendIndex, blendConstants);
-        blendIndex++;
+        currBlendCB->CopyData(bd->CBIndex(), bc);
     }
 
-    if (ImGui::TreeNode("Blendshape Controllers"))
-    {
-        int imguiBlendIndex = 0;
-        for (auto controller : mBlendshapeControllers)
-        {
-            BlendConstants blendConstants;
-            if (ImGui::TreeNode(controller.first.c_str()))
-            {
-                for (auto blends : mBlendshapeControllers.at(controller.first)->weights)
-                {
-                    if (ImGui::TreeNode(blends.first.c_str()))
-                    {
-                        for (int i = 0; i < mBlendshapeControllers.at(controller.first)->weights[blends.first].size(); i++)
-                        {
-                            std::string blend_name = blends.first + " Blendshape" + std::to_string(i);
-                            if (ImGui::TreeNode(blend_name.c_str()))
-                            {
-                                float weight = mBlendshapeControllers.at(controller.first)->weights[blends.first][i];
-                                ImGui::InputFloat("Weight", &weight);
-                                blendConstants.Weights[i].x = weight;
-                                mBlendshapeControllers[controller.first]->weights[blends.first][i] = weight;
+    if (ImGui::TreeNode("Blendshape Controllers")) {
+        for (BlendshapeDeformer* bd : mBlendshapeDeformers) {
+            BlendshapeController* ctrl = bd->Controller();
+            if (!ctrl) continue;
+            // No name field on BlendshapeController — use fallback label
+            const char* label = "Controller";
+            if (ImGui::TreeNode(label)) {
+                for (auto& [setName, wts] : ctrl->weights) {
+                    if (ImGui::TreeNode(setName.c_str())) {
+                        BlendConstants bc;
+                        for (int i = 0; i < (int)wts.size(); i++) {
+                            std::string bn = setName + " Blendshape" + std::to_string(i);
+                            if (ImGui::TreeNode(bn.c_str())) {
+                                ImGui::InputFloat("Weight", &wts[i]);
+                                bc.Weights[i].x = wts[i];
                                 ImGui::TreePop();
                             }
                         }
+                        currBlendCB->CopyData(bd->CBIndex(), bc);
                         ImGui::TreePop();
                     }
                 }
                 ImGui::TreePop();
             }
-            currBlendCB->CopyData(imguiBlendIndex, blendConstants);
-            imguiBlendIndex++;
         }
         ImGui::TreePop();
     }
