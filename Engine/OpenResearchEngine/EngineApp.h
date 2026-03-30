@@ -2,6 +2,10 @@
 
 #include "D3D12/D3DApp.h"
 #include "Common/Math.h"
+#include "Assets/AssetManager.h"
+#include "Animation/AnimationSystem.h"
+#include "Render/RenderPipeline.h"
+#include "Common/SceneState.h"
 #include "Common/UploadBuffer.h"
 #include "Objects/Camera.h"
 #include "Models/Internal/GeometryGenerator.h"
@@ -64,51 +68,10 @@ private:
     void UpdateSssCB(const GameTimer& gt);
     void UpdateRadiancePassCB(const GameTimer& gt);
 
-    void PushLights();
-    void PushMesh();
-    void PushGenericMesh();
-    void PushMaterials();
-    void PushRenderItems();
-    void ImportTextures();
-    void CompileShaders();
-    void SetPipelineStates();
-    void SetFenceResources();
-    void SetRootSignatures();
-    void SetGenericRootSignature();
-    void SerializeLevel();
     void SetRenderPassResources();
     void BuildScene();
 
     void Render(FrameResource* currentFrameResource);
-
-    void SetBlendRootSignature();
-    void SetSkinnedRootSignature();
-    void SetTriangleNormalRootSignature();
-    void SetVertexNormalRootSignature();
-    void SetSimMeshTransferRootSignature();
-    void SetPreSolveRootSignature();
-    void SetPostSolveRootSignature();
-    void SetConstraintSolveRootSignature();
-    void SetMeshTransferRootSignature();
-    void SetForceRootSignature();
-    void SetSssRootSignature();
-    void SetTensionRootSignature();
-    void SetGBufferRootSignature();
-    void SetLightingRootSignature();
-    void SetShadowsRootSignature();
-    void SetSsaoRootSignature();
-    void SetSsgiRootSignature();
-    void SetEdgeBlurRootSignature();
-    void SetPoissonBlurRootSignature();
-    void SetColorEdgeBlurRootSignature();
-    void SetCompositeRootSignature();
-    void SetRadianceRootSignature();
-	void SetGemmRootSignature();
-	void SetReluRootSignature();
-	void SetLeakyReluRootSignature();
-	void SetSigmoidRootSignature();
-	void SetTanhRootSignature();
-	void SetSoftmaxRootSignature();
 
     void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
     void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
@@ -124,17 +87,16 @@ private:
     void SssBlurPass(FrameResource* currentFrameResource);
     void RadiancePass(const DynamicLights& lights, FrameResource* currentFrameResource);
 
-    void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
-
     std::string extractFileName(const std::string& filePath);
-
-    std::array<const CD3DX12_STATIC_SAMPLER_DESC, 8> GetStaticSamplers();
-
-    PhysicsDeformerResources MakePhysicsDeformerResources();
 
 private:
     POINT mLastMousePos;
     Camera mCamera;
+    SceneState mSceneState;
+
+    std::unique_ptr<AssetManager>    mAssets;
+    std::unique_ptr<AnimationSystem> mAnimationSystem;
+    std::unique_ptr<RenderPipeline>  mRenderPipeline;
 
     DirectX::BoundingSphere mSceneBounds;
     ComPtr<ID3D12RootSignature> mRootSignature = nullptr;

@@ -29,8 +29,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
 EngineApp::EngineApp(HINSTANCE hInstance) : D3DApp(hInstance)
 {
-    mSceneBounds.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
-    mSceneBounds.Radius = sqrtf(10.0f*10.0f + 15.0f*15.0f);
 }
 
 EngineApp::~EngineApp()
@@ -205,10 +203,109 @@ void EngineApp::Draw(const GameTimer& gt)
     std::vector<float> output = mOnnxModelResource->GetOutputData();
 }
 
+void EngineApp::CreateRtvAndDsvDescriptorHeaps()
+{
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
+	rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
+	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	rtvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
+
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
+	dsvHeapDesc.NumDescriptors = 1 + MaxLights;
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	dsvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
+
+	D3D12_DESCRIPTOR_HEAP_DESC renderPassRtvHeapDesc = {};
+	renderPassRtvHeapDesc.NumDescriptors = 64;
+	renderPassRtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	renderPassRtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	renderPassRtvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&renderPassRtvHeapDesc, IID_PPV_ARGS(renderPassRtvHeap.GetAddressOf())));
+
+	D3D12_DESCRIPTOR_HEAP_DESC renderPassSrvHeapDesc = {};
+	renderPassSrvHeapDesc.NumDescriptors = 64;
+	renderPassSrvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	renderPassSrvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	renderPassSrvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&renderPassSrvHeapDesc, IID_PPV_ARGS(renderPassSrvHeap.GetAddressOf())));
+
+	D3D12_DESCRIPTOR_HEAP_DESC imguiDesc = {};
+	imguiDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	imguiDesc.NumDescriptors = 1;
+	imguiDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&imguiDesc, IID_PPV_ARGS(&imGuiSrvDescriptorHeap)));
+}
+
+void EngineApp::BuildScene()
+{
+    mAssets = std::make_unique<AssetManager>(
+        md3dDevice, mCommandList, GetDirectoryPath(),
+        m4xMsaaState, m4xMsaaQuality, mBackBufferFormat, mDepthStencilFormat);
+    mAssets->Build();
+
+    mFrameResources.clear();
+    for (int i = 0; i < gNumFrameResources; ++i)
+        mFrameResources.push_back(std::make_shared<FrameResource>(
+            md3dDevice.Get(),
+            mAssets->dynamicLights.GetNumLights(),
+            (UINT)mAssets->mRenderItems.size(),
+            1, 1,
+            (UINT)mAssets->mMaterials.size()));
+
+    mSceneState.lights       = mAssets->dynamicLights;
+    mSceneState.sceneBounds.Center = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+    mSceneState.sceneBounds.Radius = sqrtf(10.0f * 10.0f + 15.0f * 15.0f);
+    mSceneState.shadowPassCBs.resize(mAssets->dynamicLights.GetNumLights());
+    mSceneState.radianceCBs.resize(mAssets->dynamicLights.GetNumLights());
+}
+
+void EngineApp::SetRenderPassResources()
+{
+    mShadowPassCBs.resize(mAssets->dynamicLights.GetNumLights());
+    mRadianceCBs.resize(mAssets->dynamicLights.GetNumLights());
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE cpuRtvHandle(renderPassRtvHeap.Get()->GetCPUDescriptorHandleForHeapStart());
+    CD3DX12_CPU_DESCRIPTOR_HANDLE cpuSrvHandle(renderPassSrvHeap.Get()->GetCPUDescriptorHandleForHeapStart());
+    CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(renderPassSrvHeap.Get()->GetGPUDescriptorHandleForHeapStart());
+    CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDsvHandle(mDsvHeap.Get()->GetCPUDescriptorHandleForHeapStart());
+
+    mGBuffer = std::make_unique<GBuffer>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mGBuffer->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+
+    mSsao = std::make_unique<Ssao>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mSsao->BuildDescriptors(GetDepthBuffer(), cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+
+    mLighting = std::make_unique<Lighting>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mLighting->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+
+    mSsgi = std::make_unique<Ssgi>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mSsgi->BuildDescriptors(GetDepthBuffer(), cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+
+    mSss = std::make_unique<SSS>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mSss->BuildDescriptors(GetDepthBuffer(), cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+
+    mComposite = std::make_unique<Composite>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mComposite->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+
+    mRadianceResources = std::make_unique<RadianceResources>(md3dDevice.Get());
+    mRadianceResources->BuildDescriptors(mAssets->dynamicLights.GetNumLights(), mClientWidth, mClientHeight, cpuSrvHandle, gpuSrvHandle, cpuRtvHandle, mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
+
+    mRenderTextures = std::make_unique<RenderTextures>(md3dDevice.Get());
+    mRenderTextures->BuildDescriptors(cpuSrvHandle, gpuSrvHandle, mCbvSrvUavDescriptorSize, mAssets->mTextureData, mAssets->mTextures);
+
+    cpuDsvHandle = cpuDsvHandle.Offset(1, mDsvDescriptorSize);
+    mShadowResources = std::make_unique<ShadowResources>(md3dDevice.Get());
+    mShadowResources->BuildDescriptors(mAssets->dynamicLights.GetNumLights(), cpuSrvHandle, gpuSrvHandle, cpuDsvHandle, mCbvSrvUavDescriptorSize, mDsvDescriptorSize);
+}
+
 std::string EngineApp::extractFileName(const std::string& filePath) {
     size_t found = filePath.find_last_of("/\\");
     if (found != std::string::npos) {
         return filePath.substr(found + 1);
     }
-    return filePath; // If no path separator is found, return the whole path as filename
+    return filePath;
 }

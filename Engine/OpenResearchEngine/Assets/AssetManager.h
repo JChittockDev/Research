@@ -14,6 +14,7 @@
 #include "../Render/Resources/MeshInstance.h"
 #include "../Render/Deformers/SkinDeformer.h"
 #include "../Render/Deformers/BlendshapeDeformer.h"
+#include "../Render/Deformers/PhysicsDeformer.h"
 #include "../Render/Resources/StaticBatch.h"
 #include "../Utilities/OnnxModelResource.h"
 

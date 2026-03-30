@@ -101,21 +101,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Build\PushLights.cpp" />
-    <ClCompile Include="Build\BuildScene.cpp" />
-    <ClCompile Include="Build\PopulateDescriptorHeaps.cpp" />
-    <ClCompile Include="Build\SetFenceResources.cpp" />
-    <ClCompile Include="Build\PushMaterials.cpp" />
-    <ClCompile Include="Build\PushMesh.cpp" />
-    <ClCompile Include="Build\SetPipelineStates.cpp" />
-    <ClCompile Include="Build\MakePhysicsDeformerResources.cpp" />
-    <ClCompile Include="Build\PushRenderItems.cpp" />
-    <ClCompile Include="Build\SetGenericRootSignature.cpp" />
-    <ClCompile Include="Build\CompileShader.cpp" />
-    <ClCompile Include="Build\SetRenderPassResources.cpp" />
-    <ClCompile Include="Build\SetRootSignatures.cpp" />
-    <ClCompile Include="Build\ImportTextures.cpp" />
-    <ClCompile Include="Build\SerializeLevel.cpp" />
+    <ClCompile Include="Assets\AssetManager.cpp" />
     <ClCompile Include="Gui\GuiManager.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
@@ -174,9 +160,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Common\Math.cpp" />
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
-    <ClCompile Include="Build\PushGenericMesh.cpp" />
     <ClCompile Include="EngineApp.cpp" />
-    <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp" />
     <ClCompile Include="Update\UpdateRenderItems.cpp" />
