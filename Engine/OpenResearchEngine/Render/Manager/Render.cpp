@@ -1,4 +1,5 @@
 #include "../../EngineApp.h"
+#include <unordered_set>
 
 void EngineApp::Render(FrameResource* currentFrameResource)
 {
@@ -30,45 +31,27 @@ void EngineApp::Render(FrameResource* currentFrameResource)
 void EngineApp::DeformationPass(FrameResource* currentFrameResource)
 {
     auto& renderItems = mRenderItemLayers.at("Opaque");
-    for (size_t i = 0; i < renderItems.size(); ++i)
-    {
-        if (renderItems[i]->AnimationInstance != nullptr)
-        {
-            mCommandList->SetComputeRootSignature(mBlendRootSignature.Get());
-            mCommandList->SetPipelineState(mPSOs.at("blend").Get());
-            ComputeBlendshapes(mCommandList.Get(), renderItems[i], currentFrameResource);
 
-            mCommandList->SetComputeRootSignature(mSkinnedRootSignature.Get());
-            mCommandList->SetPipelineState(mPSOs.at("skinned").Get());
-            ComputeSkinning(mCommandList.Get(), renderItems[i], currentFrameResource);
-            
-            if (renderItems[i]->Simulation)
-            {
-                mCommandList->SetComputeRootSignature(mMeshTransferRootSignature.Get());
-                mCommandList->SetPipelineState(mPSOs.at("meshTransfer").Get());
-                ComputeMeshTransfer(mCommandList.Get(), renderItems[i], currentFrameResource);
+    // Group by MeshInstance so each instance's graph runs once per frame
+    // (multiple subsets share the same MeshInstance)
+    std::unordered_set<MeshInstance*> processed;
 
-                mCommandList->SetComputeRootSignature(mTensionRootSignature.Get());
-                mCommandList->SetPipelineState(mPSOs.at("tension").Get());
-                ComputeTension(mCommandList.Get(), renderItems[i], currentFrameResource);
+    for (auto& ri : renderItems) {
+        if (!ri->Instance || ri->Instance->Graph().IsEmpty()) continue;
+        if (processed.count(ri->Instance)) continue;
+        processed.insert(ri->Instance);
 
-                ComputePBD(mCommandList.Get(), renderItems[i], currentFrameResource);
-
-                mCommandList->SetComputeRootSignature(mSimMeshTransferRootSignature.Get());
-                mCommandList->SetPipelineState(mPSOs.at("simMeshTransfer").Get());
-                ComputeSimMeshTransfer(mCommandList.Get(), renderItems[i], currentFrameResource);
-
-                mCommandList->SetComputeRootSignature(mTriangleNormalRootSignature.Get());
-                mCommandList->SetPipelineState(mPSOs.at("triangleNormal").Get());
-                ComputeTriangleNormals(mCommandList.Get(), renderItems[i], currentFrameResource);
-
-                mCommandList->SetComputeRootSignature(mVertexNormalRootSignature.Get());
-                mCommandList->SetPipelineState(mPSOs.at("vertexNormal").Get());
-                ComputeVertexNormals(mCommandList.Get(), renderItems[i], currentFrameResource);
-            }
+        // Execute all deformers for all subsets of this instance
+        for (auto& [subsetName, args] : ri->Instance->Asset()->DrawArgs) {
+            DeformContext ctx{};
+            ctx.MeshAsset  = ri->Instance->Asset();
+            ctx.Frame      = currentFrameResource;
+            ctx.SubsetName = &subsetName;
+            ri->Instance->Graph().Execute(mCommandList.Get(), ctx);
         }
     }
 }
+
 
 void EngineApp::ComputeBlendshapes(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
 {
