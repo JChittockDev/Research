@@ -5,6 +5,7 @@
 #include "Skinning.h"
 #include "Blendshapes.h"
 #include "MeshAnimationResource.h"
+#include "MeshInstance.h"
 
 class RenderItem
 {
@@ -19,6 +20,9 @@ public:
 	int NumFramesDirty = gNumFrameResources;
 
 	Material* Mat = nullptr;
+	// NEW — set by PushRenderItems; old Geo/AnimationInstance kept temporarily
+	MeshInstance* Instance  = nullptr;  // non-owning
+	std::string   SubsetName;           // key into Instance->Asset()->DrawArgs
 	MeshGeometry* Geo = nullptr;
 
 	UINT VertexCount = 0;
