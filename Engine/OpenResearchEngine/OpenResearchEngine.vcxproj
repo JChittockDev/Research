@@ -148,6 +148,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\RenderMeshAsset.cpp" />
     <ClCompile Include="Render\Resources\SimMeshAsset.cpp" />
+    <ClCompile Include="Render\Deformers\SkinDeformer.cpp" />
     <ClCompile Include="Render\Resources\RenderTextures.cpp" />
     <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="Render\Resources\ShadowResources.cpp" />
@@ -224,6 +225,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Resources\SimMeshAsset.h" />
     <ClInclude Include="Render\Resources\Skinning.h" />
     <ClInclude Include="Render\Deformers\IDeformer.h" />
+    <ClInclude Include="Render\Deformers\SkinDeformer.h" />
     <ClInclude Include="Utilities\OnnxModelResource.h" />
     <ClInclude Include="Utilities\stb_image.h" />
   </ItemGroup>
