@@ -21,6 +21,14 @@
 #include "Render/Resources/Skinning.h"
 #include "Render/Resources/RenderTextures.h"
 #include "Serialize/LevelReader.h"
+#include "Render/Resources/RenderMeshAsset.h"
+#include "Render/Resources/SimMeshAsset.h"
+#include "Render/Resources/MeshInstance.h"
+#include "Render/Deformers/SkinDeformer.h"
+#include "Render/Deformers/BlendshapeDeformer.h"
+#include "Render/Deformers/PhysicsDeformer.h"
+#include "Render/Deformers/DeformationGraph.h"
+#include "Render/Resources/StaticBatch.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -188,6 +196,14 @@ private:
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;
     std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSOs;
     std::map<std::string, std::string> mTextureData;
+
+    // New mesh system (replaces mGeometries, mMesh, mMeshAnimationResources etc.)
+    std::unordered_map<std::string, std::shared_ptr<RenderMeshAsset>> mRenderMeshAssets;
+    std::unordered_map<std::string, std::shared_ptr<SimMeshAsset>>    mSimMeshAssets;
+    std::unordered_map<std::string, std::shared_ptr<MeshInstance>>    mMeshInstances;
+    std::vector<SkinDeformer*>        mSkinDeformers;       // flat list, index = SkinnedCB slot
+    std::vector<BlendshapeDeformer*>  mBlendshapeDeformers; // flat list, index = BlendCB slot
+    std::vector<std::unique_ptr<StaticBatch>> mStaticBatches;
 
     std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC> mSkinnedInputLayout;
