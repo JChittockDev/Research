@@ -6,7 +6,6 @@
 #include "Objects/Camera.h"
 #include "Models/Internal/GeometryGenerator.h"
 #include "Render/Resources/FrameResource.h"
-#include "Render/Resources/Mesh.h"
 #include "Render/Resources/ShadowMap.h"
 #include "Render/Resources/Ssao.h"
 #include "Render/Resources/SSS.h"
@@ -40,7 +39,7 @@ public:
     EngineApp& operator=(const EngineApp& rhs) = delete;
     ~EngineApp();
 
-    virtual bool Initialize()override;
+    virtual bool Initialize() override;
 
 private:
     virtual void CreateRtvAndDsvDescriptorHeaps()override;
@@ -81,18 +80,6 @@ private:
     void BuildScene();
 
     void Render(FrameResource* currentFrameResource);
-    void ComputeSkinning(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeBlendshapes(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeTriangleNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeVertexNormals(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputePreSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputePostSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeConstraintSolve(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputePBD(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeForce(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
-    void ComputeTension(ID3D12GraphicsCommandList* cmdList, std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource);
 
     void SetBlendRootSignature();
     void SetSkinnedRootSignature();
@@ -186,13 +173,10 @@ private:
     DynamicLights dynamicLights;
     std::unordered_map<std::string, std::shared_ptr<Material>> mMaterials;
     std::unordered_map<std::string, std::shared_ptr<std::pair<Texture, UINT>>> mTextures;
-    std::unordered_map<std::string, std::shared_ptr<MeshGeometry>> mGeometries;
     std::unordered_map<std::string, std::shared_ptr<Skeleton>> mSkeletons;
     std::unordered_map<std::string, std::shared_ptr<Animation>> mAnimations;
     std::unordered_map<std::string, std::shared_ptr<SkinningController>> mSkinningControllers;
     std::unordered_map<std::string, std::shared_ptr<BlendshapeController>> mBlendshapeControllers;
-    std::unordered_map<std::string, std::shared_ptr<MeshAnimationResource>> mMeshAnimationResources;
-    std::unordered_map<std::string, std::shared_ptr<Mesh>> mMesh;
     std::unordered_map<std::string, std::shared_ptr<TransformNode>> mTransforms;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>> mSubsets;
     std::unordered_map<std::string, ComPtr<ID3DBlob>> mShaders;

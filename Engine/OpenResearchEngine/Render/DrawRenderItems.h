@@ -30,26 +30,5 @@ inline void DrawRenderItems(
             const auto& args = ri->Instance->Asset()->DrawArgs.at(ri->SubsetName);
             cmdList->DrawIndexedInstanced(args.IndexCount, 1, args.IndexStart, args.VertexStart, 0);
         }
-        else
-        {
-            // Fallback: old path (removed in Task 19)
-            if (ri->AnimationInstance != nullptr)
-            {
-                if (!ri->Simulation)
-                    cmdList->IASetVertexBuffers(0, 1, &ri->MeshAnimationResourceInstance->SkinnedVertexBufferView());
-                else
-                    cmdList->IASetVertexBuffers(0, 1, &ri->MeshAnimationResourceInstance->VertexNormalBufferView());
-            }
-            else
-            {
-                cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
-            }
-
-            cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
-            cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
-            cmdList->SetGraphicsRootConstantBufferView(
-                0, objectCB->GetGPUVirtualAddress() + ri->ObjCBIndex * objCBByteSize);
-            cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->IndexStart, ri->VertexStart, 0);
-        }
     }
 }

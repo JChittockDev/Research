@@ -143,7 +143,6 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Resources\Composite.cpp" />
     <ClCompile Include="Render\Resources\GBuffer.cpp" />
     <ClCompile Include="Render\Resources\Lighting.cpp" />
-    <ClCompile Include="Render\Resources\MeshAnimationResource.cpp" />
     <ClCompile Include="Render\Resources\Radiance.cpp" />
     <ClCompile Include="Render\Resources\RadianceResources.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
@@ -176,7 +175,6 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
     <ClCompile Include="Build\PushGenericMesh.cpp" />
-    <ClCompile Include="Render\Resources\Mesh.cpp" />
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
@@ -205,9 +203,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Resources\Composite.h" />
     <ClInclude Include="Render\Resources\GBuffer.h" />
     <ClInclude Include="Render\Resources\Lighting.h" />
-    <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
-    <ClInclude Include="Render\Resources\MeshAnimationResource.h" />
     <ClInclude Include="Render\Resources\Radiance.h" />
     <ClInclude Include="Render\Resources\RadianceResources.h" />
     <ClInclude Include="Render\Resources\RenderTextures.h" />

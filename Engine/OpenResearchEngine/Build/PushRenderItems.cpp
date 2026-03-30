@@ -2,123 +2,201 @@
 
 void EngineApp::PushRenderItems()
 {
-	RenderItemSettings lightRenderItems;
-	std::unordered_map<std::string, RenderItemSettings> lightRenderSettingsDict;
-	lightRenderSettingsDict[mSubsets[GetFullPath("Models/directionallight.obj")][0]->Name] = lightRenderItems;
-	lightRenderSettingsDict[mSubsets[GetFullPath("Models/spotlight.obj")][0]->Name] = lightRenderItems;
+    // ── Helper lambda: create a MeshInstance (with optional deformers) and assign
+    //    to all RenderItems in the given map whose SubsetName lives in the asset.
+    auto BuildAndAssign = [&](
+        const std::string&  fullPath,
+        const ItemData*     data,        // nullptr for light meshes
+        RenderMeshAsset*    asset,
+        std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>& riMap)
+    {
+        if (mMeshInstances.count(fullPath)) return;   // already built
 
-	UINT dirLightOffset = 0;
-	for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++)
-	{
-		RenderItem::BuildRenderItems(GetFullPath("Models/directionallight.obj"), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-			ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers["Opaque"], mRenderItems, mDirectionalLightRenderItemMap, lightRenderSettingsDict, dirLightOffset);
-	}
+        DeformationGraph graph;
 
-	UINT spotLightOffset = 0;
-	for (int i = 0; i < dynamicLights.SpotLights.size(); i++)
-	{
-		RenderItem::BuildRenderItems(GetFullPath("Models/spotlight.obj"), DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f), DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-			ObjectCBIndex, mSubsets, mGeometries, mMaterials, mMesh, mRenderItemLayers["Opaque"], mRenderItems, mSpotLightRenderItemMap, lightRenderSettingsDict, spotLightOffset);
-	}
+        if (data && data->animated && asset->hasBlendshapes)
+        {
+            UINT bsCBIdx = (UINT)mBlendshapeDeformers.size();
+            auto bsCtrl  = mBlendshapeControllers.count(fullPath)
+                ? mBlendshapeControllers.at(fullPath) : nullptr;
+            auto bs = std::make_unique<BlendshapeDeformer>(
+                md3dDevice.Get(), mCommandList.Get(),
+                asset, bsCBIdx, bsCtrl,
+                mBlendRootSignature.Get(), mPSOs.at("blend").Get());
+            mBlendshapeDeformers.push_back(bs.get());
+            graph.AddDeformer(std::move(bs));
+        }
 
-	for (const auto& item : mLevelRenderItems.at("DemoLevel"))
-	{
-		const std::string& itemName = item.first;
-		const ItemData& renderItemData = item.second;
-		std::unordered_map<std::string, RenderItemSettings> settings = renderItemData.settings;
+        if (data && data->animated && asset->hasSkinning)
+        {
+            UINT skinCBIdx = (UINT)mSkinDeformers.size();
+            auto skinCtrl  = mSkinningControllers.count(fullPath)
+                ? mSkinningControllers.at(fullPath) : nullptr;
+            auto sk = std::make_unique<SkinDeformer>(
+                md3dDevice.Get(), mCommandList.Get(),
+                asset, skinCBIdx, skinCtrl,
+                mSkinnedRootSignature.Get(), mPSOs.at("skinned").Get());
+            mSkinDeformers.push_back(sk.get());
+            graph.AddDeformer(std::move(sk));
+        }
 
-		bool geoExists = PathExists(renderItemData.geometry);
+        if (data && data->simulated && mSimMeshAssets.count(fullPath))
+        {
+            auto phys = std::make_unique<PhysicsDeformer>(
+                md3dDevice.Get(), mCommandList.Get(),
+                mSimMeshAssets.at(fullPath).get(),
+                MakePhysicsDeformerResources());
+            graph.AddDeformer(std::move(phys));
+        }
 
-		std::string geoPath = renderItemData.geometry;
-		if (geoExists)
-		{
-			geoPath = GetFullPath(renderItemData.geometry.c_str());
-		}
+        auto instance = std::make_shared<MeshInstance>(asset, std::move(graph));
+        mMeshInstances[fullPath] = instance;
 
-		UINT meshOffset = 0;
-		if (!renderItemData.animated)
-		{
+        // Assign Instance + SubsetName to every RenderItem in the given layer map
+        for (auto& [key, vec] : riMap)
+        {
+            for (auto& ri : vec)
+            {
+                // Match by ObjCBIndex is not reliable here; match by checking
+                // whether the subset name exists in this asset's DrawArgs.
+                if (ri->Instance) continue;  // already assigned
+                if (asset->DrawArgs.count(ri->SubsetName))
+                {
+                    ri->Instance = instance.get();
+                }
+            }
+        }
+    };
 
-			RenderItem::BuildRenderItems(geoPath, DirectX::XMFLOAT3((float)renderItemData.position[0], (float)renderItemData.position[1], (float)renderItemData.position[2]),
-										DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
-										DirectX::XMFLOAT3((float)renderItemData.scale[0], (float)renderItemData.scale[1], (float)renderItemData.scale[2]), ObjectCBIndex, mSubsets, mGeometries,
-										mMaterials, mMesh, mRenderItemLayers[renderItemData.render_layer], mRenderItems, mMeshRenderItemMap, settings, meshOffset);
-		}
-		else
-		{
-			RenderItem::BuildRenderItems(geoPath, renderItemData.animation,
-										DirectX::XMFLOAT3((float)renderItemData.position[0], (float)renderItemData.position[1], (float)renderItemData.position[2]),
-										DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
-										DirectX::XMFLOAT3((float)renderItemData.scale[0], (float)renderItemData.scale[1], (float)renderItemData.scale[2]), ObjectCBIndex, SkinnedCBIndex, BlendCBIndex,
-										mSubsets, mGeometries, mMaterials, mMesh, mSkeletons, mAnimations, mTransforms, mSkinningControllers, mBlendshapeControllers, mMeshAnimationResources,
-										mRenderItemLayers[renderItemData.render_layer], mRenderItems, mMeshRenderItemMap, md3dDevice, mCommandList, settings, meshOffset);
-		}
+    // ── Light source render items ──
+    // Directional lights
+    {
+        const std::string relPath = "Models/directionallight.obj";
+        const std::string fullPath = GetFullPath(relPath.c_str());
+        RenderItemSettings settings;
+        std::unordered_map<std::string, RenderItemSettings> settingsDict;
 
-		// Build MeshInstance with DeformationGraph for this item
-		std::string fullPath = geoExists ? GetFullPath(renderItemData.geometry.c_str()) : renderItemData.geometry;
-		if (mRenderMeshAssets.count(fullPath) && !mMeshInstances.count(fullPath))
-		{
-			RenderMeshAsset* asset = mRenderMeshAssets.at(fullPath).get();
-			DeformationGraph graph;
+        if (mRenderMeshAssets.count(fullPath))
+        {
+            RenderMeshAsset* asset = mRenderMeshAssets.at(fullPath).get();
+            UINT lightOffset = 0;
+            for (int i = 0; i < (int)dynamicLights.DirectionalLights.size(); i++)
+            {
+                for (auto& [subsetName, args] : asset->DrawArgs)
+                {
+                    auto ritem = std::make_shared<RenderItem>();
+                    ritem->World       = Math::Identity4x4();
+                    ritem->TexTransform = Math::Identity4x4();
+                    ritem->ObjCBIndex  = ObjectCBIndex++;
+                    ritem->Mat         = mMaterials.at("default").get();
+                    ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+                    ritem->SubsetName  = subsetName;
 
-			if (renderItemData.animated && asset->hasBlendshapes)
-			{
-				UINT bsCBIdx = (UINT)mBlendshapeDeformers.size();
-				auto bsCtrl  = mBlendshapeControllers.count(fullPath)
-					? mBlendshapeControllers.at(fullPath) : nullptr;
-				auto bs = std::make_unique<BlendshapeDeformer>(
-					md3dDevice.Get(), mCommandList.Get(),
-					asset, bsCBIdx, bsCtrl,
-					mBlendRootSignature.Get(), mPSOs.at("blend").Get());
-				mBlendshapeDeformers.push_back(bs.get());
-				graph.AddDeformer(std::move(bs));
-			}
+                    mRenderItemLayers["Opaque"].push_back(ritem);
+                    mRenderItems.push_back(ritem);
+                    std::string key = subsetName + "_" + std::to_string(lightOffset++);
+                    mDirectionalLightRenderItemMap[key].push_back(ritem);
+                }
+            }
 
-			if (renderItemData.animated && asset->hasSkinning)
-			{
-				UINT skinCBIdx = (UINT)mSkinDeformers.size();
-				auto skinCtrl  = mSkinningControllers.count(fullPath)
-					? mSkinningControllers.at(fullPath) : nullptr;
-				auto sk = std::make_unique<SkinDeformer>(
-					md3dDevice.Get(), mCommandList.Get(),
-					asset, skinCBIdx, skinCtrl,
-					mSkinnedRootSignature.Get(), mPSOs.at("skinned").Get());
-				mSkinDeformers.push_back(sk.get());
-				graph.AddDeformer(std::move(sk));
-			}
+            BuildAndAssign(fullPath, nullptr, asset, mDirectionalLightRenderItemMap);
+            // Also assign instance to items in Opaque layer
+            for (auto& ri : mRenderItemLayers["Opaque"])
+            {
+                if (!ri->Instance && asset->DrawArgs.count(ri->SubsetName))
+                    ri->Instance = mMeshInstances.at(fullPath).get();
+            }
+        }
+    }
 
-			if (renderItemData.simulated && mSimMeshAssets.count(fullPath))
-			{
-				auto phys = std::make_unique<PhysicsDeformer>(
-					md3dDevice.Get(), mCommandList.Get(),
-					mSimMeshAssets.at(fullPath).get(),
-					MakePhysicsDeformerResources());
-				graph.AddDeformer(std::move(phys));
-			}
+    // Spot lights
+    {
+        const std::string relPath = "Models/spotlight.obj";
+        const std::string fullPath = GetFullPath(relPath.c_str());
 
-			auto instance = std::make_shared<MeshInstance>(asset, std::move(graph));
-			mMeshInstances[fullPath] = instance;
+        if (mRenderMeshAssets.count(fullPath))
+        {
+            RenderMeshAsset* asset = mRenderMeshAssets.at(fullPath).get();
+            UINT lightOffset = 0;
+            for (int i = 0; i < (int)dynamicLights.SpotLights.size(); i++)
+            {
+                for (auto& [subsetName, args] : asset->DrawArgs)
+                {
+                    auto ritem = std::make_shared<RenderItem>();
+                    ritem->World       = Math::Identity4x4();
+                    ritem->TexTransform = Math::Identity4x4();
+                    ritem->ObjCBIndex  = ObjectCBIndex++;
+                    ritem->Mat         = mMaterials.at("default").get();
+                    ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+                    ritem->SubsetName  = subsetName;
 
-			// Assign Instance and SubsetName to each RenderItem for this mesh
-			for (auto& layer : mRenderItemLayers)
-			{
-				for (auto& ri : layer.second)
-				{
-					if (ri->Geo && ri->Geo->Name == fullPath)
-					{
-						ri->Instance = instance.get();
-						// Find the subset name for this RenderItem by matching DrawArgs
-						for (auto& [subsetName, args] : asset->DrawArgs)
-						{
-							if (args.IndexStart == ri->IndexStart && args.IndexCount == ri->IndexCount)
-							{
-								ri->SubsetName = subsetName;
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+                    mRenderItemLayers["Opaque"].push_back(ritem);
+                    mRenderItems.push_back(ritem);
+                    std::string key = subsetName + "_" + std::to_string(lightOffset++);
+                    mSpotLightRenderItemMap[key].push_back(ritem);
+                }
+            }
+
+            BuildAndAssign(fullPath, nullptr, asset, mSpotLightRenderItemMap);
+            for (auto& ri : mRenderItemLayers["Opaque"])
+            {
+                if (!ri->Instance && asset->DrawArgs.count(ri->SubsetName))
+                    ri->Instance = mMeshInstances.at(fullPath).get();
+            }
+        }
+    }
+
+    // ── Level render items ──
+    for (const auto& item : mLevelRenderItems.at("DemoLevel"))
+    {
+        const std::string& itemName = item.first;
+        const ItemData& renderItemData = item.second;
+
+        if (renderItemData.geometry.empty()) continue;
+        bool geoExists = PathExists(renderItemData.geometry);
+        if (!geoExists) continue;
+
+        std::string fullPath = GetFullPath(renderItemData.geometry.c_str());
+        if (!mRenderMeshAssets.count(fullPath)) continue;
+
+        RenderMeshAsset* asset = mRenderMeshAssets.at(fullPath).get();
+        DirectX::XMFLOAT4X4 transformMatrix = Math::CreateTransformMatrix(
+            DirectX::XMFLOAT3((float)renderItemData.position[0], (float)renderItemData.position[1], (float)renderItemData.position[2]),
+            DirectX::XMFLOAT4((float)renderItemData.rotation[0], (float)renderItemData.rotation[1], (float)renderItemData.rotation[2], (float)renderItemData.rotation[3]),
+            DirectX::XMFLOAT3((float)renderItemData.scale[0],    (float)renderItemData.scale[1],    (float)renderItemData.scale[2]));
+
+        const auto& settings = renderItemData.settings;
+
+        for (auto& [subsetName, args] : asset->DrawArgs)
+        {
+            // Only add a RenderItem if there's a settings entry for this subset
+            if (settings.find(subsetName) == settings.end()) continue;
+
+            auto ritem = std::make_shared<RenderItem>();
+            ritem->World        = transformMatrix;
+            ritem->TexTransform = Math::Identity4x4();
+            ritem->ObjCBIndex   = ObjectCBIndex++;
+            ritem->Mat          = mMaterials.at(settings.at(subsetName).Material).get();
+            ritem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+            ritem->SubsetName   = subsetName;
+
+            mRenderItemLayers[renderItemData.render_layer].push_back(ritem);
+            mRenderItems.push_back(ritem);
+            mMeshRenderItemMap[itemName].push_back(ritem);
+        }
+
+        // Build MeshInstance with DeformationGraph (once per fullPath)
+        BuildAndAssign(fullPath, &renderItemData, asset, mMeshRenderItemMap);
+
+        // Assign instance to the items we just pushed into the render layer
+        if (mMeshInstances.count(fullPath))
+        {
+            auto& inst = mMeshInstances.at(fullPath);
+            for (auto& ri : mRenderItemLayers[renderItemData.render_layer])
+            {
+                if (!ri->Instance && asset->DrawArgs.count(ri->SubsetName))
+                    ri->Instance = inst.get();
+            }
+        }
+    }
 }
