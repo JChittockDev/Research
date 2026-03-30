@@ -153,6 +153,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Deformers\PhysicsDeformer.cpp" />
     <ClCompile Include="Render\Deformers\DeformationGraph.cpp" />
     <ClCompile Include="Render\Resources\MeshInstance.cpp" />
+    <ClCompile Include="Render\Resources\StaticBatch.cpp" />
     <ClCompile Include="Render\Resources\RenderTextures.cpp" />
     <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="Render\Resources\ShadowResources.cpp" />
@@ -234,6 +235,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Deformers\PhysicsDeformer.h" />
     <ClInclude Include="Render\Deformers\DeformationGraph.h" />
     <ClInclude Include="Render\Resources\MeshInstance.h" />
+    <ClInclude Include="Render\Resources\StaticBatch.h" />
     <ClInclude Include="Utilities\OnnxModelResource.h" />
     <ClInclude Include="Utilities\stb_image.h" />
   </ItemGroup>
