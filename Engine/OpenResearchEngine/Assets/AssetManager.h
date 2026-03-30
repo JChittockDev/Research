@@ -10,6 +10,12 @@
 #include "../Render/Resources/Skinning.h"
 #include "../Models/Internal/GeometryGenerator.h"
 #include "../Serialize/LevelReader.h"
+#include "../Render/Resources/RenderMeshAsset.h"
+#include "../Render/Resources/SimMeshAsset.h"
+#include "../Render/Resources/MeshInstance.h"
+#include "../Render/Deformers/SkinDeformer.h"
+#include "../Render/Deformers/BlendshapeDeformer.h"
+#include "../Render/Resources/StaticBatch.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -50,16 +56,21 @@ public:
     // --- Resource Maps (public — accessed by EngineApp Build/ and Update/ methods) ---
     std::unordered_map<std::string, std::shared_ptr<Material>>                     mMaterials;
     std::unordered_map<std::string, std::shared_ptr<std::pair<Texture, UINT>>>     mTextures;
-    std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>                 mGeometries;
     std::unordered_map<std::string, std::shared_ptr<Skeleton>>                     mSkeletons;
     std::unordered_map<std::string, std::shared_ptr<Animation>>                    mAnimations;
     std::unordered_map<std::string, std::shared_ptr<SkinningController>>           mSkinningControllers;
     std::unordered_map<std::string, std::shared_ptr<BlendshapeController>>         mBlendshapeControllers;
-    std::unordered_map<std::string, std::shared_ptr<MeshAnimationResource>>        mMeshAnimationResources;
-    std::unordered_map<std::string, std::shared_ptr<Mesh>>                         mMesh;
     std::unordered_map<std::string, std::shared_ptr<TransformNode>>                mTransforms;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>          mSubsets;
     std::map<std::string, std::string>                                             mTextureData;
+
+    // New mesh system (replaces mGeometries, mMesh, mMeshAnimationResources)
+    std::unordered_map<std::string, std::shared_ptr<RenderMeshAsset>> mRenderMeshAssets;
+    std::unordered_map<std::string, std::shared_ptr<SimMeshAsset>>    mSimMeshAssets;
+    std::unordered_map<std::string, std::shared_ptr<MeshInstance>>    mMeshInstances;
+    std::vector<SkinDeformer*>        mSkinDeformers;
+    std::vector<BlendshapeDeformer*>  mBlendshapeDeformers;
+    std::vector<std::unique_ptr<StaticBatch>> mStaticBatches;
     std::vector<D3D12_INPUT_ELEMENT_DESC>                                          mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC>                                          mSkinnedInputLayout;
 
