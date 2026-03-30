@@ -223,6 +223,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Resources\RenderMeshAsset.h" />
     <ClInclude Include="Render\Resources\SimMeshAsset.h" />
     <ClInclude Include="Render\Resources\Skinning.h" />
+    <ClInclude Include="Render\Deformers\IDeformer.h" />
     <ClInclude Include="Utilities\OnnxModelResource.h" />
     <ClInclude Include="Utilities\stb_image.h" />
   </ItemGroup>
