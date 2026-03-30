@@ -5,7 +5,6 @@
 #include "../Common/Math.h"
 #include "../Common/UploadBuffer.h"
 #include "../Render/Resources/FrameResource.h"
-#include "../Render/Resources/Mesh.h"
 #include "../Render/Resources/RenderItem.h"
 #include "../Render/Resources/Skinning.h"
 #include "../Models/Internal/GeometryGenerator.h"
@@ -16,6 +15,7 @@
 #include "../Render/Deformers/SkinDeformer.h"
 #include "../Render/Deformers/BlendshapeDeformer.h"
 #include "../Render/Resources/StaticBatch.h"
+#include "../Utilities/OnnxModelResource.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -32,15 +32,7 @@ public:
     );
 
     // Top-level init — called once from EngineApp::BuildScene()
-    void Build(
-        const DynamicLights& lights,
-        const std::unordered_map<std::string,
-              std::unordered_map<std::string, ItemData>>& levelItems,
-        const std::unordered_map<std::string,
-              std::unordered_map<std::string, PBRMaterialData>>& levelMaterials,
-        const std::unordered_map<std::string,
-              std::unordered_map<std::string, LightData>>& levelLights
-    );
+    void Build();
 
     // Path helper (mirrors D3DApp::GetFullPath)
     std::string GetFullPath(const char* path) const {
@@ -63,6 +55,28 @@ public:
     std::unordered_map<std::string, std::shared_ptr<TransformNode>>                mTransforms;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>          mSubsets;
     std::map<std::string, std::string>                                             mTextureData;
+
+    // Render items (populated by Build, consumed by render passes and Update* functions)
+    std::vector<std::shared_ptr<RenderItem>>                                    mRenderItems;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mRenderItemLayers;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mMeshRenderItemMap;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mDeformedRenderItemMap;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mDirectionalLightRenderItemMap;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mSpotLightRenderItemMap;
+    UINT ObjectCBIndex  = 0;
+    UINT SkinnedCBIndex = 0;
+    UINT BlendCBIndex   = 0;
+
+    // Serialized level data (loaded by SerializeLevel, consumed by Push* methods)
+    std::unordered_map<std::string, std::unordered_map<std::string, ItemData>>        mLevelRenderItems;
+    std::unordered_map<std::string, std::unordered_map<std::string, PBRMaterialData>> mLevelMaterials;
+    std::unordered_map<std::string, std::unordered_map<std::string, LightData>>       mLevelLights;
+
+    // Light state (populated by PushLights, read by SceneState init and UpdateLights)
+    DynamicLights dynamicLights;
+
+    // ONNX inference resource
+    std::unique_ptr<OnnxModelResource> mOnnxModelResource;
 
     // New mesh system (replaces mGeometries, mMesh, mMeshAnimationResources)
     std::unordered_map<std::string, std::shared_ptr<RenderMeshAsset>> mRenderMeshAssets;
@@ -119,23 +133,18 @@ private:
     DXGI_FORMAT                    mBackBufferFormat;
     DXGI_FORMAT                    mDepthStencilFormat;
 
-    // Build sub-methods
-    void CompileShaders(const DynamicLights& lights);
+    // Build sub-methods (all read from members — no parameters needed)
+    void SerializeLevel();
+    void PushLights();
+    void CompileShaders();
     void SetRootSignatures();
     void SetPipelineStates();
-    void ImportTextures(
-        const std::unordered_map<std::string,
-              std::unordered_map<std::string, PBRMaterialData>>& levelMaterials
-    );
+    void ImportTextures();
     void PushGenericMesh();
-    void PushMesh(
-        const std::unordered_map<std::string,
-              std::unordered_map<std::string, ItemData>>& levelItems
-    );
-    void PushMaterials(
-        const std::unordered_map<std::string,
-              std::unordered_map<std::string, PBRMaterialData>>& levelMaterials
-    );
+    void PushMesh();
+    void PushMaterials();
+    void PushRenderItems();
+    void MakePhysicsDeformerResources(PhysicsDeformerResources& res);
 
     // Helpers (moved from EngineApp)
     std::string ExtractFileName(const std::string& filePath);
