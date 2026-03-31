@@ -1,6 +1,15 @@
-#include "../EngineApp.h"
+#include "UpdateFunctions.h"
+#include "../Common/Structures.h"
+#include "../Common/SceneState.h"
+#include "../Render/Resources/FrameResource.h"
+#include "../Render/Resources/Ssao.h"
+#include "../Render/Resources/Ssgi.h"
+#include "../Render/Resources/SSS.h"
+#include "../Utilities/GameTimer.h"
+#include <imgui.h>
+#include <DirectXMath.h>
 
-void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
+void UpdateScreenSpaceCB(const GameTimer& gt, SceneState& state, const Ssao* ssao, const Ssgi* ssgi, const SSS* sss, FrameResource* fr)
 {
     SsaoConstants ssaoCB;
     SsaoBlurConstants ssaoVerticalBlurCB;
@@ -10,7 +19,8 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     SsgiBlurConstants ssgiVerticalBlurCB;
     SsgiBlurConstants ssgiHorizontalBlurCB;
 
-    DirectX::XMMATRIX P = mCamera.GetProj();
+    // Recover original (non-transposed) projection matrix from stored transposed value
+    DirectX::XMMATRIX P = XMMatrixTranspose(XMLoadFloat4x4(&state.mainPassCB.Proj));
 
     // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
     DirectX::XMMATRIX T(
@@ -19,26 +29,24 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
         0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.0f, 1.0f);
 
-    ssaoCB.Proj = mMainPassCB.Proj;
-    ssaoCB.InvProj = mMainPassCB.InvProj;
-    ssaoVerticalBlurCB.Proj = mMainPassCB.Proj;
+    ssaoCB.Proj = state.mainPassCB.Proj;
+    ssaoCB.InvProj = state.mainPassCB.InvProj;
+    ssaoVerticalBlurCB.Proj = state.mainPassCB.Proj;
     XMStoreFloat4x4(&ssaoCB.ProjTex, XMMatrixTranspose(P * T));
 
-    mSsao->GetOffsetVectors(ssaoCB.OffsetVectors);
+    ssao->GetOffsetVectors(ssaoCB.OffsetVectors);
 
-    auto blurWeights = mSsao->CalcGaussWeights(2.5f);
+    auto blurWeights = ssao->CalcGaussWeights(2.5f);
     ssaoVerticalBlurCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
     ssaoVerticalBlurCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
     ssaoVerticalBlurCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
-    ssaoVerticalBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSsao->SsaoWidth(), 1.0f / mSsao->SsaoHeight());
+    ssaoVerticalBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / ssao->SsaoWidth(), 1.0f / ssao->SsaoHeight());
     ssaoVerticalBlurCB.BlurRadius = 5;
 
-    // Default SSAO settings if ImGui is not modifying them
     static float occlusionRadius = 1.011f;
     static float occlusionFadeStart = 1.2f;
     static float occlusionFadeEnd = 4.3f;
     static float surfaceEpsilon = 0.002f;
-
     static int blurRadius = 5;
 
     ImGui::SeparatorText("Screenspace Controls");
@@ -67,20 +75,8 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     ssgiCB.InvProj = ssaoCB.InvProj;
     ssgiCB.ProjTex = ssaoCB.ProjTex;
 
-    ssgiCB.OffsetVectors[0] = ssaoCB.OffsetVectors[0];
-    ssgiCB.OffsetVectors[1] = ssaoCB.OffsetVectors[1];
-    ssgiCB.OffsetVectors[2] = ssaoCB.OffsetVectors[2];
-    ssgiCB.OffsetVectors[3] = ssaoCB.OffsetVectors[3];
-    ssgiCB.OffsetVectors[4] = ssaoCB.OffsetVectors[4];
-    ssgiCB.OffsetVectors[5] = ssaoCB.OffsetVectors[5];
-    ssgiCB.OffsetVectors[6] = ssaoCB.OffsetVectors[6];
-    ssgiCB.OffsetVectors[7] = ssaoCB.OffsetVectors[7];
-    ssgiCB.OffsetVectors[8] = ssaoCB.OffsetVectors[8];
-    ssgiCB.OffsetVectors[9] = ssaoCB.OffsetVectors[9];
-    ssgiCB.OffsetVectors[10] = ssaoCB.OffsetVectors[10];
-    ssgiCB.OffsetVectors[11] = ssaoCB.OffsetVectors[11];
-    ssgiCB.OffsetVectors[12] = ssaoCB.OffsetVectors[12];
-    ssgiCB.OffsetVectors[13] = ssaoCB.OffsetVectors[13];
+    for (int k = 0; k < 14; k++)
+        ssgiCB.OffsetVectors[k] = ssaoCB.OffsetVectors[k];
 
     static float giSampleRadius = 0.02f;
     static float giFalloffScale = 0.012f;
@@ -112,23 +108,15 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     sssBlurCB.BlurWeights[0] = ssaoVerticalBlurCB.BlurWeights[0];
     sssBlurCB.BlurWeights[1] = ssaoVerticalBlurCB.BlurWeights[1];
     sssBlurCB.BlurWeights[2] = ssaoVerticalBlurCB.BlurWeights[2];
-    sssBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSss->SSSWidth(), 1.0f / mSss->SSSHeight());
+    sssBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / sss->SSSWidth(), 1.0f / sss->SSSHeight());
     sssBlurCB.BlurRadius = 4;
     sssBlurCB.HorizontalBlur = 0;
 
-    auto currSsaoCB = mCurrFrameResource->SsaoCB.get();
-    auto currSsaoVerticalBlurCB = mCurrFrameResource->SsaoVerticalBlurCB.get();
-    auto currSsaoHorizontalBlurCB = mCurrFrameResource->SsaoHorizontalBlurCB.get();
-    auto currSsgiCB = mCurrFrameResource->SsgiCB.get();
-    auto currSsgiVerticalBlurCB = mCurrFrameResource->SsgiVerticalBlurCB.get();
-    auto currSsgiHorizontalBlurCB = mCurrFrameResource->SsgiHorizontalBlurCB.get();
-    auto currSssBlurCB = mCurrFrameResource->SssBlurCB.get();
-
-    currSsaoCB->CopyData(0, ssaoCB);
-    currSsaoVerticalBlurCB->CopyData(0, ssaoVerticalBlurCB);
-    currSsaoHorizontalBlurCB->CopyData(0, ssaoHorizontalBlurCB);
-    currSsgiCB->CopyData(0, ssgiCB);
-    currSsgiVerticalBlurCB->CopyData(0, ssgiVerticalBlurCB);
-    currSsgiHorizontalBlurCB->CopyData(0, ssgiHorizontalBlurCB);
-    currSssBlurCB->CopyData(0, sssBlurCB);
+    fr->SsaoCB->CopyData(0, ssaoCB);
+    fr->SsaoVerticalBlurCB->CopyData(0, ssaoVerticalBlurCB);
+    fr->SsaoHorizontalBlurCB->CopyData(0, ssaoHorizontalBlurCB);
+    fr->SsgiCB->CopyData(0, ssgiCB);
+    fr->SsgiVerticalBlurCB->CopyData(0, ssgiVerticalBlurCB);
+    fr->SsgiHorizontalBlurCB->CopyData(0, ssgiHorizontalBlurCB);
+    fr->SssBlurCB->CopyData(0, sssBlurCB);
 }

@@ -1,15 +1,22 @@
-#include "../EngineApp.h"
+#include "UpdateFunctions.h"
+#include "../Common/Structures.h"
+#include "../Common/SceneState.h"
+#include "../Render/Resources/FrameResource.h"
+#include "../Utilities/GameTimer.h"
+#include <imgui.h>
+#include <DirectXMath.h>
 
-void EngineApp::UpdateSssCB(const GameTimer& gt)
+void UpdateSssCB(const GameTimer& gt, SceneState& state, FrameResource* fr)
 {
     SssConstants sssCB;
 
-    for (int i = 0; i < dynamicLights.GetNumLights(); i++)
+    for (int i = 0; i < state.lights.GetNumLights(); i++)
     {
-        sssCB.Lights[i] = mMainPassCB.Lights[i];
+        sssCB.Lights[i] = state.mainPassCB.Lights[i];
     }
 
-    DirectX::XMMATRIX P = mCamera.GetProj();
+    // Recover original (non-transposed) projection matrix from stored transposed value
+    DirectX::XMMATRIX P = XMMatrixTranspose(XMLoadFloat4x4(&state.mainPassCB.Proj));
 
     // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
     DirectX::XMMATRIX T(
@@ -18,18 +25,17 @@ void EngineApp::UpdateSssCB(const GameTimer& gt)
         0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.0f, 1.0f);
 
-    sssCB.Proj = mMainPassCB.Proj;
-    sssCB.InvProj = mMainPassCB.InvProj;
-    sssCB.ViewProj = mMainPassCB.ViewProj;
-    sssCB.EyePosW = mMainPassCB.EyePosW;
+    sssCB.Proj = state.mainPassCB.Proj;
+    sssCB.InvProj = state.mainPassCB.InvProj;
+    sssCB.ViewProj = state.mainPassCB.ViewProj;
+    sssCB.EyePosW = state.mainPassCB.EyePosW;
     XMStoreFloat4x4(&sssCB.ProjTex, XMMatrixTranspose(P * T));
 
-    // Default SSAO settings if ImGui is not modifying them
     static float blend = 1.0f;
     static float thickness = 0.5f;
     static float scale = 0.5f;
-    static DirectX::XMFLOAT3 transmissionColor(0.7, 0.6, 0.5);
-    static DirectX::XMFLOAT3 scatteringProfile(0.05, 0.01, 0.01);
+    static DirectX::XMFLOAT3 transmissionColor(0.7f, 0.6f, 0.5f);
+    static DirectX::XMFLOAT3 scatteringProfile(0.05f, 0.01f, 0.01f);
     static int sampleCount = 8;
 
     if (ImGui::TreeNode("SSS Settings"))
@@ -50,6 +56,5 @@ void EngineApp::UpdateSssCB(const GameTimer& gt)
     sssCB.SampleCount = sampleCount;
     sssCB.Scale = scale;
 
-    auto currSssCB = mCurrFrameResource->SssCB.get();
-    currSssCB->CopyData(0, sssCB);
+    fr->SssCB->CopyData(0, sssCB);
 }

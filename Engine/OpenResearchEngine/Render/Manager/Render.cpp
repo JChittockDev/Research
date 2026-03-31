@@ -23,7 +23,7 @@ void EngineApp::Render(FrameResource* fr)
     ctx.backBuffer       = CurrentBackBuffer().Get();
     ctx.backBufferRtv    = CurrentBackBufferView();
     ctx.renderItemLayers = &mAssets->mRenderItemLayers;
-    ctx.lights           = &dynamicLights;
+    ctx.lights           = &mSceneState.lights;
     ctx.assets           = mAssets.get();
     ctx.sceneState       = &mSceneState;
 

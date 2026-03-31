@@ -1,9 +1,15 @@
-#include "../EngineApp.h"
+#include "UpdateFunctions.h"
+#include "../Objects/Camera.h"
+#include "../Common/Structures.h"
+#include "../Common/SceneState.h"
+#include "../Render/Resources/FrameResource.h"
+#include "../Utilities/GameTimer.h"
+#include <DirectXMath.h>
 
-void EngineApp::UpdateMainPassCB(const GameTimer& gt)
+void UpdateMainPassCB(const GameTimer& gt, const Camera& camera, SceneState& state, FrameResource* fr)
 {
-	DirectX::XMMATRIX view = mCamera.GetView();
-	DirectX::XMMATRIX proj = mCamera.GetProj();
+	DirectX::XMMATRIX view = camera.GetView();
+	DirectX::XMMATRIX proj = camera.GetProj();
 
 	DirectX::XMMATRIX viewProj = XMMatrixMultiply(view, proj);
 	DirectX::XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -15,23 +21,22 @@ void EngineApp::UpdateMainPassCB(const GameTimer& gt)
 
 	DirectX::XMMATRIX viewProjTex = XMMatrixMultiply(viewProj, T);
 
-	XMStoreFloat4x4(&mMainPassCB.View, XMMatrixTranspose(view));
-	XMStoreFloat4x4(&mMainPassCB.InvView, XMMatrixTranspose(invView));
-	XMStoreFloat4x4(&mMainPassCB.Proj, XMMatrixTranspose(proj));
-	XMStoreFloat4x4(&mMainPassCB.InvProj, XMMatrixTranspose(invProj));
-	XMStoreFloat4x4(&mMainPassCB.ViewProj, XMMatrixTranspose(viewProj));
-	XMStoreFloat4x4(&mMainPassCB.InvViewProj, XMMatrixTranspose(invViewProj));
-	XMStoreFloat4x4(&mMainPassCB.ViewProjTex, XMMatrixTranspose(viewProjTex));
-	
-	mMainPassCB.EyePosW = mCamera.GetPosition3f();
-	mMainPassCB.RenderTargetSize = DirectX::XMFLOAT2((float)mClientWidth, (float)mClientHeight);
-	mMainPassCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mClientWidth, 1.0f / mClientHeight);
-	mMainPassCB.NearZ = 1.0f;
-	mMainPassCB.FarZ = 1000.0f;
-	mMainPassCB.TotalTime = gt.TotalTime();
-	mMainPassCB.DeltaTime = gt.DeltaTime();
-	mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
+	XMStoreFloat4x4(&state.mainPassCB.View, XMMatrixTranspose(view));
+	XMStoreFloat4x4(&state.mainPassCB.InvView, XMMatrixTranspose(invView));
+	XMStoreFloat4x4(&state.mainPassCB.Proj, XMMatrixTranspose(proj));
+	XMStoreFloat4x4(&state.mainPassCB.InvProj, XMMatrixTranspose(invProj));
+	XMStoreFloat4x4(&state.mainPassCB.ViewProj, XMMatrixTranspose(viewProj));
+	XMStoreFloat4x4(&state.mainPassCB.InvViewProj, XMMatrixTranspose(invViewProj));
+	XMStoreFloat4x4(&state.mainPassCB.ViewProjTex, XMMatrixTranspose(viewProjTex));
 
-	auto currPassCB = mCurrFrameResource->PassCB.get();
-	currPassCB->CopyData(0, mMainPassCB);
+	state.mainPassCB.EyePosW = camera.GetPosition3f();
+	state.mainPassCB.RenderTargetSize = DirectX::XMFLOAT2((float)state.clientWidth, (float)state.clientHeight);
+	state.mainPassCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / state.clientWidth, 1.0f / state.clientHeight);
+	state.mainPassCB.NearZ = 1.0f;
+	state.mainPassCB.FarZ = 1000.0f;
+	state.mainPassCB.TotalTime = gt.TotalTime();
+	state.mainPassCB.DeltaTime = gt.DeltaTime();
+	state.mainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
+
+	fr->PassCB->CopyData(0, state.mainPassCB);
 }
