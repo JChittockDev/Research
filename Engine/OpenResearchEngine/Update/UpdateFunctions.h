@@ -18,5 +18,5 @@ void UpdateShadowTransform(const GameTimer&, SceneState&);
 void UpdateShadowPassCB   (const GameTimer&, SceneState&, const ShadowResources*, FrameResource*);
 void UpdateMainPassCB     (const GameTimer&, const Camera&, SceneState&, FrameResource*);
 void UpdateSssCB          (const GameTimer&, SceneState&, FrameResource*);
-void UpdateScreenSpaceCB  (const GameTimer&, SceneState&, const Ssao*, const Ssgi*, const SSS*, FrameResource*);
+void UpdateScreenSpaceCB  (const GameTimer&, SceneState&, Ssao*, Ssgi*, SSS*, FrameResource*);
 void UpdateRadiancePassCB (const GameTimer&, SceneState&, AssetManager&, FrameResource*);

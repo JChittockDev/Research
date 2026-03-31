@@ -115,9 +115,13 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
     <ClCompile Include="Objects\ViewFrustum.cpp" />
+    <ClCompile Include="Animation\AnimationSystem.cpp" />
     <ClCompile Include="Render\Manager\Render.cpp" />
+    <ClCompile Include="Render\Passes\AnimationPass.cpp" />
     <ClCompile Include="Render\Passes\CompositePass.cpp" />
     <ClCompile Include="Render\Passes\GBufferPass.cpp" />
+    <ClCompile Include="Render\Passes\PhysicsPass.cpp" />
+    <ClCompile Include="Render\RenderPipeline.cpp" />
     <ClCompile Include="Render\Passes\LightingPass.cpp" />
     <ClCompile Include="Render\Passes\RadiancePass.cpp" />
     <ClCompile Include="Render\Passes\SsaoBlurPass.cpp" />

@@ -3,7 +3,7 @@
 #include "../Common/SceneState.h"
 #include "../Render/Resources/FrameResource.h"
 #include "../Utilities/GameTimer.h"
-#include <imgui.h>
+#include "../ImGui/imgui.h"
 #include <DirectXMath.h>
 
 void UpdateSssCB(const GameTimer& gt, SceneState& state, FrameResource* fr)

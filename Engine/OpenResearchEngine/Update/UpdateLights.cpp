@@ -5,7 +5,7 @@
 #include "../Render/Resources/FrameResource.h"
 #include "../Assets/AssetManager.h"
 #include "../Utilities/GameTimer.h"
-#include <imgui.h>
+#include "../ImGui/imgui.h"
 #include <DirectXMath.h>
 
 static void UpdateLightTransforms(const std::vector<LightTransform>& lights, DirectX::XMFLOAT4X4* LightTransforms)

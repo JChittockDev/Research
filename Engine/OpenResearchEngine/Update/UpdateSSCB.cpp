@@ -6,10 +6,10 @@
 #include "../Render/Resources/Ssgi.h"
 #include "../Render/Resources/SSS.h"
 #include "../Utilities/GameTimer.h"
-#include <imgui.h>
+#include "../ImGui/imgui.h"
 #include <DirectXMath.h>
 
-void UpdateScreenSpaceCB(const GameTimer& gt, SceneState& state, const Ssao* ssao, const Ssgi* ssgi, const SSS* sss, FrameResource* fr)
+void UpdateScreenSpaceCB(const GameTimer& gt, SceneState& state, Ssao* ssao, Ssgi* ssgi, SSS* sss, FrameResource* fr)
 {
     SsaoConstants ssaoCB;
     SsaoBlurConstants ssaoVerticalBlurCB;
