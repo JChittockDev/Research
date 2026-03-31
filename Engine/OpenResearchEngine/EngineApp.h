@@ -57,7 +57,6 @@ private:
     
     void UpdateRenderAssets(const GameTimer& gt);
     void UpdateObjectCBs(const GameTimer& gt);
-    void UpdateAnimCBs(const GameTimer& gt);
     void UpdateMaterialBuffer(const GameTimer& gt);
     void UpdateShadowTransform(const GameTimer& gt);
     void UpdateMainPassCB(const GameTimer& gt);
@@ -73,19 +72,6 @@ private:
 
     void Render(FrameResource* currentFrameResource);
 
-    void SetRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<std::shared_ptr<RenderItem>>& renderItems, FrameResource* currentFrameResource);
-    void ShadowPass(const DynamicLights& lights, FrameResource* currentFrameResource);
-    void DeformationPass(FrameResource* currentFrameResource);
-    void GBufferPass(FrameResource* currentFrameResource);
-    void LightingPass(FrameResource* currentFrameResource);
-    void CompositePass(FrameResource* currentFrameResource);
-    void SsaoPass(FrameResource* currentFrameResource);
-    void SsaoBlurPass(FrameResource* currentFrameResource);
-    void SsgiPass(FrameResource* currentFrameResource);
-    void SsgiBlurPass(FrameResource* currentFrameResource);
-    void SssPass(FrameResource* currentFrameResource);
-    void SssBlurPass(FrameResource* currentFrameResource);
-    void RadiancePass(const DynamicLights& lights, FrameResource* currentFrameResource);
 
     std::string extractFileName(const std::string& filePath);
 
@@ -178,7 +164,6 @@ private:
 
     std::vector<RadianceConstants> mRadianceCBs;
 
-	std::unique_ptr<OnnxModelResource> mOnnxModelResource;
 
     std::unique_ptr<GBuffer> mGBuffer;
     std::unique_ptr<Lighting> mLighting;

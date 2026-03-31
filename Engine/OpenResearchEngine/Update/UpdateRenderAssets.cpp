@@ -5,7 +5,6 @@ void EngineApp::UpdateRenderAssets(const GameTimer& gt)
 	ImGui::Begin("Scene");
 	UpdateLights(gt);
 	UpdateObjectCBs(gt);
-	UpdateAnimCBs(gt);
 	UpdateMaterialBuffer(gt);
 	UpdateShadowTransform(gt);
 	UpdateMainPassCB(gt);

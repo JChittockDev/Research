@@ -1,4 +1,17 @@
 #include "EngineApp.h"
+#include "Render/Passes/AnimationPass.h"
+#include "Render/Passes/PhysicsPass.h"
+#include "Render/Passes/ShadowPass.h"
+#include "Render/Passes/GBufferPass.h"
+#include "Render/Passes/SsaoPass.h"
+#include "Render/Passes/SsaoBlurPass.h"
+#include "Render/Passes/RadiancePass.h"
+#include "Render/Passes/SssPass.h"
+#include "Render/Passes/SssBlurPass.h"
+#include "Render/Passes/LightingPass.h"
+#include "Render/Passes/SsgiPass.h"
+#include "Render/Passes/SsgiBlurPass.h"
+#include "Render/Passes/CompositePass.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -56,6 +69,95 @@ bool EngineApp::Initialize()
 
     BuildScene();
     SetRenderPassResources();
+
+    // AnimationSystem
+    mAnimationSystem = std::make_unique<AnimationSystem>();
+
+    // RenderPipeline — one pass per stage in submission order
+    mRenderPipeline = std::make_unique<RenderPipeline>();
+
+    AnimationPassResources animRes;
+    animRes.blend      = mAssets->mBlendRootSignature.Get();
+    animRes.skinned    = mAssets->mSkinnedRootSignature.Get();
+    animRes.psoBlend   = mAssets->mPSOs.at("blend").Get();
+    animRes.psoSkinned = mAssets->mPSOs.at("skinned").Get();
+    mRenderPipeline->AddPass(std::make_unique<AnimationPass>(animRes));
+
+    PhysicsPassResources physRes;
+    physRes.meshTransfer    = mAssets->mMeshTransferRootSignature.Get();
+    physRes.simMeshTransfer = mAssets->mSimMeshTransferRootSignature.Get();
+    physRes.triangleNormal  = mAssets->mTriangleNormalRootSignature.Get();
+    physRes.vertexNormal    = mAssets->mVertexNormalRootSignature.Get();
+    physRes.force           = mAssets->mForceRootSignature.Get();
+    physRes.preSolve        = mAssets->mPreSolveRootSignature.Get();
+    physRes.postSolve       = mAssets->mPostSolveRootSignature.Get();
+    physRes.constraintSolve = mAssets->mConstraintSolveRootSignature.Get();
+    physRes.tension         = mAssets->mTensionRootSignature.Get();
+    physRes.psoMeshTransfer    = mAssets->mPSOs.at("meshTransfer").Get();
+    physRes.psoSimMeshTransfer = mAssets->mPSOs.at("simMeshTransfer").Get();
+    physRes.psoTriangleNormal  = mAssets->mPSOs.at("triangleNormal").Get();
+    physRes.psoVertexNormal    = mAssets->mPSOs.at("vertexNormal").Get();
+    physRes.psoForce           = mAssets->mPSOs.at("force").Get();
+    physRes.psoPreSolve        = mAssets->mPSOs.at("preSolve").Get();
+    physRes.psoPostSolve       = mAssets->mPSOs.at("postSolve").Get();
+    physRes.psoConstraintSolve = mAssets->mPSOs.at("constraintSolve").Get();
+    physRes.psoTension         = mAssets->mPSOs.at("tension").Get();
+    mRenderPipeline->AddPass(std::make_unique<PhysicsPass>(physRes));
+
+    mRenderPipeline->AddPass(std::make_unique<ShadowPass>(
+        mAssets->mShadowsRootSignature.Get(),
+        mAssets->mPSOs.at("shadow_opaque").Get(),
+        mShadowResources.get(), mRenderTextures.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<GBufferPass>(
+        mAssets->mGBufferRootSignature.Get(),
+        mAssets->mPSOs.at("GBuffer").Get(),
+        mGBuffer.get(), mRenderTextures.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<SsaoPass>(
+        mAssets->mSsaoRootSignature.Get(),
+        mAssets->mPSOs.at("Ssao").Get(),
+        mGBuffer.get(), mSsao.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<SsaoBlurPass>(
+        mAssets->mEdgeBlurRootSignature.Get(),
+        mAssets->mPSOs.at("EdgeBlur").Get(),
+        mGBuffer.get(), mSsao.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<RadiancePass>(
+        mAssets->mRadianceRootSignature.Get(),
+        mAssets->mPSOs.at("Radiance").Get(),
+        mGBuffer.get(), mShadowResources.get(), mRadianceResources.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<SssPass>(
+        mAssets->mSssRootSignature.Get(),
+        mAssets->mPSOs.at("Sss").Get(),
+        mGBuffer.get(), mSss.get(), mRadianceResources.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<SssBlurPass>(
+        mAssets->mPoissonBlurRootSignature.Get(),
+        mAssets->mPSOs.at("PoissonBlur").Get(),
+        mSss.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<LightingPass>(
+        mAssets->mLightingRootSignature.Get(),
+        mAssets->mPSOs.at("Lighting").Get(),
+        mGBuffer.get(), mSss.get(), mRadianceResources.get(), mLighting.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<SsgiPass>(
+        mAssets->mSsgiRootSignature.Get(),
+        mAssets->mPSOs.at("Ssgi").Get(),
+        mLighting.get(), mGBuffer.get(), mSsgi.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<SsgiBlurPass>(
+        mAssets->mColorEdgeBlurRootSignature.Get(),
+        mAssets->mPSOs.at("ColorEdgeBlur").Get(),
+        mGBuffer.get(), mSsgi.get()));
+
+    mRenderPipeline->AddPass(std::make_unique<CompositePass>(
+        mAssets->mCompositeRootSignature.Get(),
+        mAssets->mPSOs.at("Composite").Get(),
+        mLighting.get(), mSsgi.get()));
 
     ImGui_ImplDX12_Init(md3dDevice.Get(), 2, DXGI_FORMAT_R8G8B8A8_UNORM, imGuiSrvDescriptorHeap.Get(), imGuiSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), imGuiSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
     
@@ -155,6 +257,7 @@ void EngineApp::Update(const GameTimer& gt)
         CloseHandle(eventHandle);
     }
  
+    mAnimationSystem->Update(gt, *mAssets, *mCurrFrameResource);
     UpdateRenderAssets(gt);
 
     static bool show = false;
@@ -185,7 +288,7 @@ void EngineApp::Draw(const GameTimer& gt)
 
     mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
-    mOnnxModelResource->ReadBackOutput();
+    mAssets->mOnnxModelResource->ReadBackOutput();
 
     mCommandList->Close();
 
@@ -200,7 +303,7 @@ void EngineApp::Draw(const GameTimer& gt)
     mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 
 	// Test model output retrieval
-    std::vector<float> output = mOnnxModelResource->GetOutputData();
+    std::vector<float> output = mAssets->mOnnxModelResource->GetOutputData();
 }
 
 void EngineApp::CreateRtvAndDsvDescriptorHeaps()
