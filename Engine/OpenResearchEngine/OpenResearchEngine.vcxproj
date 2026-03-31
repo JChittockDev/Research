@@ -151,7 +151,6 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRadiancePass.cpp" />
-    <ClCompile Include="Update\UpdateRenderAssets.cpp" />
 <ClCompile Include="Update\UpdateSSCB.cpp" />
     <ClCompile Include="Update\UpdateSSSCB.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />

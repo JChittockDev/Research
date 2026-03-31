@@ -12,6 +12,7 @@
 #include "Render/Passes/SsgiPass.h"
 #include "Render/Passes/SsgiBlurPass.h"
 #include "Render/Passes/CompositePass.h"
+#include "Update/UpdateFunctions.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -241,30 +242,38 @@ void EngineApp::OnResize()
 void EngineApp::Update(const GameTimer& gt)
 {
     OnKeyboardInput(gt);
-
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
     mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
     mCurrFrameResource = mFrameResources[mCurrFrameResourceIndex].get();
-
-    if(mCurrFrameResource->Fence != 0 && mFence->GetCompletedValue() < mCurrFrameResource->Fence)
+    if (mCurrFrameResource->Fence != 0 && mFence->GetCompletedValue() < mCurrFrameResource->Fence)
     {
         HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
         ThrowIfFailed(mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle));
         WaitForSingleObject(eventHandle, INFINITE);
         CloseHandle(eventHandle);
     }
- 
+
+    mSceneState.clientWidth  = mClientWidth;
+    mSceneState.clientHeight = mClientHeight;
+
+    ImGui::Begin("Scene");
+    UpdateLights         (gt, mSceneState, *mAssets, mCurrFrameResource);
+    UpdateObjectCBs      (gt, *mAssets, mCurrFrameResource);
     mAnimationSystem->Update(gt, *mAssets, *mCurrFrameResource);
-    UpdateRenderAssets(gt);
+    UpdateMaterialBuffer (gt, *mAssets, mCurrFrameResource);
+    UpdateShadowTransform(gt, mSceneState);
+    UpdateShadowPassCB   (gt, mSceneState, mShadowResources.get(), mCurrFrameResource);
+    UpdateMainPassCB     (gt, mCamera, mSceneState, mCurrFrameResource);
+    UpdateSssCB          (gt, mSceneState, mCurrFrameResource);
+    UpdateScreenSpaceCB  (gt, mSceneState, mSsao.get(), mSsgi.get(), mSss.get(), mCurrFrameResource);
+    UpdateRadiancePassCB (gt, mSceneState, *mAssets, mCurrFrameResource);
+    ImGui::End();
 
     static bool show = false;
-    if (show)
-    {
-        ImGui::ShowDemoWindow(&show);
-    }
+    if (show) ImGui::ShowDemoWindow(&show);
 }
 
 void EngineApp::Draw(const GameTimer& gt)
@@ -368,9 +377,6 @@ void EngineApp::BuildScene()
 
 void EngineApp::SetRenderPassResources()
 {
-    mShadowPassCBs.resize(mAssets->dynamicLights.GetNumLights());
-    mRadianceCBs.resize(mAssets->dynamicLights.GetNumLights());
-
     CD3DX12_CPU_DESCRIPTOR_HANDLE cpuRtvHandle(renderPassRtvHeap.Get()->GetCPUDescriptorHandleForHeapStart());
     CD3DX12_CPU_DESCRIPTOR_HANDLE cpuSrvHandle(renderPassSrvHeap.Get()->GetCPUDescriptorHandleForHeapStart());
     CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(renderPassSrvHeap.Get()->GetGPUDescriptorHandleForHeapStart());
@@ -405,10 +411,3 @@ void EngineApp::SetRenderPassResources()
     mShadowResources->BuildDescriptors(mAssets->dynamicLights.GetNumLights(), cpuSrvHandle, gpuSrvHandle, cpuDsvHandle, mCbvSrvUavDescriptorSize, mDsvDescriptorSize);
 }
 
-std::string EngineApp::extractFileName(const std::string& filePath) {
-    size_t found = filePath.find_last_of("/\\");
-    if (found != std::string::npos) {
-        return filePath.substr(found + 1);
-    }
-    return filePath;
-}
