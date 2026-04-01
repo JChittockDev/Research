@@ -16,12 +16,12 @@ void AssetManager::Build()
     PushLights();
     SetRootSignatures();
     CompileShaders();
+    SetPipelineStates();
     ImportTextures();
     PushGenericMesh();
     PushMesh();
     PushMaterials();
     PushRenderItems();
-    SetPipelineStates();
 
     mOnnxModelResource = std::make_unique<OnnxModelResource>(
         mDevice, mCmdList,
@@ -207,12 +207,85 @@ void AssetManager::ImportTextures()
     }
 }
 
-// ── PushGenericMesh (stub) ───────────────────────────────────────────────────
+// ── PushGenericMesh ──────────────────────────────────────────────────────────
 
 void AssetManager::PushGenericMesh()
 {
-    // Procedural geometry no longer used — stub retained so Build() order
-    // doesn't need to change.
+    // Build "shapeGeo" — procedural shapes referenced by DemoLevel.json.
+    // Subsets: "sphere" (sky dome, mirror, shader dome) and "grid" (floor).
+    std::string key = GetFullPath("shapeGeo");
+    if (mRenderMeshAssets.count(key)) return;
+
+    GeometryGenerator geoGen;
+    GeometryGenerator::MeshData sphere = geoGen.CreateSphere(0.5f, 20, 20);
+    GeometryGenerator::MeshData grid   = geoGen.CreateGrid(20.0f, 30.0f, 60, 40);
+
+    // Vertex layout must match mInputLayout:
+    // POSITION float3 | NORMAL float3 | TEXCOORD float2 | TANGENT float4
+    struct GeoVertex {
+        DirectX::XMFLOAT3 Position;
+        DirectX::XMFLOAT3 Normal;
+        DirectX::XMFLOAT2 TexC;
+        DirectX::XMFLOAT4 Tangent;
+    };
+    static_assert(sizeof(GeoVertex) == 48, "GeoVertex size mismatch");
+
+    UINT sphereVertexOffset = 0;
+    UINT sphereIndexOffset  = 0;
+    UINT gridVertexOffset   = (UINT)sphere.Vertices.size();
+    UINT gridIndexOffset    = (UINT)sphere.Indices32.size();
+
+    std::vector<GeoVertex> vertices;
+    vertices.reserve(sphere.Vertices.size() + grid.Vertices.size());
+
+    auto packVert = [](const GeometryGenerator::Vertex& v) -> GeoVertex {
+        return { v.Position, v.Normal, v.TexC, v.TangentU };
+    };
+    for (auto& v : sphere.Vertices) vertices.push_back(packVert(v));
+    for (auto& v : grid.Vertices)   vertices.push_back(packVert(v));
+
+    std::vector<uint32_t> indices;
+    indices.reserve(sphere.Indices32.size() + grid.Indices32.size());
+    indices.insert(indices.end(), sphere.Indices32.begin(), sphere.Indices32.end());
+    indices.insert(indices.end(), grid.Indices32.begin(),   grid.Indices32.end());
+
+    const UINT vbByteSize = (UINT)(vertices.size() * sizeof(GeoVertex));
+    const UINT ibByteSize = (UINT)(indices.size()  * sizeof(uint32_t));
+
+    auto asset = std::make_shared<RenderMeshAsset>();
+    asset->VertexByteStride     = sizeof(GeoVertex);
+    asset->VertexBufferByteSize = vbByteSize;
+    asset->IndexFormat          = DXGI_FORMAT_R32_UINT;
+    asset->IndexBufferByteSize  = ibByteSize;
+
+    asset->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(
+        mDevice.Get(), mCmdList.Get(),
+        vertices.data(), vbByteSize,
+        asset->VertexBufferUploader);
+
+    asset->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(
+        mDevice.Get(), mCmdList.Get(),
+        indices.data(), ibByteSize,
+        asset->IndexBufferUploader);
+
+    SubmeshGeometry sphereSub;
+    sphereSub.Name        = "sphere";
+    sphereSub.VertexCount = (UINT)sphere.Vertices.size();
+    sphereSub.IndexCount  = (UINT)sphere.Indices32.size();
+    sphereSub.IndexStart  = sphereIndexOffset;
+    sphereSub.VertexStart = sphereVertexOffset;
+
+    SubmeshGeometry gridSub;
+    gridSub.Name        = "grid";
+    gridSub.VertexCount = (UINT)grid.Vertices.size();
+    gridSub.IndexCount  = (UINT)grid.Indices32.size();
+    gridSub.IndexStart  = gridIndexOffset;
+    gridSub.VertexStart = gridVertexOffset;
+
+    asset->DrawArgs["sphere"] = sphereSub;
+    asset->DrawArgs["grid"]   = gridSub;
+
+    mRenderMeshAssets[key] = std::move(asset);
 }
 
 // ── PushMesh ─────────────────────────────────────────────────────────────────
