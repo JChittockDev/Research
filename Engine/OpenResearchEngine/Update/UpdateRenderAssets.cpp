@@ -1,0 +1,17 @@
+#include "../EngineApp.h"
+
+void EngineApp::UpdateRenderAssets(const GameTimer& gt)
+{
+	ImGui::Begin("Scene");
+	UpdateLights(gt);
+	UpdateObjectCBs(gt);
+	UpdateAnimCBs(gt);
+	UpdateMaterialBuffer(gt);
+	UpdateShadowTransform(gt);
+	UpdateMainPassCB(gt);
+	UpdateSssCB(gt);
+	UpdateScreenSpaceCB(gt);
+	UpdateShadowPassCB(gt);
+	UpdateRadiancePassCB(gt);
+	ImGui::End();
+}

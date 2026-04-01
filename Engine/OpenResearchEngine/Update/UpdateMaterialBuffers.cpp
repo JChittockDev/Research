@@ -1,17 +1,14 @@
-#include "UpdateFunctions.h"
-#include "../Common/Structures.h"
-#include "../Render/Resources/FrameResource.h"
-#include "../Assets/AssetManager.h"
-#include "../Utilities/GameTimer.h"
-#include "../ImGui/imgui.h"
+#include "../EngineApp.h"
 
-void UpdateMaterialBuffer(const GameTimer& gt, AssetManager& assets, FrameResource* fr)
+void EngineApp::UpdateMaterialBuffer(const GameTimer& gt)
 {
 	ImGui::SeparatorText("Materials");
 
-	auto currMaterialBuffer = fr->MaterialBuffer.get();
-	for (auto& e : assets.mMaterials)
+	auto currMaterialBuffer = mCurrFrameResource->MaterialBuffer.get();
+	for (auto& e : mMaterials)
 	{
+		// Only update the cbuffer data if the constants have changed.  If the cbuffer
+		// data changes, it needs to be updated for each FrameResource.
 		Material* mat = e.second.get();
 
 		if (ImGui::TreeNode(mat->Name.c_str()))
@@ -32,6 +29,7 @@ void UpdateMaterialBuffer(const GameTimer& gt, AssetManager& assets, FrameResour
 
 			MaterialConstants matData;
 			matData.Color = mat->Color;
+
 			matData.Reflectance = mat->Reflectance;
 			matData.Roughness = mat->Roughness;
 			matData.Metalness = mat->Metalness;
@@ -52,6 +50,8 @@ void UpdateMaterialBuffer(const GameTimer& gt, AssetManager& assets, FrameResour
 			matData.ReflectionMapIndex = mat->ReflectionSrvHeapIndex;
 
 			currMaterialBuffer->CopyData(mat->MaterialIndex, matData);
+
+			// Next FrameResource need to be updated too.
 			mat->NumFramesDirty--;
 		}
 	}

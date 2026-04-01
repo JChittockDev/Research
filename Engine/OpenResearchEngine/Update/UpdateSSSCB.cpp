@@ -1,22 +1,15 @@
-#include "UpdateFunctions.h"
-#include "../Common/Structures.h"
-#include "../Common/SceneState.h"
-#include "../Render/Resources/FrameResource.h"
-#include "../Utilities/GameTimer.h"
-#include "../ImGui/imgui.h"
-#include <DirectXMath.h>
+#include "../EngineApp.h"
 
-void UpdateSssCB(const GameTimer& gt, SceneState& state, FrameResource* fr)
+void EngineApp::UpdateSssCB(const GameTimer& gt)
 {
     SssConstants sssCB;
 
-    for (int i = 0; i < state.lights.GetNumLights(); i++)
+    for (int i = 0; i < dynamicLights.GetNumLights(); i++)
     {
-        sssCB.Lights[i] = state.mainPassCB.Lights[i];
+        sssCB.Lights[i] = mMainPassCB.Lights[i];
     }
 
-    // Recover original (non-transposed) projection matrix from stored transposed value
-    DirectX::XMMATRIX P = XMMatrixTranspose(XMLoadFloat4x4(&state.mainPassCB.Proj));
+    DirectX::XMMATRIX P = mCamera.GetProj();
 
     // Transform NDC space [-1,+1]^2 to texture space [0,1]^2
     DirectX::XMMATRIX T(
@@ -25,17 +18,18 @@ void UpdateSssCB(const GameTimer& gt, SceneState& state, FrameResource* fr)
         0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.0f, 1.0f);
 
-    sssCB.Proj = state.mainPassCB.Proj;
-    sssCB.InvProj = state.mainPassCB.InvProj;
-    sssCB.ViewProj = state.mainPassCB.ViewProj;
-    sssCB.EyePosW = state.mainPassCB.EyePosW;
+    sssCB.Proj = mMainPassCB.Proj;
+    sssCB.InvProj = mMainPassCB.InvProj;
+    sssCB.ViewProj = mMainPassCB.ViewProj;
+    sssCB.EyePosW = mMainPassCB.EyePosW;
     XMStoreFloat4x4(&sssCB.ProjTex, XMMatrixTranspose(P * T));
 
+    // Default SSAO settings if ImGui is not modifying them
     static float blend = 1.0f;
     static float thickness = 0.5f;
     static float scale = 0.5f;
-    static DirectX::XMFLOAT3 transmissionColor(0.7f, 0.6f, 0.5f);
-    static DirectX::XMFLOAT3 scatteringProfile(0.05f, 0.01f, 0.01f);
+    static DirectX::XMFLOAT3 transmissionColor(0.7, 0.6, 0.5);
+    static DirectX::XMFLOAT3 scatteringProfile(0.05, 0.01, 0.01);
     static int sampleCount = 8;
 
     if (ImGui::TreeNode("SSS Settings"))
@@ -56,5 +50,6 @@ void UpdateSssCB(const GameTimer& gt, SceneState& state, FrameResource* fr)
     sssCB.SampleCount = sampleCount;
     sssCB.Scale = scale;
 
-    fr->SssCB->CopyData(0, sssCB);
+    auto currSssCB = mCurrFrameResource->SssCB.get();
+    currSssCB->CopyData(0, sssCB);
 }

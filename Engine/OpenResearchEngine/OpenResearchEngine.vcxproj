@@ -101,7 +101,20 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Assets\AssetManager.cpp" />
+    <ClCompile Include="Build\PushLights.cpp" />
+    <ClCompile Include="Build\BuildScene.cpp" />
+    <ClCompile Include="Build\PopulateDescriptorHeaps.cpp" />
+    <ClCompile Include="Build\SetFenceResources.cpp" />
+    <ClCompile Include="Build\PushMaterials.cpp" />
+    <ClCompile Include="Build\PushMesh.cpp" />
+    <ClCompile Include="Build\SetPipelineStates.cpp" />
+    <ClCompile Include="Build\PushRenderItems.cpp" />
+    <ClCompile Include="Build\SetGenericRootSignature.cpp" />
+    <ClCompile Include="Build\CompileShader.cpp" />
+    <ClCompile Include="Build\SetRenderPassResources.cpp" />
+    <ClCompile Include="Build\SetRootSignatures.cpp" />
+    <ClCompile Include="Build\ImportTextures.cpp" />
+    <ClCompile Include="Build\SerializeLevel.cpp" />
     <ClCompile Include="Gui\GuiManager.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
@@ -115,13 +128,9 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="D3D12\D3DUtil.cpp" />
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
     <ClCompile Include="Objects\ViewFrustum.cpp" />
-    <ClCompile Include="Animation\AnimationSystem.cpp" />
     <ClCompile Include="Render\Manager\Render.cpp" />
-    <ClCompile Include="Render\Passes\AnimationPass.cpp" />
     <ClCompile Include="Render\Passes\CompositePass.cpp" />
     <ClCompile Include="Render\Passes\GBufferPass.cpp" />
-    <ClCompile Include="Render\Passes\PhysicsPass.cpp" />
-    <ClCompile Include="Render\RenderPipeline.cpp" />
     <ClCompile Include="Render\Passes\LightingPass.cpp" />
     <ClCompile Include="Render\Passes\RadiancePass.cpp" />
     <ClCompile Include="Render\Passes\SsaoBlurPass.cpp" />
@@ -133,17 +142,10 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Resources\Composite.cpp" />
     <ClCompile Include="Render\Resources\GBuffer.cpp" />
     <ClCompile Include="Render\Resources\Lighting.cpp" />
+    <ClCompile Include="Render\Resources\MeshAnimationResource.cpp" />
     <ClCompile Include="Render\Resources\Radiance.cpp" />
     <ClCompile Include="Render\Resources\RadianceResources.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
-    <ClCompile Include="Render\Resources\RenderMeshAsset.cpp" />
-    <ClCompile Include="Render\Resources\SimMeshAsset.cpp" />
-    <ClCompile Include="Render\Deformers\SkinDeformer.cpp" />
-    <ClCompile Include="Render\Deformers\BlendshapeDeformer.cpp" />
-    <ClCompile Include="Render\Deformers\PhysicsDeformer.cpp" />
-    <ClCompile Include="Render\Deformers\DeformationGraph.cpp" />
-    <ClCompile Include="Render\Resources\MeshInstance.cpp" />
-    <ClCompile Include="Render\Resources\StaticBatch.cpp" />
     <ClCompile Include="Render\Resources\RenderTextures.cpp" />
     <ClCompile Include="Render\Resources\ShadowMap.cpp" />
     <ClCompile Include="Render\Resources\ShadowResources.cpp" />
@@ -155,14 +157,19 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRadiancePass.cpp" />
-<ClCompile Include="Update\UpdateSSCB.cpp" />
+    <ClCompile Include="Update\UpdateRenderAssets.cpp" />
+    <ClCompile Include="Update\UpdateAnimConstants.cpp" />
+    <ClCompile Include="Update\UpdateSSCB.cpp" />
     <ClCompile Include="Update\UpdateSSSCB.cpp" />
     <ClCompile Include="Utilities\GameTimer.cpp" />
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
     <ClCompile Include="Common\Math.cpp" />
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
+    <ClCompile Include="Build\PushGenericMesh.cpp" />
+    <ClCompile Include="Render\Resources\Mesh.cpp" />
     <ClCompile Include="EngineApp.cpp" />
+    <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp" />
     <ClCompile Include="Update\UpdateRenderItems.cpp" />
@@ -189,7 +196,9 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Resources\Composite.h" />
     <ClInclude Include="Render\Resources\GBuffer.h" />
     <ClInclude Include="Render\Resources\Lighting.h" />
+    <ClInclude Include="Render\Resources\Mesh.h" />
     <ClInclude Include="Render\Resources\Joint.h" />
+    <ClInclude Include="Render\Resources\MeshAnimationResource.h" />
     <ClInclude Include="Render\Resources\Radiance.h" />
     <ClInclude Include="Render\Resources\RadianceResources.h" />
     <ClInclude Include="Render\Resources\RenderTextures.h" />
@@ -209,16 +218,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="Render\Resources\FrameResource.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
-    <ClInclude Include="Render\Resources\RenderMeshAsset.h" />
-    <ClInclude Include="Render\Resources\SimMeshAsset.h" />
     <ClInclude Include="Render\Resources\Skinning.h" />
-    <ClInclude Include="Render\Deformers\IDeformer.h" />
-    <ClInclude Include="Render\Deformers\SkinDeformer.h" />
-    <ClInclude Include="Render\Deformers\BlendshapeDeformer.h" />
-    <ClInclude Include="Render\Deformers\PhysicsDeformer.h" />
-    <ClInclude Include="Render\Deformers\DeformationGraph.h" />
-    <ClInclude Include="Render\Resources\MeshInstance.h" />
-    <ClInclude Include="Render\Resources\StaticBatch.h" />
     <ClInclude Include="Utilities\OnnxModelResource.h" />
     <ClInclude Include="Utilities\stb_image.h" />
   </ItemGroup>

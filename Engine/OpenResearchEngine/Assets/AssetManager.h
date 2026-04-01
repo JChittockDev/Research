@@ -5,18 +5,11 @@
 #include "../Common/Math.h"
 #include "../Common/UploadBuffer.h"
 #include "../Render/Resources/FrameResource.h"
+#include "../Render/Resources/Mesh.h"
 #include "../Render/Resources/RenderItem.h"
 #include "../Render/Resources/Skinning.h"
 #include "../Models/Internal/GeometryGenerator.h"
 #include "../Serialize/LevelReader.h"
-#include "../Render/Resources/RenderMeshAsset.h"
-#include "../Render/Resources/SimMeshAsset.h"
-#include "../Render/Resources/MeshInstance.h"
-#include "../Render/Deformers/SkinDeformer.h"
-#include "../Render/Deformers/BlendshapeDeformer.h"
-#include "../Render/Deformers/PhysicsDeformer.h"
-#include "../Render/Resources/StaticBatch.h"
-#include "../Utilities/OnnxModelResource.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -33,7 +26,15 @@ public:
     );
 
     // Top-level init — called once from EngineApp::BuildScene()
-    void Build();
+    void Build(
+        const DynamicLights& lights,
+        const std::unordered_map<std::string,
+              std::unordered_map<std::string, ItemData>>& levelItems,
+        const std::unordered_map<std::string,
+              std::unordered_map<std::string, PBRMaterialData>>& levelMaterials,
+        const std::unordered_map<std::string,
+              std::unordered_map<std::string, LightData>>& levelLights
+    );
 
     // Path helper (mirrors D3DApp::GetFullPath)
     std::string GetFullPath(const char* path) const {
@@ -49,43 +50,16 @@ public:
     // --- Resource Maps (public — accessed by EngineApp Build/ and Update/ methods) ---
     std::unordered_map<std::string, std::shared_ptr<Material>>                     mMaterials;
     std::unordered_map<std::string, std::shared_ptr<std::pair<Texture, UINT>>>     mTextures;
+    std::unordered_map<std::string, std::shared_ptr<MeshGeometry>>                 mGeometries;
     std::unordered_map<std::string, std::shared_ptr<Skeleton>>                     mSkeletons;
     std::unordered_map<std::string, std::shared_ptr<Animation>>                    mAnimations;
     std::unordered_map<std::string, std::shared_ptr<SkinningController>>           mSkinningControllers;
     std::unordered_map<std::string, std::shared_ptr<BlendshapeController>>         mBlendshapeControllers;
+    std::unordered_map<std::string, std::shared_ptr<MeshAnimationResource>>        mMeshAnimationResources;
+    std::unordered_map<std::string, std::shared_ptr<Mesh>>                         mMesh;
     std::unordered_map<std::string, std::shared_ptr<TransformNode>>                mTransforms;
     std::unordered_map<std::string, std::vector<std::shared_ptr<Subset>>>          mSubsets;
     std::map<std::string, std::string>                                             mTextureData;
-
-    // Render items (populated by Build, consumed by render passes and Update* functions)
-    std::vector<std::shared_ptr<RenderItem>>                                    mRenderItems;
-    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mRenderItemLayers;
-    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mMeshRenderItemMap;
-    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mDeformedRenderItemMap;
-    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mDirectionalLightRenderItemMap;
-    std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>>   mSpotLightRenderItemMap;
-    UINT ObjectCBIndex  = 0;
-    UINT SkinnedCBIndex = 0;
-    UINT BlendCBIndex   = 0;
-
-    // Serialized level data (loaded by SerializeLevel, consumed by Push* methods)
-    std::unordered_map<std::string, std::unordered_map<std::string, ItemData>>        mLevelRenderItems;
-    std::unordered_map<std::string, std::unordered_map<std::string, PBRMaterialData>> mLevelMaterials;
-    std::unordered_map<std::string, std::unordered_map<std::string, LightData>>       mLevelLights;
-
-    // Light state (populated by PushLights, read by SceneState init and UpdateLights)
-    DynamicLights dynamicLights;
-
-    // ONNX inference resource
-    std::unique_ptr<OnnxModelResource> mOnnxModelResource;
-
-    // New mesh system (replaces mGeometries, mMesh, mMeshAnimationResources)
-    std::unordered_map<std::string, std::shared_ptr<RenderMeshAsset>> mRenderMeshAssets;
-    std::unordered_map<std::string, std::shared_ptr<SimMeshAsset>>    mSimMeshAssets;
-    std::unordered_map<std::string, std::shared_ptr<MeshInstance>>    mMeshInstances;
-    std::vector<SkinDeformer*>        mSkinDeformers;
-    std::vector<BlendshapeDeformer*>  mBlendshapeDeformers;
-    std::vector<std::unique_ptr<StaticBatch>> mStaticBatches;
     std::vector<D3D12_INPUT_ELEMENT_DESC>                                          mInputLayout;
     std::vector<D3D12_INPUT_ELEMENT_DESC>                                          mSkinnedInputLayout;
 
@@ -134,18 +108,23 @@ private:
     DXGI_FORMAT                    mBackBufferFormat;
     DXGI_FORMAT                    mDepthStencilFormat;
 
-    // Build sub-methods (all read from members — no parameters needed)
-    void SerializeLevel();
-    void PushLights();
-    void CompileShaders();
+    // Build sub-methods
+    void CompileShaders(const DynamicLights& lights);
     void SetRootSignatures();
     void SetPipelineStates();
-    void ImportTextures();
+    void ImportTextures(
+        const std::unordered_map<std::string,
+              std::unordered_map<std::string, PBRMaterialData>>& levelMaterials
+    );
     void PushGenericMesh();
-    void PushMesh();
-    void PushMaterials();
-    void PushRenderItems();
-    void MakePhysicsDeformerResources(PhysicsDeformerResources& res);
+    void PushMesh(
+        const std::unordered_map<std::string,
+              std::unordered_map<std::string, ItemData>>& levelItems
+    );
+    void PushMaterials(
+        const std::unordered_map<std::string,
+              std::unordered_map<std::string, PBRMaterialData>>& levelMaterials
+    );
 
     // Helpers (moved from EngineApp)
     std::string ExtractFileName(const std::string& filePath);

@@ -28,9 +28,14 @@ void LevelReader::SetRenderItemData(const json& item_data, ItemData& renderItemS
     {
         renderItemStruct.animation = item_data["Animation"];
     }
-    renderItemStruct.animated  = item_data.value("Animated",  false);
-    renderItemStruct.simulated = item_data.value("Simulated", false);
-    renderItemStruct.simulationMask = item_data.value("SimulationMask", std::string("none"));
+    if (item_data.contains("Deformable"))
+    {
+        renderItemStruct.deformable = item_data["Deformable"];
+    }
+    else
+    {
+        renderItemStruct.deformable = false;
+    }
     if (item_data.contains("RenderLayer"))
     {
         renderItemStruct.render_layer = item_data["RenderLayer"];
@@ -40,9 +45,29 @@ void LevelReader::SetRenderItemData(const json& item_data, ItemData& renderItemS
         for (auto& riSettings : item_data["Settings"].items())
         {
             if (riSettings.value().contains("Material"))
+            {
                 renderItemStruct.settings[riSettings.key()].Material = riSettings.value()["Material"];
+            }
             else
+            {
                 renderItemStruct.settings[riSettings.key()].Material = "default";
+            }
+            if (riSettings.value().contains("Simulation"))
+            {
+                renderItemStruct.settings[riSettings.key()].Simulation = riSettings.value()["Simulation"];
+            }
+            else
+            {
+                renderItemStruct.settings[riSettings.key()].Simulation = false;
+            }
+            if (riSettings.value().contains("SimulationMask"))
+            {
+                renderItemStruct.settings[riSettings.key()].SimulationMask = riSettings.value()["SimulationMask"];
+            }
+            else
+            {
+                renderItemStruct.settings[riSettings.key()].SimulationMask = "none";
+            }
         }
     }
 }

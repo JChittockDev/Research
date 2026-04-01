@@ -1,41 +1,28 @@
-#include "CompositePass.h"
-#include "../RenderContext.h"
-#include "../../Render/Resources/FrameResource.h"
-#include "../../Render/Resources/Lighting.h"
-#include "../../Render/Resources/Ssgi.h"
-#include "../../D3D12/d3dx12.h"
+#include "../../EngineApp.h"
 
-CompositePass::CompositePass(
-    ID3D12RootSignature* rootSig,
-    ID3D12PipelineState* pso,
-    Lighting*            lighting,
-    Ssgi*                ssgi)
-    : mRootSig(rootSig), mPso(pso), mLighting(lighting), mSsgi(ssgi)
-{}
-
-void CompositePass::Execute(const RenderContext& ctx, FrameResource* fr)
+void EngineApp::CompositePass(FrameResource* currentFrameResource)
 {
-    ctx.cmdList->SetGraphicsRootSignature(mRootSig);
-    ctx.cmdList->RSSetViewports(1, &ctx.viewport);
-    ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
+    mCommandList->SetGraphicsRootSignature(mCompositeRootSignature.Get());
+    mCommandList->RSSetViewports(1, &mScreenViewport);
+    mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
 
-    auto objectCBAddress = fr->ObjectCB->Resource()->GetGPUVirtualAddress();
+    auto objectCBAddress = currentFrameResource->ObjectCB->Resource()->GetGPUVirtualAddress();
 
-    ctx.cmdList->SetGraphicsRootConstantBufferView(0, objectCBAddress);
-    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mLighting->GetLightingGpuSrv());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsgi->GetGIHorizontalBlurGpuSrv());
+    mCommandList->SetGraphicsRootConstantBufferView(0, objectCBAddress);
+    mCommandList->SetGraphicsRootDescriptorTable(1, mLighting->GetLightingGpuSrv());
+    mCommandList->SetGraphicsRootDescriptorTable(2, mSsgi->GetGIHorizontalBlurGpuSrv());
 
     float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ctx.backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-    ctx.cmdList->ClearRenderTargetView(ctx.backBufferRtv, clearValue, 0, nullptr);
-    ctx.cmdList->OMSetRenderTargets(1, &ctx.backBufferRtv, true, nullptr);
+    mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+    mCommandList->ClearRenderTargetView(CurrentBackBufferView(), clearValue, 0, nullptr);
+    mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, nullptr);
 
-    ctx.cmdList->SetPipelineState(mPso);
+    mCommandList->SetPipelineState(mPSOs.at("Composite").Get());
 
-    ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
-    ctx.cmdList->IASetIndexBuffer(nullptr);
-    ctx.cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    ctx.cmdList->DrawInstanced(6, 1, 0, 0);
+    mCommandList->IASetVertexBuffers(0, 0, nullptr);
+    mCommandList->IASetIndexBuffer(nullptr);
+    mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mCommandList->DrawInstanced(6, 1, 0, 0);
 
-    ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ctx.backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+    mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 }

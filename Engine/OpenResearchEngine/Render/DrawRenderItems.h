@@ -18,17 +18,22 @@ inline void DrawRenderItems(
 
     for (const auto& ri : renderItems)
     {
-        if (ri->Instance != nullptr)
+        if (ri->AnimationInstance != nullptr)
         {
-            ID3D12Resource* vb = ri->Instance->FinalVertexBuffer();
-            D3D12_VERTEX_BUFFER_VIEW vbv = ri->Instance->Asset()->MakeVertexBufferView(vb);
-            cmdList->IASetVertexBuffers(0, 1, &vbv);
-            cmdList->IASetIndexBuffer(&ri->Instance->Asset()->IndexBufferView());
-            cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
-            cmdList->SetGraphicsRootConstantBufferView(
-                0, objectCB->GetGPUVirtualAddress() + ri->ObjCBIndex * objCBByteSize);
-            const auto& args = ri->Instance->Asset()->DrawArgs.at(ri->SubsetName);
-            cmdList->DrawIndexedInstanced(args.IndexCount, 1, args.IndexStart, args.VertexStart, 0);
+            if (!ri->Simulation)
+                cmdList->IASetVertexBuffers(0, 1, &ri->MeshAnimationResourceInstance->SkinnedVertexBufferView());
+            else
+                cmdList->IASetVertexBuffers(0, 1, &ri->MeshAnimationResourceInstance->VertexNormalBufferView());
         }
+        else
+        {
+            cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
+        }
+
+        cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
+        cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
+        cmdList->SetGraphicsRootConstantBufferView(
+            0, objectCB->GetGPUVirtualAddress() + ri->ObjCBIndex * objCBByteSize);
+        cmdList->DrawIndexedInstanced(ri->IndexCount, 1, ri->IndexStart, ri->VertexStart, 0);
     }
 }

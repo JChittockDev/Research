@@ -679,6 +679,8 @@ struct Animation
 
 struct RenderItemSettings
 {
+    bool Simulation = false;
+    std::string SimulationMask = "none";
     std::string Material = "default";
 };
 
@@ -687,9 +689,7 @@ struct ItemData
     std::string item_name;
     std::string geometry;
     std::string animation;
-    bool animated  = false;   // replaces deformable
-    bool simulated = false;   // new
-    std::string simulationMask = "none";  // moved from per-subset to item level
+    bool deformable;
     std::vector<double> position;
     std::vector<double> rotation;
     std::vector<double> scale;

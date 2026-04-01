@@ -1,38 +1,33 @@
-#include "UpdateFunctions.h"
-#include "../Common/Structures.h"
-#include "../Common/SceneState.h"
-#include "../Render/Resources/FrameResource.h"
-#include "../Assets/AssetManager.h"
-#include "../Utilities/GameTimer.h"
+#include "../EngineApp.h"
 
-void UpdateRadiancePassCB(const GameTimer& gt, SceneState& state, AssetManager& assets, FrameResource* fr)
+void EngineApp::UpdateRadiancePassCB(const GameTimer& gt)
 {
-    auto radianceCB = fr->RadianceCB.get();
+    auto radianceCB = mCurrFrameResource->RadianceCB.get();
 
     int lightIndex = 0;
-    for (int i = 0; i < (int)state.lights.DirectionalLights.size(); i++, lightIndex++)
+    for (int i = 0; i < dynamicLights.DirectionalLights.size(); i++, lightIndex++)
     {
-        state.radianceCBs[lightIndex].View = state.mainPassCB.View;
-        state.radianceCBs[lightIndex].InvView = state.mainPassCB.InvView;
-        state.radianceCBs[lightIndex].Proj = state.mainPassCB.Proj;
-        state.radianceCBs[lightIndex].InvProj = state.mainPassCB.InvProj;
-        state.radianceCBs[lightIndex].EyePosW = state.mainPassCB.EyePosW;
-        state.radianceCBs[lightIndex].LightTransform = state.mainPassCB.LightTransforms[lightIndex];
-        state.radianceCBs[lightIndex].Light = state.mainPassCB.Lights[lightIndex];
+        mRadianceCBs[lightIndex].View = mMainPassCB.View;
+        mRadianceCBs[lightIndex].InvView = mMainPassCB.InvView;
+        mRadianceCBs[lightIndex].Proj = mMainPassCB.Proj;
+        mRadianceCBs[lightIndex].InvProj = mMainPassCB.InvProj;
+        mRadianceCBs[lightIndex].EyePosW = mMainPassCB.EyePosW;
+        mRadianceCBs[lightIndex].LightTransform = mMainPassCB.LightTransforms[lightIndex];
+        mRadianceCBs[lightIndex].Light = mMainPassCB.Lights[lightIndex];
 
-        radianceCB->CopyData(lightIndex, state.radianceCBs[lightIndex]);
+        radianceCB->CopyData(lightIndex, mRadianceCBs[lightIndex]);
     }
 
-    for (int i = 0; i < (int)state.lights.SpotLights.size(); i++, lightIndex++)
+    for (int i = 0; i < dynamicLights.SpotLights.size(); i++, lightIndex++)
     {
-        state.radianceCBs[lightIndex].View = state.mainPassCB.View;
-        state.radianceCBs[lightIndex].InvView = state.mainPassCB.InvView;
-        state.radianceCBs[lightIndex].Proj = state.mainPassCB.Proj;
-        state.radianceCBs[lightIndex].InvProj = state.mainPassCB.InvProj;
-        state.radianceCBs[lightIndex].EyePosW = state.mainPassCB.EyePosW;
-        state.radianceCBs[lightIndex].LightTransform = state.mainPassCB.LightTransforms[lightIndex];
-        state.radianceCBs[lightIndex].Light = state.mainPassCB.Lights[lightIndex];
+        mRadianceCBs[lightIndex].View = mMainPassCB.View;
+        mRadianceCBs[lightIndex].InvView = mMainPassCB.InvView;
+        mRadianceCBs[lightIndex].Proj = mMainPassCB.Proj;
+        mRadianceCBs[lightIndex].InvProj = mMainPassCB.InvProj;
+        mRadianceCBs[lightIndex].EyePosW = mMainPassCB.EyePosW;
+        mRadianceCBs[lightIndex].LightTransform = mMainPassCB.LightTransforms[lightIndex];
+        mRadianceCBs[lightIndex].Light = mMainPassCB.Lights[lightIndex];
 
-        radianceCB->CopyData(lightIndex, state.radianceCBs[lightIndex]);
+        radianceCB->CopyData(lightIndex, mRadianceCBs[lightIndex]);
     }
 }

@@ -1,0 +1,34 @@
+#include "../EngineApp.h"
+
+void EngineApp::SetRootSignatures()
+{
+	SetGenericRootSignature();
+	SetGBufferRootSignature();
+	SetSsaoRootSignature();
+	SetSsgiRootSignature();
+	SetSssRootSignature();
+	SetPoissonBlurRootSignature();
+	SetEdgeBlurRootSignature();
+	SetColorEdgeBlurRootSignature();
+	SetCompositeRootSignature();
+	SetShadowsRootSignature();
+	SetLightingRootSignature();
+	SetBlendRootSignature();
+	SetSkinnedRootSignature();
+	SetMeshTransferRootSignature();
+	SetTensionRootSignature();
+	SetForceRootSignature();
+	SetPreSolveRootSignature();
+	SetConstraintSolveRootSignature();
+	SetPostSolveRootSignature();
+	SetSimMeshTransferRootSignature();
+	SetTriangleNormalRootSignature();
+	SetVertexNormalRootSignature();
+	SetRadianceRootSignature();
+	SetGemmRootSignature();
+	SetReluRootSignature();
+	SetLeakyReluRootSignature();
+	SetTanhRootSignature();
+	SetSigmoidRootSignature();
+	SetSoftmaxRootSignature();
+}

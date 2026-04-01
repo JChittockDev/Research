@@ -72,8 +72,7 @@
       },
 
       "WalkingMan": {
-        "Animated": true,
-        "Simulated": false,
+        "Deformable": true,
         "Geometry": "Models/test.fbx",
         "Position": [ 0.0, -4.0, -5.0 ],
         "Rotation": [ 0.0, 0.0, 0.0, 1.0 ],

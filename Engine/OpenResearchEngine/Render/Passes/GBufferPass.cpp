@@ -1,33 +1,25 @@
-#include "GBufferPass.h"
-#include "../../D3D12/D3Dx12.h"
-#include "../../D3D12/D3DUtil.h"
-#include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
-#include "../Resources/GBuffer.h"
-#include "../Resources/RenderTextures.h"
-#include "../RenderHelpers.h"
+#include "../../EngineApp.h"
 
-GBufferPass::GBufferPass(
-    ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-    GBuffer* gBuffer, RenderTextures* renderTextures)
-    : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mRenderTextures(renderTextures)
-{}
-
-void GBufferPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void EngineApp::GBufferPass(FrameResource* currentFrameResource)
 {
-    ctx.cmdList->SetGraphicsRootSignature(mRootSig);
-    ctx.cmdList->RSSetViewports(1, &ctx.viewport);
-    ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
+    // Set the Geometry Pass Root Signature
+    mCommandList->SetGraphicsRootSignature(mGBufferRootSignature.Get());
 
+    // Set Viewport and Scissor Rects
+    mCommandList->RSSetViewports(1, &mScreenViewport);
+    mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
+
+    // Clear G-Buffer render targets
     float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetPositionCpuRtv(), clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetNormalCpuRtv(), clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetViewNormalCpuRtv(), clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetAlbedoSpecCpuRtv(), clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetReflectionCpuRtv(), clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetMaterialIdCpuRtv(), clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetTangentCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetPositionCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetNormalCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetViewNormalCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetAlbedoSpecCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetReflectionCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetMaterialIdCpuRtv(), clearColor, 0, nullptr);
+    mCommandList->ClearRenderTargetView(mGBuffer->GetTangentCpuRtv(), clearColor, 0, nullptr);
 
+    // Set render targets for the G-Buffer
     D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
         mGBuffer->GetPositionCpuRtv(),
         mGBuffer->GetNormalCpuRtv(),
@@ -38,18 +30,22 @@ void GBufferPass::Execute(const RenderContext& ctx, FrameResource* fr)
         mGBuffer->GetTangentCpuRtv()
     };
 
-    ctx.cmdList->ClearDepthStencilView(ctx.dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-    ctx.cmdList->OMSetRenderTargets(7, rtvs, false, &ctx.dsv);
+    mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+    mCommandList->OMSetRenderTargets(7, rtvs, false, &DepthStencilView());
 
-    auto objectCBAddress = fr->ObjectCB->Resource()->GetGPUVirtualAddress();
-    auto passCBAddress   = fr->PassCB->Resource()->GetGPUVirtualAddress();
-    auto matBAddress     = fr->MaterialBuffer->Resource()->GetGPUVirtualAddress();
+    // Set root parameters
+    auto objectCBAddress = currentFrameResource->ObjectCB->Resource()->GetGPUVirtualAddress();
+    auto passCBAddress = currentFrameResource->PassCB->Resource()->GetGPUVirtualAddress();
+    auto matBAddress = currentFrameResource->MaterialBuffer->Resource()->GetGPUVirtualAddress();
 
-    ctx.cmdList->SetGraphicsRootConstantBufferView(0, objectCBAddress);
-    ctx.cmdList->SetGraphicsRootConstantBufferView(1, passCBAddress);
-    ctx.cmdList->SetGraphicsRootShaderResourceView(2, matBAddress);
-    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mRenderTextures->GetStartGpuSrv());
+    mCommandList->SetGraphicsRootConstantBufferView(0, objectCBAddress);
+    mCommandList->SetGraphicsRootConstantBufferView(1, passCBAddress);
+    mCommandList->SetGraphicsRootShaderResourceView(2, matBAddress);
+    mCommandList->SetGraphicsRootDescriptorTable(3, mRenderTextures->GetStartGpuSrv());
 
-    ctx.cmdList->SetPipelineState(mPso);
-    DrawRenderItems(ctx.cmdList, ctx.renderItemLayers->at("Opaque"), fr);
+    // Set Pipeline State for G-Buffer Pass
+    mCommandList->SetPipelineState(mPSOs.at("GBuffer").Get());
+
+    // Draw all objects in the scene
+    SetRenderItems(mCommandList.Get(), mRenderItemLayers.at("Opaque"), currentFrameResource);
 }

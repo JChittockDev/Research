@@ -1,0 +1,272 @@
+﻿#include "../EngineApp.h"
+
+void EngineApp::SetPipelineStates()
+{
+    D3D12_COMPUTE_PIPELINE_STATE_DESC blendComputePSO = {};
+    blendComputePSO.pRootSignature = mBlendRootSignature.Get();
+    blendComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["blendCS"]->GetBufferPointer()), mShaders["blendCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&blendComputePSO, IID_PPV_ARGS(&mPSOs["blend"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC skinnedComputePSO = {};
+    skinnedComputePSO.pRootSignature = mSkinnedRootSignature.Get();
+    skinnedComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["skinnedCS"]->GetBufferPointer()), mShaders["skinnedCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&skinnedComputePSO, IID_PPV_ARGS(&mPSOs["skinned"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC triangleNormalComputePSO = {};
+    triangleNormalComputePSO.pRootSignature = mTriangleNormalRootSignature.Get();
+    triangleNormalComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["triangleNormalCS"]->GetBufferPointer()), mShaders["triangleNormalCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&triangleNormalComputePSO, IID_PPV_ARGS(&mPSOs["triangleNormal"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC vertexNormalComputePSO = {};
+    vertexNormalComputePSO.pRootSignature = mVertexNormalRootSignature.Get();
+    vertexNormalComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["vertexNormalCS"]->GetBufferPointer()), mShaders["vertexNormalCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&vertexNormalComputePSO, IID_PPV_ARGS(&mPSOs["vertexNormal"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC meshTransferComputePSO = {};
+    meshTransferComputePSO.pRootSignature = mMeshTransferRootSignature.Get();
+    meshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["meshTransferCS"]->GetBufferPointer()), mShaders["meshTransferCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&meshTransferComputePSO, IID_PPV_ARGS(&mPSOs["meshTransfer"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC simMeshTransferComputePSO = {};
+    simMeshTransferComputePSO.pRootSignature = mSimMeshTransferRootSignature.Get();
+    simMeshTransferComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["simMeshTransferCS"]->GetBufferPointer()), mShaders["simMeshTransferCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&simMeshTransferComputePSO, IID_PPV_ARGS(&mPSOs["simMeshTransfer"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC forceComputePSO = {};
+    forceComputePSO.pRootSignature = mForceRootSignature.Get();
+    forceComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["forceCS"]->GetBufferPointer()), mShaders["forceCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&forceComputePSO, IID_PPV_ARGS(&mPSOs["force"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC tensionComputePSO = {};
+    tensionComputePSO.pRootSignature = mTensionRootSignature.Get();
+    tensionComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["tensionCS"]->GetBufferPointer()), mShaders["tensionCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&tensionComputePSO, IID_PPV_ARGS(&mPSOs["tension"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC preSolveComputePSO = {};
+    preSolveComputePSO.pRootSignature = mPreSolveRootSignature.Get();
+    preSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["preSolveCS"]->GetBufferPointer()), mShaders["preSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&preSolveComputePSO, IID_PPV_ARGS(&mPSOs["preSolve"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC postSolveComputePSO = {};
+    postSolveComputePSO.pRootSignature = mPostSolveRootSignature.Get();
+    postSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["postSolveCS"]->GetBufferPointer()), mShaders["postSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&postSolveComputePSO, IID_PPV_ARGS(&mPSOs["postSolve"])));
+
+    D3D12_COMPUTE_PIPELINE_STATE_DESC constraintSolveComputePSO = {};
+    constraintSolveComputePSO.pRootSignature = mConstraintSolveRootSignature.Get();
+    constraintSolveComputePSO.CS = { reinterpret_cast<BYTE*>(mShaders["constraintSolveCS"]->GetBufferPointer()), mShaders["constraintSolveCS"]->GetBufferSize() };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(&constraintSolveComputePSO, IID_PPV_ARGS(&mPSOs["constraintSolve"])));
+
+
+    D3D12_RASTERIZER_DESC noCullingRasterDesc = {};
+    noCullingRasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
+    noCullingRasterDesc.CullMode = D3D12_CULL_MODE_NONE;
+    noCullingRasterDesc.FrontCounterClockwise = FALSE;
+    noCullingRasterDesc.DepthClipEnable = TRUE;
+
+    D3D12_RASTERIZER_DESC cullingRasterDesc = {};
+    cullingRasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
+    cullingRasterDesc.CullMode = D3D12_CULL_MODE_NONE;
+    cullingRasterDesc.FrontCounterClockwise = FALSE;
+    cullingRasterDesc.DepthClipEnable = TRUE;
+
+    //
+    // PSO for opaque objects.
+    //
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
+    ZeroMemory(&opaquePsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+    opaquePsoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
+    opaquePsoDesc.RasterizerState = noCullingRasterDesc;
+    opaquePsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    opaquePsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+    opaquePsoDesc.SampleMask = UINT_MAX;
+    opaquePsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    opaquePsoDesc.NumRenderTargets = 1;
+    opaquePsoDesc.RTVFormats[0] = mBackBufferFormat;
+    opaquePsoDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
+    opaquePsoDesc.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
+    opaquePsoDesc.DSVFormat = mDepthStencilFormat;
+
+    //
+    // PSO for shadow map pass.
+    //
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC smapPsoDesc = opaquePsoDesc;
+    smapPsoDesc.RasterizerState.DepthBias = 100000;
+    smapPsoDesc.RasterizerState.DepthBiasClamp = 0.0f;
+    smapPsoDesc.RasterizerState.SlopeScaledDepthBias = 1.0f;
+    smapPsoDesc.pRootSignature = mShadowsRootSignature.Get();
+    smapPsoDesc.VS = {reinterpret_cast<BYTE*>(mShaders["shadowVS"]->GetBufferPointer()), mShaders["shadowVS"]->GetBufferSize()};
+    smapPsoDesc.PS = {reinterpret_cast<BYTE*>(mShaders["shadowOpaquePS"]->GetBufferPointer()), mShaders["shadowOpaquePS"]->GetBufferSize()};
+    smapPsoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
+    smapPsoDesc.NumRenderTargets = 0;
+    ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&smapPsoDesc, IID_PPV_ARGS(&mPSOs["shadow_opaque"])));
+
+    // **5️⃣ Configure the Graphics Pipeline State**
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC gBufferPsoDesc = opaquePsoDesc;
+    gBufferPsoDesc.pRootSignature = mGBufferRootSignature.Get();
+    gBufferPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["GBufferVS"]->GetBufferPointer()), mShaders["GBufferVS"]->GetBufferSize() };
+    gBufferPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["GBufferPS"]->GetBufferPointer()), mShaders["GBufferPS"]->GetBufferSize() };
+    gBufferPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gPosition
+    gBufferPsoDesc.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gNormal
+    gBufferPsoDesc.RTVFormats[2] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gViewNormal
+    gBufferPsoDesc.RTVFormats[3] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gAlbedoSpec
+    gBufferPsoDesc.RTVFormats[4] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gReflection
+    gBufferPsoDesc.RTVFormats[5] = DXGI_FORMAT_R32G32B32A32_FLOAT;     // gAlbedoSpec
+    gBufferPsoDesc.RTVFormats[6] = DXGI_FORMAT_R16G16B16A16_FLOAT; // gTangent
+    gBufferPsoDesc.NumRenderTargets = 7;
+    md3dDevice->CreateGraphicsPipelineState(&gBufferPsoDesc, IID_PPV_ARGS(&mPSOs["GBuffer"]));
+
+    // **5️⃣ Configure the Graphics Pipeline State**
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC gRadiancePsoDesc = opaquePsoDesc;
+    gRadiancePsoDesc.pRootSignature = mRadianceRootSignature.Get();
+    gRadiancePsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["RadianceVS"]->GetBufferPointer()), mShaders["RadianceVS"]->GetBufferSize() };
+    gRadiancePsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["RadiancePS"]->GetBufferPointer()), mShaders["RadiancePS"]->GetBufferSize() };
+    gRadiancePsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gDiffuseReflectance
+    gRadiancePsoDesc.RTVFormats[1] = DXGI_FORMAT_R8G8B8A8_UNORM;     // gSpecularReflectance
+    gRadiancePsoDesc.DepthStencilState.DepthEnable = false;
+    gRadiancePsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    gRadiancePsoDesc.NumRenderTargets = 2;
+    md3dDevice->CreateGraphicsPipelineState(&gRadiancePsoDesc, IID_PPV_ARGS(&mPSOs["Radiance"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC lightingPsoDesc = opaquePsoDesc;
+    lightingPsoDesc.InputLayout = { nullptr, 0 };
+    lightingPsoDesc.pRootSignature = mLightingRootSignature.Get();
+    lightingPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    lightingPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["LightingVS"]->GetBufferPointer()), mShaders["LightingVS"]->GetBufferSize() };
+    lightingPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["LightingPS"]->GetBufferPointer()), mShaders["LightingPS"]->GetBufferSize() };
+    lightingPsoDesc.DepthStencilState.DepthEnable = false;
+    lightingPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&lightingPsoDesc, IID_PPV_ARGS(&mPSOs["Lighting"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC ssaoPsoDesc = opaquePsoDesc;
+    ssaoPsoDesc.InputLayout = { nullptr, 0 };
+    ssaoPsoDesc.pRootSignature = mSsaoRootSignature.Get();
+    ssaoPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16_UNORM;
+    ssaoPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["SsaoVS"]->GetBufferPointer()), mShaders["SsaoVS"]->GetBufferSize() };
+    ssaoPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["SsaoPS"]->GetBufferPointer()), mShaders["SsaoPS"]->GetBufferSize() };
+    ssaoPsoDesc.DepthStencilState.DepthEnable = false;
+    ssaoPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&ssaoPsoDesc, IID_PPV_ARGS(&mPSOs["Ssao"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC edgeBlurPsoDesc = opaquePsoDesc;
+    edgeBlurPsoDesc.InputLayout = { nullptr, 0 };
+    edgeBlurPsoDesc.pRootSignature = mEdgeBlurRootSignature.Get();
+    edgeBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R16_UNORM;
+    edgeBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["EdgeBlurVS"]->GetBufferPointer()), mShaders["EdgeBlurVS"]->GetBufferSize() };
+    edgeBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["EdgeBlurPS"]->GetBufferPointer()), mShaders["EdgeBlurPS"]->GetBufferSize() };
+    edgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    edgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&edgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["EdgeBlur"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC poissonBlurPsoDesc = opaquePsoDesc;
+    poissonBlurPsoDesc.InputLayout = { nullptr, 0 };
+    poissonBlurPsoDesc.pRootSignature = mPoissonBlurRootSignature.Get();
+    poissonBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    poissonBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["PoissonBlurVS"]->GetBufferPointer()), mShaders["PoissonBlurVS"]->GetBufferSize() };
+    poissonBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["PoissonBlurPS"]->GetBufferPointer()), mShaders["PoissonBlurPS"]->GetBufferSize() };
+    poissonBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    poissonBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&poissonBlurPsoDesc, IID_PPV_ARGS(&mPSOs["PoissonBlur"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC ssgiPsoDesc = opaquePsoDesc;
+    ssgiPsoDesc.InputLayout = { nullptr, 0 };
+    ssgiPsoDesc.pRootSignature = mSsgiRootSignature.Get();
+    ssgiPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    ssgiPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["SsgiVS"]->GetBufferPointer()), mShaders["SsgiVS"]->GetBufferSize() };
+    ssgiPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["SsgiPS"]->GetBufferPointer()), mShaders["SsgiPS"]->GetBufferSize() };
+    ssgiPsoDesc.DepthStencilState.DepthEnable = false;
+    ssgiPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&ssgiPsoDesc, IID_PPV_ARGS(&mPSOs["Ssgi"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC colorEdgeBlurPsoDesc = opaquePsoDesc;
+    colorEdgeBlurPsoDesc.InputLayout = { nullptr, 0 };
+    colorEdgeBlurPsoDesc.pRootSignature = mColorEdgeBlurRootSignature.Get();
+    colorEdgeBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    colorEdgeBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["EdgeBlurVS"]->GetBufferPointer()), mShaders["EdgeBlurVS"]->GetBufferSize() };
+    colorEdgeBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["EdgeBlurPS"]->GetBufferPointer()), mShaders["EdgeBlurPS"]->GetBufferSize() };
+    colorEdgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    colorEdgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&colorEdgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["ColorEdgeBlur"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC compositePsoDesc = opaquePsoDesc;
+    colorEdgeBlurPsoDesc.InputLayout = { nullptr, 0 };
+    colorEdgeBlurPsoDesc.pRootSignature = mCompositeRootSignature.Get();
+    colorEdgeBlurPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    colorEdgeBlurPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["CompositeVS"]->GetBufferPointer()), mShaders["CompositeVS"]->GetBufferSize() };
+    colorEdgeBlurPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["CompositePS"]->GetBufferPointer()), mShaders["CompositePS"]->GetBufferSize() };
+    colorEdgeBlurPsoDesc.DepthStencilState.DepthEnable = false;
+    colorEdgeBlurPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&colorEdgeBlurPsoDesc, IID_PPV_ARGS(&mPSOs["Composite"]));
+
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC sssPsoDesc = opaquePsoDesc;
+    sssPsoDesc.InputLayout = { nullptr, 0 };
+    sssPsoDesc.pRootSignature = mSssRootSignature.Get();
+    sssPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sssPsoDesc.VS = { reinterpret_cast<BYTE*>(mShaders["SssVS"]->GetBufferPointer()), mShaders["SssVS"]->GetBufferSize() };
+    sssPsoDesc.PS = { reinterpret_cast<BYTE*>(mShaders["SssPS"]->GetBufferPointer()), mShaders["SssPS"]->GetBufferSize() };
+    sssPsoDesc.DepthStencilState.DepthEnable = false;
+    sssPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+    md3dDevice->CreateGraphicsPipelineState(&sssPsoDesc, IID_PPV_ARGS(&mPSOs["Sss"]));
+
+    // ML Compute PSOs
+    
+    // Gemm compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC gemmComputePSO = {};
+    gemmComputePSO.pRootSignature = mGemmRootSignature.Get();
+    gemmComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["GemmCS"]->GetBufferPointer()), 
+        mShaders["GemmCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &gemmComputePSO, IID_PPV_ARGS(&mPSOs["Gemm"])));
+
+    // LeakyRelu compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC leakyReluComputePSO = {};
+    leakyReluComputePSO.pRootSignature = mLeakyReluRootSignature.Get();
+    leakyReluComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["LeakyReluCS"]->GetBufferPointer()), 
+        mShaders["LeakyReluCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &leakyReluComputePSO, IID_PPV_ARGS(&mPSOs["LeakyRelu"])));
+
+    // Relu compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC reluComputePSO = {};
+    reluComputePSO.pRootSignature = mReluRootSignature.Get();
+    reluComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["ReluCS"]->GetBufferPointer()), 
+        mShaders["ReluCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &reluComputePSO, IID_PPV_ARGS(&mPSOs["Relu"])));
+
+    // Sigmoid compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC sigmoidComputePSO = {};
+    sigmoidComputePSO.pRootSignature = mSigmoidRootSignature.Get();
+    sigmoidComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["SigmoidCS"]->GetBufferPointer()), 
+        mShaders["SigmoidCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &sigmoidComputePSO, IID_PPV_ARGS(&mPSOs["Sigmoid"])));
+
+    // Tanh compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC tanhComputePSO = {};
+    tanhComputePSO.pRootSignature = mTanhRootSignature.Get();
+    tanhComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["TanhCS"]->GetBufferPointer()), 
+        mShaders["TanhCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &tanhComputePSO, IID_PPV_ARGS(&mPSOs["Tanh"])));
+
+    // Softmax compute PSO
+    D3D12_COMPUTE_PIPELINE_STATE_DESC softmaxComputePSO = {};
+    softmaxComputePSO.pRootSignature = mSoftmaxRootSignature.Get();
+    softmaxComputePSO.CS = { 
+        reinterpret_cast<BYTE*>(mShaders["SoftmaxCS"]->GetBufferPointer()), 
+        mShaders["SoftmaxCS"]->GetBufferSize() 
+    };
+    ThrowIfFailed(md3dDevice->CreateComputePipelineState(
+        &softmaxComputePSO, IID_PPV_ARGS(&mPSOs["Softmax"])));
+}
