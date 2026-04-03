@@ -1,4 +1,17 @@
 #include "EngineApp.h"
+#include "Render/Passes/AnimationPass.h"
+#include "Render/Passes/PhysicsPass.h"
+#include "Render/Passes/ShadowPass.h"
+#include "Render/Passes/GBufferPass.h"
+#include "Render/Passes/SsaoPass.h"
+#include "Render/Passes/SsaoBlurPass.h"
+#include "Render/Passes/RadiancePass.h"
+#include "Render/Passes/SssPass.h"
+#include "Render/Passes/SssBlurPass.h"
+#include "Render/Passes/LightingPass.h"
+#include "Render/Passes/SsgiPass.h"
+#include "Render/Passes/SsgiBlurPass.h"
+#include "Render/Passes/CompositePass.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -58,6 +71,7 @@ bool EngineApp::Initialize()
 
     BuildScene();
     SetRenderPassResources();
+    BuildPipeline();
 
     ImGui_ImplDX12_Init(md3dDevice.Get(), 2, DXGI_FORMAT_R8G8B8A8_UNORM, imGuiSrvDescriptorHeap.Get(), imGuiSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), imGuiSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
     
@@ -171,7 +185,6 @@ void EngineApp::Draw(const GameTimer& gt)
     Render(mCurrFrameResource);
 
     ImGui::Render();
-    mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer().Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -211,4 +224,105 @@ std::string EngineApp::extractFileName(const std::string& filePath) {
         return filePath.substr(found + 1);
     }
     return filePath; // If no path separator is found, return the whole path as filename
+}
+
+void EngineApp::BuildPipeline()
+{
+    mPipeline.AddPass(std::make_unique<AnimationPass>(AnimationPassResources{
+        mAssets->mBlendRootSignature.Get(),
+        mAssets->mSkinnedRootSignature.Get(),
+        mAssets->mPSOs.at("blend").Get(),
+        mAssets->mPSOs.at("skinned").Get()
+    }));
+
+    mPipeline.AddPass(std::make_unique<PhysicsPass>(PhysicsPassResources{
+        mAssets->mMeshTransferRootSignature.Get(),
+        mAssets->mSimMeshTransferRootSignature.Get(),
+        mAssets->mTriangleNormalRootSignature.Get(),
+        mAssets->mVertexNormalRootSignature.Get(),
+        mAssets->mForceRootSignature.Get(),
+        mAssets->mPreSolveRootSignature.Get(),
+        mAssets->mPostSolveRootSignature.Get(),
+        mAssets->mConstraintSolveRootSignature.Get(),
+        mAssets->mTensionRootSignature.Get(),
+        mAssets->mPSOs.at("meshTransfer").Get(),
+        mAssets->mPSOs.at("simMeshTransfer").Get(),
+        mAssets->mPSOs.at("triangleNormal").Get(),
+        mAssets->mPSOs.at("vertexNormal").Get(),
+        mAssets->mPSOs.at("force").Get(),
+        mAssets->mPSOs.at("preSolve").Get(),
+        mAssets->mPSOs.at("postSolve").Get(),
+        mAssets->mPSOs.at("constraintSolve").Get(),
+        mAssets->mPSOs.at("tension").Get()
+    }));
+
+    mPipeline.AddPass(std::make_unique<ShadowPass>(
+        mAssets->mShadowsRootSignature.Get(),
+        mAssets->mPSOs.at("shadow_opaque").Get(),
+        mShadowResources.get(),
+        mRenderTextures.get()));
+
+    mPipeline.AddPass(std::make_unique<GBufferPass>(
+        mAssets->mGBufferRootSignature.Get(),
+        mAssets->mPSOs.at("GBuffer").Get(),
+        mGBuffer.get(),
+        mRenderTextures.get()));
+
+    mPipeline.AddPass(std::make_unique<SsaoPass>(
+        mAssets->mSsaoRootSignature.Get(),
+        mAssets->mPSOs.at("Ssao").Get(),
+        mGBuffer.get(),
+        mSsao.get()));
+
+    mPipeline.AddPass(std::make_unique<SsaoBlurPass>(
+        mAssets->mEdgeBlurRootSignature.Get(),
+        mAssets->mPSOs.at("EdgeBlur").Get(),
+        mGBuffer.get(),
+        mSsao.get()));
+
+    mPipeline.AddPass(std::make_unique<RadiancePass>(
+        mAssets->mRadianceRootSignature.Get(),
+        mAssets->mPSOs.at("Radiance").Get(),
+        mGBuffer.get(),
+        mShadowResources.get(),
+        mRadianceResources.get()));
+
+    mPipeline.AddPass(std::make_unique<SssPass>(
+        mAssets->mSssRootSignature.Get(),
+        mAssets->mPSOs.at("Sss").Get(),
+        mGBuffer.get(),
+        mSss.get(),
+        mRadianceResources.get()));
+
+    mPipeline.AddPass(std::make_unique<SssBlurPass>(
+        mAssets->mPoissonBlurRootSignature.Get(),
+        mAssets->mPSOs.at("PoissonBlur").Get(),
+        mSss.get()));
+
+    mPipeline.AddPass(std::make_unique<LightingPass>(
+        mAssets->mLightingRootSignature.Get(),
+        mAssets->mPSOs.at("Lighting").Get(),
+        mGBuffer.get(),
+        mSss.get(),
+        mRadianceResources.get(),
+        mLighting.get()));
+
+    mPipeline.AddPass(std::make_unique<SsgiPass>(
+        mAssets->mSsgiRootSignature.Get(),
+        mAssets->mPSOs.at("Ssgi").Get(),
+        mLighting.get(),
+        mGBuffer.get(),
+        mSsgi.get()));
+
+    mPipeline.AddPass(std::make_unique<SsgiBlurPass>(
+        mAssets->mColorEdgeBlurRootSignature.Get(),
+        mAssets->mPSOs.at("ColorEdgeBlur").Get(),
+        mGBuffer.get(),
+        mSsgi.get()));
+
+    mPipeline.AddPass(std::make_unique<CompositePass>(
+        mAssets->mCompositeRootSignature.Get(),
+        mAssets->mPSOs.at("Composite").Get(),
+        mLighting.get(),
+        mSsgi.get()));
 }

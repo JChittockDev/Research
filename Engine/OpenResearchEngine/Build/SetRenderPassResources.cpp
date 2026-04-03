@@ -29,12 +29,15 @@ void EngineApp::SetRenderPassResources()
     mComposite->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
     mRadianceResources = std::make_unique<RadianceResources>(md3dDevice.Get());
-    mRadianceResources->BuildDescriptors(dynamicLights.GetNumLights(), mClientWidth, mClientHeight, cpuSrvHandle, gpuSrvHandle, cpuRtvHandle, mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
+    mRadianceResources->BuildDescriptors(dynamicLights.GetNumLights(), mClientWidth, mClientHeight,
+        cpuSrvHandle, gpuSrvHandle, cpuRtvHandle, mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
 
     mRenderTextures = std::make_unique<RenderTextures>(md3dDevice.Get());
-    mRenderTextures->BuildDescriptors(cpuSrvHandle, gpuSrvHandle, mCbvSrvUavDescriptorSize, mTextureData, mTextures);
+    mRenderTextures->BuildDescriptors(cpuSrvHandle, gpuSrvHandle, mCbvSrvUavDescriptorSize,
+        mAssets->mTextureData, mAssets->mTextures);
 
     cpuDsvHandle = cpuDsvHandle.Offset(1, mDsvDescriptorSize);
     mShadowResources = std::make_unique<ShadowResources>(md3dDevice.Get());
-    mShadowResources->BuildDescriptors(dynamicLights.GetNumLights(), cpuSrvHandle, gpuSrvHandle, cpuDsvHandle, mCbvSrvUavDescriptorSize, mDsvDescriptorSize);
+    mShadowResources->BuildDescriptors(dynamicLights.GetNumLights(),
+        cpuSrvHandle, gpuSrvHandle, cpuDsvHandle, mCbvSrvUavDescriptorSize, mDsvDescriptorSize);
 }

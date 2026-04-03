@@ -1,27 +1,31 @@
-#include "../../EngineApp.h"
+#include "SsgiPass.h"
+#include "../RenderContext.h"
+#include "../Resources/FrameResource.h"
+#include "../Resources/Lighting.h"
+#include "../Resources/GBuffer.h"
+#include "../Resources/Ssgi.h"
 
-void EngineApp::SsgiPass(FrameResource* currentFrameResource)
+SsgiPass::SsgiPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
+                   Lighting* lighting, GBuffer* gBuffer, Ssgi* ssgi)
+    : mRootSig(rootSig), mPso(pso), mLighting(lighting), mGBuffer(gBuffer), mSsgi(ssgi)
+{}
+
+void SsgiPass::Execute(const RenderContext& ctx, FrameResource* fr)
 {
-    mCommandList->SetGraphicsRootSignature(mSsgiRootSignature.Get());
-    mCommandList->RSSetViewports(1, &mScreenViewport);
-    mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
-
-    auto ssgiCBAddress = currentFrameResource->SsgiCB->Resource()->GetGPUVirtualAddress();
-
-    mCommandList->SetGraphicsRootConstantBufferView(0, ssgiCBAddress);
-    mCommandList->SetGraphicsRootDescriptorTable(1, mLighting->GetLightingGpuSrv());
-    mCommandList->SetGraphicsRootDescriptorTable(2, mGBuffer->GetNormalGpuSrv());
-    mCommandList->SetGraphicsRootDescriptorTable(3, mSsgi->GetRandomVectorGpuSrv());
+    ctx.cmdList->SetGraphicsRootSignature(mRootSig);
+    ctx.cmdList->RSSetViewports(1, &ctx.viewport);
+    ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
+    ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsgiCB->Resource()->GetGPUVirtualAddress());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mLighting->GetLightingGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mGBuffer->GetNormalGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsgi->GetRandomVectorGpuSrv());
 
     float clearValue[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    mCommandList->ClearRenderTargetView(mSsgi->GetGICpuRtv(), clearValue, 0, nullptr);
-    mCommandList->OMSetRenderTargets(1, &mSsgi->GetGICpuRtv(), true, nullptr);
-
-    mCommandList->SetPipelineState(mPSOs.at("Ssgi").Get());
-   
-    mCommandList->IASetVertexBuffers(0, 0, nullptr);
-    mCommandList->IASetIndexBuffer(nullptr);
-    mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    mCommandList->DrawInstanced(6, 1, 0, 0);
-
+    ctx.cmdList->ClearRenderTargetView(mSsgi->GetGICpuRtv(), clearValue, 0, nullptr);
+    ctx.cmdList->OMSetRenderTargets(1, &mSsgi->GetGICpuRtv(), true, nullptr);
+    ctx.cmdList->SetPipelineState(mPso);
+    ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
+    ctx.cmdList->IASetIndexBuffer(nullptr);
+    ctx.cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    ctx.cmdList->DrawInstanced(6, 1, 0, 0);
 }

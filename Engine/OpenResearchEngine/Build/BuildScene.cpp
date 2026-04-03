@@ -4,22 +4,25 @@ void EngineApp::BuildScene()
 {
     SerializeLevel();
     PushLights();
-    PushGenericMesh();
-    PushMesh();
-    ImportTextures();
-    SetRootSignatures();
-    CompileShaders();
-    PushMaterials();
+
+    mAssets = std::make_unique<AssetManager>(
+        md3dDevice, mCommandList,
+        std::filesystem::path(GetFullPath("")),
+        m4xMsaaState, m4xMsaaQuality,
+        mBackBufferFormat, mDepthStencilFormat
+    );
+    mAssets->Build(dynamicLights, mLevelRenderItems, mLevelMaterials, mLevelLights);
+
     PushRenderItems();
     SetFenceResources();
-    SetPipelineStates();
 
     mOnnxModelResource = std::make_unique<OnnxModelResource>(
-        md3dDevice, mCommandList, mGemmRootSignature, mReluRootSignature,
-        mLeakyReluRootSignature, mSigmoidRootSignature, mTanhRootSignature,
-        mSoftmaxRootSignature, mPSOs["Gemm"], mPSOs["Relu"], mPSOs["LeakyRelu"],
-        mPSOs["Sigmoid"], mPSOs["Tanh"], mPSOs["Softmax"]
+        md3dDevice, mCommandList,
+        mAssets->mGemmRootSignature,    mAssets->mReluRootSignature,
+        mAssets->mLeakyReluRootSignature, mAssets->mSigmoidRootSignature,
+        mAssets->mTanhRootSignature,    mAssets->mSoftmaxRootSignature,
+        mAssets->mPSOs["Gemm"],  mAssets->mPSOs["Relu"],      mAssets->mPSOs["LeakyRelu"],
+        mAssets->mPSOs["Sigmoid"], mAssets->mPSOs["Tanh"],    mAssets->mPSOs["Softmax"]
     );
-    
     mOnnxModelResource->Initialize(GetFullPath("Onnx/test.onnx"));
 }

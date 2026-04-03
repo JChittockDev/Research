@@ -24,15 +24,15 @@ void EngineApp::UpdateAnimCBs(const GameTimer& gt)
 
     int skinningIndex = 0;
     std::map<std::string, SkinnedConstants> constants;
-    for (auto controller : mSkinningControllers)
+    for (auto controller : mAssets->mSkinningControllers)
     {
-        bool animCheck = mSkinningControllers.at(controller.first)->animation == nullptr || mSkinningControllers.at(controller.first)->animation->TransformAnimNodes.size() == 0;
+        bool animCheck = mAssets->mSkinningControllers.at(controller.first)->animation == nullptr || mAssets->mSkinningControllers.at(controller.first)->animation->TransformAnimNodes.size() == 0;
         if (!animCheck)
         {
-            mSkinningControllers.at(controller.first)->UpdateSkinning(gt.DeltaTime());
+            mAssets->mSkinningControllers.at(controller.first)->UpdateSkinning(gt.DeltaTime());
         }
         SkinnedConstants skinnedConstants;
-        std::copy(std::begin(mSkinningControllers.at(controller.first)->transforms), std::end(mSkinningControllers.at(controller.first)->transforms), &skinnedConstants.BoneTransforms[0]);
+        std::copy(std::begin(mAssets->mSkinningControllers.at(controller.first)->transforms), std::end(mAssets->mSkinningControllers.at(controller.first)->transforms), &skinnedConstants.BoneTransforms[0]);
         currSkinnedCB->CopyData(skinningIndex, skinnedConstants);
         constants[controller.first] = skinnedConstants;
         skinningIndex++;
@@ -41,19 +41,19 @@ void EngineApp::UpdateAnimCBs(const GameTimer& gt)
     if (ImGui::TreeNode("Skinning Controllers"))
     {
         int imguiSkinningIndex = 0;
-        for (auto controller : mSkinningControllers)
+        for (auto controller : mAssets->mSkinningControllers)
         {
             SkinnedConstants skinnedConstants = constants[controller.first];
             if (ImGui::TreeNode(controller.first.c_str()))
             {
-                for (int i = 0; i < mSkinningControllers.at(controller.first)->transforms.size(); i++)
+                for (int i = 0; i < mAssets->mSkinningControllers.at(controller.first)->transforms.size(); i++)
                 {
                     std::string transform_name = "Transform " + std::to_string(i);
                     if (ImGui::TreeNode(transform_name.c_str()))
                     {
                         // Load the World matrix and decompose it into position, rotation, and scale
                         DirectX::XMVECTOR scale, rotationQuat, translation;
-                        DirectX::XMMatrixDecompose(&scale, &rotationQuat, &translation, DirectX::XMLoadFloat4x4(&mSkinningControllers.at(controller.first)->transforms[i]));
+                        DirectX::XMMatrixDecompose(&scale, &rotationQuat, &translation, DirectX::XMLoadFloat4x4(&mAssets->mSkinningControllers.at(controller.first)->transforms[i]));
 
                         DirectX::XMFLOAT3 position, rotationEuler, scaleValues;
                         DirectX::XMStoreFloat3(&position, translation);
@@ -81,7 +81,7 @@ void EngineApp::UpdateAnimCBs(const GameTimer& gt)
                         // Update the World matrix in RenderItem
                         DirectX::XMStoreFloat4x4(&transform, newWorld);
                         skinnedConstants.BoneTransforms[i] = transform;
-                        mSkinningControllers[controller.first]->transforms[i] = transform;
+                        mAssets->mSkinningControllers[controller.first]->transforms[i] = transform;
                         ImGui::TreePop();
                     }
                 }
@@ -94,17 +94,17 @@ void EngineApp::UpdateAnimCBs(const GameTimer& gt)
     }
 
     int blendIndex = 0;
-    for (auto controller : mBlendshapeControllers)
+    for (auto controller : mAssets->mBlendshapeControllers)
     {
         float time = gt.TotalTime();
         BlendConstants blendConstants;
 
-        bool animCheck = mBlendshapeControllers.at(controller.first)->animation == nullptr || mBlendshapeControllers.at(controller.first)->animation->BlendAnimNodes.size() == 0;
+        bool animCheck = mAssets->mBlendshapeControllers.at(controller.first)->animation == nullptr || mAssets->mBlendshapeControllers.at(controller.first)->animation->BlendAnimNodes.size() == 0;
         if (!animCheck)
         {
-            mBlendshapeControllers.at(controller.first)->UpdateBlends(gt.DeltaTime());
+            mAssets->mBlendshapeControllers.at(controller.first)->UpdateBlends(gt.DeltaTime());
         }
-        std::vector<Vector4> weights = GetWeights(mBlendshapeControllers.at(controller.first)->weights);
+        std::vector<Vector4> weights = GetWeights(mAssets->mBlendshapeControllers.at(controller.first)->weights);
         std::copy(std::begin(weights), std::end(weights), &blendConstants.Weights[0]);
         currBlendCB->CopyData(blendIndex, blendConstants);
         blendIndex++;
@@ -113,24 +113,24 @@ void EngineApp::UpdateAnimCBs(const GameTimer& gt)
     if (ImGui::TreeNode("Blendshape Controllers"))
     {
         int imguiBlendIndex = 0;
-        for (auto controller : mBlendshapeControllers)
+        for (auto controller : mAssets->mBlendshapeControllers)
         {
             BlendConstants blendConstants;
             if (ImGui::TreeNode(controller.first.c_str()))
             {
-                for (auto blends : mBlendshapeControllers.at(controller.first)->weights)
+                for (auto blends : mAssets->mBlendshapeControllers.at(controller.first)->weights)
                 {
                     if (ImGui::TreeNode(blends.first.c_str()))
                     {
-                        for (int i = 0; i < mBlendshapeControllers.at(controller.first)->weights[blends.first].size(); i++)
+                        for (int i = 0; i < mAssets->mBlendshapeControllers.at(controller.first)->weights[blends.first].size(); i++)
                         {
                             std::string blend_name = blends.first + " Blendshape" + std::to_string(i);
                             if (ImGui::TreeNode(blend_name.c_str()))
                             {
-                                float weight = mBlendshapeControllers.at(controller.first)->weights[blends.first][i];
+                                float weight = mAssets->mBlendshapeControllers.at(controller.first)->weights[blends.first][i];
                                 ImGui::InputFloat("Weight", &weight);
                                 blendConstants.Weights[i].x = weight;
-                                mBlendshapeControllers[controller.first]->weights[blends.first][i] = weight;
+                                mAssets->mBlendshapeControllers[controller.first]->weights[blends.first][i] = weight;
                                 ImGui::TreePop();
                             }
                         }

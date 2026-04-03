@@ -101,20 +101,18 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Assets\AssetManager.cpp" />
+    <ClCompile Include="Assets\PipelineStates.cpp" />
+    <ClCompile Include="Assets\RootSignatures.cpp" />
+    <ClCompile Include="Assets\Shaders.cpp" />
     <ClCompile Include="Build\PushLights.cpp" />
     <ClCompile Include="Build\BuildScene.cpp" />
     <ClCompile Include="Build\PopulateDescriptorHeaps.cpp" />
     <ClCompile Include="Build\SetFenceResources.cpp" />
-    <ClCompile Include="Build\PushMaterials.cpp" />
-    <ClCompile Include="Build\PushMesh.cpp" />
-    <ClCompile Include="Build\SetPipelineStates.cpp" />
     <ClCompile Include="Build\PushRenderItems.cpp" />
-    <ClCompile Include="Build\SetGenericRootSignature.cpp" />
-    <ClCompile Include="Build\CompileShader.cpp" />
     <ClCompile Include="Build\SetRenderPassResources.cpp" />
-    <ClCompile Include="Build\SetRootSignatures.cpp" />
-    <ClCompile Include="Build\ImportTextures.cpp" />
     <ClCompile Include="Build\SerializeLevel.cpp" />
+    <ClCompile Include="Render\RenderPipeline.cpp" />
     <ClCompile Include="Gui\GuiManager.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
@@ -129,6 +127,8 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Models\External\DDSTextureLoader.cpp" />
     <ClCompile Include="Objects\ViewFrustum.cpp" />
     <ClCompile Include="Render\Manager\Render.cpp" />
+    <ClCompile Include="Render\Passes\AnimationPass.cpp" />
+    <ClCompile Include="Render\Passes\PhysicsPass.cpp" />
     <ClCompile Include="Render\Passes\CompositePass.cpp" />
     <ClCompile Include="Render\Passes\GBufferPass.cpp" />
     <ClCompile Include="Render\Passes\LightingPass.cpp" />
@@ -166,10 +166,8 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Common\Math.cpp" />
     <ClCompile Include="Controls\Controls.cpp" />
     <ClCompile Include="Render\Resources\FrameResource.cpp" />
-    <ClCompile Include="Build\PushGenericMesh.cpp" />
     <ClCompile Include="Render\Resources\Mesh.cpp" />
     <ClCompile Include="EngineApp.cpp" />
-    <ClCompile Include="Render\Resources\StaticSamplers.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
     <ClCompile Include="Update\UpdateMaterialBuffers.cpp" />
     <ClCompile Include="Update\UpdateRenderItems.cpp" />
@@ -192,6 +190,23 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="D3D12\D3Dx12.h" />
     <ClInclude Include="Models\External\DDSTextureLoader.h" />
     <ClInclude Include="Objects\ViewFrustum.h" />
+    <ClInclude Include="Render\DrawRenderItems.h" />
+    <ClInclude Include="Render\IRenderPass.h" />
+    <ClInclude Include="Render\Passes\AnimationPass.h" />
+    <ClInclude Include="Render\Passes\CompositePass.h" />
+    <ClInclude Include="Render\Passes\GBufferPass.h" />
+    <ClInclude Include="Render\Passes\LightingPass.h" />
+    <ClInclude Include="Render\Passes\PhysicsPass.h" />
+    <ClInclude Include="Render\Passes\RadiancePass.h" />
+    <ClInclude Include="Render\Passes\ShadowPass.h" />
+    <ClInclude Include="Render\Passes\SsaoBlurPass.h" />
+    <ClInclude Include="Render\Passes\SsaoPass.h" />
+    <ClInclude Include="Render\Passes\SsgiBlurPass.h" />
+    <ClInclude Include="Render\Passes\SsgiPass.h" />
+    <ClInclude Include="Render\Passes\SssBlurPass.h" />
+    <ClInclude Include="Render\Passes\SssPass.h" />
+    <ClInclude Include="Render\RenderContext.h" />
+    <ClInclude Include="Render\RenderPipeline.h" />
     <ClInclude Include="Render\Resources\Blendshapes.h" />
     <ClInclude Include="Render\Resources\Composite.h" />
     <ClInclude Include="Render\Resources\GBuffer.h" />
@@ -215,6 +230,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Common\Math.h" />
     <ClInclude Include="Common\Structures.h" />
     <ClInclude Include="Common\UploadBuffer.h" />
+    <ClInclude Include="Assets\AssetManager.h" />
     <ClInclude Include="EngineApp.h" />
     <ClInclude Include="Render\Resources\FrameResource.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />

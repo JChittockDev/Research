@@ -1,27 +1,29 @@
-#include "../../EngineApp.h"
+#include "SsaoPass.h"
+#include "../RenderContext.h"
+#include "../Resources/FrameResource.h"
+#include "../Resources/GBuffer.h"
+#include "../Resources/Ssao.h"
 
-void EngineApp::SsaoPass(FrameResource* currentFrameResource)
+SsaoPass::SsaoPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
+                   GBuffer* gBuffer, Ssao* ssao)
+    : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSsao(ssao)
+{}
+
+void SsaoPass::Execute(const RenderContext& ctx, FrameResource* fr)
 {
-    mCommandList->SetGraphicsRootSignature(mSsaoRootSignature.Get());
-    mCommandList->RSSetViewports(1, &mScreenViewport);
-    mCommandList->RSSetScissorRects(1, &mScreenScissorRect);
-
-    auto ssaoCBAddress = currentFrameResource->SsaoCB->Resource()->GetGPUVirtualAddress();
-
-    mCommandList->SetGraphicsRootConstantBufferView(0, ssaoCBAddress);
-
-    mCommandList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetNormalGpuSrv());
-    mCommandList->SetGraphicsRootDescriptorTable(2, mSsao->GetRandomVectorGpuSrv());
+    ctx.cmdList->SetGraphicsRootSignature(mRootSig);
+    ctx.cmdList->RSSetViewports(1, &ctx.viewport);
+    ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
+    ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsaoCB->Resource()->GetGPUVirtualAddress());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetNormalGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetRandomVectorGpuSrv());
 
     float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    mCommandList->ClearRenderTargetView(mSsao->GetAmbientCpuRtv(), clearValue, 0, nullptr);
-    mCommandList->OMSetRenderTargets(1, &mSsao->GetAmbientCpuRtv(), true, nullptr);
-
-    mCommandList->SetPipelineState(mPSOs.at("Ssao").Get());
-   
-    mCommandList->IASetVertexBuffers(0, 0, nullptr);
-    mCommandList->IASetIndexBuffer(nullptr);
-    mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    mCommandList->DrawInstanced(6, 1, 0, 0);
-
+    ctx.cmdList->ClearRenderTargetView(mSsao->GetAmbientCpuRtv(), clearValue, 0, nullptr);
+    ctx.cmdList->OMSetRenderTargets(1, &mSsao->GetAmbientCpuRtv(), true, nullptr);
+    ctx.cmdList->SetPipelineState(mPso);
+    ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
+    ctx.cmdList->IASetIndexBuffer(nullptr);
+    ctx.cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    ctx.cmdList->DrawInstanced(6, 1, 0, 0);
 }
