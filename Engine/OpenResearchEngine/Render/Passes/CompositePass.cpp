@@ -8,7 +8,7 @@
 CompositePass::CompositePass(
     ID3D12RootSignature* rootSig,
     ID3D12PipelineState* pso,
-    Lighting*            lighting,
+    LightingPassInfo*            lighting,
     Ssgi*                ssgi)
     : mRootSig(rootSig), mPso(pso), mLighting(lighting), mSsgi(ssgi)
 {}
@@ -19,7 +19,7 @@ void CompositePass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->ObjectCB->Resource()->GetGPUVirtualAddress());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mLighting->GetLightingGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mLighting->GetGpuSRVDescriptorHandle(mLighting->kLightingResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsgi->GetGIHorizontalBlurGpuSrv());
 
     float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };

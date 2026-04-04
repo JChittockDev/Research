@@ -5,7 +5,7 @@
 class GBuffer;
 class SSS;
 class RadianceResources;
-class Lighting;
+class LightingPassInfo;
 
 class LightingPass : public IRenderPass
 {
@@ -16,7 +16,7 @@ public:
         GBuffer*             gBuffer,
         SSS*                 sss,
         RadianceResources*   radianceResources,
-        Lighting*            lighting);
+        LightingPassInfo*            lighting);
 
     void        Execute(const RenderContext& ctx, FrameResource* fr) override;
     const char* Name() const override { return "Lighting"; }
@@ -27,5 +27,5 @@ private:
     GBuffer*             mGBuffer;
     SSS*                 mSss;
     RadianceResources*   mRadianceResources;
-    Lighting*            mLighting;
+    LightingPassInfo*            mLighting;
 };

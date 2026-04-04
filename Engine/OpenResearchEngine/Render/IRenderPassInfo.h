@@ -10,16 +10,23 @@
 class IRenderPassInfo
 {
 public:
-    virtual ~IRenderPassInfo() = default;
-    IRenderPassInfo(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, UINT width, UINT height);
+    virtual UINT Width() = 0;
+    virtual UINT Height() = 0;
 
-    UINT Width()const;
-    UINT Height()const;
+    virtual void OnResize(UINT newWidth, UINT newHeight) = 0;
 
-    void OnResize(UINT newWidth, UINT newHeight);
+    virtual void Build() = 0;
 
-    void Build();
+    virtual void CreateTexture(const DXGI_FORMAT& format, const DirectX::XMFLOAT4& clearColor, Microsoft::WRL::ComPtr<ID3D12Resource>& texture) = 0;
+    virtual void CreateRTV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle) = 0;
+    virtual void CreateSRV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& srvHandle) = 0;
 
-private:
+    virtual void RebuildDescriptors() = 0;
+    virtual void BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize) = 0;
 
+    virtual D3D12_VIEWPORT GetViewport() = 0;
+    virtual void SetViewport(D3D12_VIEWPORT val) = 0;
+
+    virtual D3D12_RECT GetScissorRect() = 0;
+    virtual void SetScissorRect(D3D12_RECT val) = 0;
 };

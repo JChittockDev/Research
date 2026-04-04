@@ -13,7 +13,7 @@ LightingPass::LightingPass(
     GBuffer*             gBuffer,
     SSS*                 sss,
     RadianceResources*   radianceResources,
-    Lighting*            lighting)
+    LightingPassInfo*            lighting)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer),
       mSss(sss), mRadianceResources(radianceResources), mLighting(lighting)
 {}
@@ -36,8 +36,8 @@ void LightingPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->SetGraphicsRootDescriptorTable(5, mRadianceResources->GetStartGpuSrv());
 
     float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    ctx.cmdList->ClearRenderTargetView(mLighting->GetLightingCpuRtv(), clearColor, 0, nullptr);
-    ctx.cmdList->OMSetRenderTargets(1, &mLighting->GetLightingCpuRtv(), true, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mLighting->GetCpuRTVDescriptorHandle(mLighting->kLightingResource), clearColor, 0, nullptr);
+    ctx.cmdList->OMSetRenderTargets(1, &mLighting->GetCpuRTVDescriptorHandle(mLighting->kLightingResource), true, nullptr);
     ctx.cmdList->SetPipelineState(mPso);
     ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
     ctx.cmdList->IASetIndexBuffer(nullptr);
@@ -45,7 +45,7 @@ void LightingPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->DrawInstanced(6, 1, 0, 0);
 
     ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-        mLighting->GetLighting().Get(),
+        mLighting->GetResource(mLighting->kLightingResource).Get(),
         D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 
     ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(

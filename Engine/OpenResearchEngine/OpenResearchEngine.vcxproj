@@ -112,6 +112,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Build\PushRenderItems.cpp" />
     <ClCompile Include="Build\SetRenderPassResources.cpp" />
     <ClCompile Include="Build\SerializeLevel.cpp" />
+    <ClCompile Include="Render\RenderPassInfo.cpp" />
     <ClCompile Include="Render\RenderPipeline.cpp" />
     <ClCompile Include="Gui\GuiManager.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
@@ -195,6 +196,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Passes\AnimationPass.h" />
     <ClInclude Include="Render\Passes\CompositePass.h" />
     <ClInclude Include="Render\Passes\GBufferPass.h" />
+    <ClInclude Include="Render\IRenderPassInfo.h" />
     <ClInclude Include="Render\Passes\LightingPass.h" />
     <ClInclude Include="Render\Passes\PhysicsPass.h" />
     <ClInclude Include="Render\Passes\RadiancePass.h" />
@@ -206,6 +208,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Passes\SssBlurPass.h" />
     <ClInclude Include="Render\Passes\SssPass.h" />
     <ClInclude Include="Render\RenderContext.h" />
+    <ClInclude Include="Render\RenderPassInfo.h" />
     <ClInclude Include="Render\RenderPipeline.h" />
     <ClInclude Include="Render\Resources\Blendshapes.h" />
     <ClInclude Include="Render\Resources\Composite.h" />

@@ -103,7 +103,7 @@ private:
     std::unique_ptr<OnnxModelResource> mOnnxModelResource;
 
     std::unique_ptr<GBuffer>          mGBuffer;
-    std::unique_ptr<Lighting>         mLighting;
+    std::unique_ptr<LightingPassInfo> mLighting;
     std::unique_ptr<Ssao>             mSsao;
     std::unique_ptr<Ssgi>             mSsgi;
     std::unique_ptr<SSS>              mSss;

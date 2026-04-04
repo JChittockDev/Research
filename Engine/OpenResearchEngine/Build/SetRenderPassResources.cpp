@@ -16,7 +16,7 @@ void EngineApp::SetRenderPassResources()
     mSsao = std::make_unique<Ssao>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
     mSsao->BuildDescriptors(GetDepthBuffer(), cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
-    mLighting = std::make_unique<Lighting>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+    mLighting = std::make_unique<LightingPassInfo>(md3dDevice.Get(), mClientWidth, mClientHeight);
     mLighting->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
     mSsgi = std::make_unique<Ssgi>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
