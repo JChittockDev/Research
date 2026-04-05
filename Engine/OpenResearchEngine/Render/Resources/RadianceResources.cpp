@@ -1,5 +1,4 @@
 #include "RadianceResources.h"
-#include <DirectXPackedVector.h>
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -14,7 +13,7 @@ void RadianceResources::BuildDescriptors(const int numLights, UINT width, UINT h
 
     for (int i = 0; i < numLights; i++)
     {
-        std::unique_ptr<Radiance> radianceMap = std::make_unique<Radiance>(md3dDevice, width, height);
+        std::unique_ptr<RadiancePassResource> radianceMap = std::make_unique<RadiancePassResource>(md3dDevice, width, height);
         radianceMaps.push_back(std::move(radianceMap));
     }
 

@@ -8,12 +8,12 @@
 #include "Render/Resources/ShadowMap.h"
 #include "Render/Resources/Ssao.h"
 #include "Render/Resources/SSS.h"
-#include "Render/Resources/Composite.h"
-#include "Render/Resources/Lighting.h"
+#include "Render/Resources/CompositePassResource.h"
+#include "Render/Resources/LightingPassResource.h"
 #include "Render/Resources/Ssgi.h"
 #include "Render/Resources/ShadowResources.h"
 #include "Render/Resources/RadianceResources.h"
-#include "Render/Resources/GBuffer.h"
+#include "Render/Resources/GBufferPassResource.h"
 #include "Render/Resources/RenderItem.h"
 #include "Render/Resources/RenderTextures.h"
 #include "Render/RenderPipeline.h"
@@ -102,12 +102,12 @@ private:
 
     std::unique_ptr<OnnxModelResource> mOnnxModelResource;
 
-    std::unique_ptr<GBuffer>          mGBuffer;
-    std::unique_ptr<LightingPassInfo> mLighting;
+    std::unique_ptr<GBufferPassResource>          mGBuffer;
+    std::unique_ptr<LightingPassResource> mLighting;
     std::unique_ptr<Ssao>             mSsao;
     std::unique_ptr<Ssgi>             mSsgi;
     std::unique_ptr<SSS>              mSss;
-    std::unique_ptr<Composite>        mComposite;
+    std::unique_ptr<CompositePassResource>        mComposite;
     std::unique_ptr<RenderTextures>   mRenderTextures;
     std::unique_ptr<ShadowResources>  mShadowResources;
     std::unique_ptr<RadianceResources> mRadianceResources;

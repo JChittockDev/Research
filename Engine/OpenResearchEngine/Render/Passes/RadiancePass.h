@@ -2,7 +2,7 @@
 #include "../IRenderPass.h"
 #include <d3d12.h>
 
-class GBuffer;
+class GBufferPassResource;
 class ShadowResources;
 class RadianceResources;
 
@@ -12,7 +12,7 @@ public:
     RadiancePass(
         ID3D12RootSignature* rootSig,
         ID3D12PipelineState* pso,
-        GBuffer*             gBuffer,
+        GBufferPassResource*             gBuffer,
         ShadowResources*     shadowResources,
         RadianceResources*   radianceResources);
     void        Execute(const RenderContext& ctx, FrameResource* fr) override;
@@ -20,7 +20,7 @@ public:
 private:
     ID3D12RootSignature* mRootSig;
     ID3D12PipelineState* mPso;
-    GBuffer*             mGBuffer;
+    GBufferPassResource*             mGBuffer;
     ShadowResources*     mShadowResources;
     RadianceResources*   mRadianceResources;
 };

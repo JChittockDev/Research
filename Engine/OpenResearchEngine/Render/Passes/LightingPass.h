@@ -2,10 +2,10 @@
 #include "../IRenderPass.h"
 #include <d3d12.h>
 
-class GBuffer;
+class GBufferPassResource;
 class SSS;
 class RadianceResources;
-class LightingPassInfo;
+class LightingPassResource;
 
 class LightingPass : public IRenderPass
 {
@@ -13,10 +13,10 @@ public:
     LightingPass(
         ID3D12RootSignature* rootSig,
         ID3D12PipelineState* pso,
-        GBuffer*             gBuffer,
+        GBufferPassResource*             gBuffer,
         SSS*                 sss,
         RadianceResources*   radianceResources,
-        LightingPassInfo*            lighting);
+        LightingPassResource*            lighting);
 
     void        Execute(const RenderContext& ctx, FrameResource* fr) override;
     const char* Name() const override { return "Lighting"; }
@@ -24,8 +24,8 @@ public:
 private:
     ID3D12RootSignature* mRootSig;
     ID3D12PipelineState* mPso;
-    GBuffer*             mGBuffer;
+    GBufferPassResource*             mGBuffer;
     SSS*                 mSss;
     RadianceResources*   mRadianceResources;
-    LightingPassInfo*            mLighting;
+    LightingPassResource*            mLighting;
 };

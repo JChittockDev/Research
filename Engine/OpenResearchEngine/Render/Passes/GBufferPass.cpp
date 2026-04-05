@@ -1,16 +1,14 @@
 #include "GBufferPass.h"
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
-#include "../Resources/GBuffer.h"
+#include "../Resources/GBufferPassResource.h"
 #include "../Resources/RenderTextures.h"
 #include "../DrawRenderItems.h"
-#include "../../D3D12/D3DUtil.h"
-#include "../../D3D12/D3Dx12.h"
 
 GBufferPass::GBufferPass(
     ID3D12RootSignature* rootSig,
     ID3D12PipelineState* pso,
-    GBuffer*             gBuffer,
+    GBufferPassResource*             gBuffer,
     RenderTextures*      renderTextures)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mRenderTextures(renderTextures)
 {}
@@ -22,22 +20,22 @@ void GBufferPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
 
     float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetPositionCpuRtv(),    clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetNormalCpuRtv(),      clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetViewNormalCpuRtv(),  clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetAlbedoSpecCpuRtv(),  clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetReflectionCpuRtv(),  clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetMaterialIdCpuRtv(),  clearColor, 0, nullptr);
-    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetTangentCpuRtv(),     clearColor, 0, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kPositionResource),    clearColor, 0, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kNormalResource),      clearColor, 0, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kViewNormalResource),  clearColor, 0, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kAlbedoSpecResource),  clearColor, 0, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kReflectionResource),  clearColor, 0, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kMaterialIdResource),  clearColor, 0, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kTangentResource),     clearColor, 0, nullptr);
 
     D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
-        mGBuffer->GetPositionCpuRtv(),
-        mGBuffer->GetNormalCpuRtv(),
-        mGBuffer->GetViewNormalCpuRtv(),
-        mGBuffer->GetAlbedoSpecCpuRtv(),
-        mGBuffer->GetReflectionCpuRtv(),
-        mGBuffer->GetMaterialIdCpuRtv(),
-        mGBuffer->GetTangentCpuRtv()
+        mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kPositionResource),
+        mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kNormalResource),
+        mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kViewNormalResource),
+        mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kAlbedoSpecResource),
+        mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kReflectionResource),
+        mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kMaterialIdResource),
+        mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kTangentResource)
     };
 
     ctx.cmdList->ClearDepthStencilView(ctx.dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);

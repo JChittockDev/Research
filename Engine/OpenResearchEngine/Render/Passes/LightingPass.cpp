@@ -1,19 +1,19 @@
 #include "LightingPass.h"
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
-#include "../Resources/GBuffer.h"
+#include "../Resources/GBufferPassResource.h"
 #include "../Resources/SSS.h"
 #include "../Resources/RadianceResources.h"
-#include "../Resources/Lighting.h"
+#include "../Resources/LightingPassResource.h"
 #include "../../D3D12/D3Dx12.h"
 
 LightingPass::LightingPass(
     ID3D12RootSignature* rootSig,
     ID3D12PipelineState* pso,
-    GBuffer*             gBuffer,
+    GBufferPassResource*             gBuffer,
     SSS*                 sss,
     RadianceResources*   radianceResources,
-    LightingPassInfo*            lighting)
+    LightingPassResource*            lighting)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer),
       mSss(sss), mRadianceResources(radianceResources), mLighting(lighting)
 {}
@@ -31,7 +31,7 @@ void LightingPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->ObjectCB->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootConstantBufferView(1, fr->PassCB->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootShaderResourceView(2, fr->MaterialBuffer->Resource()->GetGPUVirtualAddress());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mGBuffer->GetPositionGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kPositionResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(4, mSss->GetSSSBlurGpuSrv());
     ctx.cmdList->SetGraphicsRootDescriptorTable(5, mRadianceResources->GetStartGpuSrv());
 
@@ -44,9 +44,7 @@ void LightingPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     ctx.cmdList->DrawInstanced(6, 1, 0, 0);
 
-    ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-        mLighting->GetResource(mLighting->kLightingResource).Get(),
-        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+    mLighting->SetResourceState(mLighting->kLightingResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
     ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
         mSss->GetSSSBlur().Get(),

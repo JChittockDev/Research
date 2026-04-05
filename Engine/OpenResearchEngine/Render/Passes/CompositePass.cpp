@@ -1,14 +1,14 @@
 #include "CompositePass.h"
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
-#include "../Resources/Lighting.h"
+#include "../Resources/LightingPassResource.h"
 #include "../Resources/Ssgi.h"
 #include "../../D3D12/D3Dx12.h"
 
 CompositePass::CompositePass(
     ID3D12RootSignature* rootSig,
     ID3D12PipelineState* pso,
-    LightingPassInfo*            lighting,
+    LightingPassResource*            lighting,
     Ssgi*                ssgi)
     : mRootSig(rootSig), mPso(pso), mLighting(lighting), mSsgi(ssgi)
 {}

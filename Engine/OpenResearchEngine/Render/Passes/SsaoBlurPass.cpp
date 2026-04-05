@@ -1,11 +1,11 @@
 #include "SsaoBlurPass.h"
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
-#include "../Resources/GBuffer.h"
+#include "../Resources/GBufferPassResource.h"
 #include "../Resources/Ssao.h"
 
 SsaoBlurPass::SsaoBlurPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-                            GBuffer* gBuffer, Ssao* ssao)
+                            GBufferPassResource* gBuffer, Ssao* ssao)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSsao(ssao)
 {}
 
@@ -22,7 +22,7 @@ void SsaoBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsaoVerticalBlurCB->Resource()->GetGPUVirtualAddress());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetNormalGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kNormalResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetDepthGpuSrv());
     ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsao->GetAmbientGpuSrv());
     ctx.cmdList->ClearRenderTargetView(mSsao->GetAmbientVerticalBlurCpuRtv(), clearValue, 0, nullptr);
@@ -45,7 +45,7 @@ void SsaoBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsaoHorizontalBlurCB->Resource()->GetGPUVirtualAddress());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetNormalGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kNormalResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetDepthGpuSrv());
     ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsao->GetAmbientVerticalBlurGpuSrv());
     ctx.cmdList->ClearRenderTargetView(mSsao->GetAmbientHorizontalBlurCpuRtv(), clearValue, 0, nullptr);

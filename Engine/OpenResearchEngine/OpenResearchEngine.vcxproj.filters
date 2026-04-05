@@ -138,7 +138,7 @@
     <ClCompile Include="Render\Passes\GBufferPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\GBuffer.cpp">
+    <ClCompile Include="Render\Resources\GBufferPassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Passes\LightingPass.cpp">
@@ -174,13 +174,13 @@
     <ClCompile Include="Render\Passes\SsgiPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Lighting.cpp">
+    <ClCompile Include="Render\Resources\LightingPassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Passes\SsgiBlurPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Composite.cpp">
+    <ClCompile Include="Render\Resources\CompositePassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Passes\CompositePass.cpp">
@@ -195,7 +195,7 @@
     <ClCompile Include="Render\Passes\SssPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Radiance.cpp">
+    <ClCompile Include="Render\Resources\RadiancePassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Resources\RadianceResources.cpp">
@@ -234,7 +234,7 @@
     <ClCompile Include="Render\Passes\PhysicsPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\RenderPassInfo.cpp">
+    <ClCompile Include="Render\RenderPassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -332,7 +332,7 @@
     <ClInclude Include="Gui\GuiManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\GBuffer.h">
+    <ClInclude Include="Render\Resources\GBufferPassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\stb_image.h">
@@ -353,16 +353,16 @@
     <ClInclude Include="Render\Resources\Ssgi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Lighting.h">
+    <ClInclude Include="Render\Resources\LightingPassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Composite.h">
+    <ClInclude Include="Render\Resources\CompositePassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\SSS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Radiance.h">
+    <ClInclude Include="Render\Resources\RadiancePassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\RadianceResources.h">
@@ -425,10 +425,10 @@
     <ClInclude Include="Render\RenderPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\IRenderPassInfo.h">
+    <ClInclude Include="Render\IRenderPassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\RenderPassInfo.h">
+    <ClInclude Include="Render\RenderPassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

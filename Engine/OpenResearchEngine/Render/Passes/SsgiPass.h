@@ -2,21 +2,21 @@
 #include "../IRenderPass.h"
 #include <d3d12.h>
 
-class LightingPassInfo;
-class GBuffer;
+class LightingPassResource;
+class GBufferPassResource;
 class Ssgi;
 
 class SsgiPass : public IRenderPass
 {
 public:
     SsgiPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-             LightingPassInfo* lighting, GBuffer* gBuffer, Ssgi* ssgi);
+             LightingPassResource* lighting, GBufferPassResource* gBuffer, Ssgi* ssgi);
     void        Execute(const RenderContext& ctx, FrameResource* fr) override;
     const char* Name() const override { return "SSGI"; }
 private:
     ID3D12RootSignature* mRootSig;
     ID3D12PipelineState* mPso;
-    LightingPassInfo*            mLighting;
-    GBuffer*             mGBuffer;
+    LightingPassResource*            mLighting;
+    GBufferPassResource*             mGBuffer;
     Ssgi*                mSsgi;
 };

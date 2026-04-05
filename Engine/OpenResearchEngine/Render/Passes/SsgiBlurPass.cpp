@@ -1,11 +1,11 @@
 #include "SsgiBlurPass.h"
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
-#include "../Resources/GBuffer.h"
+#include "../Resources/GBufferPassResource.h"
 #include "../Resources/Ssgi.h"
 
 SsgiBlurPass::SsgiBlurPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-                            GBuffer* gBuffer, Ssgi* ssgi)
+                            GBufferPassResource* gBuffer, Ssgi* ssgi)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSsgi(ssgi)
 {}
 
@@ -22,7 +22,7 @@ void SsgiBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsgiVerticalBlurCB->Resource()->GetGPUVirtualAddress());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetNormalGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kNormalResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsgi->GetDepthGpuSrv());
     ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsgi->GetGIGpuSrv());
     ctx.cmdList->ClearRenderTargetView(mSsgi->GetGIVerticalBlurCpuRtv(), clearValue, 0, nullptr);
@@ -45,7 +45,7 @@ void SsgiBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsgiHorizontalBlurCB->Resource()->GetGPUVirtualAddress());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetNormalGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kNormalResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsgi->GetDepthGpuSrv());
     ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsgi->GetGIVerticalBlurGpuSrv());
     ctx.cmdList->ClearRenderTargetView(mSsgi->GetGIHorizontalBlurCpuRtv(), clearValue, 0, nullptr);

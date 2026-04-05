@@ -1,12 +1,12 @@
 #include "SssPass.h"
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
-#include "../Resources/GBuffer.h"
+#include "../Resources/GBufferPassResource.h"
 #include "../Resources/SSS.h"
 #include "../Resources/RadianceResources.h"
 
 SssPass::SssPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-                 GBuffer* gBuffer, SSS* sss, RadianceResources* radianceResources)
+                 GBufferPassResource* gBuffer, SSS* sss, RadianceResources* radianceResources)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSss(sss), mRadianceResources(radianceResources)
 {}
 
@@ -17,10 +17,10 @@ void SssPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SssCB->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootShaderResourceView(1, fr->MaterialBuffer->Resource()->GetGPUVirtualAddress());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mGBuffer->GetPositionGpuSrv());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mGBuffer->GetAlbedoSpecGpuSrv());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(4, mGBuffer->GetTangentGpuSrv());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(5, mGBuffer->GetMaterialIdGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kPositionResource));
+    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kAlbedoSpecResource));
+    ctx.cmdList->SetGraphicsRootDescriptorTable(4, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kTangentResource));
+    ctx.cmdList->SetGraphicsRootDescriptorTable(5, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kMaterialIdResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(6, mSss->GetRandomVectorGpuSrv());
     ctx.cmdList->SetGraphicsRootDescriptorTable(7, mRadianceResources->GetStartGpuSrv());
 

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../../D3D12/D3DUtil.h"
-#include "../Resources/FrameResource.h"
-#include "../Resources/Radiance.h"
+#include "../Resources/RadiancePassResource.h"
  
  
 class RadianceResources
@@ -21,7 +19,7 @@ public:
     D3D12_GPU_DESCRIPTOR_HANDLE GetStartGpuSrv() const { return startGpuSrv; }
     D3D12_CPU_DESCRIPTOR_HANDLE GetStartCpuDsv() const { return startCpuRtv; }
 
-    std::vector<std::unique_ptr<Radiance>> radianceMaps;
+    std::vector<std::unique_ptr<RadiancePassResource>> radianceMaps;
 
 private:
 	ID3D12Device* md3dDevice;
