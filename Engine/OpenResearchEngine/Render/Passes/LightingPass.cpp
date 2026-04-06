@@ -28,6 +28,8 @@ void LightingPass::Execute(const RenderContext& ctx, FrameResource* fr)
         mSss->GetSSSBlur().Get(),
         D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 
+    mLighting->SetResourceState(mLighting->kLightingResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->ObjectCB->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootConstantBufferView(1, fr->PassCB->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootShaderResourceView(2, fr->MaterialBuffer->Resource()->GetGPUVirtualAddress());

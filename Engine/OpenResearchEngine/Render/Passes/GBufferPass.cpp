@@ -19,6 +19,15 @@ void GBufferPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
 
+	// Set GBuffer render targets (may have been changed last frame) and clear them
+	mGBuffer->SetResourceState(mGBuffer->kPositionResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mGBuffer->SetResourceState(mGBuffer->kNormalResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mGBuffer->SetResourceState(mGBuffer->kViewNormalResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mGBuffer->SetResourceState(mGBuffer->kAlbedoSpecResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mGBuffer->SetResourceState(mGBuffer->kReflectionResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mGBuffer->SetResourceState(mGBuffer->kMaterialIdResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mGBuffer->SetResourceState(mGBuffer->kTangentResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
     float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kPositionResource),    clearColor, 0, nullptr);
     ctx.cmdList->ClearRenderTargetView(mGBuffer->GetCpuRTVDescriptorHandle(mGBuffer->kNormalResource),      clearColor, 0, nullptr);
@@ -48,6 +57,14 @@ void GBufferPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->SetGraphicsRootShaderResourceView(2, matBAddress);
     ctx.cmdList->SetGraphicsRootDescriptorTable(3, mRenderTextures->GetStartGpuSrv());
     ctx.cmdList->SetPipelineState(mPso);
+
+    mGBuffer->SetResourceState(mGBuffer->kPositionResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    mGBuffer->SetResourceState(mGBuffer->kNormalResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    mGBuffer->SetResourceState(mGBuffer->kViewNormalResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    mGBuffer->SetResourceState(mGBuffer->kAlbedoSpecResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    mGBuffer->SetResourceState(mGBuffer->kReflectionResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    mGBuffer->SetResourceState(mGBuffer->kMaterialIdResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    mGBuffer->SetResourceState(mGBuffer->kTangentResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
     DrawRenderItems(ctx.cmdList, ctx.renderItemLayers->at("Opaque"), fr);
 }

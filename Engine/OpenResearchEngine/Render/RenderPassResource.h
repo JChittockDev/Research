@@ -61,4 +61,6 @@ private:
 	
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12Resource>> resources;
 	std::unordered_map<std::string, D3D12_RESOURCE_STATES> states;
+
+	const D3D12_RESOURCE_STATES defaultState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 };
