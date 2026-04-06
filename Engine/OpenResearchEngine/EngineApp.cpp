@@ -97,7 +97,8 @@ void EngineApp::OnResize()
     if (mSsao != nullptr)
     {
         mSsao->OnResize(mClientWidth, mClientHeight);
-        mSsao->RebuildDescriptors(GetDepthBuffer());
+        mSsao->SetDepthStencilBuffer(GetDepthBuffer());
+        mSsao->RebuildDescriptors();
     }
 
     if (mLighting != nullptr)

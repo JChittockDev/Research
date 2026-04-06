@@ -14,7 +14,7 @@ public:
     static constexpr const char* kMaterialIdResource = "MaterialId";
     static constexpr const char* kTangentResource = "Tangent";
 
-    GBufferPassResource::GBufferPassResource(ID3D12Device* device, UINT width, UINT height) : RenderPassResource(device)
+    GBufferPassResource::GBufferPassResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, UINT width, UINT height) : RenderPassResource(device, cmdList)
 	{
 		OnResize(width, height);
 	}

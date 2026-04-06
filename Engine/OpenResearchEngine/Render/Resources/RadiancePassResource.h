@@ -8,7 +8,7 @@ public:
 	static constexpr const char* kDiffuseReflectanceResource = "DiffuseReflectance";
 	static constexpr const char* kSpecularReflectanceResource = "SpecularReflectance";
 
-    RadiancePassResource::RadiancePassResource(ID3D12Device* device, UINT width, UINT height) : RenderPassResource(device)
+    RadiancePassResource::RadiancePassResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, UINT width, UINT height) : RenderPassResource(device, cmdList)
 	{
 		OnResize(width, height);
 	}

@@ -1,16 +1,21 @@
 #include "RenderPassResource.h"
 
-RenderPassResource::RenderPassResource(ID3D12Device* device)
+RenderPassResource::RenderPassResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 {
-	md3dDevice = device;
+	d3dDevice = device;
+	commandList = cmdList;
 }
 
-void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX::XMFLOAT4& clearColor, Microsoft::WRL::ComPtr<ID3D12Resource>& texture)
+void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX::XMFLOAT4& clearColor, Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
+											Microsoft::WRL::ComPtr<ID3D12Resource>* uploadTexture, std::vector<DirectX::XMFLOAT4>* data, const UINT& widthOverride, const UINT& heightOverride)
 {
+	const UINT width = (widthOverride > 0) ? widthOverride : GetRenderWidth();
+	const UINT height = (heightOverride > 0) ? heightOverride : GetRenderHeight();
+
 	D3D12_RESOURCE_DESC textureDesc = {};
 	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	textureDesc.Width = GetRenderWidth();
-	textureDesc.Height = GetRenderHeight();
+	textureDesc.Width = width;
+	textureDesc.Height = height;
 	textureDesc.DepthOrArraySize = 1;
 	textureDesc.MipLevels = 1;
 	textureDesc.Format = format;
@@ -25,7 +30,32 @@ void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX:
 	clearValue.Color[2] = clearColor.z;
 	clearValue.Color[3] = clearColor.w;
 
-	md3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_COMMON, &clearValue, IID_PPV_ARGS(&texture));
+	D3D12_RESOURCE_STATES initState = defaultState;
+
+	if (data != nullptr && !data->empty())
+	{
+		initState = D3D12_RESOURCE_STATE_COPY_DEST;
+	}
+
+	ThrowIfFailed(d3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, initState, &clearValue, IID_PPV_ARGS(&texture)));
+
+	if (data != nullptr && !data->empty() && uploadTexture != nullptr)
+	{
+		const UINT num2DSubresources = textureDesc.DepthOrArraySize * textureDesc.MipLevels;
+		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(texture.Get(), 0, num2DSubresources);
+
+		ThrowIfFailed(d3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE, 
+						&CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize), D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadTexture->GetAddressOf())));
+
+		D3D12_SUBRESOURCE_DATA subResourceData = {};
+		subResourceData.pData = data->data();
+		subResourceData.RowPitch = width * sizeof(DirectX::XMFLOAT4);
+		subResourceData.SlicePitch = subResourceData.RowPitch * height;
+
+		UpdateSubresources(commandList, texture.Get(), uploadTexture->Get(), 0, 0, num2DSubresources, &subResourceData);
+
+		commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, defaultState));
+	}
 }
 
 void RenderPassResource::CreateRTV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle)
@@ -35,7 +65,7 @@ void RenderPassResource::CreateRTV(const DXGI_FORMAT& format, Microsoft::WRL::Co
 	rtvDesc.Format = format;
 	rtvDesc.Texture2D.MipSlice = 0;
 	rtvDesc.Texture2D.PlaneSlice = 0;
-	md3dDevice->CreateRenderTargetView(texture.Get(), &rtvDesc, rtvHandle);
+	d3dDevice->CreateRenderTargetView(texture.Get(), &rtvDesc, rtvHandle);
 }
 
 void RenderPassResource::CreateSRV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& srvHandle)
@@ -48,7 +78,7 @@ void RenderPassResource::CreateSRV(const DXGI_FORMAT& format, Microsoft::WRL::Co
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Texture2D.PlaneSlice = 0;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-	md3dDevice->CreateShaderResourceView(texture.Get(), &srvDesc, srvHandle);
+	d3dDevice->CreateShaderResourceView(texture.Get(), &srvDesc, srvHandle);
 }
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE RenderPassResource::GetCpuDescriptorHandle(const std::string& name, const std::string& type)
@@ -183,18 +213,24 @@ D3D12_RESOURCE_STATES RenderPassResource::GetResourceState(const std::string& na
 
 void RenderPassResource::SetResourceState(const std::string& name, D3D12_RESOURCE_STATES state)
 {
+	// check if resource exists before trying to transition it
 	if (resources.find(name) != resources.end())
 	{
-		if (states.find(name) != states.end())
+		// if resource state is not tracked, transition from default state
+		if (states.find(name) == states.end())
 		{
-			&CD3DX12_RESOURCE_BARRIER::Transition(resources[name].Get(), D3D12_RESOURCE_STATE_COMMON, state);
+			if (state != defaultState)
+			{
+				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(GetResource(name).Get(), defaultState, state));
+			}
 			states[name] = state;
 		}
+		// if resource state is tracked, transition from current state
 		else
 		{
 			if (states[name] != state)
 			{
-				&CD3DX12_RESOURCE_BARRIER::Transition(resources[name].Get(), states[name], D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(GetResource(name).Get(), states[name], state));
 				states[name] = state;
 			}
 		}

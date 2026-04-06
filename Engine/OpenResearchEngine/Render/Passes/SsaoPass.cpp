@@ -2,10 +2,10 @@
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
 #include "../Resources/GBufferPassResource.h"
-#include "../Resources/Ssao.h"
+#include "../Resources/SsaoPassResource.h"
 
 SsaoPass::SsaoPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-                   GBufferPassResource* gBuffer, Ssao* ssao)
+                   GBufferPassResource* gBuffer, SsaoPassResource* ssao)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSsao(ssao)
 {}
 
@@ -16,11 +16,11 @@ void SsaoPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsaoCB->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kNormalResource));
-    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetRandomVectorGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetGpuSRVDescriptorHandle(mSsao->kRandomVectorResource));
 
     float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    ctx.cmdList->ClearRenderTargetView(mSsao->GetAmbientCpuRtv(), clearValue, 0, nullptr);
-    ctx.cmdList->OMSetRenderTargets(1, &mSsao->GetAmbientCpuRtv(), true, nullptr);
+    ctx.cmdList->ClearRenderTargetView(mSsao->GetCpuRTVDescriptorHandle(mSsao->kAmbientResource), clearValue, 0, nullptr);
+    ctx.cmdList->OMSetRenderTargets(1, &mSsao->GetCpuRTVDescriptorHandle(mSsao->kAmbientResource), true, nullptr);
     ctx.cmdList->SetPipelineState(mPso);
     ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
     ctx.cmdList->IASetIndexBuffer(nullptr);

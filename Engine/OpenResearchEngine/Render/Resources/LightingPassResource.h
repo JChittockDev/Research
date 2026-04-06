@@ -7,7 +7,7 @@ class LightingPassResource : public RenderPassResource
 public:
 	static constexpr const char* kLightingResource = "Lighting";
 
-	LightingPassResource::LightingPassResource(ID3D12Device* device, UINT width, UINT height) : RenderPassResource(device)
+	LightingPassResource::LightingPassResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, UINT width, UINT height) : RenderPassResource(device, cmdList)
 	{
 		OnResize(width, height);
 	}

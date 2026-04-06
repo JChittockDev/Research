@@ -30,7 +30,7 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     ssaoVerticalBlurCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
     ssaoVerticalBlurCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
     ssaoVerticalBlurCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
-    ssaoVerticalBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSsao->SsaoWidth(), 1.0f / mSsao->SsaoHeight());
+    ssaoVerticalBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSsao->GetRenderWidth(), 1.0f / mSsao->GetRenderHeight());
     ssaoVerticalBlurCB.BlurRadius = 5;
 
     // Default SSAO settings if ImGui is not modifying them

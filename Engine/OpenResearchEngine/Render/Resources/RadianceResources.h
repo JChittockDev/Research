@@ -7,7 +7,7 @@ class RadianceResources
 {
 public:
 
-    RadianceResources(ID3D12Device* device);
+    RadianceResources(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
     RadianceResources(const RadianceResources& rhs) = delete;
     RadianceResources& operator=(const RadianceResources& rhs) = delete;
     ~RadianceResources() = default;
@@ -23,6 +23,7 @@ public:
 
 private:
 	ID3D12Device* md3dDevice;
+    ID3D12GraphicsCommandList* commandList;
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE startCpuSrv;
     CD3DX12_GPU_DESCRIPTOR_HANDLE startGpuSrv;

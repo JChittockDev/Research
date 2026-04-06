@@ -2,10 +2,9 @@
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
 #include "../Resources/GBufferPassResource.h"
-#include "../Resources/Ssao.h"
+#include "../Resources/SsaoPassResource.h"
 
-SsaoBlurPass::SsaoBlurPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-                            GBufferPassResource* gBuffer, Ssao* ssao)
+SsaoBlurPass::SsaoBlurPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso, GBufferPassResource* gBuffer, SsaoPassResource* ssao)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSsao(ssao)
 {}
 
@@ -13,9 +12,8 @@ void SsaoBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
 {
     float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-    ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-        mSsao->GetAmbient().Get(),
-        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+    mSsao->SetResourceState(mSsao->kAmbientResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    mSsao->SetResourceState(mSsao->kAmbientVerticalBlurResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
     // Vertical blur
     ctx.cmdList->SetGraphicsRootSignature(mRootSig);
@@ -23,22 +21,19 @@ void SsaoBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsaoVerticalBlurCB->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kNormalResource));
-    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetDepthGpuSrv());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsao->GetAmbientGpuSrv());
-    ctx.cmdList->ClearRenderTargetView(mSsao->GetAmbientVerticalBlurCpuRtv(), clearValue, 0, nullptr);
-    ctx.cmdList->OMSetRenderTargets(1, &mSsao->GetAmbientVerticalBlurCpuRtv(), true, nullptr);
+    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetGpuSRVDescriptorHandle(mSsao->kDepthResource));
+    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsao->GetGpuSRVDescriptorHandle(mSsao->kAmbientResource));
+    ctx.cmdList->ClearRenderTargetView(mSsao->GetCpuRTVDescriptorHandle(mSsao->kAmbientVerticalBlurResource), clearValue, 0, nullptr);
+    ctx.cmdList->OMSetRenderTargets(1, &mSsao->GetCpuRTVDescriptorHandle(mSsao->kAmbientVerticalBlurResource), true, nullptr);
     ctx.cmdList->SetPipelineState(mPso);
     ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
     ctx.cmdList->IASetIndexBuffer(nullptr);
     ctx.cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     ctx.cmdList->DrawInstanced(6, 1, 0, 0);
 
-    ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-        mSsao->GetAmbientVerticalBlur().Get(),
-        D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
-    ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-        mSsao->GetAmbient().Get(),
-        D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));
+	mSsao->SetResourceState(mSsao->kAmbientResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	mSsao->SetResourceState(mSsao->kAmbientVerticalBlurResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    mSsao->SetResourceState(mSsao->kAmbientHorizontalBlurResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
     // Horizontal blur
     ctx.cmdList->SetGraphicsRootSignature(mRootSig);
@@ -46,13 +41,15 @@ void SsaoBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->RSSetScissorRects(1, &ctx.scissorRect);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->SsaoHorizontalBlurCB->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootDescriptorTable(1, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kNormalResource));
-    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetDepthGpuSrv());
-    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsao->GetAmbientVerticalBlurGpuSrv());
-    ctx.cmdList->ClearRenderTargetView(mSsao->GetAmbientHorizontalBlurCpuRtv(), clearValue, 0, nullptr);
-    ctx.cmdList->OMSetRenderTargets(1, &mSsao->GetAmbientHorizontalBlurCpuRtv(), true, nullptr);
+    ctx.cmdList->SetGraphicsRootDescriptorTable(2, mSsao->GetGpuSRVDescriptorHandle(mSsao->kDepthResource));
+    ctx.cmdList->SetGraphicsRootDescriptorTable(3, mSsao->GetGpuSRVDescriptorHandle(mSsao->kAmbientVerticalBlurResource));
+    ctx.cmdList->ClearRenderTargetView(mSsao->GetCpuRTVDescriptorHandle(mSsao->kAmbientHorizontalBlurResource), clearValue, 0, nullptr);
+    ctx.cmdList->OMSetRenderTargets(1, &mSsao->GetCpuRTVDescriptorHandle(mSsao->kAmbientHorizontalBlurResource), true, nullptr);
     ctx.cmdList->SetPipelineState(mPso);
     ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
     ctx.cmdList->IASetIndexBuffer(nullptr);
     ctx.cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     ctx.cmdList->DrawInstanced(6, 1, 0, 0);
+
+    mSsao->SetResourceState(mSsao->kAmbientHorizontalBlurResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }

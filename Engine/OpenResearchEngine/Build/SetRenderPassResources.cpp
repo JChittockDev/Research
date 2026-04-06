@@ -10,13 +10,14 @@ void EngineApp::SetRenderPassResources()
     CD3DX12_GPU_DESCRIPTOR_HANDLE gpuSrvHandle(renderPassSrvHeap.Get()->GetGPUDescriptorHandleForHeapStart());
     CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDsvHandle(mDsvHeap.Get()->GetCPUDescriptorHandleForHeapStart());
 
-    mGBuffer = std::make_unique<GBufferPassResource>(md3dDevice.Get(), mClientWidth, mClientHeight);
+    mGBuffer = std::make_unique<GBufferPassResource>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
     mGBuffer->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
-    mSsao = std::make_unique<Ssao>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
-    mSsao->BuildDescriptors(GetDepthBuffer(), cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
+    mSsao = std::make_unique<SsaoPassResource>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
+	mSsao->SetDepthStencilBuffer(GetDepthBuffer());
+    mSsao->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
-    mLighting = std::make_unique<LightingPassResource>(md3dDevice.Get(), mClientWidth, mClientHeight);
+    mLighting = std::make_unique<LightingPassResource>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
     mLighting->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
     mSsgi = std::make_unique<Ssgi>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
@@ -25,10 +26,10 @@ void EngineApp::SetRenderPassResources()
     mSss = std::make_unique<SSS>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
     mSss->BuildDescriptors(GetDepthBuffer(), cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
-    mComposite = std::make_unique<CompositePassResource>(md3dDevice.Get(), mClientWidth, mClientHeight);
+    mComposite = std::make_unique<CompositePassResource>(md3dDevice.Get(), mCommandList.Get(), mClientWidth, mClientHeight);
     mComposite->BuildDescriptors(cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, mRtvDescriptorSize, mCbvSrvUavDescriptorSize);
 
-    mRadianceResources = std::make_unique<RadianceResources>(md3dDevice.Get());
+    mRadianceResources = std::make_unique<RadianceResources>(md3dDevice.Get(), mCommandList.Get());
     mRadianceResources->BuildDescriptors(dynamicLights.GetNumLights(), mClientWidth, mClientHeight,
         cpuSrvHandle, gpuSrvHandle, cpuRtvHandle, mCbvSrvUavDescriptorSize, mRtvDescriptorSize);
 

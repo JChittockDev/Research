@@ -4,12 +4,13 @@
 class RenderPassResource : public IRenderPassResource
 {
 public:
-	RenderPassResource(ID3D12Device* device);
+	RenderPassResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
 	RenderPassResource(const RenderPassResource& rhs) = delete;
 	RenderPassResource& operator=(const RenderPassResource& rhs) = delete;
 	~RenderPassResource() = default;
 	
-	void CreateTexture(const DXGI_FORMAT& format, const DirectX::XMFLOAT4& clearColor, Microsoft::WRL::ComPtr<ID3D12Resource>& texture) override;
+	void CreateTexture(const DXGI_FORMAT& format, const DirectX::XMFLOAT4& clearColor, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, 
+							Microsoft::WRL::ComPtr<ID3D12Resource>* uploadTexture = nullptr, std::vector<DirectX::XMFLOAT4>* data = nullptr, const UINT& widthOverride = 0, const UINT& heightOverride = 0) override;
 	void CreateRTV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle) override;
 	void CreateSRV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& srvHandle) override;
 
@@ -43,7 +44,8 @@ public:
 	void SetResourceState(const std::string& name, D3D12_RESOURCE_STATES state);
 
 private:
-	ID3D12Device* md3dDevice;
+	ID3D12Device* d3dDevice;
+	ID3D12GraphicsCommandList* commandList;
 
 	UINT renderWidth = 0;
 	UINT renderHeight = 0;

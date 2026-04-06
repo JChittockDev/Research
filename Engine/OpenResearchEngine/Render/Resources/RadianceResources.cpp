@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 using namespace Microsoft::WRL;
 
-void RadianceResources::BuildDescriptors(const int numLights, UINT width, UINT height, CD3DX12_CPU_DESCRIPTOR_HANDLE& hCpuSrv, CD3DX12_GPU_DESCRIPTOR_HANDLE& hGpuSrv, 
+void RadianceResources::BuildDescriptors(const int numLights, UINT width, UINT height, CD3DX12_CPU_DESCRIPTOR_HANDLE& hCpuSrv, CD3DX12_GPU_DESCRIPTOR_HANDLE& hGpuSrv,
                                                                 CD3DX12_CPU_DESCRIPTOR_HANDLE& hCpuRtv, UINT srvDescriptorSize, UINT rtvDescriptorSize)
 {
     startCpuRtv = hCpuRtv;
@@ -13,7 +13,7 @@ void RadianceResources::BuildDescriptors(const int numLights, UINT width, UINT h
 
     for (int i = 0; i < numLights; i++)
     {
-        std::unique_ptr<RadiancePassResource> radianceMap = std::make_unique<RadiancePassResource>(md3dDevice, width, height);
+        std::unique_ptr<RadiancePassResource> radianceMap = std::make_unique<RadiancePassResource>(md3dDevice, commandList, width, height);
         radianceMaps.push_back(std::move(radianceMap));
     }
 
@@ -30,7 +30,8 @@ void RadianceResources::BuildDescriptors(const int numLights, UINT width, UINT h
     }
 }
 
-RadianceResources::RadianceResources(ID3D12Device* device)
+RadianceResources::RadianceResources(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList)
 {
     md3dDevice = device;
+    commandList = cmdList;
 }

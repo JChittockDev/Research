@@ -7,7 +7,7 @@ class CompositePassResource : public RenderPassResource
 public:
 	static constexpr const char* kCompositeResource = "Composite";
 
-	CompositePassResource::CompositePassResource(ID3D12Device* device, UINT width, UINT height) : RenderPassResource(device)
+	CompositePassResource::CompositePassResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, UINT width, UINT height) : RenderPassResource(device, cmdList)
 	{
 		OnResize(width, height);
 	}

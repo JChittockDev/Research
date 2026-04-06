@@ -6,7 +6,7 @@
 #include "Objects/Camera.h"
 #include "Render/Resources/FrameResource.h"
 #include "Render/Resources/ShadowMap.h"
-#include "Render/Resources/Ssao.h"
+#include "Render/Resources/SsaoPassResource.h"
 #include "Render/Resources/SSS.h"
 #include "Render/Resources/CompositePassResource.h"
 #include "Render/Resources/LightingPassResource.h"
@@ -104,7 +104,7 @@ private:
 
     std::unique_ptr<GBufferPassResource>          mGBuffer;
     std::unique_ptr<LightingPassResource> mLighting;
-    std::unique_ptr<Ssao>             mSsao;
+    std::unique_ptr<SsaoPassResource>             mSsao;
     std::unique_ptr<Ssgi>             mSsgi;
     std::unique_ptr<SSS>              mSss;
     std::unique_ptr<CompositePassResource>        mComposite;
