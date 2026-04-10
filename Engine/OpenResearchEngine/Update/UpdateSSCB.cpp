@@ -24,20 +24,19 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     ssaoVerticalBlurCB.Proj = mMainPassCB.Proj;
     XMStoreFloat4x4(&ssaoCB.ProjTex, XMMatrixTranspose(P * T));
 
+    // TODO FIX UP
     mSsao->GetOffsetVectors(ssaoCB.OffsetVectors);
-
-    auto blurWeights = mSsao->CalcGaussWeights(2.5f);
-    ssaoVerticalBlurCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
-    ssaoVerticalBlurCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
-    ssaoVerticalBlurCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
+    
     ssaoVerticalBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSsao->GetRenderWidth(), 1.0f / mSsao->GetRenderHeight());
-    ssaoVerticalBlurCB.BlurRadius = 5;
 
     // Default SSAO settings if ImGui is not modifying them
     static float occlusionRadius = 1.011f;
     static float occlusionFadeStart = 1.2f;
     static float occlusionFadeEnd = 4.3f;
     static float surfaceEpsilon = 0.002f;
+
+	static UINT maxBlurRadius = 5;
+    auto blurWeights = Math::GenerateGaussWeights(2.5f, maxBlurRadius);
 
     static int blurRadius = 5;
 
@@ -62,6 +61,13 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     ssaoHorizontalBlurCB = ssaoVerticalBlurCB;
     ssaoVerticalBlurCB.HorizontalBlur = 0;
     ssaoHorizontalBlurCB.HorizontalBlur = 1;
+
+	ssaoVerticalBlurCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
+	ssaoVerticalBlurCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
+	ssaoVerticalBlurCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
+    ssaoHorizontalBlurCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
+    ssaoHorizontalBlurCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
+    ssaoHorizontalBlurCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
 
     ssgiCB.Proj = ssaoCB.Proj;
     ssgiCB.InvProj = ssaoCB.InvProj;
@@ -98,9 +104,13 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
     ssgiCB.GiFalloffScale = giFalloffScale;
 
     ssgiVerticalBlurCB.Proj = ssaoVerticalBlurCB.Proj;
-    ssgiVerticalBlurCB.BlurWeights[0] = ssaoVerticalBlurCB.BlurWeights[0];
-    ssgiVerticalBlurCB.BlurWeights[1] = ssaoVerticalBlurCB.BlurWeights[1];
-    ssgiVerticalBlurCB.BlurWeights[2] = ssaoVerticalBlurCB.BlurWeights[2];
+
+	ssgiVerticalBlurCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
+	ssgiVerticalBlurCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
+	ssgiVerticalBlurCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
+	ssgiHorizontalBlurCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
+	ssgiHorizontalBlurCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
+	ssgiHorizontalBlurCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
     ssgiVerticalBlurCB.InvRenderTargetSize = ssaoVerticalBlurCB.InvRenderTargetSize;
     ssgiVerticalBlurCB.BlurRadius = giBlurRadius;
     ssgiVerticalBlurCB.HorizontalBlur = 0;
@@ -109,10 +119,11 @@ void EngineApp::UpdateScreenSpaceCB(const GameTimer& gt)
 
     SssBlurConstants sssBlurCB;
     sssBlurCB.Proj = ssaoVerticalBlurCB.Proj;
-    sssBlurCB.BlurWeights[0] = ssaoVerticalBlurCB.BlurWeights[0];
-    sssBlurCB.BlurWeights[1] = ssaoVerticalBlurCB.BlurWeights[1];
-    sssBlurCB.BlurWeights[2] = ssaoVerticalBlurCB.BlurWeights[2];
-    sssBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSss->SSSWidth(), 1.0f / mSss->SSSHeight());
+
+    sssBlurCB.BlurWeights[0] = DirectX::XMFLOAT4(&blurWeights[0]);
+    sssBlurCB.BlurWeights[1] = DirectX::XMFLOAT4(&blurWeights[4]);
+    sssBlurCB.BlurWeights[2] = DirectX::XMFLOAT4(&blurWeights[8]);
+    sssBlurCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / mSss->GetRenderWidth(), 1.0f / mSss->GetRenderHeight());
     sssBlurCB.BlurRadius = 4;
     sssBlurCB.HorizontalBlur = 0;
 

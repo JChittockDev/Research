@@ -90,20 +90,20 @@ void EngineApp::OnResize()
 
     if (mGBuffer != nullptr)
     {
-        mGBuffer->OnResize(mClientWidth, mClientHeight);
+        mGBuffer->OnResize(mClientWidth, mClientHeight, mGBuffer->GetRenderDivisor());
         mGBuffer->RebuildDescriptors();
     }
 
     if (mSsao != nullptr)
     {
-        mSsao->OnResize(mClientWidth, mClientHeight);
+        mSsao->OnResize(mClientWidth, mClientHeight, mSsao->GetRenderDivisor());
         mSsao->SetDepthStencilBuffer(GetDepthBuffer());
         mSsao->RebuildDescriptors();
     }
 
     if (mLighting != nullptr)
     {
-        mLighting->OnResize(mClientWidth, mClientHeight);
+        mLighting->OnResize(mClientWidth, mClientHeight, mLighting->GetRenderDivisor());
         mLighting->RebuildDescriptors();
     }
 
@@ -113,7 +113,7 @@ void EngineApp::OnResize()
         {
             if (mRadianceResources->radianceMaps[i] != nullptr)
             {
-                mRadianceResources->radianceMaps[i]->OnResize(mClientWidth, mClientHeight);
+                mRadianceResources->radianceMaps[i]->OnResize(mClientWidth, mClientHeight, mRadianceResources->radianceMaps[i]->GetRenderDivisor());
             }
         }
 
@@ -136,19 +136,21 @@ void EngineApp::OnResize()
 
     if (mSsgi != nullptr)
     {
-        mSsgi->OnResize(mClientWidth, mClientHeight);
-        mSsgi->RebuildDescriptors(GetDepthBuffer());
+        mSsgi->OnResize(mClientWidth, mClientHeight, mSsgi->GetRenderDivisor());
+        mSsgi->SetDepthStencilBuffer(GetDepthBuffer());
+        mSsgi->RebuildDescriptors();
     }
 
     if (mSss != nullptr)
     {
-        mSss->OnResize(mClientWidth, mClientHeight);
-        mSss->RebuildDescriptors(GetDepthBuffer());
+        mSss->OnResize(mClientWidth, mClientHeight, mSsgi->GetRenderDivisor());
+        mSss->SetDepthStencilBuffer(GetDepthBuffer());
+        mSss->RebuildDescriptors();
     }
 
     if (mComposite != nullptr)
     {
-        mComposite->OnResize(mClientWidth, mClientHeight);
+        mComposite->OnResize(mClientWidth, mClientHeight , mComposite->GetRenderDivisor());
         mComposite->RebuildDescriptors();
     }
 }
@@ -263,23 +265,23 @@ void EngineApp::BuildPipeline()
         mShadowResources.get(),
         mRenderTextures.get()));
 
-    mPipeline.AddPass(std::make_unique<GBufferPass>(
-        mAssets->mGBufferRootSignature.Get(),
-        mAssets->mPSOs.at("GBuffer").Get(),
-        mGBuffer.get(),
-        mRenderTextures.get()));
+	mPipeline.AddPass(std::make_unique<GBufferPass>(
+		mAssets->mGBufferRootSignature.Get(),
+		mAssets->mPSOs.at("GBuffer").Get(),
+		mGBuffer.get(),
+		mRenderTextures.get()));
 
-    mPipeline.AddPass(std::make_unique<SsaoPass>(
-        mAssets->mSsaoRootSignature.Get(),
-        mAssets->mPSOs.at("Ssao").Get(),
-        mGBuffer.get(),
-        mSsao.get()));
+	mPipeline.AddPass(std::make_unique<SsaoPass>(
+		mAssets->mSsaoRootSignature.Get(),
+		mAssets->mPSOs.at("Ssao").Get(),
+		mGBuffer.get(),
+		mSsao.get()));
 
-    mPipeline.AddPass(std::make_unique<SsaoBlurPass>(
-        mAssets->mEdgeBlurRootSignature.Get(),
-        mAssets->mPSOs.at("EdgeBlur").Get(),
-        mGBuffer.get(),
-        mSsao.get()));
+	mPipeline.AddPass(std::make_unique<SsaoBlurPass>(
+		mAssets->mEdgeBlurRootSignature.Get(),
+		mAssets->mPSOs.at("EdgeBlur").Get(),
+		mGBuffer.get(),
+		mSsao.get()));
 
     mPipeline.AddPass(std::make_unique<RadiancePass>(
         mAssets->mRadianceRootSignature.Get(),
@@ -295,10 +297,10 @@ void EngineApp::BuildPipeline()
         mSss.get(),
         mRadianceResources.get()));
 
-    mPipeline.AddPass(std::make_unique<SssBlurPass>(
-        mAssets->mPoissonBlurRootSignature.Get(),
-        mAssets->mPSOs.at("PoissonBlur").Get(),
-        mSss.get()));
+	mPipeline.AddPass(std::make_unique<SssBlurPass>(
+		mAssets->mPoissonBlurRootSignature.Get(),
+		mAssets->mPSOs.at("PoissonBlur").Get(),
+		mSss.get()));
 
     mPipeline.AddPass(std::make_unique<LightingPass>(
         mAssets->mLightingRootSignature.Get(),

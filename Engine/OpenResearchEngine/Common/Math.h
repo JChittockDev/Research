@@ -1,8 +1,11 @@
 ﻿#pragma once
-
-#include <Windows.h>
+#include <d3d12.h>
+#include <unordered_map>
+#include <vector>
+#include <memory>
+#include <string>
+#include <wrl/client.h>
 #include <DirectXMath.h>
-#include <cstdint>
 
 class Math
 {
@@ -89,6 +92,9 @@ public:
 	static const float Infinity;
 	static const float Pi;
 
+	static void GenerateRandomVectors(const UINT& width, const UINT& height, std::vector<DirectX::XMFLOAT4>& vectors);
+	static void GenerateBoxVectors(DirectX::XMFLOAT4 OffsetVectors[14]);
+	static std::vector<float> GenerateGaussWeights(float sigma, UINT MaxBlurRadius);
 	static DirectX::XMFLOAT4X4 CreateTransformMatrix(const DirectX::XMFLOAT3& translation, const DirectX::XMFLOAT4& rotation, const DirectX::XMFLOAT3& scaling)
 	{
 		DirectX::XMFLOAT4X4 matrix;

@@ -58,6 +58,8 @@ void GBufferPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->SetGraphicsRootDescriptorTable(3, mRenderTextures->GetStartGpuSrv());
     ctx.cmdList->SetPipelineState(mPso);
 
+    DrawRenderItems(ctx.cmdList, ctx.renderItemLayers->at("Opaque"), fr);
+
     mGBuffer->SetResourceState(mGBuffer->kPositionResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     mGBuffer->SetResourceState(mGBuffer->kNormalResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     mGBuffer->SetResourceState(mGBuffer->kViewNormalResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
@@ -65,6 +67,4 @@ void GBufferPass::Execute(const RenderContext& ctx, FrameResource* fr)
     mGBuffer->SetResourceState(mGBuffer->kReflectionResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     mGBuffer->SetResourceState(mGBuffer->kMaterialIdResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     mGBuffer->SetResourceState(mGBuffer->kTangentResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
-    DrawRenderItems(ctx.cmdList, ctx.renderItemLayers->at("Opaque"), fr);
 }

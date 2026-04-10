@@ -13,7 +13,7 @@ void RadianceResources::BuildDescriptors(const int numLights, UINT width, UINT h
 
     for (int i = 0; i < numLights; i++)
     {
-        std::unique_ptr<RadiancePassResource> radianceMap = std::make_unique<RadiancePassResource>(md3dDevice, commandList, width, height);
+        std::unique_ptr<RadiancePassResource> radianceMap = std::make_unique<RadiancePassResource>(md3dDevice, commandList, width, height, 2);
         radianceMaps.push_back(std::move(radianceMap));
     }
 

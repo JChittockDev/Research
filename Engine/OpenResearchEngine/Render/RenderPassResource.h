@@ -1,5 +1,6 @@
 #pragma once
 #include "IRenderPassResource.h"
+#include "../D3D12/D3DUtil.h"
 
 class RenderPassResource : public IRenderPassResource
 {
@@ -8,9 +9,11 @@ public:
 	RenderPassResource(const RenderPassResource& rhs) = delete;
 	RenderPassResource& operator=(const RenderPassResource& rhs) = delete;
 	~RenderPassResource() = default;
+
+	void OnResize(UINT width, UINT height, UINT divisor) override;
 	
 	void CreateTexture(const DXGI_FORMAT& format, const DirectX::XMFLOAT4& clearColor, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, 
-							Microsoft::WRL::ComPtr<ID3D12Resource>* uploadTexture = nullptr, std::vector<DirectX::XMFLOAT4>* data = nullptr, const UINT& widthOverride = 0, const UINT& heightOverride = 0) override;
+							Microsoft::WRL::ComPtr<ID3D12Resource>* uploadTexture = nullptr, const std::vector<DirectX::XMFLOAT4>& data = {}, const UINT& widthOverride = 0, const UINT& heightOverride = 0) override;
 	void CreateRTV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& rtvHandle) override;
 	void CreateSRV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& srvHandle) override;
 
@@ -33,6 +36,9 @@ public:
 	
 	UINT GetRenderHeight() const { return renderHeight; }
 	void SetRenderHeight(UINT val) { renderHeight = val; }
+
+	UINT GetRenderDivisor() const { return renderDivisor; }
+	void SetRenderDivisor(UINT val) { renderDivisor = val; }
 	
 	D3D12_VIEWPORT GetViewport() override { return viewport; }
 	void SetViewport(D3D12_VIEWPORT val) override { viewport = val; }
@@ -42,13 +48,13 @@ public:
 
 	D3D12_RESOURCE_STATES GetResourceState(const std::string& name);
 	void SetResourceState(const std::string& name, D3D12_RESOURCE_STATES state);
-
 private:
 	ID3D12Device* d3dDevice;
 	ID3D12GraphicsCommandList* commandList;
 
 	UINT renderWidth = 0;
 	UINT renderHeight = 0;
+	UINT renderDivisor = 0;
 
 	D3D12_VIEWPORT viewport;
 	D3D12_RECT scissorRect;

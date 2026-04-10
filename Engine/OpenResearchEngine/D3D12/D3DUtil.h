@@ -115,3 +115,16 @@ public:
 #ifndef ReleaseCom
 #define ReleaseCom(x) { if(x){ x->Release(); x = 0; } }
 #endif
+
+class BarrierTransition
+{
+public:
+	static std::string StateName(D3D12_RESOURCE_STATES state);
+	static void Transition(
+		ID3D12GraphicsCommandList* cmdList,
+		ID3D12Resource* resource,
+		D3D12_RESOURCE_STATES      before,
+		D3D12_RESOURCE_STATES      after,
+		const char* resourceName = nullptr,
+		const char* context = nullptr);
+};

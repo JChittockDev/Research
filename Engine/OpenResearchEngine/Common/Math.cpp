@@ -1,12 +1,95 @@
-//***************************************************************************************
+﻿//***************************************************************************************
 #include "Math.h"
-#include <float.h>
 #include <cmath>
+#include <vector>
+#include <random>
 
 using namespace DirectX;
 
 const float Math::Infinity = FLT_MAX;
 const float Math::Pi       = 3.1415926535f;
+
+void Math::GenerateRandomVectors(const UINT& width, const UINT& height, std::vector<DirectX::XMFLOAT4>& vectors)
+{
+	vectors.resize(width * height);
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+	for (UINT i = 0; i < height; ++i)
+	{
+		for (UINT j = 0; j < width; ++j)
+		{
+			UINT index = i * width + j;
+
+			vectors[index] = XMFLOAT4(
+				dis(gen), // R: for radius sampling
+				dis(gen), // G: for disk sampling X
+				dis(gen), // B: for disk sampling Y  
+				dis(gen)  // A: extra random value for future use
+			);
+		}
+	}
+}
+
+void Math::GenerateBoxVectors(DirectX::XMFLOAT4 OffsetVectors[14])
+{
+	OffsetVectors[0] = XMFLOAT4(+1.0f, +1.0f, +1.0f, 0.0f);
+	OffsetVectors[1] = XMFLOAT4(-1.0f, -1.0f, -1.0f, 0.0f);
+	OffsetVectors[2] = XMFLOAT4(-1.0f, +1.0f, +1.0f, 0.0f);
+	OffsetVectors[3] = XMFLOAT4(+1.0f, -1.0f, -1.0f, 0.0f);
+	OffsetVectors[4] = XMFLOAT4(+1.0f, +1.0f, -1.0f, 0.0f);
+	OffsetVectors[5] = XMFLOAT4(-1.0f, -1.0f, +1.0f, 0.0f);
+	OffsetVectors[6] = XMFLOAT4(-1.0f, +1.0f, -1.0f, 0.0f);
+	OffsetVectors[7] = XMFLOAT4(+1.0f, -1.0f, +1.0f, 0.0f);
+	OffsetVectors[8] = XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f);
+	OffsetVectors[9] = XMFLOAT4(+1.0f, 0.0f, 0.0f, 0.0f);
+	OffsetVectors[10] = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
+	OffsetVectors[11] = XMFLOAT4(0.0f, +1.0f, 0.0f, 0.0f);
+	OffsetVectors[12] = XMFLOAT4(0.0f, 0.0f, -1.0f, 0.0f);
+	OffsetVectors[13] = XMFLOAT4(0.0f, 0.0f, +1.0f, 0.0f);
+
+	for (int i = 0; i < 14; ++i)
+	{
+		float s = Math::RandF(0.25f, 1.0f);
+		XMVECTOR v = s * XMVector4Normalize(XMLoadFloat4(&OffsetVectors[i]));
+		XMStoreFloat4(&OffsetVectors[i], v);
+	}
+}
+
+std::vector<float> Math::GenerateGaussWeights(float sigma, UINT MaxBlurRadius)
+{
+	float twoSigma2 = 2.0f * sigma * sigma;
+
+	// Estimate the blur radius based on sigma since sigma controls the "width" of the bell curve.
+	// For example, for sigma = 3, the width of the bell curve is 
+	int blurRadius = (int)ceil(2.0f * sigma);
+
+	assert(blurRadius <= MaxBlurRadius);
+
+	std::vector<float> weights;
+	weights.resize(2 * blurRadius + 1);
+
+	float weightSum = 0.0f;
+
+	for (int i = -blurRadius; i <= blurRadius; ++i)
+	{
+		float x = (float)i;
+
+		weights[i + blurRadius] = expf(-x * x / twoSigma2);
+
+		weightSum += weights[i + blurRadius];
+	}
+
+	// Divide by the sum so all the weights add up to 1.0.
+	for (int i = 0; i < weights.size(); ++i)
+	{
+		weights[i] /= weightSum;
+	}
+
+	return weights;
+}
 
 DirectX::XMFLOAT3 Math::QuaternionToEuler(const DirectX::XMFLOAT4& quat)
 {

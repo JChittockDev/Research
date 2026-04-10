@@ -6,8 +6,33 @@ RenderPassResource::RenderPassResource(ID3D12Device* device, ID3D12GraphicsComma
 	commandList = cmdList;
 }
 
+void RenderPassResource::OnResize(UINT width, UINT height, UINT divisor)
+{
+	if (GetRenderWidth() != width || GetRenderHeight() != height || GetRenderDivisor() != divisor)
+	{
+		SetRenderWidth(width);
+		SetRenderHeight(height);
+		SetRenderDivisor(divisor);
+
+		D3D12_VIEWPORT viewport;
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+		viewport.Width = width / divisor;
+		viewport.Height = height / divisor;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+
+		D3D12_RECT scissorRect = { 0, 0, (int)width / divisor, (int)height / divisor };
+
+		SetViewport(viewport);
+		SetScissorRect(scissorRect);
+
+		Build();
+	}
+}
+
 void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX::XMFLOAT4& clearColor, Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
-											Microsoft::WRL::ComPtr<ID3D12Resource>* uploadTexture, std::vector<DirectX::XMFLOAT4>* data, const UINT& widthOverride, const UINT& heightOverride)
+											Microsoft::WRL::ComPtr<ID3D12Resource>* uploadTexture, const std::vector<DirectX::XMFLOAT4>& data, const UINT& widthOverride, const UINT& heightOverride)
 {
 	const UINT width = (widthOverride > 0) ? widthOverride : GetRenderWidth();
 	const UINT height = (heightOverride > 0) ? heightOverride : GetRenderHeight();
@@ -32,14 +57,14 @@ void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX:
 
 	D3D12_RESOURCE_STATES initState = defaultState;
 
-	if (data != nullptr && !data->empty())
+	if (!data.empty())
 	{
 		initState = D3D12_RESOURCE_STATE_COPY_DEST;
 	}
 
 	ThrowIfFailed(d3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, initState, &clearValue, IID_PPV_ARGS(&texture)));
 
-	if (data != nullptr && !data->empty() && uploadTexture != nullptr)
+	if (!data.empty() && uploadTexture != nullptr)
 	{
 		const UINT num2DSubresources = textureDesc.DepthOrArraySize * textureDesc.MipLevels;
 		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(texture.Get(), 0, num2DSubresources);
@@ -48,7 +73,7 @@ void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX:
 						&CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize), D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadTexture->GetAddressOf())));
 
 		D3D12_SUBRESOURCE_DATA subResourceData = {};
-		subResourceData.pData = data->data();
+		subResourceData.pData = data.data();
 		subResourceData.RowPitch = width * sizeof(DirectX::XMFLOAT4);
 		subResourceData.SlicePitch = subResourceData.RowPitch * height;
 
@@ -213,26 +238,23 @@ D3D12_RESOURCE_STATES RenderPassResource::GetResourceState(const std::string& na
 
 void RenderPassResource::SetResourceState(const std::string& name, D3D12_RESOURCE_STATES state)
 {
-	// check if resource exists before trying to transition it
-	if (resources.find(name) != resources.end())
+	if (resources.find(name) == resources.end())
+		return;
+
+	if (states.find(name) == states.end())
 	{
-		// if resource state is not tracked, transition from default state
-		if (states.find(name) == states.end())
+		if (state != defaultState)
 		{
-			if (state != defaultState)
-			{
-				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(GetResource(name).Get(), defaultState, state));
-			}
-			states[name] = state;
+			BarrierTransition::Transition(commandList, GetResource(name).Get(), defaultState, state, name.c_str(), "RenderPassResource");
 		}
-		// if resource state is tracked, transition from current state
-		else
+		states[name] = state;
+	}
+	else
+	{
+		if (states[name] != state)
 		{
-			if (states[name] != state)
-			{
-				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(GetResource(name).Get(), states[name], state));
-				states[name] = state;
-			}
+			BarrierTransition::Transition(commandList, GetResource(name).Get(), states[name], state, name.c_str(), "RenderPassResource");
+			states[name] = state;
 		}
 	}
 }

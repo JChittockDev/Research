@@ -4,13 +4,13 @@
 
 class LightingPassResource;
 class GBufferPassResource;
-class Ssgi;
+class SsgiPassResource;
 
 class SsgiPass : public IRenderPass
 {
 public:
     SsgiPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-             LightingPassResource* lighting, GBufferPassResource* gBuffer, Ssgi* ssgi);
+             LightingPassResource* lighting, GBufferPassResource* gBuffer, SsgiPassResource* ssgi);
     void        Execute(const RenderContext& ctx, FrameResource* fr) override;
     const char* Name() const override { return "SSGI"; }
 private:
@@ -18,5 +18,5 @@ private:
     ID3D12PipelineState* mPso;
     LightingPassResource*            mLighting;
     GBufferPassResource*             mGBuffer;
-    Ssgi*                mSsgi;
+    SsgiPassResource*                mSsgi;
 };

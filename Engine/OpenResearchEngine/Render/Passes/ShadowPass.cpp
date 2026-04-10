@@ -30,9 +30,9 @@ void ShadowPass::Execute(const RenderContext& ctx, FrameResource* fr)
     {
         ctx.cmdList->RSSetViewports(1, &mShadowResources->shadowMaps[i]->Viewport());
         ctx.cmdList->RSSetScissorRects(1, &mShadowResources->shadowMaps[i]->ScissorRect());
-        ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-            mShadowResources->shadowMaps[i]->Resource(),
-            D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+        BarrierTransition::Transition(ctx.cmdList, mShadowResources->shadowMaps[i]->Resource(),
+            D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE,
+            "ShadowMap", "ShadowPass");
         ctx.cmdList->ClearDepthStencilView(mShadowResources->shadowMaps[i]->Dsv(),
             D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
         ctx.cmdList->OMSetRenderTargets(0, nullptr, false, &mShadowResources->shadowMaps[i]->Dsv());
@@ -40,8 +40,8 @@ void ShadowPass::Execute(const RenderContext& ctx, FrameResource* fr)
             passCB->GetGPUVirtualAddress() + (i + 1) * passCBByteSize);
         ctx.cmdList->SetPipelineState(mPso);
         DrawRenderItems(ctx.cmdList, ctx.renderItemLayers->at("Opaque"), fr);
-        ctx.cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-            mShadowResources->shadowMaps[i]->Resource(),
-            D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ));
+        BarrierTransition::Transition(ctx.cmdList, mShadowResources->shadowMaps[i]->Resource(),
+            D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ,
+            "ShadowMap", "ShadowPass");
     }
 }

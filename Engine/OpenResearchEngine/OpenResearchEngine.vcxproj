@@ -153,8 +153,8 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Render\Passes\ShadowPass.cpp" />
     <ClCompile Include="Render\Resources\SsaoPassResource.cpp" />
-    <ClCompile Include="Render\Resources\Ssgi.cpp" />
-    <ClCompile Include="Render\Resources\SSS.cpp" />
+    <ClCompile Include="Render\Resources\SsgiPassResource.cpp" />
+    <ClCompile Include="Render\Resources\SssPassResource.cpp" />
     <ClCompile Include="Serialize\LevelReader.cpp" />
     <ClCompile Include="Update\UpdateLights.cpp" />
     <ClCompile Include="Update\UpdateRadiancePass.cpp" />
@@ -224,8 +224,8 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Resources\ShadowResources.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Render\Resources\SsaoPassResource.h" />
-    <ClInclude Include="Render\Resources\Ssgi.h" />
-    <ClInclude Include="Render\Resources\SSS.h" />
+    <ClInclude Include="Render\Resources\SsgiPassResource.h" />
+    <ClInclude Include="Render\Resources\SssPassResource.h" />
     <ClInclude Include="Render\Resources\TransformNode.h" />
     <ClInclude Include="Serialize\LevelReader.h" />
     <ClInclude Include="Utilities\GameTimer.h" />

@@ -7,7 +7,7 @@
 #include <wrl/client.h>
 #include "../Common/Structures.h"
 
-struct RenderItem;
+class RenderItem;
 struct FrameResource;
 
 // Shared per-frame state passed to every render pass.

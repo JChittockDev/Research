@@ -3,7 +3,7 @@
 #include <d3d12.h>
 
 class GBufferPassResource;
-class SSS;
+class SssPassResource;
 class RadianceResources;
 class LightingPassResource;
 
@@ -14,7 +14,7 @@ public:
         ID3D12RootSignature* rootSig,
         ID3D12PipelineState* pso,
         GBufferPassResource*             gBuffer,
-        SSS*                 sss,
+        SssPassResource*                 sss,
         RadianceResources*   radianceResources,
         LightingPassResource*            lighting);
 
@@ -25,7 +25,7 @@ private:
     ID3D12RootSignature* mRootSig;
     ID3D12PipelineState* mPso;
     GBufferPassResource*             mGBuffer;
-    SSS*                 mSss;
+    SssPassResource*                 mSss;
     RadianceResources*   mRadianceResources;
     LightingPassResource*            mLighting;
 };

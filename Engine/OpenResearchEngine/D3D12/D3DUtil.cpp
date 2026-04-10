@@ -172,4 +172,66 @@ std::wstring DxException::ToString()const
     return FunctionName + L" failed in " + Filename + L"; line " + std::to_wstring(LineNumber) + L"; error: " + msg;
 }
 
+std::string BarrierTransition::StateName(D3D12_RESOURCE_STATES state)
+{
+	if (state == D3D12_RESOURCE_STATE_COMMON)       return "COMMON";
+	if (state == D3D12_RESOURCE_STATE_GENERIC_READ) return "GENERIC_READ";
+
+	struct Bit { D3D12_RESOURCE_STATES mask; const char* name; };
+	static constexpr Bit kBits[] = {
+		{ D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, "VB/CB"        },
+		{ D3D12_RESOURCE_STATE_INDEX_BUFFER,               "IB"           },
+		{ D3D12_RESOURCE_STATE_RENDER_TARGET,              "RTV"          },
+		{ D3D12_RESOURCE_STATE_UNORDERED_ACCESS,           "UAV"          },
+		{ D3D12_RESOURCE_STATE_DEPTH_WRITE,                "DEPTH_WRITE"  },
+		{ D3D12_RESOURCE_STATE_DEPTH_READ,                 "DEPTH_READ"   },
+		{ D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE,  "NON_PS_SRV"  },
+		{ D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,      "PS_SRV"       },
+		{ D3D12_RESOURCE_STATE_STREAM_OUT,                 "STREAM_OUT"   },
+		{ D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT,          "INDIRECT_ARG" },
+		{ D3D12_RESOURCE_STATE_COPY_DEST,                  "COPY_DEST"    },
+		{ D3D12_RESOURCE_STATE_COPY_SOURCE,                "COPY_SRC"     },
+		{ D3D12_RESOURCE_STATE_RESOLVE_DEST,               "RESOLVE_DEST" },
+		{ D3D12_RESOURCE_STATE_RESOLVE_SOURCE,             "RESOLVE_SRC"  },
+	};
+
+	std::string result;
+	for (const auto& b : kBits)
+	{
+		if (state & b.mask)
+		{
+			if (!result.empty()) result += '|';
+			result += b.name;
+		}
+	}
+
+	if (result.empty())
+	{
+		std::ostringstream oss;
+		oss << "UNKNOWN(0x" << std::hex << static_cast<UINT>(state) << ")";
+		result = oss.str();
+	}
+	return result;
+}
+
+void BarrierTransition::Transition(
+	ID3D12GraphicsCommandList* cmdList,
+	ID3D12Resource* resource,
+	D3D12_RESOURCE_STATES      before,
+	D3D12_RESOURCE_STATES      after,
+	const char* resourceName,
+	const char* context)
+{
+#ifdef _GRAPHICS_DEBUG
+	std::ostringstream oss;
+	oss << "[Barrier]";
+	if (context && context[0])           oss << " [" << context << "]";
+	if (resourceName && resourceName[0]) oss << " " << resourceName;
+	else                                 oss << " 0x" << std::hex << reinterpret_cast<uintptr_t>(resource);
+	oss << "  " << StateName(before) << " -> " << StateName(after) << "\n";
+	OutputDebugStringA(oss.str().c_str());
+#endif
+
+	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(resource, before, after));
+}
 

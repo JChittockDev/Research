@@ -168,7 +168,7 @@
     <ClCompile Include="Update\UpdateSSCB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Ssgi.cpp">
+    <ClCompile Include="Render\Resources\SsgiPassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Passes\SsgiPass.cpp">
@@ -186,7 +186,7 @@
     <ClCompile Include="Render\Passes\CompositePass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\SSS.cpp">
+    <ClCompile Include="Render\Resources\SssPassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Update\UpdateSSSCB.cpp">
@@ -350,7 +350,7 @@
     <ClInclude Include="Render\Resources\SsaoPassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Ssgi.h">
+    <ClInclude Include="Render\Resources\SsgiPassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\LightingPassResource.h">
@@ -359,7 +359,7 @@
     <ClInclude Include="Render\Resources\CompositePassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\SSS.h">
+    <ClInclude Include="Render\Resources\SssPassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\RadiancePassResource.h">
