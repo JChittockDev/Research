@@ -13,7 +13,7 @@
 #include "Render/Resources/LightingPassResource.h"
 #include "Render/Resources/SsgiPassResource.h"
 #include "Render/Resources/GBufferPassResource.h"
-#include "Render/Resources/RenderItem.h"
+#include "Render/RenderItem.h"
 #include "Render/RenderPassResourceArray.h"
 #include "Render/Resources/RenderTextures.h"
 #include "Render/RenderPipeline.h"

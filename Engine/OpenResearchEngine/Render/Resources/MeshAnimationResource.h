@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Skeleton.h"
+#include "../Components/Skeleton.h"
 
 class MeshAnimationResource
 {

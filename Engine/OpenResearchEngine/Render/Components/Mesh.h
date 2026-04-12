@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../../Common/Structures.h"
-#include "../../Render/Resources/Skeleton.h"
-#include "../../Render/Resources/Skinning.h"
-#include "../../Render/Resources/TransformNode.h"
-#include "../../Render/Resources/FrameResource.h"
+#include "Skeleton.h"
+#include "Skinning.h"
+#include "TransformNode.h"
+#include "../Resources/FrameResource.h"
 
 class Mesh
 {

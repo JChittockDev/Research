@@ -1,7 +1,7 @@
 #include "PhysicsPass.h"
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
-#include "../Resources/RenderItem.h"
+#include "../RenderItem.h"
 #include "../Resources/MeshAnimationResource.h"
 #include "../../D3D12/D3Dx12.h"
 #include "../../Common/Structures.h"

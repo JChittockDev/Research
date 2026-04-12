@@ -1,10 +1,10 @@
 #pragma once
 
-#include "FrameResource.h"
-#include "Mesh.h"
-#include "Skinning.h"
-#include "Blendshapes.h"
-#include "MeshAnimationResource.h"
+#include "Resources/FrameResource.h"
+#include "Components/Mesh.h"
+#include "Components/Skinning.h"
+#include "Components/Blendshapes.h"
+#include "Resources/MeshAnimationResource.h"
 
 class RenderItem
 {

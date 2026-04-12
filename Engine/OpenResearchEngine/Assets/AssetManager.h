@@ -5,9 +5,9 @@
 #include "../Common/Math.h"
 #include "../Common/UploadBuffer.h"
 #include "../Render/Resources/FrameResource.h"
-#include "../Render/Resources/Mesh.h"
-#include "../Render/Resources/RenderItem.h"
-#include "../Render/Resources/Skinning.h"
+#include "../Render/Components/Mesh.h"
+#include "../Render/RenderItem.h"
+#include "../Render/Components/Skinning.h"
 #include "../Models/Internal/GeometryGenerator.h"
 #include "../Serialize/LevelReader.h"
 

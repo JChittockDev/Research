@@ -5,7 +5,7 @@
 #include <memory>
 #include "../D3D12/D3DUtil.h"
 #include "Resources/FrameResource.h"
-#include "Resources/RenderItem.h"
+#include "RenderItem.h"
 #include "Resources/MeshAnimationResource.h"
 
 inline void DrawRenderItems(

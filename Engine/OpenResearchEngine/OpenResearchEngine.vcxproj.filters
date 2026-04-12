@@ -42,7 +42,7 @@
     <ClCompile Include="EngineApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Mesh.cpp">
+    <ClCompile Include="Render\Components\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Build\PushRenderItems.cpp">
@@ -69,13 +69,10 @@
     <ClCompile Include="Update\UpdateRenderItems.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\Skeleton.cpp">
+    <ClCompile Include="Render\Components\Skeleton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Update\UpdateAnimConstants.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Resources\RenderItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Update\UpdateRenderAssets.cpp">
@@ -234,6 +231,9 @@
     <ClCompile Include="Render\RenderPassResourceArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Render\RenderItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects\Camera.h">
@@ -272,22 +272,22 @@
     <ClInclude Include="Render\Resources\RenderItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Skinning.h">
+    <ClInclude Include="Render\Components\Skinning.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Structures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Joint.h">
+    <ClInclude Include="Render\Components\Joint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Skeleton.h">
+    <ClInclude Include="Render\Components\Skeleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Mesh.h">
+    <ClInclude Include="Render\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\TransformNode.h">
+    <ClInclude Include="Render\Components\TransformNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Serialize\LevelReader.h">
@@ -296,7 +296,7 @@
     <ClInclude Include="Objects\ViewFrustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\Blendshapes.h">
+    <ClInclude Include="Render\Components\Blendshapes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\MeshAnimationResource.h">
@@ -429,6 +429,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\DataStructures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Components\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\RenderItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
