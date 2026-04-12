@@ -107,31 +107,26 @@ void EngineApp::OnResize()
         mLighting->RebuildDescriptors();
     }
 
-    if (mRadianceResources != nullptr)
+    if (mRadianceResourceArray != nullptr)
     {
-        for (int i = 0; i < mRadianceResources->radianceMaps.size(); i++)
+        for (int i = 0; i < mRadianceResourceArray->Count(); i++)
         {
-            if (mRadianceResources->radianceMaps[i] != nullptr)
-            {
-                mRadianceResources->radianceMaps[i]->OnResize(mClientWidth, mClientHeight, mRadianceResources->radianceMaps[i]->GetRenderDivisor());
-            }
+            RadiancePassResource* radianceResource = mRadianceResourceArray->Get<RadiancePassResource>(i);
+            radianceResource->OnResize(mClientWidth, mClientHeight, radianceResource->GetRenderDivisor());
         }
 
-        for (int i = 0; i < mRadianceResources->radianceMaps.size(); i++)
-        {
-            if (mRadianceResources->radianceMaps[i] != nullptr)
-            {
-                mRadianceResources->radianceMaps[i]->RebuildDiffuseDescriptors();
-            }
-        }
+		for (int i = 0; i < mRadianceResourceArray->Count(); i++)
+		{
+			RadiancePassResource* radianceResource = mRadianceResourceArray->Get<RadiancePassResource>(i);
+            mRadianceResourceArray->Get<RadiancePassResource>(i)->RebuildDescriptorType(mRadianceResourceArray->Get<RadiancePassResource>(i)->kDiffuseReflectanceResource);
+		}
 
-        for (int i = 0; i < mRadianceResources->radianceMaps.size(); i++)
-        {
-            if (mRadianceResources->radianceMaps[i] != nullptr)
-            {
-                mRadianceResources->radianceMaps[i]->RebuildSpecularDescriptors();
-            }
-        }
+		for (int i = 0; i < mRadianceResourceArray->Count(); i++)
+		{
+			RadiancePassResource* radianceResource = mRadianceResourceArray->Get<RadiancePassResource>(i);
+            mRadianceResourceArray->Get<RadiancePassResource>(i)->RebuildDescriptorType(mRadianceResourceArray->Get<RadiancePassResource>(i)->kSpecularReflectanceResource);
+		}
+
     }
 
     if (mSsgi != nullptr)
@@ -262,7 +257,7 @@ void EngineApp::BuildPipeline()
     mPipeline.AddPass(std::make_unique<ShadowPass>(
         mAssets->mShadowsRootSignature.Get(),
         mAssets->mPSOs.at("shadow_opaque").Get(),
-        mShadowResources.get(),
+        mShadowResourceArray.get(),
         mRenderTextures.get()));
 
 	mPipeline.AddPass(std::make_unique<GBufferPass>(
@@ -287,15 +282,15 @@ void EngineApp::BuildPipeline()
         mAssets->mRadianceRootSignature.Get(),
         mAssets->mPSOs.at("Radiance").Get(),
         mGBuffer.get(),
-        mShadowResources.get(),
-        mRadianceResources.get()));
+        mShadowResourceArray.get(),
+        mRadianceResourceArray.get()));
 
     mPipeline.AddPass(std::make_unique<SssPass>(
         mAssets->mSssRootSignature.Get(),
         mAssets->mPSOs.at("Sss").Get(),
         mGBuffer.get(),
         mSss.get(),
-        mRadianceResources.get()));
+        mRadianceResourceArray.get()));
 
 	mPipeline.AddPass(std::make_unique<SssBlurPass>(
 		mAssets->mPoissonBlurRootSignature.Get(),
@@ -307,7 +302,7 @@ void EngineApp::BuildPipeline()
         mAssets->mPSOs.at("Lighting").Get(),
         mGBuffer.get(),
         mSss.get(),
-        mRadianceResources.get(),
+        mRadianceResourceArray.get(),
         mLighting.get()));
 
     mPipeline.AddPass(std::make_unique<SsgiPass>(

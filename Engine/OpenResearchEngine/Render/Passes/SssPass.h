@@ -4,13 +4,13 @@
 
 class GBufferPassResource;
 class SssPassResource;
-class RadianceResources;
+class RenderPassResourceArray;
 
 class SssPass : public IRenderPass
 {
 public:
     SssPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-            GBufferPassResource* gBuffer, SssPassResource* sss, RadianceResources* radianceResources);
+            GBufferPassResource* gBuffer, SssPassResource* sss, RenderPassResourceArray* radianceResources);
     void        Execute(const RenderContext& ctx, FrameResource* fr) override;
     const char* Name() const override { return "SSS"; }
 private:
@@ -18,5 +18,5 @@ private:
     ID3D12PipelineState* mPso;
     GBufferPassResource*             mGBuffer;
     SssPassResource*                 mSss;
-    RadianceResources*   mRadianceResources;
+    RenderPassResourceArray*   mRadianceResources;
 };

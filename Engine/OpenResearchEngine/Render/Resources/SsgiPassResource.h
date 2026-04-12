@@ -18,6 +18,7 @@ public:
 
 	SsgiPassResource::SsgiPassResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, UINT width, UINT height, UINT divisor) : RenderPassResource(device, cmdList)
 	{
+		SetResourceTypes({ kGiResource, kGiVerticalBlurResource, kGiHorizontalBlurResource, kRandomVectorResource, kDepthResource });
 		Math::GenerateRandomVectors(RandomVecHeight, RandomVecWidth, randomVectors);
 		Math::GenerateBoxVectors(offsetVectors);
 		OnResize(width, height, divisor);
@@ -26,10 +27,6 @@ public:
 	UINT Width() override { return GetRenderWidth() / GetRenderDivisor(); };
 	UINT Height() override { return GetRenderHeight() / GetRenderDivisor(); };
 	UINT Divisor() override { return GetRenderDivisor(); };
-
-	void RebuildDescriptors() override;
-
-	void BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, UINT rtvDescriptorSize, UINT srvDescriptorSize) override;
 
 	void Build() override;
 

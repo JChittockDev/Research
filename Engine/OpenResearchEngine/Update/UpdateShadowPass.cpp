@@ -20,8 +20,8 @@ void EngineApp::UpdateShadowPassCB(const GameTimer& gt)
         DirectX::XMMATRIX invProj = XMMatrixInverse(&XMMatrixDeterminant(proj), proj);
         DirectX::XMMATRIX invViewProj = XMMatrixInverse(&XMMatrixDeterminant(viewProj), viewProj);
 
-        UINT w = mShadowResources->shadowMaps[lightIndex]->Width();
-        UINT h = mShadowResources->shadowMaps[lightIndex]->Height();
+        UINT w = mShadowResourceArray->Get<ShadowPassResource>(lightIndex)->Width();
+        UINT h = mShadowResourceArray->Get<ShadowPassResource>(lightIndex)->Height();
 
         XMStoreFloat4x4(&mShadowPassCBs[lightIndex].View, XMMatrixTranspose(view));
         XMStoreFloat4x4(&mShadowPassCBs[lightIndex].InvView, XMMatrixTranspose(invView));
@@ -48,8 +48,8 @@ void EngineApp::UpdateShadowPassCB(const GameTimer& gt)
         DirectX::XMMATRIX invProj = XMMatrixInverse(&XMMatrixDeterminant(proj), proj);
         DirectX::XMMATRIX invViewProj = XMMatrixInverse(&XMMatrixDeterminant(viewProj), viewProj);
 
-        UINT w = mShadowResources->shadowMaps[lightIndex]->Width();
-        UINT h = mShadowResources->shadowMaps[lightIndex]->Height();
+		UINT w = mShadowResourceArray->Get<ShadowPassResource>(lightIndex)->Width();
+		UINT h = mShadowResourceArray->Get<ShadowPassResource>(lightIndex)->Height();
 
         XMStoreFloat4x4(&mShadowPassCBs[lightIndex].View, XMMatrixTranspose(view));
         XMStoreFloat4x4(&mShadowPassCBs[lightIndex].InvView, XMMatrixTranspose(invView));

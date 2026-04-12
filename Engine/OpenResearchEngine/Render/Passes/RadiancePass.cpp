@@ -2,16 +2,17 @@
 #include "../RenderContext.h"
 #include "../Resources/FrameResource.h"
 #include "../Resources/GBufferPassResource.h"
-#include "../Resources/ShadowResources.h"
-#include "../Resources/RadianceResources.h"
+#include "../Resources/RadiancePassResource.h"
+#include "../Resources/ShadowPassResource.h"
+#include "../RenderPassResourceArray.h"
 #include "../../D3D12/D3DUtil.h"
 
 RadiancePass::RadiancePass(
     ID3D12RootSignature* rootSig,
     ID3D12PipelineState* pso,
     GBufferPassResource*             gBuffer,
-    ShadowResources*     shadowResources,
-    RadianceResources*   radianceResources)
+    RenderPassResourceArray*     shadowResources,
+    RenderPassResourceArray*   radianceResources)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer),
       mShadowResources(shadowResources), mRadianceResources(radianceResources)
 {}
@@ -30,29 +31,32 @@ void RadiancePass::Execute(const RenderContext& ctx, FrameResource* fr)
 
     for (int i = 0; i < (int)ctx.lights->LightTransforms.size(); i++)
     {
-        mRadianceResources->radianceMaps[i]->SetResourceState(mRadianceResources->radianceMaps[i]->kDiffuseReflectanceResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
-        mRadianceResources->radianceMaps[i]->SetResourceState(mRadianceResources->radianceMaps[i]->kSpecularReflectanceResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-        ctx.cmdList->SetGraphicsRootConstantBufferView(1,
-            radianceCB->GetGPUVirtualAddress() + i * radianceCBByteSize);
-        ctx.cmdList->SetGraphicsRootDescriptorTable(4, mShadowResources->shadowMaps[i]->Srv());
+		RadiancePassResource* radianceResource = mRadianceResources->Get<RadiancePassResource>(i);
+		radianceResource->SetResourceState(radianceResource->kDiffuseReflectanceResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		radianceResource->SetResourceState(radianceResource->kSpecularReflectanceResource, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-        float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-        ctx.cmdList->ClearRenderTargetView(mRadianceResources->radianceMaps[i]->GetCpuRTVDescriptorHandle(mRadianceResources->radianceMaps[i]->kDiffuseReflectanceResource), clearColor, 0, nullptr);
-        ctx.cmdList->ClearRenderTargetView(mRadianceResources->radianceMaps[i]->GetCpuRTVDescriptorHandle(mRadianceResources->radianceMaps[i]->kSpecularReflectanceResource), clearColor, 0, nullptr);
+		ctx.cmdList->SetGraphicsRootConstantBufferView(1,radianceCB->GetGPUVirtualAddress() + i * radianceCBByteSize);
 
-        D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
-            mRadianceResources->radianceMaps[i]->GetCpuRTVDescriptorHandle(mRadianceResources->radianceMaps[i]->kDiffuseReflectanceResource),
-            mRadianceResources->radianceMaps[i]->GetCpuRTVDescriptorHandle(mRadianceResources->radianceMaps[i]->kSpecularReflectanceResource)
-        };
-        ctx.cmdList->OMSetRenderTargets(2, rtvs, false, nullptr);
-        ctx.cmdList->SetPipelineState(mPso);
-        ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
-        ctx.cmdList->IASetIndexBuffer(nullptr);
-        ctx.cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        ctx.cmdList->DrawInstanced(6, 1, 0, 0);
+		ShadowPassResource* shadowResource = mShadowResources->Get<ShadowPassResource>(i);
+		ctx.cmdList->SetGraphicsRootDescriptorTable(4, shadowResource->GetGpuSRVDescriptorHandle(shadowResource->kShadowResource));
 
-		mRadianceResources->radianceMaps[i]->SetResourceState(mRadianceResources->radianceMaps[i]->kDiffuseReflectanceResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		mRadianceResources->radianceMaps[i]->SetResourceState(mRadianceResources->radianceMaps[i]->kSpecularReflectanceResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		ctx.cmdList->ClearRenderTargetView(radianceResource->GetCpuRTVDescriptorHandle(radianceResource->kDiffuseReflectanceResource), clearColor, 0, nullptr);
+		ctx.cmdList->ClearRenderTargetView(radianceResource->GetCpuRTVDescriptorHandle(radianceResource->kSpecularReflectanceResource), clearColor, 0, nullptr);
+
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvs[] = {
+			radianceResource->GetCpuRTVDescriptorHandle(radianceResource->kDiffuseReflectanceResource),
+			radianceResource->GetCpuRTVDescriptorHandle(radianceResource->kSpecularReflectanceResource)
+		};
+		ctx.cmdList->OMSetRenderTargets(2, rtvs, false, nullptr);
+		ctx.cmdList->SetPipelineState(mPso);
+		ctx.cmdList->IASetVertexBuffers(0, 0, nullptr);
+		ctx.cmdList->IASetIndexBuffer(nullptr);
+		ctx.cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		ctx.cmdList->DrawInstanced(6, 1, 0, 0);
+
+		radianceResource->SetResourceState(radianceResource->kDiffuseReflectanceResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		radianceResource->SetResourceState(radianceResource->kSpecularReflectanceResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
     }
 }

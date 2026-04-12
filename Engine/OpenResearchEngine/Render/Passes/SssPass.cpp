@@ -3,10 +3,10 @@
 #include "../Resources/FrameResource.h"
 #include "../Resources/GBufferPassResource.h"
 #include "../Resources/SssPassResource.h"
-#include "../Resources/RadianceResources.h"
+#include "../RenderPassResourceArray.h"
 
 SssPass::SssPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
-                 GBufferPassResource* gBuffer, SssPassResource* sss, RadianceResources* radianceResources)
+                 GBufferPassResource* gBuffer, SssPassResource* sss, RenderPassResourceArray* radianceResources)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSss(sss), mRadianceResources(radianceResources)
 {}
 
@@ -22,7 +22,7 @@ void SssPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->SetGraphicsRootDescriptorTable(4, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kTangentResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(5, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kMaterialIdResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(6, mSss->GetGpuSRVDescriptorHandle(mSss->kRandomVectorResource));
-    ctx.cmdList->SetGraphicsRootDescriptorTable(7, mRadianceResources->GetStartGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(7, mRadianceResources->GetGpuDescriptorHandleStart("SRV"));
 
     float clearValue[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     ctx.cmdList->ClearRenderTargetView(mSss->GetCpuRTVDescriptorHandle(mSss->kSssResource), clearValue, 0, nullptr);

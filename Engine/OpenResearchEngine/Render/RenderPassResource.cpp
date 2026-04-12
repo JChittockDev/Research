@@ -31,8 +31,8 @@ void RenderPassResource::OnResize(UINT width, UINT height, UINT divisor)
 	}
 }
 
-void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX::XMFLOAT4& clearColor, Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
-											Microsoft::WRL::ComPtr<ID3D12Resource>* uploadTexture, const std::vector<DirectX::XMFLOAT4>& data, const UINT& widthOverride, const UINT& heightOverride)
+void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const D3D12_CLEAR_VALUE& clearValue, const D3D12_RESOURCE_FLAGS& flags, Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
+											Microsoft::WRL::ComPtr<ID3D12Resource>* uploadTexture, const std::vector<DirectX::XMFLOAT4>& data, const UINT& widthOverride, const UINT& heightOverride, const D3D12_RESOURCE_STATES& state)
 {
 	const UINT width = (widthOverride > 0) ? widthOverride : GetRenderWidth();
 	const UINT height = (heightOverride > 0) ? heightOverride : GetRenderHeight();
@@ -46,23 +46,9 @@ void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX:
 	textureDesc.Format = format;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	textureDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+	textureDesc.Flags = flags;
 
-	D3D12_CLEAR_VALUE clearValue = {};
-	clearValue.Format = format;
-	clearValue.Color[0] = clearColor.x;
-	clearValue.Color[1] = clearColor.y;
-	clearValue.Color[2] = clearColor.z;
-	clearValue.Color[3] = clearColor.w;
-
-	D3D12_RESOURCE_STATES initState = defaultState;
-
-	if (!data.empty())
-	{
-		initState = D3D12_RESOURCE_STATE_COPY_DEST;
-	}
-
-	ThrowIfFailed(d3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, initState, &clearValue, IID_PPV_ARGS(&texture)));
+	ThrowIfFailed(d3dDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &textureDesc, state, &clearValue, IID_PPV_ARGS(&texture)));
 
 	if (!data.empty() && uploadTexture != nullptr)
 	{
@@ -79,7 +65,7 @@ void RenderPassResource::CreateTexture(const DXGI_FORMAT& format, const DirectX:
 
 		UpdateSubresources(commandList, texture.Get(), uploadTexture->Get(), 0, 0, num2DSubresources, &subResourceData);
 
-		commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, defaultState));
+		commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texture.Get(), state, defaultState));
 	}
 }
 
@@ -106,96 +92,147 @@ void RenderPassResource::CreateSRV(const DXGI_FORMAT& format, Microsoft::WRL::Co
 	d3dDevice->CreateShaderResourceView(texture.Get(), &srvDesc, srvHandle);
 }
 
-CD3DX12_CPU_DESCRIPTOR_HANDLE RenderPassResource::GetCpuDescriptorHandle(const std::string& name, const std::string& type)
+void RenderPassResource::CreateDSV(const DXGI_FORMAT& format, Microsoft::WRL::ComPtr<ID3D12Resource>& texture, CD3DX12_CPU_DESCRIPTOR_HANDLE& dsvHandle)
+{
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvDesc.Texture2D.MipSlice = 0;
+	d3dDevice->CreateDepthStencilView(texture.Get(), &dsvDesc, dsvHandle);
+}
+
+CD3DX12_CPU_DESCRIPTOR_HANDLE RenderPassResource::GetCpuDescriptorHandleStart(const std::string& type)
 {
 	if (type == "SRV")
 	{
-		return GetCpuSRVDescriptorHandle(name);
+		if (!cpuSRVDescriptorHandles.Empty())
+		{
+			return cpuSRVDescriptorHandles.GetByIndex(0);
+		}
 	}
 	else if (type == "RTV")
 	{
-		return GetCpuRTVDescriptorHandle(name);
+		if (!cpuRTVDescriptorHandles.Empty())
+		{
+			return cpuRTVDescriptorHandles.GetByIndex(0);
+		}
 	}
-	else
+	else if (type == "DSV")
 	{
-		return CD3DX12_CPU_DESCRIPTOR_HANDLE();
+		if (!cpuDSVDescriptorHandles.Empty())
+		{
+			return cpuDSVDescriptorHandles.GetByIndex(0);
+		}
 	}
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE();
+
 }
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE RenderPassResource::GetCpuSRVDescriptorHandle(const std::string& name)
 {
-	if (cpuSRVDescriptorHandles.find(name) != cpuSRVDescriptorHandles.end())
+	if (cpuSRVDescriptorHandles.Contains(name))
 	{
-		return cpuSRVDescriptorHandles[name];
+		return cpuSRVDescriptorHandles.Get(name);
 	}
-	else
-	{
-		return CD3DX12_CPU_DESCRIPTOR_HANDLE();
-	}
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE();
 }
 
 CD3DX12_CPU_DESCRIPTOR_HANDLE RenderPassResource::GetCpuRTVDescriptorHandle(const std::string& name)
 {
-	if (cpuRTVDescriptorHandles.find(name) != cpuRTVDescriptorHandles.end())
+	if (cpuRTVDescriptorHandles.Contains(name))
 	{
-		return cpuRTVDescriptorHandles[name];
+		return cpuRTVDescriptorHandles.Get(name);
 	}
-	else
-	{
-		return CD3DX12_CPU_DESCRIPTOR_HANDLE();
-	}
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE();
 }
 
-CD3DX12_GPU_DESCRIPTOR_HANDLE RenderPassResource::GetGpuDescriptorHandle(const std::string& name, const std::string& type)
+CD3DX12_CPU_DESCRIPTOR_HANDLE RenderPassResource::GetCpuDSVDescriptorHandle(const std::string& name)
+{
+	if (cpuDSVDescriptorHandles.Contains(name))
+	{
+		return cpuDSVDescriptorHandles.Get(name);
+	}
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE();
+}
+
+bool RenderPassResource::QueryCpuSRVDescriptorHandle(const std::string& name, CD3DX12_CPU_DESCRIPTOR_HANDLE& handle)
+{
+	if (cpuSRVDescriptorHandles.Contains(name))
+	{
+		handle = cpuSRVDescriptorHandles.Get(name);
+		return true;
+	}
+	return false;
+}
+
+bool RenderPassResource::QueryCpuRTVDescriptorHandle(const std::string& name, CD3DX12_CPU_DESCRIPTOR_HANDLE& handle)
+{
+	if (cpuRTVDescriptorHandles.Contains(name))
+	{
+		handle = cpuRTVDescriptorHandles.Get(name);
+		return true;
+	}
+	return false;
+}
+
+bool RenderPassResource::QueryCpuDSVDescriptorHandle(const std::string& name, CD3DX12_CPU_DESCRIPTOR_HANDLE& handle)
+{
+	if (cpuDSVDescriptorHandles.Contains(name))
+	{
+		handle = cpuDSVDescriptorHandles.Get(name);
+		return true;
+	}
+	return false;
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE RenderPassResource::GetGpuDescriptorHandleStart(const std::string& type)
 {
 	if (type == "SRV")
 	{
-		return GetGpuSRVDescriptorHandle(name);
+		if (!gpuSRVDescriptorHandles.Empty())
+		{
+			return gpuSRVDescriptorHandles.GetByIndex(0);
+		}
 	}
-	else if (type == "RTV")
+
+	return CD3DX12_GPU_DESCRIPTOR_HANDLE();
+}
+
+bool RenderPassResource::QueryGpuSRVDescriptorHandle(const std::string& name, CD3DX12_GPU_DESCRIPTOR_HANDLE& handle)
+{
+	if (gpuSRVDescriptorHandles.Contains(name))
 	{
-		return GetGpuRTVDescriptorHandle(name);
+		handle = gpuSRVDescriptorHandles.Get(name);
+		return true;
 	}
-	else
-	{
-		return CD3DX12_GPU_DESCRIPTOR_HANDLE();
-	}
+	return false;
 }
 
 CD3DX12_GPU_DESCRIPTOR_HANDLE RenderPassResource::GetGpuSRVDescriptorHandle(const std::string& name)
 {
-	if (gpuSRVDescriptorHandles.find(name) != gpuSRVDescriptorHandles.end())
+	if (gpuSRVDescriptorHandles.Contains(name))
 	{
-		return gpuSRVDescriptorHandles[name];
+		return gpuSRVDescriptorHandles.Get(name);
 	}
-	else
-	{
-		return CD3DX12_GPU_DESCRIPTOR_HANDLE();
-	}
-}
-
-CD3DX12_GPU_DESCRIPTOR_HANDLE RenderPassResource::GetGpuRTVDescriptorHandle(const std::string& name)
-{
-	if (gpuRTVDescriptorHandles.find(name) != gpuRTVDescriptorHandles.end())
-	{
-		return gpuRTVDescriptorHandles[name];
-	}
-	else
-	{
-		return CD3DX12_GPU_DESCRIPTOR_HANDLE();
-	}
+	return CD3DX12_GPU_DESCRIPTOR_HANDLE();
 }
 
 void RenderPassResource::SetCpuDescriptorHandle(const std::string& name, const std::string& type, CD3DX12_CPU_DESCRIPTOR_HANDLE& handle, const UINT& size)
 {
 	if (type == "SRV")
 	{
-		cpuSRVDescriptorHandles[name] = handle;
+		cpuSRVDescriptorHandles.Insert(name, handle);
 		handle = handle.Offset(1, size);
 	}
 	else if (type == "RTV")
 	{
-		cpuRTVDescriptorHandles[name] = handle;
+		cpuRTVDescriptorHandles.Insert(name, handle);
+		handle = handle.Offset(1, size);
+	}
+	else if (type == "DSV")
+	{
+		cpuDSVDescriptorHandles.Insert(name, handle);
 		handle = handle.Offset(1, size);
 	}
 }
@@ -204,24 +241,26 @@ void RenderPassResource::SetGpuDescriptorHandle(const std::string& name, const s
 {
 	if (type == "SRV")
 	{
-		gpuSRVDescriptorHandles[name] = handle;
-		handle = handle.Offset(1, size);
-	}
-	else if (type == "RTV")
-	{
-		gpuRTVDescriptorHandles[name] = handle;
+		gpuSRVDescriptorHandles.Insert(name, handle);
 		handle = handle.Offset(1, size);
 	}
 }
 
 void RenderPassResource::SetResource(const std::string& name, Microsoft::WRL::ComPtr<ID3D12Resource> resource)
 {
-	resources[name] = resource;
+	resources.Insert(name, resource);
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource>& RenderPassResource::GetResource(const std::string& name)
 {
-	return resources[name];
+	if (!resources.Contains(name))
+	{
+		// create a default entry so callers get a valid reference (like std::map::operator[] would)
+		resources.Insert(name, Microsoft::WRL::ComPtr<ID3D12Resource>());
+	}
+
+	// always return the stored entry
+	return resources.Get(name);
 }
 
 D3D12_RESOURCE_STATES RenderPassResource::GetResourceState(const std::string& name)
@@ -230,15 +269,30 @@ D3D12_RESOURCE_STATES RenderPassResource::GetResourceState(const std::string& na
 	{
 		return states[name];
 	}
+	return D3D12_RESOURCE_STATES();
+}
+
+void RenderPassResource::ForceSyncState(const std::string& name, D3D12_RESOURCE_STATES state)
+{
+	if (!resources.Contains(name))
+		return;
+
+	if (states.find(name) == states.end())
+	{
+		states[name] = state;
+	}
 	else
 	{
-		return D3D12_RESOURCE_STATES();
+		if (states[name] != state)
+		{
+			states[name] = state;
+		}
 	}
 }
 
 void RenderPassResource::SetResourceState(const std::string& name, D3D12_RESOURCE_STATES state)
 {
-	if (resources.find(name) == resources.end())
+	if (!resources.Contains(name))
 		return;
 
 	if (states.find(name) == states.end())
@@ -256,5 +310,69 @@ void RenderPassResource::SetResourceState(const std::string& name, D3D12_RESOURC
 			BarrierTransition::Transition(commandList, GetResource(name).Get(), states[name], state, name.c_str(), "RenderPassResource");
 			states[name] = state;
 		}
+	}
+}
+
+void RenderPassResource::BuildDescriptors(CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle,
+	CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuDsvHandle, UINT srvDescriptorSize, UINT rtvDescriptorSize, UINT dsvDescriptorSize)
+{
+	for (const auto& type : GetResourceTypes())
+	{
+		BuildDescriptorType(type, cpuRtvHandle, cpuSrvHandle, gpuSrvHandle, cpuDsvHandle, srvDescriptorSize, rtvDescriptorSize, dsvDescriptorSize);
+	}
+}
+
+void RenderPassResource::BuildDescriptorType(const std::string& type, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuRtvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuSrvHandle,
+	CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuSrvHandle, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuDsvHandle, UINT srvDescriptorSize, UINT rtvDescriptorSize, UINT dsvDescriptorSize)
+{
+	if (rtvDescriptorSize != 0)
+		SetCpuDescriptorHandle(type, "RTV", cpuRtvHandle, rtvDescriptorSize);
+
+	if (srvDescriptorSize != 0)
+		SetCpuDescriptorHandle(type, "SRV", cpuSrvHandle, srvDescriptorSize);
+
+	if (srvDescriptorSize != 0)
+		SetGpuDescriptorHandle(type, "SRV", gpuSrvHandle, srvDescriptorSize);
+
+	if (dsvDescriptorSize != 0)
+		SetCpuDescriptorHandle(type, "DSV", cpuDsvHandle, dsvDescriptorSize);
+
+	RebuildDescriptorType(type);
+}
+
+void RenderPassResource::RebuildDescriptorType(const std::string& type)
+{
+	auto& resource = GetResource(type);
+	D3D12_RESOURCE_DESC desc = resource->GetDesc();
+	DXGI_FORMAT format = desc.Format;
+	D3D12_RESOURCE_FLAGS flags = desc.Flags;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuRtvHandle;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuSrvHandle;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDsvHandle;
+
+	bool rtv = QueryCpuRTVDescriptorHandle(type, cpuRtvHandle);
+	bool srv = QueryCpuSRVDescriptorHandle(type, cpuSrvHandle);
+	bool dsv = QueryCpuDSVDescriptorHandle(type, cpuDsvHandle);
+
+	if (rtv && (flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET))
+	{
+		CreateRTV(GetOperationFormat(format, "RTV"), resource, cpuRtvHandle);
+	}
+	if (srv)
+	{
+		CreateSRV(GetOperationFormat(format, "SRV"), resource, cpuSrvHandle);
+	}
+	if (dsv && (flags & D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL))
+	{
+		CreateDSV(GetOperationFormat(format, "DSV"), resource, cpuDsvHandle);
+	}
+}
+
+void RenderPassResource::RebuildDescriptors()
+{
+	for (const auto& type : GetResourceTypes())
+	{
+		RebuildDescriptorType(type);
 	}
 }

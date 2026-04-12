@@ -22,6 +22,81 @@
 #include "D3Dx12.h"
 #include "../Common/Math.h"
 
+inline bool IsCpuHandleValid(const CD3DX12_CPU_DESCRIPTOR_HANDLE& h) { return h.ptr != 0; }
+inline bool IsGpuHandleValid(const CD3DX12_GPU_DESCRIPTOR_HANDLE& h) { return h.ptr != 0; }
+
+inline DXGI_FORMAT GetDSVFormat(const DXGI_FORMAT& format)
+{
+	switch (format)
+	{
+	case DXGI_FORMAT_R32G8X24_TYPELESS:
+		return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+	case DXGI_FORMAT_R24G8_TYPELESS:
+		return DXGI_FORMAT_D24_UNORM_S8_UINT;
+	default:
+		return format;
+	}
+}
+
+inline DXGI_FORMAT GetRTVFormat(const DXGI_FORMAT& format)
+{
+	switch (format)
+	{
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+		return DXGI_FORMAT_R8G8B8A8_UNORM;
+    case DXGI_FORMAT_R16_UNORM:
+        return DXGI_FORMAT_R16_UNORM;
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+		return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	case DXGI_FORMAT_R32G32B32A32_FLOAT:
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	case DXGI_FORMAT_R32G8X24_TYPELESS:
+		return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+	case DXGI_FORMAT_R24G8_TYPELESS:
+		return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	default:
+		return format;
+	}
+}
+
+inline DXGI_FORMAT GetSRVFormat(const DXGI_FORMAT& format)
+{
+	switch (format)
+	{
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+		return DXGI_FORMAT_R8G8B8A8_UNORM;
+	case DXGI_FORMAT_R16_UNORM:
+		return DXGI_FORMAT_R16_UNORM;
+	case DXGI_FORMAT_R16G16B16A16_FLOAT:
+		return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	case DXGI_FORMAT_R32G32B32A32_FLOAT:
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	case DXGI_FORMAT_R32G8X24_TYPELESS:
+		return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+	case DXGI_FORMAT_R24G8_TYPELESS:
+		return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	default:
+		return format;
+	}
+}
+
+
+inline DXGI_FORMAT GetOperationFormat(const DXGI_FORMAT& format, const std::string& type)
+{
+	if (type == "RTV")
+	{
+		return GetRTVFormat(format);
+	}
+	if (type == "SRV")
+	{
+		return GetSRVFormat(format);
+	}
+	if (type == "DSV")
+	{
+		return GetDSVFormat(format);
+	}
+}
+
 inline void d3dSetDebugName(IDXGIObject* obj, const char* name)
 {
     if(obj)

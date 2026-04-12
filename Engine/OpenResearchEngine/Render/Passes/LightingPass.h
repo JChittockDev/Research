@@ -4,7 +4,7 @@
 
 class GBufferPassResource;
 class SssPassResource;
-class RadianceResources;
+class RenderPassResourceArray;
 class LightingPassResource;
 
 class LightingPass : public IRenderPass
@@ -15,7 +15,7 @@ public:
         ID3D12PipelineState* pso,
         GBufferPassResource*             gBuffer,
         SssPassResource*                 sss,
-        RadianceResources*   radianceResources,
+        RenderPassResourceArray*   radianceResources,
         LightingPassResource*            lighting);
 
     void        Execute(const RenderContext& ctx, FrameResource* fr) override;
@@ -26,6 +26,6 @@ private:
     ID3D12PipelineState* mPso;
     GBufferPassResource*             mGBuffer;
     SssPassResource*                 mSss;
-    RadianceResources*   mRadianceResources;
+    RenderPassResourceArray*   mRadianceResources;
     LightingPassResource*            mLighting;
 };

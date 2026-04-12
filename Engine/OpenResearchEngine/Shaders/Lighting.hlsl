@@ -137,5 +137,5 @@ float4 PS(VertexOut pin) : SV_Target
         Lighting = Albedo;
     }
     
-    return float4(Lighting, 1.0f);
+	return float4(Lighting, 1.0f);
 }

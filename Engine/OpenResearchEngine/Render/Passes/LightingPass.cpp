@@ -3,8 +3,8 @@
 #include "../Resources/FrameResource.h"
 #include "../Resources/GBufferPassResource.h"
 #include "../Resources/SssPassResource.h"
-#include "../Resources/RadianceResources.h"
 #include "../Resources/LightingPassResource.h"
+#include "../RenderPassResourceArray.h"
 #include "../../D3D12/D3Dx12.h"
 
 LightingPass::LightingPass(
@@ -12,7 +12,7 @@ LightingPass::LightingPass(
     ID3D12PipelineState* pso,
     GBufferPassResource*             gBuffer,
     SssPassResource*                 sss,
-    RadianceResources*   radianceResources,
+    RenderPassResourceArray*   radianceResources,
     LightingPassResource*            lighting)
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer),
       mSss(sss), mRadianceResources(radianceResources), mLighting(lighting)
@@ -32,7 +32,7 @@ void LightingPass::Execute(const RenderContext& ctx, FrameResource* fr)
     ctx.cmdList->SetGraphicsRootShaderResourceView(2, fr->MaterialBuffer->Resource()->GetGPUVirtualAddress());
     ctx.cmdList->SetGraphicsRootDescriptorTable(3, mGBuffer->GetGpuSRVDescriptorHandle(mGBuffer->kPositionResource));
     ctx.cmdList->SetGraphicsRootDescriptorTable(4, mSss->GetGpuSRVDescriptorHandle(mSss->kSssBlurResource));
-    ctx.cmdList->SetGraphicsRootDescriptorTable(5, mRadianceResources->GetStartGpuSrv());
+    ctx.cmdList->SetGraphicsRootDescriptorTable(5, mRadianceResources->GetGpuDescriptorHandleStart("SRV"));
 
     float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
     ctx.cmdList->ClearRenderTargetView(mLighting->GetCpuRTVDescriptorHandle(mLighting->kLightingResource), clearColor, 0, nullptr);

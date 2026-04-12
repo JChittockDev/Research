@@ -112,6 +112,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Build\PushRenderItems.cpp" />
     <ClCompile Include="Build\SetRenderPassResources.cpp" />
     <ClCompile Include="Build\SerializeLevel.cpp" />
+    <ClCompile Include="Render\RenderPassResourceArray.cpp" />
     <ClCompile Include="Render\RenderPassResource.cpp" />
     <ClCompile Include="Render\RenderPipeline.cpp" />
     <ClCompile Include="Gui\GuiManager.cpp" />
@@ -145,11 +146,9 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Render\Resources\LightingPassResource.cpp" />
     <ClCompile Include="Render\Resources\MeshAnimationResource.cpp" />
     <ClCompile Include="Render\Resources\RadiancePassResource.cpp" />
-    <ClCompile Include="Render\Resources\RadianceResources.cpp" />
     <ClCompile Include="Render\Resources\RenderItem.cpp" />
     <ClCompile Include="Render\Resources\RenderTextures.cpp" />
-    <ClCompile Include="Render\Resources\ShadowMap.cpp" />
-    <ClCompile Include="Render\Resources\ShadowResources.cpp" />
+    <ClCompile Include="Render\Resources\ShadowPassResource.cpp" />
     <ClCompile Include="Render\Resources\Skeleton.cpp" />
     <ClCompile Include="Render\Passes\ShadowPass.cpp" />
     <ClCompile Include="Render\Resources\SsaoPassResource.cpp" />
@@ -176,6 +175,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Utilities\OnnxModelResource.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common\DataStructures.h" />
     <ClInclude Include="Gui\GuiManager.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
@@ -193,6 +193,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Objects\ViewFrustum.h" />
     <ClInclude Include="Render\DrawRenderItems.h" />
     <ClInclude Include="Render\IRenderPass.h" />
+    <ClInclude Include="Render\IRenderPassResourceArray.h" />
     <ClInclude Include="Render\Passes\AnimationPass.h" />
     <ClInclude Include="Render\Passes\CompositePass.h" />
     <ClInclude Include="Render\Passes\GBufferPass.h" />
@@ -208,6 +209,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Passes\SssBlurPass.h" />
     <ClInclude Include="Render\Passes\SssPass.h" />
     <ClInclude Include="Render\RenderContext.h" />
+    <ClInclude Include="Render\RenderPassResourceArray.h" />
     <ClInclude Include="Render\RenderPassResource.h" />
     <ClInclude Include="Render\RenderPipeline.h" />
     <ClInclude Include="Render\Resources\Blendshapes.h" />
@@ -218,10 +220,8 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Render\Resources\Joint.h" />
     <ClInclude Include="Render\Resources\MeshAnimationResource.h" />
     <ClInclude Include="Render\Resources\RadiancePassResource.h" />
-    <ClInclude Include="Render\Resources\RadianceResources.h" />
     <ClInclude Include="Render\Resources\RenderTextures.h" />
-    <ClInclude Include="Render\Resources\ShadowMap.h" />
-    <ClInclude Include="Render\Resources\ShadowResources.h" />
+    <ClInclude Include="Render\Resources\ShadowPassResource.h" />
     <ClInclude Include="Render\Resources\Skeleton.h" />
     <ClInclude Include="Render\Resources\SsaoPassResource.h" />
     <ClInclude Include="Render\Resources\SsgiPassResource.h" />

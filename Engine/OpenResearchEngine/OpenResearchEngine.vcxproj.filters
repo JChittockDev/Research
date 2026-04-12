@@ -147,10 +147,7 @@
     <ClCompile Include="Render\Resources\RenderTextures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\ShadowResources.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Resources\ShadowMap.cpp">
+    <ClCompile Include="Render\Resources\ShadowPassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Passes\SsaoPass.cpp">
@@ -198,9 +195,6 @@
     <ClCompile Include="Render\Resources\RadiancePassResource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Resources\RadianceResources.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Render\Passes\RadiancePass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -235,6 +229,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\RenderPassResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\RenderPassResourceArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -341,10 +338,7 @@
     <ClInclude Include="Render\Resources\RenderTextures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Resources\ShadowResources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Resources\ShadowMap.h">
+    <ClInclude Include="Render\Resources\ShadowPassResource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\SsaoPassResource.h">
@@ -360,12 +354,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Resources\SssPassResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Resources\RadiancePassResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Resources\RadianceResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\OnnxModelResource.h">
@@ -429,6 +417,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\RenderPassResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\IRenderPassResourceArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\RenderPassResourceArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Resources\RadiancePassResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\DataStructures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

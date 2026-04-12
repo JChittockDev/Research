@@ -5,16 +5,16 @@
 #include "Common/UploadBuffer.h"
 #include "Objects/Camera.h"
 #include "Render/Resources/FrameResource.h"
-#include "Render/Resources/ShadowMap.h"
+#include "Render/Resources/ShadowPassResource.h"
+#include "Render/Resources/RadiancePassResource.h"
 #include "Render/Resources/SsaoPassResource.h"
 #include "Render/Resources/SssPassResource.h"
 #include "Render/Resources/CompositePassResource.h"
 #include "Render/Resources/LightingPassResource.h"
 #include "Render/Resources/SsgiPassResource.h"
-#include "Render/Resources/ShadowResources.h"
-#include "Render/Resources/RadianceResources.h"
 #include "Render/Resources/GBufferPassResource.h"
 #include "Render/Resources/RenderItem.h"
+#include "Render/RenderPassResourceArray.h"
 #include "Render/Resources/RenderTextures.h"
 #include "Render/RenderPipeline.h"
 #include "Assets/AssetManager.h"
@@ -109,8 +109,9 @@ private:
     std::unique_ptr<SssPassResource>              mSss;
     std::unique_ptr<CompositePassResource>        mComposite;
     std::unique_ptr<RenderTextures>   mRenderTextures;
-    std::unique_ptr<ShadowResources>  mShadowResources;
-    std::unique_ptr<RadianceResources> mRadianceResources;
+
+    std::unique_ptr<RenderPassResourceArray> mShadowResourceArray;
+    std::unique_ptr<RenderPassResourceArray> mRadianceResourceArray;
 
     std::unique_ptr<AssetManager> mAssets;
     RenderPipeline mPipeline;
