@@ -1,6 +1,6 @@
 #include "SsaoPass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../Resources/GBufferPassResource.h"
 #include "../Resources/SsaoPassResource.h"
 
@@ -9,7 +9,7 @@ SsaoPass::SsaoPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSsao(ssao)
 {}
 
-void SsaoPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void SsaoPass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     ctx.cmdList->SetGraphicsRootSignature(mRootSig);
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);

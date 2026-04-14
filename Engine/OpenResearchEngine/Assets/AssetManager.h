@@ -4,7 +4,7 @@
 #include "../D3D12/D3DUtil.h"
 #include "../Common/Math.h"
 #include "../Common/UploadBuffer.h"
-#include "../Render/Resources/FrameResource.h"
+#include "../Render/RenderPassConstantBuffers.h"
 #include "../Render/Components/Mesh.h"
 #include "../Render/RenderItem.h"
 #include "../Render/Components/Skinning.h"

@@ -18,7 +18,7 @@ public:
         RenderPassResourceArray*   radianceResources,
         LightingPassResource*            lighting);
 
-    void        Execute(const RenderContext& ctx, FrameResource* fr) override;
+    void        Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr) override;
     const char* Name() const override { return "Lighting"; }
 
 private:

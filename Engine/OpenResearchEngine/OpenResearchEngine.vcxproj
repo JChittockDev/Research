@@ -165,7 +165,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClCompile Include="Models\Internal\GeometryGenerator.cpp" />
     <ClCompile Include="Common\Math.cpp" />
     <ClCompile Include="Controls\Controls.cpp" />
-    <ClCompile Include="Render\Resources\FrameResource.cpp" />
+    <ClCompile Include="Render\RenderPassConstantBuffers.cpp" />
     <ClCompile Include="Render\Components\Mesh.cpp" />
     <ClCompile Include="EngineApp.cpp" />
     <ClCompile Include="Update\UpdateMainPass.cpp" />
@@ -237,7 +237,7 @@ xcopy /Y /I "$(ProjectDir)Models\*" "$(OutDir)Models\"</Command>
     <ClInclude Include="Common\UploadBuffer.h" />
     <ClInclude Include="Assets\AssetManager.h" />
     <ClInclude Include="EngineApp.h" />
-    <ClInclude Include="Render\Resources\FrameResource.h" />
+    <ClInclude Include="Render\RenderPassConstantBuffers.h" />
     <ClInclude Include="Render\Resources\RenderItem.h" />
     <ClInclude Include="Render\Components\Skinning.h" />
     <ClInclude Include="Utilities\OnnxModelResource.h" />

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Resources/FrameResource.h"
+#include "RenderPassConstantBuffers.h"
 #include "Components/Mesh.h"
 #include "Components/Skinning.h"
 #include "Components/Blendshapes.h"

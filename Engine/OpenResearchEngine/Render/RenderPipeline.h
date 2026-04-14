@@ -4,13 +4,13 @@
 #include <memory>
 
 struct RenderContext;
-struct FrameResource;
+struct RenderPassConstantBuffers;
 
 class RenderPipeline
 {
 public:
     void AddPass(std::unique_ptr<IRenderPass> pass);
-    void Execute(const RenderContext& ctx, FrameResource* fr);
+    void Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr);
 
 private:
     std::vector<std::unique_ptr<IRenderPass>> mPasses;

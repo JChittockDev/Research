@@ -1,7 +1,7 @@
 #include "../../EngineApp.h"
 #include "../RenderContext.h"
 
-void EngineApp::Render(FrameResource* currentFrameResource)
+void EngineApp::Render(RenderPassConstantBuffers* currentFrameResource)
 {
     ThrowIfFailed(currentFrameResource->CmdListAlloc->Reset());
     ThrowIfFailed(mCommandList->Reset(currentFrameResource->CmdListAlloc.Get(),

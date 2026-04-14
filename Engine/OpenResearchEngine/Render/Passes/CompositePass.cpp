@@ -1,6 +1,6 @@
 #include "CompositePass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../Resources/LightingPassResource.h"
 #include "../Resources/SsgiPassResource.h"
 #include "../../D3D12/D3Dx12.h"
@@ -13,7 +13,7 @@ CompositePass::CompositePass(
     : mRootSig(rootSig), mPso(pso), mLighting(lighting), mSsgi(ssgi)
 {}
 
-void CompositePass::Execute(const RenderContext& ctx, FrameResource* fr)
+void CompositePass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
 
 	mSsgi->SetResourceState(mSsgi->kGiHorizontalBlurResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);

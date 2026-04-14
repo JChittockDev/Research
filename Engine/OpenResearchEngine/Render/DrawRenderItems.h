@@ -4,14 +4,14 @@
 #include <vector>
 #include <memory>
 #include "../D3D12/D3DUtil.h"
-#include "Resources/FrameResource.h"
+#include "RenderPassConstantBuffers.h"
 #include "RenderItem.h"
 #include "Resources/MeshAnimationResource.h"
 
 inline void DrawRenderItems(
     ID3D12GraphicsCommandList* cmdList,
     const std::vector<std::shared_ptr<RenderItem>>& renderItems,
-    FrameResource* fr)
+    RenderPassConstantBuffers* fr)
 {
     UINT objCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
     auto objectCB = fr->ObjectCB->Resource();

@@ -4,7 +4,7 @@
 #include "Common/Math.h"
 #include "Common/UploadBuffer.h"
 #include "Objects/Camera.h"
-#include "Render/Resources/FrameResource.h"
+#include "Render/RenderPassConstantBuffers.h"
 #include "Render/Resources/ShadowPassResource.h"
 #include "Render/Resources/RadiancePassResource.h"
 #include "Render/Resources/SsaoPassResource.h"
@@ -64,7 +64,7 @@ private:
     void BuildScene();
     void BuildPipeline();
 
-    void Render(FrameResource* currentFrameResource);
+    void Render(RenderPassConstantBuffers* currentFrameResource);
 
     void SetLights(const std::vector<Light>& DirectionalLights, const std::vector<Light>& SpotLights, std::vector<LightTransform>& LightTransforms);
     std::string extractFileName(const std::string& filePath);
@@ -78,9 +78,9 @@ private:
     DynamicLights dynamicLights;
 
     std::vector<std::shared_ptr<RenderItem>> mRenderItems;
-    std::vector<std::shared_ptr<FrameResource>> mFrameResources;
+    std::vector<std::shared_ptr<RenderPassConstantBuffers>> mFrameResources;
     int mCurrFrameResourceIndex = 0;
-    FrameResource* mCurrFrameResource = nullptr;
+    RenderPassConstantBuffers* mCurrFrameResource = nullptr;
 
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mMeshRenderItemMap;
     std::unordered_map<std::string, std::vector<std::shared_ptr<RenderItem>>> mDeformedRenderItemMap;

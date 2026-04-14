@@ -1,6 +1,6 @@
 #include "RadiancePass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../Resources/GBufferPassResource.h"
 #include "../Resources/RadiancePassResource.h"
 #include "../Resources/ShadowPassResource.h"
@@ -17,7 +17,7 @@ RadiancePass::RadiancePass(
       mShadowResources(shadowResources), mRadianceResources(radianceResources)
 {}
 
-void RadiancePass::Execute(const RenderContext& ctx, FrameResource* fr)
+void RadiancePass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     ctx.cmdList->SetGraphicsRootSignature(mRootSig);
     ctx.cmdList->SetGraphicsRootConstantBufferView(0, fr->ObjectCB->Resource()->GetGPUVirtualAddress());

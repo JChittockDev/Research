@@ -1,6 +1,6 @@
 #include "SsgiBlurPass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../Resources/GBufferPassResource.h"
 #include "../Resources/SsgiPassResource.h"
 
@@ -9,7 +9,7 @@ SsgiBlurPass::SsgiBlurPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* ps
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSsgi(ssgi)
 {}
 
-void SsgiBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void SsgiBlurPass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     float clearValue[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 

@@ -10,7 +10,7 @@ class SsaoBlurPass : public IRenderPass
 public:
     SsaoBlurPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
                  GBufferPassResource* gBuffer, SsaoPassResource* ssao);
-    void        Execute(const RenderContext& ctx, FrameResource* fr) override;
+    void        Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr) override;
     const char* Name() const override { return "SsaoBlur"; }
 private:
     ID3D12RootSignature* mRootSig;

@@ -1,6 +1,6 @@
 #include "AnimationPass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../RenderItem.h"
 #include "../Resources/MeshAnimationResource.h"
 #include "../../D3D12/D3Dx12.h"
@@ -8,7 +8,7 @@
 
 AnimationPass::AnimationPass(const AnimationPassResources& res) : mRes(res) {}
 
-void AnimationPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void AnimationPass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     auto& renderItems = ctx.renderItemLayers->at("Opaque");
     for (size_t i = 0; i < renderItems.size(); ++i)
@@ -26,7 +26,7 @@ void AnimationPass::Execute(const RenderContext& ctx, FrameResource* fr)
     }
 }
 
-void AnimationPass::ComputeBlendshapes(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void AnimationPass::ComputeBlendshapes(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     UINT blendCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(BlendConstants));
     auto blendCB = currentFrameResource->BlendCB->Resource();
@@ -49,7 +49,7 @@ void AnimationPass::ComputeBlendshapes(ID3D12GraphicsCommandList* cmdList, const
     }
 }
 
-void AnimationPass::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void AnimationPass::ComputeSkinning(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     UINT skinnedCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(SkinnedConstants));
     auto skinnedCB = currentFrameResource->SkinnedCB->Resource();

@@ -1,6 +1,6 @@
 #include "SsgiPass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../Resources/LightingPassResource.h"
 #include "../Resources/GBufferPassResource.h"
 #include "../Resources/SsgiPassResource.h"
@@ -10,7 +10,7 @@ SsgiPass::SsgiPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
     : mRootSig(rootSig), mPso(pso), mLighting(lighting), mGBuffer(gBuffer), mSsgi(ssgi)
 {}
 
-void SsgiPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void SsgiPass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     ctx.cmdList->SetGraphicsRootSignature(mRootSig);
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);

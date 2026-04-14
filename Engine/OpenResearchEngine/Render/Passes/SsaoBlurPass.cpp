@@ -1,6 +1,6 @@
 #include "SsaoBlurPass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../Resources/GBufferPassResource.h"
 #include "../Resources/SsaoPassResource.h"
 
@@ -8,7 +8,7 @@ SsaoBlurPass::SsaoBlurPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* ps
     : mRootSig(rootSig), mPso(pso), mGBuffer(gBuffer), mSsao(ssao)
 {}
 
-void SsaoBlurPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void SsaoBlurPass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     float clearValue[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 

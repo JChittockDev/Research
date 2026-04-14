@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../D3D12/D3DUtil.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
  
  
 class RenderTextures

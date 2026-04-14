@@ -10,7 +10,7 @@ class SsgiBlurPass : public IRenderPass
 public:
     SsgiBlurPass(ID3D12RootSignature* rootSig, ID3D12PipelineState* pso,
                  GBufferPassResource* gBuffer, SsgiPassResource* ssgi);
-    void        Execute(const RenderContext& ctx, FrameResource* fr) override;
+    void        Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr) override;
     const char* Name() const override { return "SsgiBlur"; }
 private:
     ID3D12RootSignature* mRootSig;

@@ -1,6 +1,6 @@
 #include "LightingPass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../Resources/GBufferPassResource.h"
 #include "../Resources/SssPassResource.h"
 #include "../Resources/LightingPassResource.h"
@@ -18,7 +18,7 @@ LightingPass::LightingPass(
       mSss(sss), mRadianceResources(radianceResources), mLighting(lighting)
 {}
 
-void LightingPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void LightingPass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     ctx.cmdList->SetGraphicsRootSignature(mRootSig);
     ctx.cmdList->RSSetViewports(1, &ctx.viewport);

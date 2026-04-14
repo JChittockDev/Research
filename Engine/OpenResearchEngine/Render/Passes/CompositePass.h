@@ -14,7 +14,7 @@ public:
         LightingPassResource*            lighting,
         SsgiPassResource*                ssgi);
 
-    void        Execute(const RenderContext& ctx, FrameResource* fr) override;
+    void        Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr) override;
     const char* Name() const override { return "Composite"; }
 
 private:

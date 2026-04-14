@@ -4,7 +4,7 @@
 #include "Skeleton.h"
 #include "Skinning.h"
 #include "TransformNode.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 
 class Mesh
 {

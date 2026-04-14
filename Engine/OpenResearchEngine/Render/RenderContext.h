@@ -8,7 +8,7 @@
 #include "../Common/Structures.h"
 
 class RenderItem;
-struct FrameResource;
+struct RenderPassConstantBuffers;
 
 // Shared per-frame state passed to every render pass.
 // Passes do NOT own any of these pointers.

@@ -1,6 +1,6 @@
-#include "FrameResource.h"
+#include "RenderPassConstantBuffers.h"
 
-FrameResource::FrameResource(ID3D12Device* device, UINT lightCount, UINT objectCount, UINT blendObjectCount, UINT skinnedObjectCount, UINT materialCount)
+RenderPassConstantBuffers::RenderPassConstantBuffers(ID3D12Device* device, UINT lightCount, UINT objectCount, UINT blendObjectCount, UINT skinnedObjectCount, UINT materialCount)
 {
     ThrowIfFailed(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(CmdListAlloc.GetAddressOf())));
     PassCB = std::make_unique<UploadBuffer<PassConstants>>(device, 1 + lightCount, true);
@@ -19,7 +19,7 @@ FrameResource::FrameResource(ID3D12Device* device, UINT lightCount, UINT objectC
     RadianceCB = std::make_unique<UploadBuffer<RadianceConstants>>(device, lightCount, true);
 }
 
-FrameResource::~FrameResource()
+RenderPassConstantBuffers::~RenderPassConstantBuffers()
 {
 
 }

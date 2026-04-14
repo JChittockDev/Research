@@ -17,12 +17,12 @@ class AnimationPass : public IRenderPass
 {
 public:
     explicit AnimationPass(const AnimationPassResources& res);
-    void        Execute(const RenderContext& ctx, FrameResource* fr) override;
+    void        Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr) override;
     const char* Name() const override { return "Animation"; }
 
 private:
-    void ComputeBlendshapes(ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputeSkinning   (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
+    void ComputeBlendshapes(ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputeSkinning   (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
 
     AnimationPassResources mRes;
 };

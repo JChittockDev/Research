@@ -32,20 +32,20 @@ class PhysicsPass : public IRenderPass
 {
 public:
     explicit PhysicsPass(const PhysicsPassResources& res);
-    void        Execute(const RenderContext& ctx, FrameResource* fr) override;
+    void        Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr) override;
     const char* Name() const override { return "Physics"; }
 
 private:
-    void ComputeMeshTransfer   (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputeTension        (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputePBD            (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputeForce          (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputePreSolve       (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputeConstraintSolve(ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputePostSolve      (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputeSimMeshTransfer(ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputeTriangleNormals(ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
-    void ComputeVertexNormals  (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, FrameResource*);
+    void ComputeMeshTransfer   (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputeTension        (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputePBD            (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputeForce          (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputePreSolve       (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputeConstraintSolve(ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputePostSolve      (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputeSimMeshTransfer(ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputeTriangleNormals(ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
+    void ComputeVertexNormals  (ID3D12GraphicsCommandList*, const std::shared_ptr<RenderItem>&, RenderPassConstantBuffers*);
 
     PhysicsPassResources mRes;
 };

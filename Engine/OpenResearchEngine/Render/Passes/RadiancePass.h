@@ -14,7 +14,7 @@ public:
         GBufferPassResource*             gBuffer,
         RenderPassResourceArray*     shadowResources,
         RenderPassResourceArray*   radianceResources);
-    void        Execute(const RenderContext& ctx, FrameResource* fr) override;
+    void        Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr) override;
     const char* Name() const override { return "Radiance"; }
 private:
     ID3D12RootSignature* mRootSig;

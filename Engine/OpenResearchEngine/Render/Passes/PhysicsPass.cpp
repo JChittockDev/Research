@@ -1,6 +1,6 @@
 #include "PhysicsPass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../RenderItem.h"
 #include "../Resources/MeshAnimationResource.h"
 #include "../../D3D12/D3Dx12.h"
@@ -8,7 +8,7 @@
 
 PhysicsPass::PhysicsPass(const PhysicsPassResources& res) : mRes(res) {}
 
-void PhysicsPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void PhysicsPass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     auto& renderItems = ctx.renderItemLayers->at("Opaque");
     for (size_t i = 0; i < renderItems.size(); ++i)
@@ -40,7 +40,7 @@ void PhysicsPass::Execute(const RenderContext& ctx, FrameResource* fr)
     }
 }
 
-void PhysicsPass::ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
     cmdList->SetComputeRootShaderResourceView(0, ri->MeshAnimationResourceInstance->SkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->VertexStart * sizeof(Vertex));
@@ -58,7 +58,7 @@ void PhysicsPass::ComputeMeshTransfer(ID3D12GraphicsCommandList* cmdList, const 
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SkinnedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
 }
 
-void PhysicsPass::ComputeTension(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputeTension(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->MeshAnimationResourceInstance->SimMeshSkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vertex));
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshVertexNeighbourBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(VertexNeighbours));
@@ -74,7 +74,7 @@ void PhysicsPass::ComputeTension(ID3D12GraphicsCommandList* cmdList, const std::
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshTensionBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 
-void PhysicsPass::ComputePBD(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputePBD(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootSignature(mRes.force);
     cmdList->SetPipelineState(mRes.psoForce);
@@ -96,7 +96,7 @@ void PhysicsPass::ComputePBD(ID3D12GraphicsCommandList* cmdList, const std::shar
     }
 }
 
-void PhysicsPass::ComputeForce(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputeForce(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->MeshAnimationResourceInstance->SimMeshSkinnedVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vertex));
 
@@ -115,7 +115,7 @@ void PhysicsPass::ComputeForce(ID3D12GraphicsCommandList* cmdList, const std::sh
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshForceBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 
-void PhysicsPass::ComputePreSolve(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputePreSolve(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->MeshAnimationResourceInstance->SimMeshForceBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vector3));
     cmdList->SetComputeRootShaderResourceView(1, ri->MeshAnimationResourceInstance->SimMeshSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vertex));
@@ -131,7 +131,7 @@ void PhysicsPass::ComputePreSolve(ID3D12GraphicsCommandList* cmdList, const std:
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshConstraintsVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 
-void PhysicsPass::ComputeConstraintSolve(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputeConstraintSolve(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshConstraintIDsBufferGPU->GetGPUVirtualAddress() + ri->SimMeshConstraintStart * sizeof(Edge));
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->SimMeshConstraintsBufferGPU->GetGPUVirtualAddress() + ri->SimMeshConstraintStart * sizeof(float));
@@ -152,7 +152,7 @@ void PhysicsPass::ComputeConstraintSolve(ID3D12GraphicsCommandList* cmdList, con
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverCountBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 
-void PhysicsPass::ComputePostSolve(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputePostSolve(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->Geo->SimMeshVertexColorBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vector4));
     cmdList->SetComputeRootShaderResourceView(1, ri->MeshAnimationResourceInstance->SimMeshTensionBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vector4));
@@ -187,7 +187,7 @@ void PhysicsPass::ComputePostSolve(ID3D12GraphicsCommandList* cmdList, const std
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->SimMeshSolverCountBufferGPU.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 
-void PhysicsPass::ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->MeshAnimationResourceInstance->SimMeshSolverVertexBufferGPU->GetGPUVirtualAddress() + ri->SimMeshVertexStart * sizeof(Vertex));
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->MeshTransferBufferGPU->GetGPUVirtualAddress() + ri->VertexStart * sizeof(UINT));
@@ -203,7 +203,7 @@ void PhysicsPass::ComputeSimMeshTransfer(ID3D12GraphicsCommandList* cmdList, con
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->TransformedVertexBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 
-void PhysicsPass::ComputeTriangleNormals(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputeTriangleNormals(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->MeshAnimationResourceInstance->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->VertexStart * sizeof(Vertex));
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->IndexBufferGPU->GetGPUVirtualAddress() + ri->IndexStart * sizeof(UINT));
@@ -219,7 +219,7 @@ void PhysicsPass::ComputeTriangleNormals(ID3D12GraphicsCommandList* cmdList, con
     cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(ri->MeshAnimationResourceInstance->TriangleNormalBufferGPU.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 
-void PhysicsPass::ComputeVertexNormals(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, FrameResource* currentFrameResource)
+void PhysicsPass::ComputeVertexNormals(ID3D12GraphicsCommandList* cmdList, const std::shared_ptr<RenderItem>& ri, RenderPassConstantBuffers* currentFrameResource)
 {
     cmdList->SetComputeRootShaderResourceView(0, ri->MeshAnimationResourceInstance->TransformedVertexBufferGPU->GetGPUVirtualAddress() + ri->VertexStart * sizeof(Vertex));
     cmdList->SetComputeRootShaderResourceView(1, ri->Geo->TriangleAdjacencyBufferGPU->GetGPUVirtualAddress() + ri->VertexStart * sizeof(Neighbours));

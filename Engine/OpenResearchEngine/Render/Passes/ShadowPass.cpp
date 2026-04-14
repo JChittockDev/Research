@@ -1,6 +1,6 @@
 #include "ShadowPass.h"
 #include "../RenderContext.h"
-#include "../Resources/FrameResource.h"
+#include "../RenderPassConstantBuffers.h"
 #include "../Resources/RenderTextures.h"
 #include "../DrawRenderItems.h"
 #include "../../D3D12/D3DUtil.h"
@@ -17,7 +17,7 @@ ShadowPass::ShadowPass(
     : mRootSig(rootSig), mPso(pso), mShadowResources(shadowResources), mRenderTextures(renderTextures)
 {}
 
-void ShadowPass::Execute(const RenderContext& ctx, FrameResource* fr)
+void ShadowPass::Execute(const RenderContext& ctx, RenderPassConstantBuffers* fr)
 {
     auto matBuffer = fr->MaterialBuffer->Resource();
     ctx.cmdList->SetGraphicsRootSignature(mRootSig);

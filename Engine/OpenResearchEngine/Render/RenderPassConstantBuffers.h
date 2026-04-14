@@ -1,17 +1,17 @@
 #pragma once
 
-#include "../../Common/Structures.h"
+#include "../Common/Structures.h"
 
 // Stores the resources needed for the CPU to build the command lists
 // for a frame.  
-struct FrameResource
+struct RenderPassConstantBuffers
 {
 public:
     
-    FrameResource(ID3D12Device* device, UINT lightCount, UINT objectCount, UINT blendObjectCount, UINT skinnedObjectCount, UINT materialCount);
-    FrameResource(const FrameResource& rhs) = delete;
-    FrameResource& operator=(const FrameResource& rhs) = delete;
-    ~FrameResource();
+    RenderPassConstantBuffers(ID3D12Device* device, UINT lightCount, UINT objectCount, UINT blendObjectCount, UINT skinnedObjectCount, UINT materialCount);
+    RenderPassConstantBuffers(const RenderPassConstantBuffers& rhs) = delete;
+    RenderPassConstantBuffers& operator=(const RenderPassConstantBuffers& rhs) = delete;
+    ~RenderPassConstantBuffers();
 
     // We cannot reset the allocator until the GPU is done processing the commands.
     // So each frame needs their own allocator.
